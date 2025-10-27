@@ -30,7 +30,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Last Login</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -68,27 +68,49 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         {{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Never' }}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div class="flex items-center space-x-2">
-                            <a href="{{ route('admin.users.show', $user) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300" title="View">
-                                <i class='bx bx-show text-lg'></i>
-                            </a>
-                            <a href="{{ route('admin.users.edit', $user) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300" title="Edit">
-                                <i class='bx bx-edit text-lg'></i>
-                            </a>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
+                        <div class="flex items-center justify-end space-x-2">
+                            <!-- Toggle Status Button -->
                             <form action="{{ route('admin.users.toggle-status', $user) }}" method="POST" class="inline">
                                 @csrf
                                 @method('PATCH')
-                                <button type="submit" class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300" title="Toggle Status">
-                                    <i class='bx bx-power-off text-lg'></i>
+                                <button type="submit" 
+                                        class="inline-flex items-center px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 hover:scale-105 {{ $user->status === 'active' ? 'text-red-700 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-800/40' : 'text-green-700 bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-800/40' }}" 
+                                        title="{{ $user->status === 'active' ? 'Deactivate User' : 'Activate User' }}">
+                                    <i class='bx bx-power-off mr-1 text-sm'></i>
+                                    {{ $user->status === 'active' ? 'Deactivate' : 'Activate' }}
                                 </button>
                             </form>
-                            <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this user?')">
+                            
+                            <!-- View Button -->
+                            <a href="{{ route('admin.users.show', $user) }}" 
+                               class="inline-flex items-center px-3 py-2 text-xs font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/40 transition-all duration-200 hover:scale-105" 
+                               title="View Details">
+                                <i class='bx bx-show mr-1 text-sm'></i>
+                                View
+                            </a>
+                            
+                            <!-- Edit Button -->
+                            <a href="{{ route('admin.users.edit', $user) }}" 
+                               class="inline-flex items-center px-3 py-2 text-xs font-medium text-indigo-700 bg-indigo-100 rounded-lg hover:bg-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-800/40 transition-all duration-200 hover:scale-105" 
+                               title="Edit User">
+                                <i class='bx bx-edit mr-1 text-sm'></i>
+                                Edit
+                            </a>
+                            
+                            <!-- Delete Button -->
+                            <button type="button" 
+                                    onclick="confirmDelete({{ $user->id }}, '{{ $user->full_name }}')"
+                                    class="inline-flex items-center px-3 py-2 text-xs font-medium text-red-700 bg-red-100 rounded-lg hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-800/40 transition-all duration-200 hover:scale-105" 
+                                    title="Delete User">
+                                <i class='bx bx-trash mr-1 text-sm'></i>
+                                Delete
+                            </button>
+                            
+                            <!-- Hidden form for deletion -->
+                            <form id="delete-form-{{ $user->id }}" action="{{ route('admin.users.destroy', $user) }}" method="POST" style="display: none;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300" title="Delete">
-                                    <i class='bx bx-trash text-lg'></i>
-                                </button>
                             </form>
                         </div>
                     </td>
@@ -115,4 +137,28 @@
     </div>
     @endif --}}
 </div>
+
+<!-- SweetAlert2 Delete Confirmation Script -->
+<script>
+function confirmDelete(userId, userName) {
+    Swal.fire({
+        title: 'Are you sure?',
+        html: `You are about to delete <strong>${userName}</strong><br><br>This action cannot be undone!`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Yes, delete user',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        showLoaderOnConfirm: true,
+        allowOutsideClick: () => !Swal.isLoading(),
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Submit the delete form
+            document.getElementById('delete-form-' + userId).submit();
+        }
+    });
+}
+</script>
 @endsection

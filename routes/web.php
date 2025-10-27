@@ -60,6 +60,23 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('users', App\Http\Controllers\UserController::class);
     Route::patch('/users/{user}/toggle-status', [App\Http\Controllers\UserController::class, 'toggleStatus'])->name('users.toggle-status');
     
+    // Form Submissions
+    Route::prefix('submissions')->name('submissions.')->group(function () {
+        Route::get('/dar', [App\Http\Controllers\Admin\SubmissionController::class, 'dar'])->name('dar');
+        Route::get('/dcr', [App\Http\Controllers\Admin\SubmissionController::class, 'dcr'])->name('dcr');
+        Route::get('/raf', [App\Http\Controllers\Admin\SubmissionController::class, 'raf'])->name('raf');
+        Route::get('/srf', [App\Http\Controllers\Admin\SubmissionController::class, 'srf'])->name('srf');
+        
+        // Show individual submissions
+        Route::get('/dar/{id}', [App\Http\Controllers\Admin\SubmissionController::class, 'showDar'])->name('show-dar');
+        Route::get('/dcr/{id}', [App\Http\Controllers\Admin\SubmissionController::class, 'showDcr'])->name('show-dcr');
+        Route::get('/raf/{id}', [App\Http\Controllers\Admin\SubmissionController::class, 'showRaf'])->name('show-raf');
+        Route::get('/srf/{id}', [App\Http\Controllers\Admin\SubmissionController::class, 'showSrf'])->name('show-srf');
+        
+        // Update status
+        Route::patch('/{type}/{id}/status', [App\Http\Controllers\Admin\SubmissionController::class, 'updateStatus'])->name('update-status');
+    });
+    
     // Profile
     Route::get('/profile', function () {
         return view('admin.profile');
