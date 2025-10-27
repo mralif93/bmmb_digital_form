@@ -1,61 +1,229 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🏦 BMMB Digital Forms System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A comprehensive Laravel-based digital forms platform for Brunei Darussalam financial institutions, designed for streamlined data access requests, corrections, service requests, and remittance applications.
 
-## About Laravel
+## 📋 Overview
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+BMMB Digital Forms is a modern web application built with Laravel that provides secure, user-friendly interfaces for processing various types of requests and applications. The system features interactive multi-step forms with real-time validation and a beautiful, responsive UI.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🎯 Core Functionality
 
-## Learning Laravel
+- **Multi-Step Forms**: Interactive stepper navigation with Alpine.js
+- **Four Form Types**:
+  - **DAR** (Data Access Request) - GDPR-compliant data access requests
+  - **DCR** (Data Correction Request) - Data correction and rectification
+  - **RAF** (Remittance Application Form) - Foreign remittance applications
+  - **SRF** (Service Request Form) - General service requests
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 🎨 UI/UX Features
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Modern Stepper Component**: Fully interactive step navigation
+- **Real-time Progress Indicators**: Visual feedback on form completion
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **Smooth Animations**: Alpine.js transitions between steps
+- **Form Validation**: Client-side validation with server-side security
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 🔐 Security
 
-## Laravel Sponsors
+- **CSRF Protection**: Built-in Laravel security
+- **Data Encryption**: Secure form data handling
+- **GDPR Compliance**: Data protection regulation adherence
+- **Input Sanitization**: XSS and injection protection
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🛠️ Tech Stack
 
-### Premium Partners
+- **Backend**: Laravel 11.x
+- **Frontend**: Blade Templates + Tailwind CSS
+- **JavaScript**: Alpine.js for reactive components
+- **Icons**: Boxicons
+- **Database**: SQLite (development) / MySQL (production)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 📁 Project Structure
 
-## Contributing
+```
+bmmb_digital_form/
+├── app/
+│   ├── Http/Controllers/    # Form controllers
+│   └── Models/               # Eloquent models
+│       ├── DarFormSubmission.php
+│       ├── DcrFormSubmission.php
+│       ├── RafFormSubmission.php
+│       └── SrfFormSubmission.php
+├── resources/
+│   └── views/
+│       ├── public/forms/     # Public form views
+│       │   ├── dar.blade.php
+│       │   ├── dcr.blade.php
+│       │   ├── raf.blade.php
+│       │   └── srf.blade.php
+│       └── layouts/          # Blade layouts
+├── database/
+│   └── migrations/          # Database migrations
+└── routes/
+    └── web.php              # Route definitions
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🚀 Getting Started
 
-## Code of Conduct
+### Prerequisites
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- PHP 8.2 or higher
+- Composer
+- Node.js & NPM
 
-## Security Vulnerabilities
+### Installation
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/bmmb_digital_form.git
+   cd bmmb_digital_form
+   ```
 
-## License
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+3. **Install frontend dependencies**
+   ```bash
+   npm install
+   ```
+
+4. **Set up environment**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+5. **Configure database**
+   Update `.env` with your database credentials:
+   ```env
+   DB_CONNECTION=sqlite
+   # or for MySQL
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_DATABASE=bmmb_digital_form
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+
+6. **Run migrations**
+   ```bash
+   php artisan migrate
+   ```
+
+7. **Seed database (optional)**
+   ```bash
+   php artisan db:seed
+   ```
+
+8. **Compile assets**
+   ```bash
+   npm run dev
+   # or for production
+   npm run build
+   ```
+
+9. **Start development server**
+   ```bash
+   php artisan serve
+   ```
+
+10. **Access the application**
+    Open your browser and visit: `http://localhost:8000`
+
+## 📝 Available Forms
+
+### 1. Data Access Request (DAR)
+- Multi-step form for requesting personal data access
+- GDPR compliant processing
+- Legal basis validation
+- Purpose and justification requirements
+
+### 2. Data Correction Request (DCR)
+- Request data corrections or updates
+- Priority-based processing
+- Supporting document uploads
+- Verification workflow
+
+### 3. Remittance Application Form (RAF)
+- Foreign remittance applications
+- Multi-step verification process
+- Document management
+- Status tracking
+
+### 4. Service Request Form (SRF)
+- General service requests
+- Category-based routing
+- Service description and requirements
+- Legal basis and documentation
+
+## 🎨 Stepper Component
+
+The forms feature an interactive stepper component built with Alpine.js:
+
+- **Click navigation**: Click any step to jump directly to that step
+- **Visual feedback**: Active step highlighted with gradient styling
+- **Progress tracking**: Completed steps show checkmarks
+- **Smooth transitions**: Animated transitions between steps
+
+### Recent Improvements
+
+✅ Fixed stepper synchronization across all forms  
+✅ Converted from JavaScript-based navigation to Alpine.js  
+✅ Added smooth transitions and animations  
+✅ Unified navigation experience across DAR, RAF, DCR, and SRF forms
+
+## 🔧 Development
+
+### Running Tests
+```bash
+php artisan test
+```
+
+### Generating Assets
+```bash
+npm run dev    # Development build
+npm run build  # Production build
+npm run watch  # Watch for changes
+```
+
+### Database Management
+```bash
+php artisan migrate        # Run migrations
+php artisan migrate:fresh  # Fresh migration with seeding
+php artisan db:seed        # Seed database
+```
+
+## 📊 Database Structure
+
+For detailed database schema information, see [DATABASE_STRUCTURE.md](DATABASE_STRUCTURE.md)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is proprietary software for BMMB Digital Forms System.
+
+## 👥 Support
+
+For issues, questions, or support requests, please contact the development team.
+
+## 🙏 Acknowledgments
+
+- Laravel Framework
+- Alpine.js for reactive components
+- Tailwind CSS for styling
+- Boxicons for icons
+
+---
+
+**Built with ❤️ for BMMB Digital Forms System**
