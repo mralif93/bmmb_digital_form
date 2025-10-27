@@ -30,7 +30,7 @@
 <!-- Form Section -->
 <section class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="form-card rounded-xl p-8 shadow-xl">
+        <div class="form-card rounded-xl p-8 shadow-xl" x-data="{ currentStep: 1 }">
             <!-- Progress Indicator -->
             <div class="mb-8">
                 <div class="flex items-center justify-between relative">
@@ -105,7 +105,7 @@
             </div>
 
             <!-- Form -->
-            <form id="dar-form" class="space-y-8" x-data="{ currentStep: 1 }">
+            <form id="dar-form" class="space-y-8">
                 @csrf
                 
                 <!-- Step 1: Personal Information -->

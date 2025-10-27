@@ -30,9 +30,9 @@
 <!-- Form Section -->
 <section class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="form-card rounded-xl p-8 shadow-xl">
+        <div class="form-card rounded-xl p-8 shadow-xl" x-data="{ currentStep: 1 }">
             <!-- Progress Indicator -->
-            <div class="mb-8" x-data="{ currentStep: 1 }">
+            <div class="mb-8">
                 <div class="flex items-center justify-between relative">
                     <!-- Step 1 -->
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 1">
@@ -105,7 +105,7 @@
             </div>
 
             <!-- Form -->
-            <form id="raf-form" class="space-y-8" x-data="{ currentStep: 1 }">
+            <form id="raf-form" class="space-y-8">
                 @csrf
                 
                 <!-- Step 1: Personal Information -->

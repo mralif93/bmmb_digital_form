@@ -30,9 +30,9 @@
 <!-- Form Section -->
 <section class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="form-card rounded-xl p-8 shadow-xl">
+        <div class="form-card rounded-xl p-8 shadow-xl" x-data="{ currentStep: 1 }">
             <!-- Progress Indicator -->
-            <div class="mb-8" x-data="{ currentStep: 1 }">
+            <div class="mb-8">
                 <div class="flex items-center justify-between relative">
                     <!-- Step 1 -->
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 1">
@@ -109,7 +109,7 @@
                 @csrf
                 
                 <!-- Step 1: Personal Information -->
-                <div id="step-1">
+                <div x-show="currentStep === 1" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-x-4" x-transition:enter-end="opacity-100 transform translate-x-0">
                     <h3 class="text-2xl font-bold text-gray-900 mb-6">Personal Information</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -177,7 +177,7 @@
                     </div>
                     
                     <div class="flex justify-end mt-8">
-                        <button type="button" onclick="nextStep(1, 2)" 
+                        <button type="button" @click="currentStep = 2" 
                                 class="btn-primary text-white px-8 py-3 rounded-lg font-semibold">
                             Next Step <i class='bx bx-right-arrow-alt ml-2'></i>
                         </button>
@@ -185,7 +185,7 @@
                 </div>
                 
                 <!-- Step 2: Correction Details -->
-                <div id="step-2" class="hidden">
+                <div x-show="currentStep === 2" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-x-4" x-transition:enter-end="opacity-100 transform translate-x-0">
                     <h3 class="text-2xl font-bold text-gray-900 mb-6">Correction Details</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -380,12 +380,12 @@
                     </div>
                     
                     <div class="flex justify-between mt-8">
-                        <button type="button" onclick="prevStep(2, 1)" 
+                        <button type="button" @click="currentStep = 1" 
                                 class="bg-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-400 transition-colors">
                             <i class='bx bx-left-arrow-alt mr-2'></i>
                             Previous
                         </button>
-                        <button type="button" onclick="nextStep(2, 3)" 
+                        <button type="button" @click="currentStep = 3" 
                                 class="btn-primary text-white px-8 py-3 rounded-lg font-semibold">
                             Next Step <i class='bx bx-right-arrow-alt ml-2'></i>
                         </button>
@@ -393,7 +393,7 @@
                 </div>
                 
                 <!-- Step 3: Supporting Documents -->
-                <div id="step-3" class="hidden">
+                <div x-show="currentStep === 3" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-x-4" x-transition:enter-end="opacity-100 transform translate-x-0">
                     <h3 class="text-2xl font-bold text-gray-900 mb-6">Supporting Documents & Legal Basis</h3>
                     
                     <div class="mt-6">
@@ -493,12 +493,12 @@
                     </div>
                     
                     <div class="flex justify-between mt-8">
-                        <button type="button" onclick="prevStep(3, 2)" 
+                        <button type="button" @click="currentStep = 2" 
                                 class="bg-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-400 transition-colors">
                             <i class='bx bx-left-arrow-alt mr-2'></i>
                             Previous
                         </button>
-                        <button type="button" onclick="nextStep(3, 4)" 
+                        <button type="button" @click="currentStep = 4" 
                                 class="btn-primary text-white px-8 py-3 rounded-lg font-semibold">
                             Next Step <i class='bx bx-right-arrow-alt ml-2'></i>
                         </button>
@@ -506,7 +506,7 @@
                 </div>
                 
                 <!-- Step 4: Review & Submit -->
-                <div id="step-4" class="hidden">
+                <div x-show="currentStep === 4" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-x-4" x-transition:enter-end="opacity-100 transform translate-x-0">
                     <h3 class="text-2xl font-bold text-gray-900 mb-6">Review & Submit</h3>
                     
                     <div class="bg-gray-50 rounded-lg p-6 mb-6">
@@ -551,7 +551,7 @@
                     </div>
                     
                     <div class="flex justify-between mt-8">
-                        <button type="button" onclick="prevStep(4, 3)" 
+                        <button type="button" @click="currentStep = 3" 
                                 class="bg-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-400 transition-colors">
                             <i class='bx bx-left-arrow-alt mr-2'></i>
                             Previous
