@@ -20,7 +20,8 @@
     </div>
 
     <!-- Settings Tabs -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700" x-data="{ activeTab: 'general' }">
+    <form method="POST" action="{{ route('admin.settings.update') }}" id="settings-form" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700" x-data="{ activeTab: 'general' }">
+        @csrf
         <div class="border-b border-gray-200 dark:border-gray-700">
             <nav class="flex space-x-8 px-6" aria-label="Tabs">
                 <button @click="activeTab = 'general'" 
@@ -115,13 +116,30 @@
                 <div>
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Feature Toggles</h3>
                     <div class="space-y-4">
+                        <!-- Offline Mode Toggle -->
+                        <div class="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-800/30">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class='bx bx-wifi-off text-white text-xl'></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white">Offline Mode (PWA)</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Enable progressive web app features and offline functionality</p>
+                                </div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer ml-4">
+                                <input type="checkbox" name="enable_offline_mode" value="1" {{ ($settings['enable_offline_mode'] ?? true) ? 'checked' : '' }} class="sr-only peer offline-mode-toggle">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                        
                         <div class="flex items-center justify-between">
                             <div>
                                 <h4 class="text-sm font-medium text-gray-900 dark:text-white">User Registration</h4>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">Allow new users to register accounts</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" checked class="sr-only peer">
+                                <input type="checkbox" name="enable_registration" value="1" {{ ($settings['enable_registration'] ?? true) ? 'checked' : '' }} class="sr-only peer">
                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                             </label>
                         </div>
@@ -294,42 +312,46 @@
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 
     <!-- System Information -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">System Information</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                        <i class='bx bx-server text-blue-600 dark:text-blue-400'></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-900 dark:text-white">PHP Version</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">8.4.1</p>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                        <i class='bx bx-data text-green-600 dark:text-green-400'></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-900 dark:text-white">Laravel Version</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">11.x</p>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">System Information</h3>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                            <i class='bx bx-server text-blue-600 dark:text-blue-400'></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">PHP Version</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">8.4.1</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                        <i class='bx bx-memory-card text-purple-600 dark:text-purple-400'></i>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                            <i class='bx bx-data text-green-600 dark:text-green-400'></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">Laravel Version</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">11.x</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-900 dark:text-white">Memory Usage</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">128 MB</p>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                            <i class='bx bx-memory-card text-purple-600 dark:text-purple-400'></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">Memory Usage</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">128 MB</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -337,26 +359,71 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center pt-4">
         <div class="flex space-x-3">
-            <button class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors">
+            <button type="button" class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors">
                 <i class='bx bx-reset mr-2'></i>
                 Reset to Defaults
             </button>
-            <button class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors">
+            <button type="button" class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors">
                 <i class='bx bx-download mr-2'></i>
                 Export Settings
             </button>
         </div>
         <div class="flex space-x-3">
-            <button class="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors">
+            <button type="button" class="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors">
                 Cancel
             </button>
-            <button class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+            <button type="submit" form="settings-form" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
                 <i class='bx bx-save mr-2'></i>
                 Save Settings
             </button>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle offline mode toggle
+    const offlineToggle = document.querySelector('.offline-mode-toggle');
+    if (offlineToggle) {
+        offlineToggle.addEventListener('change', function(e) {
+            const isEnabled = e.target.checked;
+            
+            Swal.fire({
+                title: isEnabled ? 'Enable Offline Mode?' : 'Disable Offline Mode?',
+                html: isEnabled 
+                    ? 'Users will be able to access the application without an internet connection. This will install service worker caching.'
+                    : 'Users will no longer be able to access cached content offline. Service worker will be unregistered.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2563eb',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: isEnabled ? 'Enable' : 'Disable',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Auto-save form after confirmation
+                    document.getElementById('settings-form').submit();
+                } else {
+                    // Revert toggle if cancelled
+                    offlineToggle.checked = !isEnabled;
+                }
+            });
+        });
+    }
+
+    // Handle save button
+    const saveBtn = document.querySelector('button[type="submit"]');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function(e) {
+            const form = document.getElementById('settings-form');
+            if (form) {
+                form.submit();
+            }
+        });
+    }
+});
+</script>
 @endsection

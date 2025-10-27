@@ -1,6 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Cache;
+
+// API Routes for Offline Mode
+Route::get('/api/offline-mode-enabled', function () {
+    $settings = Cache::get('system_settings', [
+        'enable_offline_mode' => true
+    ]);
+    
+    return response()->json([
+        'enabled' => $settings['enable_offline_mode'] ?? true
+    ]);
+})->name('api.offline-mode-enabled');
 
 // Public Routes - Home page
 Route::get('/', function () {
@@ -83,7 +95,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     })->name('profile');
     
     // System Settings
-    Route::get('/settings', function () {
-        return view('admin.settings');
-    })->name('settings');
+    Route::get('/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings');
+    Route::post('/settings', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
 });

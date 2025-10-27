@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="description" content="BMMB Digital Forms - Submit forms offline, access anytime">
     <title>@yield('title', 'BMMB Digital Forms')</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/favicon.ico">
     
     <!-- Tailwind CSS CDN - Play CDN (More Reliable) -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
@@ -555,5 +561,8 @@
     </script>
     
     @stack('scripts')
+    
+    <!-- Register Service Worker for Offline Support -->
+    <script src="{{ asset('register-sw.js') }}"></script>
 </body>
 </html>
