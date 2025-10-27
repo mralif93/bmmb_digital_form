@@ -2,9 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Public Routes
+// Public Routes - Home page
 Route::get('/', function () {
     return view('public.home');
+})->name('home');
+
+// Redirect public.home to home for compatibility
+Route::get('/home', function () {
+    return redirect()->route('home');
 })->name('public.home');
 
 // Public Form Routes
@@ -26,25 +31,26 @@ Route::prefix('forms')->name('public.forms.')->group(function () {
     })->name('srf');
 });
 
-// Auth routes (placeholder - you can implement these later)
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
+// Auth Routes
+Route::get('/login', [App\Http\Controllers\Auth\AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [App\Http\Controllers\Auth\AuthController::class, 'login']);
+Route::get('/register', [App\Http\Controllers\Auth\AuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [App\Http\Controllers\Auth\AuthController::class, 'register']);
+Route::post('/logout', [App\Http\Controllers\Auth\AuthController::class, 'logout'])->name('logout');
 
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register');
+// Password Reset Routes
+Route::get('/forgot-password', [App\Http\Controllers\Auth\AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [App\Http\Controllers\Auth\AuthController::class, 'sendResetLink'])->name('password.email');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+// Protected Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+});
 
-Route::get('/logout', function () {
-    return redirect('/');
-})->name('logout');
-
-// Admin Routes
-Route::prefix('admin')->name('admin.')->group(function () {
+// Admin Routes (protected by auth and admin middleware)
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard
     Route::get('/dashboard', function () {
         return view('admin.dashboard');

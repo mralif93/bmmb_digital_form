@@ -95,7 +95,7 @@
 
     @stack('styles')
 </head>
-<body class="font-sans bg-gray-100 dark:bg-gray-900">
+<body class="font-sans bg-gray-100 dark:bg-gray-900" x-data="{ profileDropdown: false }">
     <!-- Row 1: Header -->
     <header class="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700">
         <div class="px-6 py-4">
@@ -111,14 +111,59 @@
                     </div>
                 </div>
                 
-                <!-- User Profile -->
-                <div class="flex items-center space-x-2">
-                    <div class="w-7 h-7 bg-gradient-to-br from-gray-400 to-gray-500 rounded-md flex items-center justify-center">
-                        <i class='bx bx-user text-white text-xs'></i>
-                    </div>
-                    <div class="hidden lg:block text-left">
-                        <p class="text-xs font-semibold text-gray-900 dark:text-white">Admin User</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">admin@bmmb.com</p>
+                <!-- User Profile Dropdown -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" @click.away="open = false" class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <div class="w-9 h-9 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center shadow-md">
+                            <i class='bx bx-user text-white text-sm'></i>
+                        </div>
+                        <div class="hidden lg:block text-left">
+                            <p class="text-xs font-semibold text-gray-900 dark:text-white">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ Auth::user()->email }}</p>
+                        </div>
+                        <i class='bx bx-chevron-down text-gray-500 dark:text-gray-400 text-sm transition-transform duration-200' :class="open ? 'rotate-180' : ''"></i>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div x-show="open" x-cloak 
+                         class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-2 z-50">
+                        <!-- User Info -->
+                        <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                            <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ Auth::user()->email }}</p>
+                            <span class="inline-block mt-2 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded">
+                                {{ ucfirst(Auth::user()->role) }}
+                            </span>
+                        </div>
+                        
+                        <!-- Dropdown Items -->
+                        <div class="py-2">
+                            <a href="{{ route('admin.profile') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                                <i class='bx bx-user mr-3 text-lg'></i>
+                                <span>Profile</span>
+                            </a>
+                            
+                            <a href="{{ route('admin.settings') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-400 transition-colors">
+                                <i class='bx bx-cog mr-3 text-lg'></i>
+                                <span>Settings</span>
+                            </a>
+                            
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                                <i class='bx bx-help-circle mr-3 text-lg'></i>
+                                <span>Help & Support</span>
+                            </a>
+                        </div>
+                        
+                        <!-- Logout -->
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-2">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full flex items-center px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                    <i class='bx bx-log-out mr-3 text-lg'></i>
+                                    <span>Sign Out</span>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -187,13 +232,6 @@
                                 <a href="#" class="text-xs text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms of Service</a>
                                 <a href="#" class="text-xs text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Support</a>
                             </div>
-                        </div>
-                        
-                        <div class="flex items-center space-x-3">
-                            <a href="{{ route('logout') }}" class="flex items-center px-2 py-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded-md hover:bg-red-50 dark:hover:bg-red-900/20">
-                                <i class='bx bx-log-out mr-1.5 text-sm'></i>
-                                Logout
-                            </a>
                         </div>
                     </div>
                 </div>

@@ -262,7 +262,7 @@
             <div class="flex justify-between items-center h-20">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="{{ route('public.home') }}" class="flex items-center space-x-4 group">
+                    <a href="{{ route('home') }}" class="flex items-center space-x-4 group">
                         <div class="w-14 h-14 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg shadow-blue-500/25">
                             <i class='bx bx-file-text text-white text-3xl'></i>
                         </div>
@@ -277,7 +277,7 @@
                 
                 <!-- Desktop Navigation -->
                 <nav class="hidden xl:flex items-center space-x-2">
-                    <a href="{{ route('public.home') }}" class="relative px-4 py-2.5 text-sm font-semibold text-gray-700 hover:text-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-300 group {{ request()->routeIs('public.home') ? 'text-blue-600 bg-blue-50' : '' }}">
+                    <a href="{{ route('home') }}" class="relative px-4 py-2.5 text-sm font-semibold text-gray-700 hover:text-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-300 group {{ request()->routeIs('home') ? 'text-blue-600 bg-blue-50' : '' }}">
                         <i class='bx bx-home mr-2 text-lg'></i>
                         <span>Home</span>
                         <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -372,7 +372,7 @@
         <div x-show="mobileMenuOpen" x-cloak class="xl:hidden bg-white/95 backdrop-blur-md border-t border-gray-100 shadow-xl">
             <div class="px-6 py-6 space-y-4">
                 <!-- Mobile Home Link -->
-                <a href="{{ route('public.home') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all duration-300 group {{ request()->routeIs('public.home') ? 'bg-blue-50 text-blue-600' : '' }}">
+                <a href="{{ route('home') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all duration-300 group {{ request()->routeIs('home') ? 'bg-blue-50 text-blue-600' : '' }}">
                     <i class='bx bx-home text-xl mr-4'></i>
                     <span class="text-lg font-semibold">Home</span>
                 </a>

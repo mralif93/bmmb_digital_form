@@ -38,13 +38,13 @@
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 1">
                         <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300" 
                              :class="{ 'ring-4 ring-blue-200 scale-110': currentStep === 1 }">
-                            <i class='bx bx-user text-lg' x-show="currentStep > 1"></i>
-                            <span x-show="currentStep <= 1">1</span>
+                            <i class='bx bx-user text-lg' x-show="currentStep > 1" x-cloak></i>
+                            <span x-show="currentStep <= 1" x-cloak>1</span>
                         </div>
                         <div class="ml-3">
                             <span class="text-sm font-semibold text-gray-700 block" 
                                   :class="{ 'text-blue-600': currentStep >= 1 }">Personal Information</span>
-                            <span class="text-xs text-gray-500" x-show="currentStep > 1">Completed</span>
+                            <span class="text-xs text-gray-500" x-show="currentStep > 1" x-cloak>Completed</span>
                         </div>
                     </div>
                     
@@ -56,13 +56,13 @@
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 2">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300"
                              :class="currentStep >= 2 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white ring-4 ring-blue-200 scale-110' : 'bg-gray-300 text-gray-600'">
-                            <i class='bx bx-cog text-lg' x-show="currentStep > 2"></i>
-                            <span x-show="currentStep <= 2">2</span>
+                            <i class='bx bx-cog text-lg' x-show="currentStep > 2" x-cloak></i>
+                            <span x-show="currentStep <= 2" x-cloak>2</span>
                         </div>
                         <div class="ml-3">
                             <span class="text-sm font-semibold block"
                                   :class="currentStep >= 2 ? 'text-blue-600' : 'text-gray-500'">Service Details</span>
-                            <span class="text-xs text-gray-500" x-show="currentStep > 2">Completed</span>
+                            <span class="text-xs text-gray-500" x-show="currentStep > 2" x-cloak>Completed</span>
                         </div>
                     </div>
                     
@@ -74,13 +74,13 @@
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 3">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300"
                              :class="currentStep >= 3 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white ring-4 ring-blue-200 scale-110' : 'bg-gray-300 text-gray-600'">
-                            <i class='bx bx-list-check text-lg' x-show="currentStep > 3"></i>
-                            <span x-show="currentStep <= 3">3</span>
+                            <i class='bx bx-check-square text-lg' x-show="currentStep > 3" x-cloak></i>
+                            <span x-show="currentStep <= 3" x-cloak>3</span>
                         </div>
                         <div class="ml-3">
                             <span class="text-sm font-semibold block"
                                   :class="currentStep >= 3 ? 'text-blue-600' : 'text-gray-500'">Requirements</span>
-                            <span class="text-xs text-gray-500" x-show="currentStep > 3">Completed</span>
+                            <span class="text-xs text-gray-500" x-show="currentStep > 3" x-cloak>Completed</span>
                         </div>
                     </div>
                     
@@ -92,13 +92,13 @@
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 4">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300"
                              :class="currentStep >= 4 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white ring-4 ring-blue-200 scale-110' : 'bg-gray-300 text-gray-600'">
-                            <i class='bx bx-check text-lg' x-show="currentStep > 4"></i>
-                            <span x-show="currentStep <= 4">4</span>
+                            <i class='bx bx-check text-lg' x-show="currentStep > 4" x-cloak></i>
+                            <span x-show="currentStep <= 4" x-cloak>4</span>
                         </div>
                         <div class="ml-3">
                             <span class="text-sm font-semibold block"
                                   :class="currentStep >= 4 ? 'text-blue-600' : 'text-gray-500'">Review & Submit</span>
-                            <span class="text-xs text-gray-500" x-show="currentStep > 4">Completed</span>
+                            <span class="text-xs text-gray-500" x-show="currentStep > 4" x-cloak>Completed</span>
                         </div>
                     </div>
                 </div>
