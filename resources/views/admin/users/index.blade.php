@@ -71,16 +71,13 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
                         <div class="flex items-center justify-end space-x-2">
                             <!-- Toggle Status Button -->
-                            <form action="{{ route('admin.users.toggle-status', $user) }}" method="POST" class="inline">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" 
-                                        class="inline-flex items-center px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 hover:scale-105 {{ $user->status === 'active' ? 'text-red-700 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-800/40' : 'text-green-700 bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-800/40' }}" 
-                                        title="{{ $user->status === 'active' ? 'Deactivate User' : 'Activate User' }}">
-                                    <i class='bx bx-power-off mr-1 text-sm'></i>
-                                    {{ $user->status === 'active' ? 'Deactivate' : 'Activate' }}
-                                </button>
-                            </form>
+                            <button type="button" 
+                                    onclick="confirmToggleStatus({{ $user->id }}, '{{ $user->full_name }}', '{{ $user->status }}')"
+                                    class="inline-flex items-center px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 hover:scale-105 {{ $user->status === 'active' ? 'text-red-700 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-800/40' : 'text-green-700 bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-800/40' }}" 
+                                    title="{{ $user->status === 'active' ? 'Deactivate User' : 'Activate User' }}">
+                                <i class='bx bx-power-off mr-1 text-sm'></i>
+                                {{ $user->status === 'active' ? 'Deactivate' : 'Activate' }}
+                            </button>
                             
                             <!-- View Button -->
                             <a href="{{ route('admin.users.show', $user) }}" 
@@ -107,10 +104,15 @@
                                 Delete
                             </button>
                             
-                            <!-- Hidden form for deletion -->
+                            <!-- Hidden forms -->
                             <form id="delete-form-{{ $user->id }}" action="{{ route('admin.users.destroy', $user) }}" method="POST" style="display: none;">
                                 @csrf
                                 @method('DELETE')
+                            </form>
+                            
+                            <form id="toggle-status-form-{{ $user->id }}" action="{{ route('admin.users.toggle-status', $user) }}" method="POST" style="display: none;">
+                                @csrf
+                                @method('PATCH')
                             </form>
                         </div>
                     </td>
@@ -138,7 +140,7 @@
     @endif --}}
 </div>
 
-<!-- SweetAlert2 Delete Confirmation Script -->
+<!-- SweetAlert2 Confirmation Scripts -->
 <script>
 function confirmDelete(userId, userName) {
     Swal.fire({
@@ -155,8 +157,31 @@ function confirmDelete(userId, userName) {
         allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
         if (result.isConfirmed) {
-            // Submit the delete form
             document.getElementById('delete-form-' + userId).submit();
+        }
+    });
+}
+
+function confirmToggleStatus(userId, userName, currentStatus) {
+    const action = currentStatus === 'active' ? 'deactivate' : 'activate';
+    const icon = currentStatus === 'active' ? 'question' : 'success';
+    const confirmColor = currentStatus === 'active' ? '#ef4444' : '#10b981';
+    
+    Swal.fire({
+        title: `${action === 'activate' ? 'Activate' : 'Deactivate'} user?`,
+        html: `You are about to ${action} <strong>${userName}</strong><br><br>This will change their account status and access permissions.`,
+        icon: icon,
+        showCancelButton: true,
+        confirmButtonColor: confirmColor,
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: `Yes, ${action} user`,
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        showLoaderOnConfirm: true,
+        allowOutsideClick: () => !Swal.isLoading(),
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('toggle-status-form-' + userId).submit();
         }
     });
 }

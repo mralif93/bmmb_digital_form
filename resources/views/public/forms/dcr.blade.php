@@ -19,7 +19,7 @@
                     <span>Processing: 5-7 business days</span>
                 </div>
                 <div class="flex items-center">
-                    <i class='bx bx-shield-check mr-2'></i>
+                    <i class='bx bx-shield-alt-2 mr-2'></i>
                     <span>Data Protection</span>
                 </div>
             </div>
@@ -583,7 +583,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="text-center">
                 <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class='bx bx-shield-check text-white text-2xl'></i>
+                    <i class='bx bx-shield-alt-2 text-white text-2xl'></i>
                 </div>
                 <h3 class="text-xl font-bold text-gray-900 mb-2">Data Accuracy</h3>
                 <p class="text-gray-600">

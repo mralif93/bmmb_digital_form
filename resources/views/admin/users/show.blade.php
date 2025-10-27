@@ -46,15 +46,12 @@
                         <i class='bx bx-edit mr-2'></i>
                         Edit User
                     </a>
-                    <form action="{{ route('admin.users.toggle-status', $user) }}" method="POST" class="inline">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit" 
-                                class="inline-flex items-center px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg {{ $user->status === 'active' ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-green-600 hover:bg-green-700 text-white' }}">
-                            <i class='bx {{ $user->status === 'active' ? 'bx-user-x' : 'bx-check-circle' }} mr-2'></i>
-                            {{ $user->status === 'active' ? 'Deactivate' : 'Activate' }}
-                        </button>
-                    </form>
+                    <button type="button" 
+                            onclick="confirmToggleStatus({{ $user->id }}, '{{ $user->full_name }}', '{{ $user->status }}')"
+                            class="inline-flex items-center px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg {{ $user->status === 'active' ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-green-600 hover:bg-green-700 text-white' }}">
+                        <i class='bx {{ $user->status === 'active' ? 'bx-user-x' : 'bx-check-circle' }} mr-2'></i>
+                        {{ $user->status === 'active' ? 'Deactivate' : 'Activate' }}
+                    </button>
                     <button type="button" 
                             onclick="confirmDeleteUser({{ $user->id }}, '{{ $user->full_name }}')"
                             class="inline-flex items-center px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg">
@@ -183,14 +180,19 @@
     </div>
     @endif
 
-    <!-- Hidden delete form -->
+    <!-- Hidden forms -->
     <form id="delete-form-{{ $user->id }}" action="{{ route('admin.users.destroy', $user) }}" method="POST" style="display: none;">
         @csrf
         @method('DELETE')
     </form>
+    
+    <form id="toggle-status-form-{{ $user->id }}" action="{{ route('admin.users.toggle-status', $user) }}" method="POST" style="display: none;">
+        @csrf
+        @method('PATCH')
+    </form>
 </div>
 
-<!-- SweetAlert2 Delete Confirmation Script -->
+<!-- SweetAlert2 Confirmation Scripts -->
 <script>
 function confirmDeleteUser(userId, userName) {
     Swal.fire({
@@ -208,6 +210,30 @@ function confirmDeleteUser(userId, userName) {
     }).then((result) => {
         if (result.isConfirmed) {
             document.getElementById('delete-form-' + userId).submit();
+        }
+    });
+}
+
+function confirmToggleStatus(userId, userName, currentStatus) {
+    const action = currentStatus === 'active' ? 'deactivate' : 'activate';
+    const icon = currentStatus === 'active' ? 'question' : 'success';
+    const confirmColor = currentStatus === 'active' ? '#ef4444' : '#10b981';
+    
+    Swal.fire({
+        title: `${action === 'activate' ? 'Activate' : 'Deactivate'} user?`,
+        html: `You are about to ${action} <strong>${userName}</strong><br><br>This will change their account status and access permissions.`,
+        icon: icon,
+        showCancelButton: true,
+        confirmButtonColor: confirmColor,
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: `Yes, ${action} user`,
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        showLoaderOnConfirm: true,
+        allowOutsideClick: () => !Swal.isLoading(),
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('toggle-status-form-' + userId).submit();
         }
     });
 }

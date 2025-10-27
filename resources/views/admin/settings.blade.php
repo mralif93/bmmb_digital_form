@@ -38,7 +38,7 @@
                 <button @click="activeTab = 'security'" 
                         :class="activeTab === 'security' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
                         class="border-b-2 py-4 px-1 text-sm font-medium transition-colors">
-                    <i class='bx bx-shield-check mr-2'></i>
+                    <i class='bx bx-shield-alt-2 mr-2'></i>
                     Security
                 </button>
                 <button @click="activeTab = 'appearance'" 

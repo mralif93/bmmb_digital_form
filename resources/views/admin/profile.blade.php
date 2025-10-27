@@ -29,7 +29,7 @@
                         Active
                     </span>
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                        <i class='bx bx-shield-check mr-1'></i>
+                        <i class='bx bx-shield-alt-2 mr-1'></i>
                         Administrator
                     </span>
                 </div>
