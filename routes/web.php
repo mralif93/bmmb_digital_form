@@ -1,28 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Cache;
 
-// API Routes for Offline Mode
-Route::get('/api/offline-mode-enabled', function () {
-    $settings = Cache::get('system_settings', [
-        'enable_offline_mode' => true
-    ]);
-    
-    return response()->json([
-        'enabled' => $settings['enable_offline_mode'] ?? true
-    ]);
-})->name('api.offline-mode-enabled');
-
-// Public Routes - Home page
+// Public Routes - Home route with both names for compatibility
 Route::get('/', function () {
     return view('public.home');
 })->name('home');
-
-// Redirect public.home to home for compatibility
-Route::get('/home', function () {
-    return redirect()->route('home');
-})->name('public.home');
 
 // Public Form Routes
 Route::prefix('forms')->name('public.forms.')->group(function () {
@@ -43,26 +26,41 @@ Route::prefix('forms')->name('public.forms.')->group(function () {
     })->name('srf');
 });
 
-// Auth Routes
-Route::get('/login', [App\Http\Controllers\Auth\AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [App\Http\Controllers\Auth\AuthController::class, 'login']);
-Route::get('/register', [App\Http\Controllers\Auth\AuthController::class, 'showRegisterForm'])->name('register');
-Route::post('/register', [App\Http\Controllers\Auth\AuthController::class, 'register']);
-Route::post('/logout', [App\Http\Controllers\Auth\AuthController::class, 'logout'])->name('logout');
+// Auth routes
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
 
-// Password Reset Routes
-Route::get('/forgot-password', [App\Http\Controllers\Auth\AuthController::class, 'showForgotPasswordForm'])->name('password.request');
-Route::post('/forgot-password', [App\Http\Controllers\Auth\AuthController::class, 'sendResetLink'])->name('password.email');
+Route::post('/login', function () {
+    $credentials = request()->only('email', 'password');
+    
+    if (auth()->attempt($credentials, request()->filled('remember'))) {
+        request()->session()->regenerate();
+        return redirect()->intended('/dashboard');
+    }
+    
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ])->onlyInput('email');
+})->name('login.submit');
 
-// Protected Routes
-Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-});
+Route::get('/register', function () {
+    return view('auth.register');
+})->name('register');
 
-// Admin Routes (protected by auth and admin middleware)
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
+
+Route::post('/logout', function () {
+    auth()->logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/');
+})->name('logout');
+
+// Admin Routes
+Route::prefix('admin')->name('admin.')->group(function () {
     // Dashboard
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
@@ -72,29 +70,35 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('users', App\Http\Controllers\UserController::class);
     Route::patch('/users/{user}/toggle-status', [App\Http\Controllers\UserController::class, 'toggleStatus'])->name('users.toggle-status');
     
-    // Form Submissions
-    Route::prefix('submissions')->name('submissions.')->group(function () {
-        Route::get('/dar', [App\Http\Controllers\Admin\SubmissionController::class, 'dar'])->name('dar');
-        Route::get('/dcr', [App\Http\Controllers\Admin\SubmissionController::class, 'dcr'])->name('dcr');
-        Route::get('/raf', [App\Http\Controllers\Admin\SubmissionController::class, 'raf'])->name('raf');
-        Route::get('/srf', [App\Http\Controllers\Admin\SubmissionController::class, 'srf'])->name('srf');
-        
-        // Show individual submissions
-        Route::get('/dar/{id}', [App\Http\Controllers\Admin\SubmissionController::class, 'showDar'])->name('show-dar');
-        Route::get('/dcr/{id}', [App\Http\Controllers\Admin\SubmissionController::class, 'showDcr'])->name('show-dcr');
-        Route::get('/raf/{id}', [App\Http\Controllers\Admin\SubmissionController::class, 'showRaf'])->name('show-raf');
-        Route::get('/srf/{id}', [App\Http\Controllers\Admin\SubmissionController::class, 'showSrf'])->name('show-srf');
-        
-        // Update status
-        Route::patch('/{type}/{id}/status', [App\Http\Controllers\Admin\SubmissionController::class, 'updateStatus'])->name('update-status');
-    });
-    
     // Profile
     Route::get('/profile', function () {
         return view('admin.profile');
     })->name('profile');
     
     // System Settings
-    Route::get('/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings');
-    Route::post('/settings', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
+    Route::get('/settings', function () {
+        return view('admin.settings');
+    })->name('settings');
+    
+    // Form Management
+    Route::resource('forms', App\Http\Controllers\Admin\FormController::class);
+    Route::post('/forms/{form}/generate-qr', [App\Http\Controllers\Admin\FormController::class, 'generateQrCode'])->name('forms.generate-qr');
+    Route::post('/forms/{form}/toggle-status', [App\Http\Controllers\Admin\FormController::class, 'toggleStatus'])->name('forms.toggle-status');
+    
+    // Content Management
+    Route::resource('content', App\Http\Controllers\Admin\ContentController::class);
+    Route::post('/content/{page}/toggle-status', [App\Http\Controllers\Admin\ContentController::class, 'toggleStatus'])->name('content.toggle-status');
+    Route::post('/content/{page}/toggle-featured', [App\Http\Controllers\Admin\ContentController::class, 'toggleFeatured'])->name('content.toggle-featured');
+    
+    // QR Code Management
+    Route::prefix('qr-codes')->name('qr-codes.')->group(function () {
+        Route::post('/generate', [App\Http\Controllers\Admin\QrCodeController::class, 'generate'])->name('generate');
+        Route::post('/bulk-generate', [App\Http\Controllers\Admin\QrCodeController::class, 'bulkGenerate'])->name('bulk-generate');
+        Route::get('/download/{fileName}', [App\Http\Controllers\Admin\QrCodeController::class, 'download'])->name('download');
+    });
+    
+    // Branch QR Test
+    Route::get('/branch-qr-test', function () {
+        return view('admin.branch-qr-test');
+    })->name('branch-qr-test');
 });

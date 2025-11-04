@@ -4,13 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="theme-color" content="#2563eb">
-    <meta name="description" content="BMMB Digital Forms - Submit forms offline, access anytime">
     <title>@yield('title', 'BMMB Digital Forms')</title>
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/favicon.ico">
     
     <!-- Tailwind CSS CDN - Play CDN (More Reliable) -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
@@ -97,7 +91,7 @@
         [x-cloak] { display: none !important; }
         
         .form-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #FE8000;
         }
         
         .form-card {
@@ -106,13 +100,14 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #FE8000;
             transition: all 0.3s ease;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 25px rgba(254, 128, 0, 0.4);
+            background: #E87700;
         }
         
         .form-input {
@@ -121,7 +116,7 @@
         
         .form-input:focus {
             transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 5px 15px rgba(254, 128, 0, 0.2);
         }
         
         .step-indicator {
@@ -144,7 +139,7 @@
         }
         
         .step-indicator.active::after {
-            background: #667eea;
+            background: #FE8000;
         }
         
         /* Animations */
@@ -184,12 +179,12 @@
         }
         
         ::-webkit-scrollbar-thumb {
-            background: #667eea;
+            background: #FE8000;
             border-radius: 4px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: #5a67d8;
+            background: #E87700;
         }
         
         /* Navigation Styles */
@@ -269,15 +264,7 @@
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="{{ route('home') }}" class="flex items-center space-x-4 group">
-                        <div class="w-14 h-14 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg shadow-blue-500/25">
-                            <i class='bx bx-file-text text-white text-3xl'></i>
-                        </div>
-                        <div class="group-hover:translate-x-1 transition-transform duration-300">
-                            <h1 class="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent group-hover:from-blue-600 group-hover:to-purple-600 transition-all duration-300">
-                                BMMB Digital Forms
-                            </h1>
-                            <p class="text-sm text-gray-500 font-medium">Streamlined Form Management</p>
-                        </div>
+                        <img src="{{ asset('assets/images/Logo_BMMB_Full.png') }}" alt="BMMB Logo" class="h-16 object-contain group-hover:scale-105 transition-transform duration-300">
                     </a>
                 </div>
                 
@@ -358,7 +345,7 @@
                     <a href="{{ route('login') }}" class="px-4 py-2.5 text-sm font-semibold text-gray-600 hover:text-blue-600 transition-colors duration-300">
                         Sign In
                     </a>
-                    <a href="{{ route('public.forms.raf') }}" class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white px-6 py-2.5 rounded-xl font-semibold hover:shadow-xl hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 flex items-center">
+                    <a href="{{ route('public.forms.raf') }}" class="bg-orange-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:shadow-xl hover:shadow-orange-500/25 transform hover:scale-105 transition-all duration-300 flex items-center">
                         <i class='bx bx-plus mr-2 text-lg'></i>
                         Get Started
                     </a>
@@ -432,7 +419,7 @@
                         <i class='bx bx-log-in text-xl mr-4'></i>
                         <span class="text-lg font-semibold">Sign In</span>
                     </a>
-                    <a href="{{ route('public.forms.raf') }}" class="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white px-6 py-4 rounded-xl font-semibold text-center hover:shadow-xl hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300 flex items-center justify-center">
+                    <a href="{{ route('public.forms.raf') }}" class="w-full bg-orange-600 text-white px-6 py-4 rounded-xl font-semibold text-center hover:shadow-xl hover:shadow-orange-500/25 transform hover:scale-105 transition-all duration-300 flex items-center justify-center">
                         <i class='bx bx-plus mr-2 text-xl'></i>
                         Get Started
                     </a>
@@ -447,16 +434,16 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white">
+    <footer class="bg-white border-t border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
-                <div class="text-gray-400 text-sm">
+                <div class="text-gray-600 text-sm">
                     © {{ date('Y') }} BMMB Digital Forms. All rights reserved.
                 </div>
                 <div class="flex space-x-6 text-sm">
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">Privacy Policy</a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">Terms of Service</a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">Cookie Policy</a>
+                    <a href="#" class="text-gray-600 hover:text-orange-600 transition-colors duration-300">Privacy Policy</a>
+                    <a href="#" class="text-gray-600 hover:text-orange-600 transition-colors duration-300">Terms of Service</a>
+                    <a href="#" class="text-gray-600 hover:text-orange-600 transition-colors duration-300">Cookie Policy</a>
                 </div>
             </div>
         </div>
@@ -498,7 +485,7 @@
                     icon: 'error',
                     title: 'Validation Error',
                     text: 'Please fill in all required fields.',
-                    confirmButtonColor: '#667eea'
+                    confirmButtonColor: '#FE8000'
                 });
                 return false;
             }
@@ -519,7 +506,7 @@
                     icon: 'success',
                     title: 'Success!',
                     text: successMessage,
-                    confirmButtonColor: '#667eea'
+                    confirmButtonColor: '#FE8000'
                 }).then(() => {
                     document.getElementById(formId).reset();
                 });
@@ -561,8 +548,5 @@
     </script>
     
     @stack('scripts')
-    
-    <!-- Register Service Worker for Offline Support -->
-    <script src="{{ asset('register-sw.js') }}"></script>
 </body>
 </html>

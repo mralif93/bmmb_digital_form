@@ -13,16 +13,6 @@
             <p class="text-lg text-white/90 mb-6 max-w-2xl mx-auto">
                 Request various services and support from our organization.
             </p>
-            <div class="flex items-center justify-center space-x-4 text-white/80">
-                <div class="flex items-center">
-                    <i class='bx bx-time mr-2'></i>
-                    <span>Processing: 2-3 business days</span>
-                </div>
-                <div class="flex items-center">
-                    <i class='bx bx-shield-alt-2 mr-2'></i>
-                    <span>24/7 Support</span>
-                </div>
-            </div>
         </div>
     </div>
 </section>
@@ -36,69 +26,69 @@
                 <div class="flex items-center justify-between relative">
                     <!-- Step 1 -->
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 1">
-                        <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300" 
-                             :class="{ 'ring-4 ring-blue-200 scale-110': currentStep === 1 }">
-                            <i class='bx bx-user text-lg' x-show="currentStep > 1" x-cloak></i>
-                            <span x-show="currentStep <= 1" x-cloak>1</span>
+                        <div class="w-10 h-10 bg-orange-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300" 
+                             :class="{ 'ring-4 ring-orange-200 scale-110': currentStep === 1 }">
+                            <i class='bx bx-user text-lg' x-show="currentStep > 1"></i>
+                            <span x-show="currentStep <= 1">1</span>
                         </div>
                         <div class="ml-3">
                             <span class="text-sm font-semibold text-gray-700 block" 
                                   :class="{ 'text-blue-600': currentStep >= 1 }">Personal Information</span>
-                            <span class="text-xs text-gray-500" x-show="currentStep > 1" x-cloak>Completed</span>
+                            <span class="text-xs text-gray-500" x-show="currentStep > 1">Completed</span>
                         </div>
                     </div>
                     
                     <!-- Connector Line 1 -->
                     <div class="flex-1 h-0.5 bg-gray-300 mx-6" 
-                         :class="{ 'bg-gradient-to-r from-blue-600 to-purple-600': currentStep > 1 }"></div>
+                         :class="{ 'bg-orange-600': currentStep > 1 }"></div>
                     
                     <!-- Step 2 -->
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 2">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300"
-                             :class="currentStep >= 2 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white ring-4 ring-blue-200 scale-110' : 'bg-gray-300 text-gray-600'">
-                            <i class='bx bx-cog text-lg' x-show="currentStep > 2" x-cloak></i>
-                            <span x-show="currentStep <= 2" x-cloak>2</span>
+                             :class="currentStep >= 2 ? 'bg-orange-600 text-white ring-4 ring-orange-200 scale-110' : 'bg-gray-300 text-gray-600'">
+                            <i class='bx bx-cog text-lg' x-show="currentStep > 2"></i>
+                            <span x-show="currentStep <= 2">2</span>
                         </div>
                         <div class="ml-3">
                             <span class="text-sm font-semibold block"
                                   :class="currentStep >= 2 ? 'text-blue-600' : 'text-gray-500'">Service Details</span>
-                            <span class="text-xs text-gray-500" x-show="currentStep > 2" x-cloak>Completed</span>
+                            <span class="text-xs text-gray-500" x-show="currentStep > 2">Completed</span>
                         </div>
                     </div>
                     
                     <!-- Connector Line 2 -->
                     <div class="flex-1 h-0.5 bg-gray-300 mx-6" 
-                         :class="{ 'bg-gradient-to-r from-blue-600 to-purple-600': currentStep > 2 }"></div>
+                         :class="{ 'bg-orange-600': currentStep > 2 }"></div>
                     
                     <!-- Step 3 -->
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 3">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300"
-                             :class="currentStep >= 3 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white ring-4 ring-blue-200 scale-110' : 'bg-gray-300 text-gray-600'">
-                            <i class='bx bx-check-square text-lg' x-show="currentStep > 3" x-cloak></i>
-                            <span x-show="currentStep <= 3" x-cloak>3</span>
+                             :class="currentStep >= 3 ? 'bg-orange-600 text-white ring-4 ring-orange-200 scale-110' : 'bg-gray-300 text-gray-600'">
+                            <i class='bx bx-list-check text-lg' x-show="currentStep > 3"></i>
+                            <span x-show="currentStep <= 3">3</span>
                         </div>
                         <div class="ml-3">
                             <span class="text-sm font-semibold block"
                                   :class="currentStep >= 3 ? 'text-blue-600' : 'text-gray-500'">Requirements</span>
-                            <span class="text-xs text-gray-500" x-show="currentStep > 3" x-cloak>Completed</span>
+                            <span class="text-xs text-gray-500" x-show="currentStep > 3">Completed</span>
                         </div>
                     </div>
                     
                     <!-- Connector Line 3 -->
                     <div class="flex-1 h-0.5 bg-gray-300 mx-6" 
-                         :class="{ 'bg-gradient-to-r from-blue-600 to-purple-600': currentStep > 3 }"></div>
+                         :class="{ 'bg-orange-600': currentStep > 3 }"></div>
                     
                     <!-- Step 4 -->
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 4">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300"
-                             :class="currentStep >= 4 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white ring-4 ring-blue-200 scale-110' : 'bg-gray-300 text-gray-600'">
-                            <i class='bx bx-check text-lg' x-show="currentStep > 4" x-cloak></i>
-                            <span x-show="currentStep <= 4" x-cloak>4</span>
+                             :class="currentStep >= 4 ? 'bg-orange-600 text-white ring-4 ring-orange-200 scale-110' : 'bg-gray-300 text-gray-600'">
+                            <i class='bx bx-check text-lg' x-show="currentStep > 4"></i>
+                            <span x-show="currentStep <= 4">4</span>
                         </div>
                         <div class="ml-3">
                             <span class="text-sm font-semibold block"
                                   :class="currentStep >= 4 ? 'text-blue-600' : 'text-gray-500'">Review & Submit</span>
-                            <span class="text-xs text-gray-500" x-show="currentStep > 4" x-cloak>Completed</span>
+                            <span class="text-xs text-gray-500" x-show="currentStep > 4">Completed</span>
                         </div>
                     </div>
                 </div>
@@ -545,52 +535,6 @@
                     </div>
                 </div>
             </form>
-        </div>
-    </div>
-</section>
-
-<!-- Information Section -->
-<section class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">
-                Service Information
-            </h2>
-            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                Our commitment to providing excellent service and support.
-            </p>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="text-center">
-                <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class='bx bx-support text-white text-2xl'></i>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">24/7 Support</h3>
-                <p class="text-gray-600">
-                    Our support team is available around the clock to assist you with your service needs.
-                </p>
-            </div>
-            
-            <div class="text-center">
-                <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class='bx bx-time text-white text-2xl'></i>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Fast Response</h3>
-                <p class="text-gray-600">
-                    We typically respond to service requests within 2-3 business days.
-                </p>
-            </div>
-            
-            <div class="text-center">
-                <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class='bx bx-shield-alt-2 text-white text-2xl'></i>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Quality Assurance</h3>
-                <p class="text-gray-600">
-                    We maintain high standards and quality assurance in all our services.
-                </p>
-            </div>
         </div>
     </div>
 </section>

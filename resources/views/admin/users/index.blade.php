@@ -14,7 +14,7 @@
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">All Users</h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Manage user accounts and permissions</p>
             </div>
-            <a href="{{ route('admin.users.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+            <a href="{{ route('admin.users.create') }}" class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium rounded-lg transition-colors">
                 <i class='bx bx-plus mr-2'></i>
                 Add New User
             </a>
@@ -30,7 +30,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Last Login</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -68,51 +68,27 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         {{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Never' }}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
-                        <div class="flex items-center justify-end space-x-2">
-                            <!-- Toggle Status Button -->
-                            <button type="button" 
-                                    onclick="confirmToggleStatus({{ $user->id }}, '{{ $user->full_name }}', '{{ $user->status }}')"
-                                    class="inline-flex items-center px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 hover:scale-105 {{ $user->status === 'active' ? 'text-red-700 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-800/40' : 'text-green-700 bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-800/40' }}" 
-                                    title="{{ $user->status === 'active' ? 'Deactivate User' : 'Activate User' }}">
-                                <i class='bx bx-power-off mr-1 text-sm'></i>
-                                {{ $user->status === 'active' ? 'Deactivate' : 'Activate' }}
-                            </button>
-                            
-                            <!-- View Button -->
-                            <a href="{{ route('admin.users.show', $user) }}" 
-                               class="inline-flex items-center px-3 py-2 text-xs font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/40 transition-all duration-200 hover:scale-105" 
-                               title="View Details">
-                                <i class='bx bx-show mr-1 text-sm'></i>
-                                View
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex items-center space-x-2">
+                            <a href="{{ route('admin.users.show', $user) }}" class="text-orange-600 hover:text-orange-900 dark:text-orange-400 dark:hover:text-orange-300" title="View">
+                                <i class='bx bx-show text-lg'></i>
                             </a>
-                            
-                            <!-- Edit Button -->
-                            <a href="{{ route('admin.users.edit', $user) }}" 
-                               class="inline-flex items-center px-3 py-2 text-xs font-medium text-indigo-700 bg-indigo-100 rounded-lg hover:bg-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-800/40 transition-all duration-200 hover:scale-105" 
-                               title="Edit User">
-                                <i class='bx bx-edit mr-1 text-sm'></i>
-                                Edit
+                            <a href="{{ route('admin.users.edit', $user) }}" class="text-orange-600 hover:text-orange-900 dark:text-orange-400 dark:hover:text-orange-300" title="Edit">
+                                <i class='bx bx-edit text-lg'></i>
                             </a>
-                            
-                            <!-- Delete Button -->
-                            <button type="button" 
-                                    onclick="confirmDelete({{ $user->id }}, '{{ $user->full_name }}')"
-                                    class="inline-flex items-center px-3 py-2 text-xs font-medium text-red-700 bg-red-100 rounded-lg hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-800/40 transition-all duration-200 hover:scale-105" 
-                                    title="Delete User">
-                                <i class='bx bx-trash mr-1 text-sm'></i>
-                                Delete
-                            </button>
-                            
-                            <!-- Hidden forms -->
-                            <form id="delete-form-{{ $user->id }}" action="{{ route('admin.users.destroy', $user) }}" method="POST" style="display: none;">
-                                @csrf
-                                @method('DELETE')
-                            </form>
-                            
-                            <form id="toggle-status-form-{{ $user->id }}" action="{{ route('admin.users.toggle-status', $user) }}" method="POST" style="display: none;">
+                            <form action="{{ route('admin.users.toggle-status', $user) }}" method="POST" class="inline">
                                 @csrf
                                 @method('PATCH')
+                                <button type="submit" class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300" title="Toggle Status">
+                                    <i class='bx bx-power-off text-lg'></i>
+                                </button>
+                            </form>
+                            <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this user?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300" title="Delete">
+                                    <i class='bx bx-trash text-lg'></i>
+                                </button>
                             </form>
                         </div>
                     </td>
@@ -139,51 +115,4 @@
     </div>
     @endif --}}
 </div>
-
-<!-- SweetAlert2 Confirmation Scripts -->
-<script>
-function confirmDelete(userId, userName) {
-    Swal.fire({
-        title: 'Are you sure?',
-        html: `You are about to delete <strong>${userName}</strong><br><br>This action cannot be undone!`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Yes, delete user',
-        cancelButtonText: 'Cancel',
-        reverseButtons: true,
-        showLoaderOnConfirm: true,
-        allowOutsideClick: () => !Swal.isLoading(),
-    }).then((result) => {
-        if (result.isConfirmed) {
-            document.getElementById('delete-form-' + userId).submit();
-        }
-    });
-}
-
-function confirmToggleStatus(userId, userName, currentStatus) {
-    const action = currentStatus === 'active' ? 'deactivate' : 'activate';
-    const icon = currentStatus === 'active' ? 'question' : 'success';
-    const confirmColor = currentStatus === 'active' ? '#ef4444' : '#10b981';
-    
-    Swal.fire({
-        title: `${action === 'activate' ? 'Activate' : 'Deactivate'} user?`,
-        html: `You are about to ${action} <strong>${userName}</strong><br><br>This will change their account status and access permissions.`,
-        icon: icon,
-        showCancelButton: true,
-        confirmButtonColor: confirmColor,
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: `Yes, ${action} user`,
-        cancelButtonText: 'Cancel',
-        reverseButtons: true,
-        showLoaderOnConfirm: true,
-        allowOutsideClick: () => !Swal.isLoading(),
-    }).then((result) => {
-        if (result.isConfirmed) {
-            document.getElementById('toggle-status-form-' + userId).submit();
-        }
-    });
-}
-</script>
 @endsection
