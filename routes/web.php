@@ -1,10 +1,16 @@
 <?php
 
+use App\Http\Controllers\Admin\BranchController;
+use App\Http\Controllers\Admin\FormManagementController;
+use App\Http\Controllers\Admin\QrCodeController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 
-// Public Routes - Home route with both names for compatibility
+// Public Routes - Home route
 Route::get('/', function () {
-    return view('public.home');
+    return view('welcome');
 })->name('home');
 
 // Public Form Routes
@@ -31,26 +37,33 @@ Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
-Route::post('/login', function () {
-    $credentials = request()->only('email', 'password');
-    
-    if (auth()->attempt($credentials, request()->filled('remember'))) {
-        request()->session()->regenerate();
-        return redirect()->intended('/dashboard');
-    }
-    
-    return back()->withErrors([
-        'email' => 'The provided credentials do not match our records.',
-    ])->onlyInput('email');
-})->name('login.submit');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
 Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
 
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password');
+})->name('password.request');
+
+Route::post('/forgot-password', function () {
+    request()->validate([
+        'email' => 'required|email',
+    ]);
+
+    $status = Password::sendResetLink(
+        request()->only('email')
+    );
+
+    return $status === Password::RESET_LINK_SENT
+        ? back()->with(['status' => __($status)])
+        : back()->withErrors(['email' => __($status)]);
+})->name('password.email');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->name('dashboard');
+})->middleware('auth')->name('dashboard');
 
 Route::post('/logout', function () {
     auth()->logout();
@@ -60,15 +73,18 @@ Route::post('/logout', function () {
 })->name('logout');
 
 // Admin Routes
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
     
     // User Management
-    Route::resource('users', App\Http\Controllers\UserController::class);
-    Route::patch('/users/{user}/toggle-status', [App\Http\Controllers\UserController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::resource('users', UserController::class);
+    Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+    
+    // Branch Management
+    Route::resource('branches', BranchController::class);
     
     // Profile
     Route::get('/profile', function () {
@@ -80,21 +96,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
         return view('admin.settings');
     })->name('settings');
     
-    // Form Management
-    Route::resource('forms', App\Http\Controllers\Admin\FormController::class);
-    Route::post('/forms/{form}/generate-qr', [App\Http\Controllers\Admin\FormController::class, 'generateQrCode'])->name('forms.generate-qr');
-    Route::post('/forms/{form}/toggle-status', [App\Http\Controllers\Admin\FormController::class, 'toggleStatus'])->name('forms.toggle-status');
-    
-    // Content Management
-    Route::resource('content', App\Http\Controllers\Admin\ContentController::class);
-    Route::post('/content/{page}/toggle-status', [App\Http\Controllers\Admin\ContentController::class, 'toggleStatus'])->name('content.toggle-status');
-    Route::post('/content/{page}/toggle-featured', [App\Http\Controllers\Admin\ContentController::class, 'toggleFeatured'])->name('content.toggle-featured');
+    // Forms Management (4 Forms: RAF, DAR, DCR, SRF)
+    Route::prefix('forms/{type}')->name('forms.')->where(['type' => 'raf|dar|dcr|srf'])->group(function () {
+        Route::get('/', [FormManagementController::class, 'index'])->name('index');
+        Route::get('/create', [FormManagementController::class, 'create'])->name('create');
+        Route::post('/', [FormManagementController::class, 'store'])->name('store');
+        Route::get('/{id}', [FormManagementController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [FormManagementController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [FormManagementController::class, 'update'])->name('update');
+        Route::delete('/{id}', [FormManagementController::class, 'destroy'])->name('destroy');
+    });
     
     // QR Code Management
     Route::prefix('qr-codes')->name('qr-codes.')->group(function () {
-        Route::post('/generate', [App\Http\Controllers\Admin\QrCodeController::class, 'generate'])->name('generate');
-        Route::post('/bulk-generate', [App\Http\Controllers\Admin\QrCodeController::class, 'bulkGenerate'])->name('bulk-generate');
-        Route::get('/download/{fileName}', [App\Http\Controllers\Admin\QrCodeController::class, 'download'])->name('download');
+        Route::post('/generate', [QrCodeController::class, 'generate'])->name('generate');
+        Route::post('/bulk-generate', [QrCodeController::class, 'bulkGenerate'])->name('bulk-generate');
+        Route::get('/download/{fileName}', [QrCodeController::class, 'download'])->name('download');
     });
     
     // Branch QR Test

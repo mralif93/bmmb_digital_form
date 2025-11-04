@@ -21,6 +21,18 @@
                         'sans': ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif'],
                     },
                     colors: {
+                        primary: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            300: '#fdba74',
+                            400: '#fb923c',
+                            500: '#FE8000',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            800: '#9a3412',
+                            900: '#7c2d12',
+                        },
                         'blue-50': '#eff6ff',
                         'blue-100': '#dbeafe',
                         'blue-400': '#60a5fa',
@@ -62,7 +74,7 @@
             background: #ffffff !important;
             min-height: 100vh !important;
             font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-            font-size: 16px;
+            font-size: 14px;
             line-height: 1.5;
         }
         .bg-white {
@@ -84,6 +96,9 @@
         h3 { font-size: 1.125rem; font-weight: 600; }
         h4 { font-size: 1rem; font-weight: 600; }
         p, li { font-size: 0.9375rem; }
+        
+        /* Alpine.js x-cloak */
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 <body class="font-sans">
@@ -102,14 +117,51 @@
                     </div>
                 </div>
                 
-                <!-- User Profile -->
-                <div class="flex items-center space-x-2">
-                    <div class="w-7 h-7 bg-gradient-to-br from-gray-400 to-gray-500 rounded-md flex items-center justify-center">
-                        <i class='bx bx-user text-white text-xs'></i>
-                    </div>
-                    <div class="hidden lg:block text-left">
-                        <p class="text-xs font-semibold text-gray-900 dark:text-white">Admin User</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">admin@bmmb.com</p>
+                <!-- User Profile Dropdown -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" @click.away="open = false" class="flex items-center space-x-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg px-2 py-1.5 transition-colors">
+                        <div class="w-7 h-7 bg-gradient-to-br from-gray-400 to-gray-500 rounded-md flex items-center justify-center">
+                            <i class='bx bx-user text-white text-xs'></i>
+                        </div>
+                        <div class="hidden lg:block text-left">
+                            <p class="text-xs font-semibold text-gray-900 dark:text-white">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ Auth::user()->email }}</p>
+                        </div>
+                        <i class='bx bx-chevron-down text-gray-600 dark:text-gray-400 text-xs ml-1 transition-transform duration-200' :class="open ? 'rotate-180' : ''"></i>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div x-show="open" 
+                         x-cloak
+                         x-transition:enter="transition ease-out duration-100"
+                         x-transition:enter-start="transform opacity-0 scale-95"
+                         x-transition:enter-end="transform opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-75"
+                         x-transition:leave-start="transform opacity-100 scale-100"
+                         x-transition:leave-end="transform opacity-0 scale-95"
+                         class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+                        <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                            <p class="text-xs font-semibold text-gray-900 dark:text-white">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ Auth::user()->email }}</p>
+                        </div>
+                        <div class="py-1">
+                            <a href="{{ route('admin.profile') }}" class="flex items-center px-4 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                <i class='bx bx-user-circle mr-2.5 text-sm'></i>
+                                <span>Profile</span>
+                            </a>
+                            <a href="{{ route('admin.settings') }}" class="flex items-center px-4 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                <i class='bx bx-cog mr-2.5 text-sm'></i>
+                                <span>Settings</span>
+                            </a>
+                            <div class="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full flex items-center px-4 py-2 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                    <i class='bx bx-log-out mr-2.5 text-sm'></i>
+                                    <span>Sign Out</span>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -133,15 +185,42 @@
                             <span class="font-medium">Users</span>
                         </a>
                         
-                        <a href="{{ route('admin.forms.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.forms*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                            <i class='bx bx-file-blank mr-3 text-base'></i>
-                            <span class="font-medium">Forms</span>
+                        <a href="{{ route('admin.branches.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.branches*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
+                            <i class='bx bx-building mr-3 text-base'></i>
+                            <span class="font-medium">Branches</span>
                         </a>
                         
-                        <a href="{{ route('admin.content.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.content*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                            <i class='bx bx-edit mr-3 text-base'></i>
-                            <span class="font-medium">Content</span>
-                        </a>
+                        <!-- Forms Menu (Collapsible) -->
+                        <div x-data="{ open: {{ request()->routeIs('admin.forms*') ? 'true' : 'false' }} }" class="space-y-0.5">
+                            <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.forms*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
+                                <div class="flex items-center">
+                                    <i class='bx bx-file-blank mr-3 text-base'></i>
+                                    <span class="font-medium">Forms</span>
+                                </div>
+                                <i class='bx bx-chevron-down text-xs transition-transform duration-200' :class="open ? 'rotate-180' : ''"></i>
+                            </button>
+                            <div x-show="open" x-collapse class="ml-4 space-y-0.5 mt-1">
+                                @php
+                                    $currentType = request()->route('type');
+                                @endphp
+                                <a href="{{ route('admin.forms.index', 'raf') }}" class="flex items-center px-3 py-2 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ $currentType == 'raf' ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
+                                    <i class='bx bx-money mr-2 text-sm'></i>
+                                    <span>RAF</span>
+                                </a>
+                                <a href="{{ route('admin.forms.index', 'dar') }}" class="flex items-center px-3 py-2 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ $currentType == 'dar' ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
+                                    <i class='bx bx-data mr-2 text-sm'></i>
+                                    <span>DAR</span>
+                                </a>
+                                <a href="{{ route('admin.forms.index', 'dcr') }}" class="flex items-center px-3 py-2 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ $currentType == 'dcr' ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
+                                    <i class='bx bx-edit mr-2 text-sm'></i>
+                                    <span>DCR</span>
+                                </a>
+                                <a href="{{ route('admin.forms.index', 'srf') }}" class="flex items-center px-3 py-2 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ $currentType == 'srf' ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
+                                    <i class='bx bx-cog mr-2 text-sm'></i>
+                                    <span>SRF</span>
+                                </a>
+                            </div>
+                        </div>
                         
                         <a href="{{ route('admin.branch-qr-test') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.branch-qr-test*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
                             <i class='bx bx-qr-scan mr-3 text-base'></i>
@@ -152,11 +231,6 @@
 
                 <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                     <div class="space-y-0.5">
-                        <a href="{{ route('admin.profile') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:text-purple-600 dark:hover:text-purple-400 transition-colors {{ request()->routeIs('admin.profile*') ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : '' }}">
-                            <i class='bx bx-user-circle mr-3 text-base'></i>
-                            <span class="font-medium">Profile</span>
-                        </a>
-                        
                         <a href="{{ route('admin.settings') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-400 transition-colors {{ request()->routeIs('admin.settings*') ? 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400' : '' }}">
                             <i class='bx bx-cog mr-3 text-base'></i>
                             <span class="font-medium">Settings</span>
@@ -186,17 +260,8 @@
             <!-- Footer -->
             <footer class="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 py-3">
                 <div class="px-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <p class="text-xs text-gray-600 dark:text-gray-400">&copy; {{ date('Y') }} BMMB Digital Forms. All rights reserved.</p>
-                        </div>
-                        
-                        <div class="flex items-center space-x-3">
-                            <a href="{{ route('logout') }}" class="flex items-center px-2 py-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded-md hover:bg-red-50 dark:hover:bg-red-900/20">
-                                <i class='bx bx-log-out mr-1.5 text-sm'></i>
-                                Logout
-                            </a>
-                        </div>
+                    <div class="flex items-center justify-center">
+                        <p class="text-xs text-gray-600 dark:text-gray-400">&copy; {{ date('Y') }} BMMB Digital Forms. All rights reserved.</p>
                     </div>
                 </div>
             </footer>

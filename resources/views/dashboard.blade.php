@@ -1,156 +1,97 @@
-@extends('layouts.public')
+@extends('layouts.app')
 
 @section('title', 'Dashboard - BMMB Digital Forms')
 
 @section('content')
-<!-- Stats Overview -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                        <i class='bx bx-edit-alt text-2xl text-blue-600 dark:text-blue-400'></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Forms</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">12</p>
-                    </div>
-                </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Welcome Section -->
+    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200 mb-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">
+                    Welcome back, {{ Auth::user()->first_name }}!
+                </h1>
+                <p class="text-sm text-gray-600">
+                    Manage your form submissions and track your requests
+                </p>
             </div>
-
-            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                        <i class='bx bx-clipboard text-2xl text-green-600 dark:text-green-400'></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Responses</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">1,247</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                        <i class='bx bx-user text-2xl text-purple-600 dark:text-purple-400'></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Active Users</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">89</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                        <i class='bx bx-trending-up text-2xl text-orange-600 dark:text-orange-400'></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Conversion</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">68%</p>
-                    </div>
+            <div class="hidden md:block">
+                <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
+                    <i class='bx bx-user text-2xl text-primary-600'></i>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Recent Forms -->
-        <div class="bg-white rounded-xl shadow-lg border border-gray-200">
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Forms</h3>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Your latest form submissions</p>
-            </div>
-            <div class="p-6">
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                                <i class='bx bx-user-plus text-blue-600 dark:text-blue-400'></i>
-                            </div>
-                            <div>
-                                <h4 class="font-medium text-gray-900 dark:text-white">Registration Form</h4>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">45 responses today</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm font-medium text-green-600 dark:text-green-400">+12%</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">vs yesterday</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                                <i class='bx bx-clipboard text-green-600 dark:text-green-400'></i>
-                            </div>
-                            <div>
-                                <h4 class="font-medium text-gray-900 dark:text-white">Customer Survey</h4>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">23 responses today</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm font-medium text-green-600 dark:text-green-400">+8%</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">vs yesterday</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                                <i class='bx bx-wallet text-purple-600 dark:text-purple-400'></i>
-                            </div>
-                            <div>
-                                <h4 class="font-medium text-gray-900 dark:text-white">Payment Form</h4>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">18 responses today</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm font-medium text-red-600 dark:text-red-400">-3%</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">vs yesterday</p>
-                        </div>
-                    </div>
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <a href="{{ route('public.forms.raf') }}" class="bg-white rounded-xl shadow-md p-5 border border-gray-200 hover:border-primary-300 hover:shadow-lg transition-all duration-300 group">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i class='bx bx-money text-xl text-primary-600'></i>
                 </div>
             </div>
-        </div>
+            <h3 class="text-base font-semibold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors">Remittance Application</h3>
+            <p class="text-xs text-gray-600">Start new application</p>
+        </a>
 
-        <!-- Quick Actions -->
-        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <a href="#" class="group bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center group-hover:bg-orange-200 dark:group-hover:bg-orange-800/50 transition-colors">
-                        <i class='bx bx-plus text-2xl text-orange-600 dark:text-orange-400'></i>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">Create New Form</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Build a custom form from scratch</p>
-                    </div>
+        <a href="{{ route('public.forms.dar') }}" class="bg-white rounded-xl shadow-md p-5 border border-gray-200 hover:border-primary-300 hover:shadow-lg transition-all duration-300 group">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i class='bx bx-data text-xl text-primary-600'></i>
                 </div>
-            </a>
+            </div>
+            <h3 class="text-base font-semibold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors">Data Access Request</h3>
+            <p class="text-xs text-gray-600">Request data access</p>
+        </a>
 
-            <a href="#" class="group bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center group-hover:bg-green-200 dark:group-hover:bg-green-800/50 transition-colors">
-                        <i class='bx bx-template text-2xl text-green-600 dark:text-green-400'></i>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">Use Template</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Start with a pre-built template</p>
-                    </div>
+        <a href="{{ route('public.forms.dcr') }}" class="bg-white rounded-xl shadow-md p-5 border border-gray-200 hover:border-primary-300 hover:shadow-lg transition-all duration-300 group">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i class='bx bx-edit text-xl text-primary-600'></i>
                 </div>
-            </a>
+            </div>
+            <h3 class="text-base font-semibold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors">Data Correction</h3>
+            <p class="text-xs text-gray-600">Correct your data</p>
+        </a>
 
-            <a href="#" class="group bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center group-hover:bg-purple-200 dark:group-hover:bg-purple-800/50 transition-colors">
-                        <i class='bx bx-bar-chart-alt-2 text-2xl text-purple-600 dark:text-purple-400'></i>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">View Analytics</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Analyze form performance</p>
-                    </div>
+        <a href="{{ route('public.forms.srf') }}" class="bg-white rounded-xl shadow-md p-5 border border-gray-200 hover:border-primary-300 hover:shadow-lg transition-all duration-300 group">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i class='bx bx-cog text-xl text-primary-600'></i>
                 </div>
-            </a>
+            </div>
+            <h3 class="text-base font-semibold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors">Service Request</h3>
+            <p class="text-xs text-gray-600">Request services</p>
+        </a>
+    </div>
+
+    <!-- Account Information -->
+    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Account Information</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <p class="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Full Name</p>
+                <p class="text-sm text-gray-900">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</p>
+            </div>
+            <div>
+                <p class="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Email</p>
+                <p class="text-sm text-gray-900">{{ Auth::user()->email }}</p>
+            </div>
+            @if(Auth::user()->phone)
+            <div>
+                <p class="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Phone</p>
+                <p class="text-sm text-gray-900">{{ Auth::user()->phone }}</p>
+            </div>
+            @endif
+            <div>
+                <p class="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Account Status</p>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                    {{ ucfirst(Auth::user()->status) }}
+                </span>
+            </div>
         </div>
-        </div>
+    </div>
+</div>
 @endsection
+

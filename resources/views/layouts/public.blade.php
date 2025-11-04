@@ -14,16 +14,16 @@
                 extend: {
                     colors: {
                         primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
+                            50: '#fff8f0',
+                            100: '#ffeed6',
+                            200: '#ffd9ad',
+                            300: '#ffbe73',
+                            400: '#ff9a3d',
+                            500: '#FE8000',
+                            600: '#e66f00',
+                            700: '#cc5e00',
+                            800: '#b34d00',
+                            900: '#993c00',
                         }
                     },
                     animation: {
@@ -86,6 +86,8 @@
         body {
             margin: 0;
             line-height: inherit;
+            font-size: 14px;
+            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
         
         [x-cloak] { display: none !important; }
@@ -258,30 +260,29 @@
 </head>
 <body class="bg-gray-50 min-h-screen" x-data="{ mobileMenuOpen: false }">
     <!-- Header -->
-    <header class="bg-white/95 backdrop-blur-md shadow-xl border-b border-gray-100 sticky top-0 z-50">
+    <header class="backdrop-blur-md shadow-md border-b border-primary-100 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
+            <div class="flex justify-between items-center h-14">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="{{ route('home') }}" class="flex items-center space-x-4 group">
-                        <img src="{{ asset('assets/images/Logo_BMMB_Full.png') }}" alt="BMMB Logo" class="h-16 object-contain group-hover:scale-105 transition-transform duration-300">
+                    <a href="{{ route('home') }}" class="flex items-center space-x-2 group">
+                        <img src="{{ asset('assets/images/Logo_BMMB_Full.png') }}" alt="BMMB Logo" class="h-10 object-contain group-hover:scale-105 transition-transform duration-300">
                     </a>
                 </div>
                 
                 <!-- Desktop Navigation -->
                 <nav class="hidden xl:flex items-center space-x-2">
-                    <a href="{{ route('home') }}" class="relative px-4 py-2.5 text-sm font-semibold text-gray-700 hover:text-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-300 group {{ request()->routeIs('home') ? 'text-blue-600 bg-blue-50' : '' }}">
-                        <i class='bx bx-home mr-2 text-lg'></i>
+                    <a href="{{ route('home') }}" class="relative px-2.5 py-1 text-xs font-semibold text-gray-700 hover:text-primary-600 rounded-lg hover:bg-primary-100 transition-all duration-300 group {{ request()->routeIs('home') ? 'text-primary-600 bg-primary-100' : '' }}">
+                        <i class='bx bx-home mr-1.5 text-sm'></i>
                         <span>Home</span>
-                        <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </a>
                     
                     <!-- Forms Dropdown -->
                     <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" @click.away="open = false" class="flex items-center px-4 py-2.5 text-sm font-semibold text-gray-700 hover:text-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-300 group">
-                            <i class='bx bx-file-blank mr-2 text-lg'></i>
+                        <button @click="open = !open" @click.away="open = false" class="flex items-center px-2.5 py-1 text-xs font-semibold text-gray-700 hover:text-primary-600 rounded-lg hover:bg-primary-100 transition-all duration-300 group">
+                            <i class='bx bx-file-blank mr-1.5 text-sm'></i>
                             <span>Forms</span>
-                            <i class='bx bx-chevron-down ml-2 text-sm transition-transform duration-200' :class="open ? 'rotate-180' : ''"></i>
+                            <i class='bx bx-chevron-down ml-1.5 text-xs transition-transform duration-200' :class="open ? 'rotate-180' : ''"></i>
                         </button>
                         
                         <!-- Dropdown Menu -->
@@ -329,45 +330,32 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <a href="#features" class="px-4 py-2.5 text-sm font-semibold text-gray-700 hover:text-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-300 group">
-                        <i class='bx bx-star mr-2 text-lg'></i>
-                        <span>Features</span>
-                    </a>
-                    <a href="#contact" class="px-4 py-2.5 text-sm font-semibold text-gray-700 hover:text-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-300 group">
-                        <i class='bx bx-phone mr-2 text-lg'></i>
-                        <span>Contact</span>
-                    </a>
                 </nav>
                 
                 <!-- Action Buttons -->
-                <div class="hidden xl:flex items-center space-x-3">
-                    <a href="{{ route('login') }}" class="px-4 py-2.5 text-sm font-semibold text-gray-600 hover:text-blue-600 transition-colors duration-300">
+                <div class="hidden xl:flex items-center space-x-2">
+                    <a href="{{ route('login') }}" class="px-2.5 py-1 text-xs font-semibold text-primary-600 bg-primary-100 hover:bg-primary-200 rounded-lg transition-all duration-300">
                         Sign In
-                    </a>
-                    <a href="{{ route('public.forms.raf') }}" class="bg-orange-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:shadow-xl hover:shadow-orange-500/25 transform hover:scale-105 transition-all duration-300 flex items-center">
-                        <i class='bx bx-plus mr-2 text-lg'></i>
-                        Get Started
                     </a>
                 </div>
                 
                 <!-- Mobile menu button -->
                 <div class="xl:hidden">
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-3 text-gray-700 hover:text-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-300">
-                        <i class='bx bx-menu text-2xl' x-show="!mobileMenuOpen"></i>
-                        <i class='bx bx-x text-2xl' x-show="mobileMenuOpen"></i>
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-1.5 text-gray-700 hover:text-primary-600 rounded-lg hover:bg-primary-100 transition-all duration-300">
+                        <i class='bx bx-menu text-lg' x-show="!mobileMenuOpen"></i>
+                        <i class='bx bx-x text-lg' x-show="mobileMenuOpen"></i>
                     </button>
                 </div>
             </div>
         </div>
         
         <!-- Mobile menu -->
-        <div x-show="mobileMenuOpen" x-cloak class="xl:hidden bg-white/95 backdrop-blur-md border-t border-gray-100 shadow-xl">
-            <div class="px-6 py-6 space-y-4">
+        <div x-show="mobileMenuOpen" x-cloak class="xl:hidden backdrop-blur-md border-t border-primary-100 shadow-xl">
+            <div class="px-3 py-3 space-y-2">
                 <!-- Mobile Home Link -->
-                <a href="{{ route('home') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all duration-300 group {{ request()->routeIs('home') ? 'bg-blue-50 text-blue-600' : '' }}">
-                    <i class='bx bx-home text-xl mr-4'></i>
-                    <span class="text-lg font-semibold">Home</span>
+                <a href="{{ route('home') }}" class="flex items-center px-2.5 py-1.5 text-gray-700 hover:bg-primary-100 hover:text-primary-600 rounded-lg transition-all duration-300 group {{ request()->routeIs('home') ? 'bg-primary-100 text-primary-600' : '' }}">
+                    <i class='bx bx-home text-sm mr-2'></i>
+                    <span class="text-sm font-semibold">Home</span>
                 </a>
                 
                 <!-- Mobile Forms Section -->
@@ -414,14 +402,10 @@
                 </div>
                 
                 <!-- Mobile Action Buttons -->
-                <div class="border-t border-gray-100 pt-4 space-y-3">
-                    <a href="{{ route('login') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-300">
-                        <i class='bx bx-log-in text-xl mr-4'></i>
-                        <span class="text-lg font-semibold">Sign In</span>
-                    </a>
-                    <a href="{{ route('public.forms.raf') }}" class="w-full bg-orange-600 text-white px-6 py-4 rounded-xl font-semibold text-center hover:shadow-xl hover:shadow-orange-500/25 transform hover:scale-105 transition-all duration-300 flex items-center justify-center">
-                        <i class='bx bx-plus mr-2 text-xl'></i>
-                        Get Started
+                <div class="border-t border-primary-100 pt-2 space-y-2">
+                    <a href="{{ route('login') }}" class="flex items-center px-2.5 py-1.5 text-primary-600 bg-primary-100 hover:bg-primary-200 rounded-lg transition-all duration-300">
+                        <i class='bx bx-log-in text-sm mr-2'></i>
+                        <span class="text-sm font-semibold">Sign In</span>
                     </a>
                 </div>
             </div>
@@ -435,15 +419,15 @@
 
     <!-- Footer -->
     <footer class="bg-white border-t border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
-                <div class="text-gray-600 text-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
+                <div class="text-gray-600 text-xs">
                     © {{ date('Y') }} BMMB Digital Forms. All rights reserved.
                 </div>
-                <div class="flex space-x-6 text-sm">
-                    <a href="#" class="text-gray-600 hover:text-orange-600 transition-colors duration-300">Privacy Policy</a>
-                    <a href="#" class="text-gray-600 hover:text-orange-600 transition-colors duration-300">Terms of Service</a>
-                    <a href="#" class="text-gray-600 hover:text-orange-600 transition-colors duration-300">Cookie Policy</a>
+                <div class="flex space-x-4 text-xs">
+                    <a href="#" class="text-gray-600 hover:text-primary-600 transition-colors duration-300">Privacy Policy</a>
+                    <a href="#" class="text-gray-600 hover:text-primary-600 transition-colors duration-300">Terms of Service</a>
+                    <a href="#" class="text-gray-600 hover:text-primary-600 transition-colors duration-300">Cookie Policy</a>
                 </div>
             </div>
         </div>
