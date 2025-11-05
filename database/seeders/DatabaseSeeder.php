@@ -17,7 +17,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             BranchSeeder::class,
             QrCodeSeeder::class,
-            FormSeeder::class,
             RafSubmissionSeeder::class,
             DarSubmissionSeeder::class,
             DcrSubmissionSeeder::class,

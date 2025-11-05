@@ -271,38 +271,6 @@
                             <i class='bx bx-history mr-3 text-base'></i>
                             <span class="font-medium">Audit Trail</span>
                         </a>
-                        
-                        <!-- Forms Menu (Collapsible) -->
-                        <div x-data="{ open: {{ request()->routeIs('admin.forms*') ? 'true' : 'false' }} }" class="space-y-0.5">
-                            <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.forms*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                                <div class="flex items-center">
-                                    <i class='bx bx-file-blank mr-3 text-base'></i>
-                                    <span class="font-medium">Forms</span>
-                                </div>
-                                <i class='bx bx-chevron-down text-xs transition-transform duration-200' :class="open ? 'rotate-180' : ''"></i>
-                            </button>
-                            <div x-show="open" x-collapse class="ml-4 space-y-0.5 mt-1">
-                                @php
-                                    $currentType = request()->route('type');
-                                @endphp
-                                <a href="{{ route('admin.forms.index', 'raf') }}" class="flex items-center px-3 py-2 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ $currentType == 'raf' ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                                    <i class='bx bx-money mr-2 text-sm'></i>
-                                    <span>RAF</span>
-                                </a>
-                                <a href="{{ route('admin.forms.index', 'dar') }}" class="flex items-center px-3 py-2 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ $currentType == 'dar' ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                                    <i class='bx bx-data mr-2 text-sm'></i>
-                                    <span>DAR</span>
-                                </a>
-                                <a href="{{ route('admin.forms.index', 'dcr') }}" class="flex items-center px-3 py-2 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ $currentType == 'dcr' ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                                    <i class='bx bx-edit mr-2 text-sm'></i>
-                                    <span>DCR</span>
-                                </a>
-                                <a href="{{ route('admin.forms.index', 'srf') }}" class="flex items-center px-3 py-2 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ $currentType == 'srf' ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                                    <i class='bx bx-cog mr-2 text-sm'></i>
-                                    <span>SRF</span>
-                                </a>
-                            </div>
-                        </div>
                     </div>
                 </div>
 

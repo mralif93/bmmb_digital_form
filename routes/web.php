@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Admin\AuditTrailController;
 use App\Http\Controllers\Admin\BranchController;
-use App\Http\Controllers\Admin\FormManagementController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\QrCodeController;
 use App\Http\Controllers\Admin\QrCodeManagementController;
@@ -145,15 +144,4 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Audit Trail
     Route::get('/audit-trails', [AuditTrailController::class, 'index'])->name('audit-trails.index');
     Route::get('/audit-trails/{auditTrail}', [AuditTrailController::class, 'show'])->name('audit-trails.show');
-    
-    // Forms Management (4 Forms: RAF, DAR, DCR, SRF)
-    Route::prefix('forms/{type}')->name('forms.')->where(['type' => 'raf|dar|dcr|srf'])->group(function () {
-        Route::get('/', [FormManagementController::class, 'index'])->name('index');
-        Route::get('/create', [FormManagementController::class, 'create'])->name('create');
-        Route::post('/', [FormManagementController::class, 'store'])->name('store');
-        Route::get('/{id}', [FormManagementController::class, 'show'])->name('show');
-        Route::get('/{id}/edit', [FormManagementController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [FormManagementController::class, 'update'])->name('update');
-        Route::delete('/{id}', [FormManagementController::class, 'destroy'])->name('destroy');
-    });
 });
