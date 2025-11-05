@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
+use App\Traits\LogsAuditTrail;
 use Illuminate\Http\Request;
 
 class BranchController extends Controller
 {
+    use LogsAuditTrail;
     /**
      * Display a listing of the resource.
      */
@@ -40,7 +42,16 @@ class BranchController extends Controller
             'region' => 'required|string|max:255',
         ]);
 
-        Branch::create($validated);
+        $branch = Branch::create($validated);
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'create',
+            description: "Created branch: {$branch->branch_name} (TI Code: {$branch->ti_agent_code})",
+            modelType: Branch::class,
+            modelId: $branch->id,
+            newValues: $branch->toArray()
+        );
 
         return redirect()->route('admin.branches.index')
             ->with('success', 'Branch created successfully!');
@@ -77,7 +88,34 @@ class BranchController extends Controller
             'region' => 'required|string|max:255',
         ]);
 
+        // Get old values before update, format dates consistently
+        $oldValues = $branch->toArray();
+        foreach ($oldValues as $key => $value) {
+            if ($value instanceof \Carbon\Carbon) {
+                $oldValues[$key] = $value->format('Y-m-d H:i:s');
+            }
+        }
+        
         $branch->update($validated);
+        $branch->refresh();
+
+        // Get new values, format dates consistently
+        $newValues = $branch->toArray();
+        foreach ($newValues as $key => $value) {
+            if ($value instanceof \Carbon\Carbon) {
+                $newValues[$key] = $value->format('Y-m-d H:i:s');
+            }
+        }
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'update',
+            description: "Updated branch: {$branch->branch_name} (TI Code: {$branch->ti_agent_code})",
+            modelType: Branch::class,
+            modelId: $branch->id,
+            oldValues: $oldValues,
+            newValues: $newValues
+        );
 
         return redirect()->route('admin.branches.index')
             ->with('success', 'Branch updated successfully!');
@@ -88,7 +126,20 @@ class BranchController extends Controller
      */
     public function destroy(Branch $branch)
     {
+        $oldValues = $branch->toArray();
+        $branchName = $branch->branch_name;
+        $branchId = $branch->id;
+        
         $branch->delete();
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'delete',
+            description: "Deleted branch: {$branchName} (TI Code: {$oldValues['ti_agent_code']})",
+            modelType: Branch::class,
+            modelId: $branchId,
+            oldValues: $oldValues
+        );
 
         return redirect()->route('admin.branches.index')
             ->with('success', 'Branch deleted successfully!');

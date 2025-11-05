@@ -14,6 +14,7 @@ class SrfFormSubmission extends Model
     protected $fillable = [
         'srf_form_id',
         'user_id',
+        'branch_id',
         'submission_token',
         'status',
         'submission_data',
@@ -60,6 +61,11 @@ class SrfFormSubmission extends Model
     public function reviewedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function serviceActions(): HasMany

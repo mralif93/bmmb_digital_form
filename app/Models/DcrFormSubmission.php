@@ -14,6 +14,7 @@ class DcrFormSubmission extends Model
     protected $fillable = [
         'dcr_form_id',
         'user_id',
+        'branch_id',
         'submission_token',
         'status',
         'submission_data',
@@ -60,6 +61,11 @@ class DcrFormSubmission extends Model
     public function reviewedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function correctionActions(): HasMany

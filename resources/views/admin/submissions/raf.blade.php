@@ -104,7 +104,7 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {{ $submission->created_at->format('M d, Y') }}
+                            {{ $timezoneHelper->convert($submission->created_at)?->format('M d, Y') }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <a href="{{ route('admin.submissions.show-raf', $submission->id) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">

@@ -3,18 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Traits\LogsAuditTrail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+    use LogsAuditTrail;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $users = User::orderBy('created_at', 'desc')->get();
+        $users = User::orderBy('created_at', 'desc')->paginate(15);
         return view('admin.users.index', compact('users'));
     }
 
@@ -44,7 +46,18 @@ class UserController extends Controller
 
         $validated['password'] = Hash::make($validated['password']);
 
-        User::create($validated);
+        $user = User::create($validated);
+
+        // Log audit trail (exclude password from logging)
+        $userData = $user->toArray();
+        unset($userData['password']);
+        $this->logAuditTrail(
+            action: 'create',
+            description: "Created user: {$user->full_name} ({$user->email})",
+            modelType: User::class,
+            modelId: $user->id,
+            newValues: $userData
+        );
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User created successfully.');
@@ -89,7 +102,36 @@ class UserController extends Controller
             $validated['password'] = Hash::make($request->password);
         }
 
+        // Get old values before update, format dates consistently
+        $oldValues = $user->toArray();
+        unset($oldValues['password']);
+        foreach ($oldValues as $key => $value) {
+            if ($value instanceof \Carbon\Carbon) {
+                $oldValues[$key] = $value->format('Y-m-d H:i:s');
+            }
+        }
+        
         $user->update($validated);
+        $user->refresh();
+
+        // Get new values, format dates consistently
+        $userData = $user->toArray();
+        unset($userData['password']);
+        foreach ($userData as $key => $value) {
+            if ($value instanceof \Carbon\Carbon) {
+                $userData[$key] = $value->format('Y-m-d H:i:s');
+            }
+        }
+
+        // Log audit trail (exclude password from logging)
+        $this->logAuditTrail(
+            action: 'update',
+            description: "Updated user: {$user->full_name} ({$user->email})",
+            modelType: User::class,
+            modelId: $user->id,
+            oldValues: $oldValues,
+            newValues: $userData
+        );
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User updated successfully.');
@@ -100,7 +142,22 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        $oldValues = $user->toArray();
+        unset($oldValues['password']);
+        $userName = $user->full_name;
+        $userEmail = $user->email;
+        $userId = $user->id;
+        
         $user->delete();
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'delete',
+            description: "Deleted user: {$userName} ({$userEmail})",
+            modelType: User::class,
+            modelId: $userId,
+            oldValues: $oldValues
+        );
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User deleted successfully.');
@@ -111,9 +168,22 @@ class UserController extends Controller
      */
     public function toggleStatus(User $user)
     {
+        $oldStatus = $user->status;
+        $newStatus = $user->status === 'active' ? 'inactive' : 'active';
+        
         $user->update([
-            'status' => $user->status === 'active' ? 'inactive' : 'active'
+            'status' => $newStatus
         ]);
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'update',
+            description: "Changed user status: {$user->full_name} from {$oldStatus} to {$newStatus}",
+            modelType: User::class,
+            modelId: $user->id,
+            oldValues: ['status' => $oldStatus],
+            newValues: ['status' => $newStatus]
+        );
 
         return redirect()->back()
             ->with('success', 'User status updated successfully.');

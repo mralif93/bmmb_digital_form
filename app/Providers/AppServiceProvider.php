@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use App\Helpers\TimezoneHelper;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +22,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Share TimezoneHelper with all views
+        View::share('timezoneHelper', new class {
+            public function convert($date) {
+                return TimezoneHelper::toSystemTimezone($date);
+            }
+        });
     }
 }

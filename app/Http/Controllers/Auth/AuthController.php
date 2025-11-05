@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Traits\LogsAuditTrail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,6 +13,7 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    use LogsAuditTrail;
     /**
      * Show login form
      */
@@ -48,6 +50,14 @@ class AuthController extends Controller
                 'last_login_at' => now(),
                 'last_login_ip' => $request->ip(),
             ]);
+
+            // Log audit trail for login
+            $this->logAuditTrail(
+                action: 'login',
+                description: "User logged in: {$user->full_name} ({$user->email})",
+                modelType: User::class,
+                modelId: $user->id
+            );
 
             // Redirect based on user role
             if ($user->isAdmin()) {
@@ -94,6 +104,17 @@ class AuthController extends Controller
             'status' => 'active',
         ]);
 
+        // Log audit trail for registration
+        $userData = $user->toArray();
+        unset($userData['password']);
+        $this->logAuditTrail(
+            action: 'create',
+            description: "User registered: {$user->full_name} ({$user->email})",
+            modelType: User::class,
+            modelId: $user->id,
+            newValues: $userData
+        );
+
         // Auto login after registration
         Auth::login($user);
 
@@ -105,6 +126,18 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+        $user = Auth::user();
+        
+        // Log audit trail for logout (before logout)
+        if ($user) {
+            $this->logAuditTrail(
+                action: 'logout',
+                description: "User logged out: {$user->full_name} ({$user->email})",
+                modelType: User::class,
+                modelId: $user->id
+            );
+        }
+
         Auth::logout();
 
         $request->session()->invalidate();

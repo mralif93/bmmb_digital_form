@@ -5,8 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Admin Dashboard - BMMB Digital Forms')</title>
     
+    <!-- Google Fonts - Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Boxicons CDN -->
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <!-- Alpine.js CDN -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -15,10 +23,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
-                        'sans': ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif'],
+                        'sans': ['Poppins', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif'],
                     },
                     colors: {
                         primary: {
@@ -71,35 +80,91 @@
     <!-- Custom Styles for White Background and Typography Scale -->
     <style>
         body {
-            background: #ffffff !important;
-            min-height: 100vh !important;
-            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-            font-size: 14px;
+            background: #ffffff;
+            min-height: 100vh;
+            font-family: 'Poppins', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+            font-size: 13px;
             line-height: 1.5;
+            transition: background-color 0.3s ease;
+        }
+        .dark body {
+            background: #111827;
         }
         .bg-white {
-            background: #ffffff !important;
+            background: #ffffff;
         }
-        .dark\\:bg-gray-800 {
-            background: #1f2937 !important;
+        .dark .bg-white {
+            background: #1f2937;
         }
         .bg-gray-50 {
-            background: #f9fafb !important;
+            background: #f9fafb;
         }
-        .dark\\:bg-gray-900 {
-            background: #111827 !important;
+        .dark .bg-gray-50 {
+            background: #111827;
         }
 
-        /* Admin dashboard typography scale */
-        h1 { font-size: 1.5rem; font-weight: 700; }
-        h2 { font-size: 1.25rem; font-weight: 700; }
-        h3 { font-size: 1.125rem; font-weight: 600; }
-        h4 { font-size: 1rem; font-weight: 600; }
-        p, li { font-size: 0.9375rem; }
+        /* Admin dashboard typography scale - standardized */
+        h1 { font-size: 1.375rem; font-weight: 600; }
+        h2 { font-size: 1.125rem; font-weight: 600; }
+        h3 { font-size: 1rem; font-weight: 600; }
+        h4 { font-size: 0.9375rem; font-weight: 600; }
+        p, li, span, div, a, button, input, select, textarea, label { font-size: 0.8125rem; }
+        
+        /* Standardize text sizes */
+        .text-xs { font-size: 0.75rem !important; }
+        .text-sm { font-size: 0.8125rem !important; }
+        .text-base { font-size: 0.875rem !important; }
+        .text-lg { font-size: 1rem !important; }
+        .text-xl { font-size: 1.125rem !important; }
+        .text-2xl { font-size: 1.25rem !important; }
         
         /* Alpine.js x-cloak */
         [x-cloak] { display: none !important; }
     </style>
+    
+    <!-- Dark Mode Script -->
+    <script>
+        // Check for saved theme preference or default to light mode
+        function getThemePreference() {
+            const saved = localStorage.getItem('darkMode');
+            if (saved !== null) {
+                return saved === 'true';
+            }
+            // Default to light mode
+            return false;
+        }
+
+        // Apply theme on page load
+        function applyTheme(isDark) {
+            const html = document.documentElement;
+            const icon = document.getElementById('darkModeIcon');
+            
+            if (isDark) {
+                html.classList.add('dark');
+                if (icon) {
+                    icon.className = 'bx bx-sun text-gray-300 text-lg';
+                }
+            } else {
+                html.classList.remove('dark');
+                if (icon) {
+                    icon.className = 'bx bx-moon text-gray-600 text-lg';
+                }
+            }
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        // Toggle dark mode
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            applyTheme(!isDark);
+        }
+
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            applyTheme(getThemePreference());
+        });
+    </script>
 </head>
 <body class="font-sans">
     <!-- Header -->
@@ -117,9 +182,16 @@
                     </div>
                 </div>
                 
-                <!-- User Profile Dropdown -->
-                <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" @click.away="open = false" class="flex items-center space-x-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg px-2 py-1.5 transition-colors">
+                <!-- Dark Mode Toggle & User Profile Dropdown -->
+                <div class="flex items-center space-x-3">
+                    <!-- Dark Mode Toggle -->
+                    <button id="darkModeToggle" onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Toggle Dark Mode">
+                        <i id="darkModeIcon" class='bx bx-moon text-gray-600 dark:text-gray-300 text-lg'></i>
+                    </button>
+                    
+                    <!-- User Profile Dropdown -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" @click.away="open = false" class="flex items-center space-x-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg px-2 py-1.5 transition-colors">
                         <div class="w-7 h-7 bg-gradient-to-br from-gray-400 to-gray-500 rounded-md flex items-center justify-center">
                             <i class='bx bx-user text-white text-xs'></i>
                         </div>
@@ -190,6 +262,16 @@
                             <span class="font-medium">Branches</span>
                         </a>
                         
+                        <a href="{{ route('admin.qr-codes.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.qr-codes*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
+                            <i class='bx bx-qr-scan mr-3 text-base'></i>
+                            <span class="font-medium">QR Codes</span>
+                        </a>
+                        
+                        <a href="{{ route('admin.audit-trails.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.audit-trails*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
+                            <i class='bx bx-history mr-3 text-base'></i>
+                            <span class="font-medium">Audit Trail</span>
+                        </a>
+                        
                         <!-- Forms Menu (Collapsible) -->
                         <div x-data="{ open: {{ request()->routeIs('admin.forms*') ? 'true' : 'false' }} }" class="space-y-0.5">
                             <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.forms*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
@@ -221,11 +303,6 @@
                                 </a>
                             </div>
                         </div>
-                        
-                        <a href="{{ route('admin.branch-qr-test') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.branch-qr-test*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                            <i class='bx bx-qr-scan mr-3 text-base'></i>
-                            <span class="font-medium">Branch QR Test</span>
-                        </a>
                     </div>
                 </div>
 
@@ -267,5 +344,7 @@
             </footer>
         </div>
     </div>
+    
+    @stack('scripts')
 </body>
 </html>

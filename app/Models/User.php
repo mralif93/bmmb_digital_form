@@ -86,4 +86,12 @@ class User extends Authenticatable
     {
         return $this->status === 'active';
     }
+
+    /**
+     * Get the audit trails for the user.
+     */
+    public function auditTrails()
+    {
+        return $this->hasMany(AuditTrail::class);
+    }
 }

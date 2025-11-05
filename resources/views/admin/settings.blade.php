@@ -5,6 +5,18 @@
 @section('page-description', 'Configure system settings and preferences')
 
 @section('content')
+@if(session('success'))
+<div class="mb-4 p-3 bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700 rounded-lg text-sm text-green-800 dark:text-green-400">
+    {{ session('success') }}
+</div>
+@endif
+
+@if(session('error'))
+<div class="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg text-sm text-red-800 dark:text-red-400">
+    {{ session('error') }}
+</div>
+@endif
+
 <div class="space-y-6">
     <!-- Settings Overview -->
     <div class="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-xl p-6 border border-orange-200 dark:border-orange-800/30">
@@ -20,6 +32,9 @@
     </div>
 
     <!-- Settings Tabs -->
+    <form id="settings-form" action="{{ route('admin.settings.update') }}" method="POST">
+        @csrf
+        @method('PUT')
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700" x-data="{ activeTab: 'general' }">
         <div class="border-b border-gray-200 dark:border-gray-700">
             <nav class="flex space-x-8 px-6" aria-label="Tabs">
@@ -76,12 +91,34 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Default Timezone</label>
-                            <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white">
-                                <option value="UTC">UTC</option>
-                                <option value="America/New_York" selected>Eastern Time (ET)</option>
-                                <option value="America/Chicago">Central Time (CT)</option>
-                                <option value="America/Denver">Mountain Time (MT)</option>
-                                <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                            <select name="timezone" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white">
+                                <option value="UTC" {{ ($settings['timezone'] ?? 'UTC') == 'UTC' ? 'selected' : '' }}>UTC (Coordinated Universal Time)</option>
+                                <optgroup label="Asia">
+                                    <option value="Asia/Kuala_Lumpur" {{ ($settings['timezone'] ?? 'UTC') == 'Asia/Kuala_Lumpur' ? 'selected' : '' }}>Kuala Lumpur, Malaysia (GMT+8)</option>
+                                    <option value="Asia/Singapore" {{ ($settings['timezone'] ?? 'UTC') == 'Asia/Singapore' ? 'selected' : '' }}>Singapore (GMT+8)</option>
+                                    <option value="Asia/Jakarta" {{ ($settings['timezone'] ?? 'UTC') == 'Asia/Jakarta' ? 'selected' : '' }}>Jakarta, Indonesia (GMT+7)</option>
+                                    <option value="Asia/Bangkok" {{ ($settings['timezone'] ?? 'UTC') == 'Asia/Bangkok' ? 'selected' : '' }}>Bangkok, Thailand (GMT+7)</option>
+                                    <option value="Asia/Manila" {{ ($settings['timezone'] ?? 'UTC') == 'Asia/Manila' ? 'selected' : '' }}>Manila, Philippines (GMT+8)</option>
+                                    <option value="Asia/Tokyo" {{ ($settings['timezone'] ?? 'UTC') == 'Asia/Tokyo' ? 'selected' : '' }}>Tokyo, Japan (GMT+9)</option>
+                                    <option value="Asia/Seoul" {{ ($settings['timezone'] ?? 'UTC') == 'Asia/Seoul' ? 'selected' : '' }}>Seoul, South Korea (GMT+9)</option>
+                                    <option value="Asia/Hong_Kong" {{ ($settings['timezone'] ?? 'UTC') == 'Asia/Hong_Kong' ? 'selected' : '' }}>Hong Kong (GMT+8)</option>
+                                    <option value="Asia/Shanghai" {{ ($settings['timezone'] ?? 'UTC') == 'Asia/Shanghai' ? 'selected' : '' }}>Shanghai, China (GMT+8)</option>
+                                    <option value="Asia/Dubai" {{ ($settings['timezone'] ?? 'UTC') == 'Asia/Dubai' ? 'selected' : '' }}>Dubai, UAE (GMT+4)</option>
+                                </optgroup>
+                                <optgroup label="Europe">
+                                    <option value="Europe/London" {{ ($settings['timezone'] ?? 'UTC') == 'Europe/London' ? 'selected' : '' }}>London, UK (GMT+0/+1)</option>
+                                    <option value="Europe/Paris" {{ ($settings['timezone'] ?? 'UTC') == 'Europe/Paris' ? 'selected' : '' }}>Paris, France (GMT+1/+2)</option>
+                                    <option value="Europe/Berlin" {{ ($settings['timezone'] ?? 'UTC') == 'Europe/Berlin' ? 'selected' : '' }}>Berlin, Germany (GMT+1/+2)</option>
+                                </optgroup>
+                                <optgroup label="America">
+                                    <option value="America/New_York" {{ ($settings['timezone'] ?? 'UTC') == 'America/New_York' ? 'selected' : '' }}>New York, USA (EST/EDT)</option>
+                                    <option value="America/Chicago" {{ ($settings['timezone'] ?? 'UTC') == 'America/Chicago' ? 'selected' : '' }}>Chicago, USA (CST/CDT)</option>
+                                    <option value="America/Los_Angeles" {{ ($settings['timezone'] ?? 'UTC') == 'America/Los_Angeles' ? 'selected' : '' }}>Los Angeles, USA (PST/PDT)</option>
+                                </optgroup>
+                                <optgroup label="Australia">
+                                    <option value="Australia/Sydney" {{ ($settings['timezone'] ?? 'UTC') == 'Australia/Sydney' ? 'selected' : '' }}>Sydney, Australia (AEST/AEDT)</option>
+                                    <option value="Australia/Melbourne" {{ ($settings['timezone'] ?? 'UTC') == 'Australia/Melbourne' ? 'selected' : '' }}>Melbourne, Australia (AEST/AEDT)</option>
+                                </optgroup>
                             </select>
                         </div>
                         <div>
@@ -108,6 +145,11 @@
                                 <option value="H:i" selected>24 Hour (14:30)</option>
                                 <option value="g:i A">12 Hour (2:30 PM)</option>
                             </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">QR Code Expiration (minutes)</label>
+                            <input type="number" name="qr_code_expiration_minutes" value="{{ $settings['qr_code_expiration_minutes'] ?? 60 }}" min="1" max="10080" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">QR codes will expire after this many minutes (1-10080 minutes = 7 days)</p>
                         </div>
                     </div>
                 </div>
@@ -295,6 +337,7 @@
             </div>
         </div>
     </div>
+    </form>
 
     <!-- System Information -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-700">
@@ -352,7 +395,7 @@
             <button class="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors">
                 Cancel
             </button>
-            <button class="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors">
+            <button type="submit" form="settings-form" class="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors">
                 <i class='bx bx-save mr-2'></i>
                 Save Settings
             </button>

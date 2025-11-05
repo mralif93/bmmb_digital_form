@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'BMMB Digital Forms')</title>
     
     <!-- Tailwind CSS CDN - Play CDN (More Reliable) -->
@@ -484,19 +485,58 @@
                 }
             });
             
-            // Simulate form submission (replace with actual form submission)
-            setTimeout(() => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: successMessage,
-                    confirmButtonColor: '#FE8000'
-                }).then(() => {
-                    document.getElementById(formId).reset();
-                });
-            }, 2000);
+            // Get form element
+            const form = document.getElementById(formId);
+            const formData = new FormData(form);
             
-            return true;
+            // Determine form type from URL or form ID
+            let formType = 'raf';
+            if (formId.includes('dar')) formType = 'dar';
+            else if (formId.includes('dcr')) formType = 'dcr';
+            else if (formId.includes('srf')) formType = 'srf';
+            
+            // Submit to backend
+            fetch(`/forms/${formType}/submit`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]')?.value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: data.message || successMessage,
+                        confirmButtonColor: '#FE8000'
+                    }).then(() => {
+                        form.reset();
+                        // Optionally redirect to a thank you page
+                        // window.location.href = '/forms/thank-you';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Submission Failed',
+                        text: data.message || 'An error occurred. Please try again.',
+                        confirmButtonColor: '#FE8000'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Submission Failed',
+                    text: 'An error occurred. Please try again.',
+                    confirmButtonColor: '#FE8000'
+                });
+            });
+            
+            return false; // Prevent default form submission
         }
         
         // Step navigation for multi-step forms

@@ -16,6 +16,17 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             BranchSeeder::class,
+            QrCodeSeeder::class,
+            FormSeeder::class,
+            RafSubmissionSeeder::class,
+            DarSubmissionSeeder::class,
+            DcrSubmissionSeeder::class,
+            SrfSubmissionSeeder::class,
+            // Public form submissions (optional - run separately if needed)
+            // PublicRafSubmissionSeeder::class,
+            // PublicDarSubmissionSeeder::class,
+            // PublicDcrSubmissionSeeder::class,
+            // PublicSrfSubmissionSeeder::class,
         ]);
     }
 }

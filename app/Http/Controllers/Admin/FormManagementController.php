@@ -8,11 +8,13 @@ use App\Models\DataCorrectionRequestForm;
 use App\Models\RemittanceApplicationForm;
 use App\Models\ServiceRequestForm;
 use App\Models\User;
+use App\Traits\LogsAuditTrail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class FormManagementController extends Controller
 {
+    use LogsAuditTrail;
     private $formConfig = [
         'raf' => [
             'model' => RemittanceApplicationForm::class,
@@ -100,17 +102,26 @@ class FormManagementController extends Controller
 
         // Generate unique number
         $year = date('Y');
-        $lastForm = $model::where($config['number_field'], 'like', $config['number_prefix'] . '-' . $year . '-%')
-            ->orderBy($config['number_field'], 'desc')
-            ->first();
-
-        $sequence = 1;
-        if ($lastForm) {
-            $lastSequence = (int) substr($lastForm->{$config['number_field']}, -6);
-            $sequence = $lastSequence + 1;
+        
+        // Get all forms for this year and find the highest sequence
+        $allForms = $model::where($config['number_field'], 'like', $config['number_prefix'] . '-' . $year . '-%')->get();
+        $maxSequence = 0;
+        
+        foreach ($allForms as $form) {
+            if (preg_match('/' . preg_quote($config['number_prefix']) . '-' . $year . '-(\d+)$/', $form->{$config['number_field']}, $matches)) {
+                $sequence = (int) $matches[1];
+                $maxSequence = max($maxSequence, $sequence);
+            }
         }
-
+        
+        $sequence = $maxSequence + 1;
         $number = $config['number_prefix'] . '-' . $year . '-' . str_pad($sequence, 6, '0', STR_PAD_LEFT);
+        
+        // Ensure uniqueness by checking if the number already exists
+        while ($model::where($config['number_field'], $number)->exists()) {
+            $sequence++;
+            $number = $config['number_prefix'] . '-' . $year . '-' . str_pad($sequence, 6, '0', STR_PAD_LEFT);
+        }
 
         $formData = [
             'user_id' => $validated['user_id'],
@@ -124,6 +135,15 @@ class FormManagementController extends Controller
         }
 
         $form = $model::create($formData);
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'create',
+            description: "Created {$config['title']}: {$form->{$config['number_field']}}",
+            modelType: $config['model'],
+            modelId: $form->id,
+            newValues: $form->toArray()
+        );
 
         return redirect()->route('admin.forms.show', [$type, $form->id])
             ->with('success', $config['title'] . ' created successfully!');
@@ -183,7 +203,19 @@ class FormManagementController extends Controller
             'status' => 'required|in:draft,submitted,under_review,approved,rejected,completed,in_progress,cancelled,expired,partially_approved',
         ]);
 
+        $oldValues = $form->toArray();
         $form->update($validated);
+        $form->refresh();
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'update',
+            description: "Updated {$config['title']}: {$form->{$config['number_field']}}",
+            modelType: $config['model'],
+            modelId: $form->id,
+            oldValues: $oldValues,
+            newValues: $form->toArray()
+        );
 
         return redirect()->route('admin.forms.show', [$type, $form->id])
             ->with('success', $config['title'] . ' updated successfully!');
@@ -202,7 +234,20 @@ class FormManagementController extends Controller
         $model = $config['model'];
         
         $form = $model::findOrFail($id);
+        $oldValues = $form->toArray();
+        $formNumber = $form->{$config['number_field']};
+        $formId = $form->id;
+        
         $form->delete();
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'delete',
+            description: "Deleted {$config['title']}: {$formNumber}",
+            modelType: $config['model'],
+            modelId: $formId,
+            oldValues: $oldValues
+        );
 
         return redirect()->route('admin.forms.index', $type)
             ->with('success', $config['title'] . ' deleted successfully!');

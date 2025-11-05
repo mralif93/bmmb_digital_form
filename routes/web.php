@@ -1,9 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\AuditTrailController;
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\FormManagementController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\QrCodeController;
+use App\Http\Controllers\Admin\QrCodeManagementController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Public\BranchController as PublicBranchController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
@@ -13,23 +17,55 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// Public Form Routes
+// Public Branch Route (accessed via QR code)
+Route::get('/branch/{tiAgentCode}', [PublicBranchController::class, 'show'])->name('public.branch');
+
+// Public Form Routes (with optional branch parameter)
 Route::prefix('forms')->name('public.forms.')->group(function () {
-    Route::get('/raf', function () {
+    Route::get('/raf/{branch?}', function ($branch = null) {
+        if ($branch) {
+            $branchModel = \App\Models\Branch::where('ti_agent_code', $branch)->first();
+            if ($branchModel) {
+                session(['submission_branch_id' => $branchModel->id]);
+            }
+        }
         return view('public.forms.raf');
     })->name('raf');
     
-    Route::get('/dar', function () {
+    Route::get('/dar/{branch?}', function ($branch = null) {
+        if ($branch) {
+            $branchModel = \App\Models\Branch::where('ti_agent_code', $branch)->first();
+            if ($branchModel) {
+                session(['submission_branch_id' => $branchModel->id]);
+            }
+        }
         return view('public.forms.dar');
     })->name('dar');
     
-    Route::get('/dcr', function () {
+    Route::get('/dcr/{branch?}', function ($branch = null) {
+        if ($branch) {
+            $branchModel = \App\Models\Branch::where('ti_agent_code', $branch)->first();
+            if ($branchModel) {
+                session(['submission_branch_id' => $branchModel->id]);
+            }
+        }
         return view('public.forms.dcr');
     })->name('dcr');
     
-    Route::get('/srf', function () {
+    Route::get('/srf/{branch?}', function ($branch = null) {
+        if ($branch) {
+            $branchModel = \App\Models\Branch::where('ti_agent_code', $branch)->first();
+            if ($branchModel) {
+                session(['submission_branch_id' => $branchModel->id]);
+            }
+        }
         return view('public.forms.srf');
     })->name('srf');
+    
+    // Public Form Submission Routes
+    Route::post('/{type}/submit', [\App\Http\Controllers\Public\FormSubmissionController::class, 'store'])
+        ->where(['type' => 'raf|dar|dcr|srf'])
+        ->name('submit');
 });
 
 // Auth routes
@@ -86,15 +122,29 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Branch Management
     Route::resource('branches', BranchController::class);
     
+    // QR Code Generation Routes (must be before resource route to avoid conflicts)
+    Route::prefix('qr-codes')->name('qr-codes.')->group(function () {
+        Route::post('/generate', [QrCodeController::class, 'generate'])->name('generate');
+        Route::post('/bulk-generate', [QrCodeController::class, 'bulkGenerate'])->name('bulk-generate');
+        Route::get('/download/{fileName}', [QrCodeController::class, 'download'])->name('download');
+    });
+    
+    // QR Code Management (CRUD)
+    Route::resource('qr-codes', QrCodeManagementController::class);
+    Route::post('/qr-codes/regenerate-all', [QrCodeManagementController::class, 'regenerateAll'])->name('qr-codes.regenerate-all');
+    
     // Profile
-    Route::get('/profile', function () {
-        return view('admin.profile');
-    })->name('profile');
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
     
     // System Settings
-    Route::get('/settings', function () {
-        return view('admin.settings');
-    })->name('settings');
+    Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings');
+    Route::put('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
+    
+    // Audit Trail
+    Route::get('/audit-trails', [AuditTrailController::class, 'index'])->name('audit-trails.index');
+    Route::get('/audit-trails/{auditTrail}', [AuditTrailController::class, 'show'])->name('audit-trails.show');
     
     // Forms Management (4 Forms: RAF, DAR, DCR, SRF)
     Route::prefix('forms/{type}')->name('forms.')->where(['type' => 'raf|dar|dcr|srf'])->group(function () {
@@ -106,16 +156,4 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::put('/{id}', [FormManagementController::class, 'update'])->name('update');
         Route::delete('/{id}', [FormManagementController::class, 'destroy'])->name('destroy');
     });
-    
-    // QR Code Management
-    Route::prefix('qr-codes')->name('qr-codes.')->group(function () {
-        Route::post('/generate', [QrCodeController::class, 'generate'])->name('generate');
-        Route::post('/bulk-generate', [QrCodeController::class, 'bulkGenerate'])->name('bulk-generate');
-        Route::get('/download/{fileName}', [QrCodeController::class, 'download'])->name('download');
-    });
-    
-    // Branch QR Test
-    Route::get('/branch-qr-test', function () {
-        return view('admin.branch-qr-test');
-    })->name('branch-qr-test');
 });

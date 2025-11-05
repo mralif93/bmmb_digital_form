@@ -107,7 +107,7 @@
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Email Verified</dt>
                             <dd class="mt-1 text-sm text-gray-900 dark:text-white">
                                 @if($user->email_verified_at)
-                                    <span class="text-green-600 dark:text-green-400">Verified on {{ $user->email_verified_at->format('M d, Y') }}</span>
+                                    <span class="text-green-600 dark:text-green-400">Verified on {{ $timezoneHelper->convert($user->email_verified_at)?->format('M d, Y') }}</span>
                                 @else
                                     <span class="text-red-600 dark:text-red-400">Not verified</span>
                                 @endif
@@ -116,7 +116,7 @@
                         <div>
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Last Login</dt>
                             <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                                {{ $user->last_login_at ? $user->last_login_at->format('M d, Y \a\t g:i A') : 'Never' }}
+                                {{ $user->last_login_at ? $timezoneHelper->convert($user->last_login_at)?->format('M d, Y \a\t g:i A') : 'Never' }}
                             </dd>
                         </div>
                     </dl>
@@ -142,7 +142,7 @@
                         </div>
                         <div class="ml-3">
                             <p class="text-sm font-medium text-orange-900 dark:text-orange-100">Member Since</p>
-                            <p class="text-lg font-semibold text-orange-600 dark:text-orange-400">{{ $user->created_at->format('M Y') }}</p>
+                            <p class="text-lg font-semibold text-orange-600 dark:text-orange-400">{{ $timezoneHelper->convert($user->created_at)?->format('M Y') }}</p>
                         </div>
                     </div>
                 </div>
@@ -155,7 +155,7 @@
                         <div class="ml-3">
                             <p class="text-sm font-medium text-green-900 dark:text-green-100">Last Active</p>
                             <p class="text-lg font-semibold text-green-600 dark:text-green-400">
-                                {{ $user->last_login_at ? $user->last_login_at->diffForHumans() : 'Never' }}
+                                {{ $user->last_login_at ? $timezoneHelper->convert($user->last_login_at)?->diffForHumans() : 'Never' }}
                             </p>
                         </div>
                     </div>

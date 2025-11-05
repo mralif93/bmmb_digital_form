@@ -26,6 +26,11 @@ return new class extends Migration
             $table->index('state');
             $table->index('region');
         });
+
+        // Note: Foreign key constraints for branch_id in submission tables
+        // are added after the branches table is created to avoid SQLite issues.
+        // They will be added in a separate migration if needed, but SQLite doesn't
+        // handle foreign keys on existing tables well, so we rely on application-level integrity.
     }
 
     /**

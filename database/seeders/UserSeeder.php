@@ -3,11 +3,14 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Traits\UsesSystemTimezone;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
+    use UsesSystemTimezone;
+
     /**
      * Run the database seeds.
      */
@@ -23,8 +26,8 @@ class UserSeeder extends Seeder
             'role' => 'admin',
             'status' => 'active',
             'bio' => 'System administrator with full access to all features.',
-            'email_verified_at' => now(),
-            'last_login_at' => now()->subHours(2),
+            'email_verified_at' => $this->nowInSystemTimezone(),
+            'last_login_at' => $this->nowInSystemTimezone()->subHours(2),
             'last_login_ip' => '127.0.0.1',
         ]);
 
@@ -38,8 +41,8 @@ class UserSeeder extends Seeder
             'role' => 'moderator',
             'status' => 'active',
             'bio' => 'Content moderator responsible for reviewing user submissions.',
-            'email_verified_at' => now(),
-            'last_login_at' => now()->subDays(1),
+            'email_verified_at' => $this->nowInSystemTimezone(),
+            'last_login_at' => $this->nowInSystemTimezone()->subDays(1),
             'last_login_ip' => '127.0.0.1',
         ]);
 
@@ -53,8 +56,8 @@ class UserSeeder extends Seeder
             'role' => 'user',
             'status' => 'active',
             'bio' => 'Regular user who creates and manages forms.',
-            'email_verified_at' => now(),
-            'last_login_at' => now()->subHours(5),
+            'email_verified_at' => $this->nowInSystemTimezone(),
+            'last_login_at' => $this->nowInSystemTimezone()->subHours(5),
             'last_login_ip' => '127.0.0.1',
         ]);
 
@@ -67,8 +70,8 @@ class UserSeeder extends Seeder
             'role' => 'user',
             'status' => 'active',
             'bio' => 'Marketing professional using forms for lead generation.',
-            'email_verified_at' => now(),
-            'last_login_at' => now()->subDays(2),
+            'email_verified_at' => $this->nowInSystemTimezone(),
+            'last_login_at' => $this->nowInSystemTimezone()->subDays(2),
             'last_login_ip' => '127.0.0.1',
         ]);
 
@@ -81,8 +84,8 @@ class UserSeeder extends Seeder
             'role' => 'user',
             'status' => 'inactive',
             'bio' => 'Event coordinator who uses forms for event registrations.',
-            'email_verified_at' => now(),
-            'last_login_at' => now()->subWeeks(2),
+            'email_verified_at' => $this->nowInSystemTimezone(),
+            'last_login_at' => $this->nowInSystemTimezone()->subWeeks(2),
             'last_login_ip' => '127.0.0.1',
         ]);
 
@@ -95,8 +98,8 @@ class UserSeeder extends Seeder
             'role' => 'user',
             'status' => 'suspended',
             'bio' => 'Account suspended due to policy violations.',
-            'email_verified_at' => now(),
-            'last_login_at' => now()->subMonths(1),
+            'email_verified_at' => $this->nowInSystemTimezone(),
+            'last_login_at' => $this->nowInSystemTimezone()->subMonths(1),
             'last_login_ip' => '127.0.0.1',
         ]);
     }

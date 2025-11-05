@@ -195,6 +195,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('dcr_form_id')->constrained('data_correction_request_forms')->onDelete('cascade');
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+            $table->unsignedBigInteger('branch_id')->nullable()->after('user_id');
             $table->string('submission_token')->unique();
             $table->enum('status', ['draft', 'submitted', 'under_review', 'approved', 'rejected', 'completed', 'partially_approved'])->default('draft');
             
@@ -226,6 +227,7 @@ return new class extends Migration
             
             $table->index('dcr_form_id');
             $table->index('user_id');
+            $table->index('branch_id');
             $table->index('submission_token');
             $table->index('status');
             $table->index('submitted_at');

@@ -101,7 +101,7 @@
                         Created At
                     </dt>
                     <dd class="text-sm text-gray-900 dark:text-white">
-                        {{ $branch->created_at->format('M d, Y h:i A') }}
+                        {{ $timezoneHelper->convert($branch->created_at)?->format('M d, Y h:i A') }}
                     </dd>
                 </div>
                 <div>
@@ -109,7 +109,7 @@
                         Updated At
                     </dt>
                     <dd class="text-sm text-gray-900 dark:text-white">
-                        {{ $branch->updated_at->format('M d, Y h:i A') }}
+                        {{ $timezoneHelper->convert($branch->updated_at)?->format('M d, Y h:i A') }}
                     </dd>
                 </div>
             </dl>
