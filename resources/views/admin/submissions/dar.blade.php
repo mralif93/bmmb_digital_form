@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.admin-minimal')
 
 @section('page-title', 'DAR Submissions')
 @section('page-description', 'View and manage Data Access Request submissions')

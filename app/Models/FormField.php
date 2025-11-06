@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class DcrFormField extends Model
+class FormField extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'dcr_form_id',
+        'form_id',
         'field_section',
         'field_name',
         'field_label',
@@ -43,28 +43,17 @@ class DcrFormField extends Model
         'custom_attributes' => 'array',
     ];
 
-    // Relationships
-    public function dcrForm(): BelongsTo
+    /**
+     * Relationship: FormField belongs to Form
+     */
+    public function form(): BelongsTo
     {
-        return $this->belongsTo(DataCorrectionRequestForm::class, 'dcr_form_id');
+        return $this->belongsTo(Form::class);
     }
 
-    // Scopes
-    public function scopeBySection($query, $section)
-    {
-        return $query->where('field_section', $section);
-    }
-
-    public function scopeByType($query, $type)
-    {
-        return $query->where('field_type', $type);
-    }
-
-    public function scopeRequired($query)
-    {
-        return $query->where('is_required', true);
-    }
-
+    /**
+     * Scopes
+     */
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
@@ -75,27 +64,14 @@ class DcrFormField extends Model
         return $query->orderBy('sort_order');
     }
 
-    // Helper Methods
-    public function isText(): bool
+    public function scopeBySection($query, $section)
     {
-        return in_array($this->field_type, ['text', 'email', 'phone', 'textarea']);
+        return $query->where('field_section', $section);
     }
 
-    public function isSelect(): bool
-    {
-        return in_array($this->field_type, ['select', 'radio', 'checkbox', 'multiselect']);
-    }
-
-    public function isFile(): bool
-    {
-        return $this->field_type === 'file';
-    }
-
-    public function isDate(): bool
-    {
-        return $this->field_type === 'date';
-    }
-
+    /**
+     * Helper Methods
+     */
     public function hasOptions(): bool
     {
         return !empty($this->field_options) && is_array($this->field_options);
@@ -126,7 +102,9 @@ class DcrFormField extends Model
         return $this->custom_attributes ?? [];
     }
 
-    // Static Methods
+    /**
+     * Get field types
+     */
     public static function getFieldTypes(): array
     {
         return [
@@ -141,21 +119,10 @@ class DcrFormField extends Model
             'date' => 'Date Picker',
             'file' => 'File Upload',
             'signature' => 'Digital Signature',
+            'currency' => 'Currency Input',
             'multiselect' => 'Multi-Select',
+            'time' => 'Time Picker',
+            'datetime' => 'Date & Time Picker',
         ];
-    }
-
-    public static function getFieldSections(): array
-    {
-        // Get sections from database
-        $sections = \App\Models\FormSection::getSectionsForFormType('dcr');
-        
-        // If no sections in database, initialize defaults
-        if (empty($sections)) {
-            \App\Models\FormSection::initializeDefaults('dcr');
-            $sections = \App\Models\FormSection::getSectionsForFormType('dcr');
-        }
-        
-        return $sections;
     }
 }

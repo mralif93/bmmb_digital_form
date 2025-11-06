@@ -52,7 +52,7 @@ class SubmissionController extends Controller
      */
     public function showDar($id)
     {
-        $submission = DarFormSubmission::with('user')->findOrFail($id);
+        $submission = DarFormSubmission::with(['user', 'branch', 'reviewedBy', 'darForm'])->findOrFail($id);
         return view('admin.submissions.show-dar', compact('submission'));
     }
 
@@ -61,7 +61,7 @@ class SubmissionController extends Controller
      */
     public function showDcr($id)
     {
-        $submission = DcrFormSubmission::with('user')->findOrFail($id);
+        $submission = DcrFormSubmission::with(['user', 'branch', 'reviewedBy', 'dcrForm'])->findOrFail($id);
         return view('admin.submissions.show-dcr', compact('submission'));
     }
 
@@ -70,7 +70,7 @@ class SubmissionController extends Controller
      */
     public function showRaf($id)
     {
-        $submission = RafFormSubmission::with('user')->findOrFail($id);
+        $submission = RafFormSubmission::with(['user', 'branch', 'reviewedBy', 'rafForm'])->findOrFail($id);
         return view('admin.submissions.show-raf', compact('submission'));
     }
 
@@ -79,7 +79,7 @@ class SubmissionController extends Controller
      */
     public function showSrf($id)
     {
-        $submission = SrfFormSubmission::with('user')->findOrFail($id);
+        $submission = SrfFormSubmission::with(['user', 'branch', 'reviewedBy', 'srfForm'])->findOrFail($id);
         return view('admin.submissions.show-srf', compact('submission'));
     }
 

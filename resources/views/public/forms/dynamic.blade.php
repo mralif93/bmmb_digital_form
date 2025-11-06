@@ -1,0 +1,528 @@
+@extends('layouts.public')
+
+@section('title', ($type == 'raf' ? 'Remittance Application Form' : ($type == 'dar' ? 'Data Access Request Form' : ($type == 'dcr' ? 'Data Correction Request Form' : 'Service Request Form'))) . ' - BMMB Digital Forms')
+
+@section('content')
+<!-- Hero Section -->
+<section class="form-section py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">
+                @if($type == 'raf')
+                    Remittance Application Form
+                @elseif($type == 'dar')
+                    Data Access Request Form
+                @elseif($type == 'dcr')
+                    Data Correction Request Form
+                @else
+                    Service Request Form
+                @endif
+            </h1>
+            <p class="text-lg text-white/90 mb-6 max-w-2xl mx-auto">
+                @if($type == 'raf')
+                    Submit your remittance application for international money transfers and financial transactions.
+                @elseif($type == 'dar')
+                    Request access to your personal data and information in compliance with data protection regulations.
+                @elseif($type == 'dcr')
+                    Request correction of your personal data in compliance with data protection regulations.
+                @else
+                    Submit your service request for banking and financial services.
+                @endif
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Form Section -->
+<section class="py-12 bg-gradient-to-br from-gray-50 to-gray-100" x-data="formWizard" x-init="init()">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        @if(isset($error))
+            <div class="bg-red-50 border-l-4 border-red-500 text-red-700 px-6 py-4 mb-6 rounded-lg">
+                <div class="flex items-center">
+                    <i class='bx bx-error-circle text-xl mr-2'></i>
+                    <span class="font-medium">{{ $error }}</span>
+                </div>
+            </div>
+        @endif
+
+        <!-- White Card Container -->
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+            <!-- Stepper Progress Indicator -->
+            @if(count($sections ?? []) > 0)
+            <div class="w-full pt-6 pb-4 border-b border-gray-200 bg-gradient-to-b from-gray-50 to-white">
+                <!-- Stepper (Desktop) -->
+                <div class="flex items-center justify-between relative px-4 sm:px-6 lg:px-8">
+                    @foreach($sections as $index => $section)
+                        @php
+                            $stepNumber = $section['step'] ?? ($index + 1);
+                        @endphp
+                        <div class="flex items-center relative z-10 flex-1" :class="{ 'cursor-pointer': currentStep > {{ $stepNumber }} }" @click="if (currentStep > {{ $stepNumber }}) currentStep = {{ $stepNumber }}">
+                            <div class="flex items-center">
+                                <!-- Step Circle -->
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 shadow-md"
+                                     :class="{
+                                         'bg-gradient-to-br from-primary-500 to-primary-600 text-white ring-2 ring-primary-200 scale-105 shadow-lg': currentStep === {{ $stepNumber }},
+                                         'bg-gradient-to-br from-primary-600 to-primary-700 text-white ring-1 ring-primary-300 shadow-sm': currentStep > {{ $stepNumber }},
+                                         'bg-gray-200 text-gray-500 shadow-sm': currentStep < {{ $stepNumber }}
+                                     }">
+                                    <i class='bx bx-check text-sm font-bold' x-show="currentStep > {{ $stepNumber }}"></i>
+                                    <span class="text-xs" x-show="currentStep <= {{ $stepNumber }}">{{ $stepNumber }}</span>
+                                </div>
+                                <!-- Step Label -->
+                                <div class="ml-2.5">
+                                    <span class="text-xs font-semibold block transition-colors"
+                                          :class="{
+                                              'text-primary-700': currentStep >= {{ $stepNumber }},
+                                              'text-gray-500': currentStep < {{ $stepNumber }}
+                                          }">
+                                        {{ $section['label'] }}
+                                    </span>
+                                    <span class="text-xs text-primary-600 font-medium mt-0.5" x-show="currentStep > {{ $stepNumber }}">Completed</span>
+                                </div>
+                            </div>
+                            <!-- Connector Line -->
+                            <div class="flex-1 h-0.5 mx-3 transition-all duration-300 rounded-full"
+                                 :class="{
+                                     'bg-gradient-to-r from-primary-500 to-primary-600 shadow-sm': currentStep > {{ $stepNumber }},
+                                     'bg-gray-200': currentStep <= {{ $stepNumber }}
+                                 }"></div>
+                        </div>
+                    @endforeach
+                    <!-- Preview Step -->
+                    <div class="flex items-center relative z-10 flex-1">
+                        <div class="flex items-center">
+                            <!-- Step Circle -->
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 shadow-md"
+                                 :class="{
+                                     'bg-gradient-to-br from-primary-500 to-primary-600 text-white ring-2 ring-primary-200 scale-105 shadow-lg': currentStep === {{ count($sections) + 1 }},
+                                     'bg-gradient-to-br from-primary-600 to-primary-700 text-white ring-1 ring-primary-300 shadow-sm': currentStep > {{ count($sections) + 1 }},
+                                     'bg-gray-200 text-gray-500 shadow-sm': currentStep < {{ count($sections) + 1 }}
+                                 }">
+                                <i class='bx bx-check text-sm font-bold' x-show="currentStep > {{ count($sections) + 1 }}"></i>
+                                <i class='bx bx-show text-sm font-bold' x-show="currentStep === {{ count($sections) + 1 }}"></i>
+                                <span class="text-xs" x-show="currentStep < {{ count($sections) + 1 }}">{{ count($sections) + 1 }}</span>
+                            </div>
+                            <!-- Step Label -->
+                            <div class="ml-2.5">
+                                <span class="text-xs font-semibold block transition-colors"
+                                      :class="{
+                                          'text-primary-700': currentStep >= {{ count($sections) + 1 }},
+                                          'text-gray-500': currentStep < {{ count($sections) + 1 }}
+                                      }">
+                                    Review & Submit
+                                </span>
+                                <span class="text-xs text-primary-600 font-medium mt-0.5" x-show="currentStep > {{ count($sections) + 1 }}">Completed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            <!-- Dynamic Form -->
+            <form id="{{ $type }}-form" class="p-4 sm:p-6 lg:p-8">
+            @csrf
+            
+            {!! $formHtml !!}
+            
+            <!-- Preview Step -->
+            <div x-show="currentStep === totalSteps" 
+                 x-transition:enter="transition ease-out duration-300" 
+                 x-transition:enter-start="opacity-0 transform translate-x-4" 
+                 x-transition:enter-end="opacity-100 transform translate-x-0"
+                 x-init="$watch('currentStep', (value) => { if (value === totalSteps) { collectFormData(); } })"
+                 :key="currentStep">
+                <!-- Preview Header -->
+                <div class="bg-primary-500 px-4 py-3 mb-4">
+                    <h3 class="text-lg font-bold text-white tracking-wide flex items-center">
+                        <i class="bx bx-show mr-2 text-lg text-white"></i>
+                        Review Your Information
+                    </h3>
+                </div>
+                
+                <!-- Preview Content -->
+                <div class="space-y-6">
+                    @foreach($sections as $section)
+                    <div class="overflow-hidden">
+                        <div class="bg-gray-50 px-4 py-3">
+                            <h4 class="text-sm font-semibold text-gray-800">{{ $section['label'] }}</h4>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            @php
+                                $formRenderer = app(\App\Services\FormRendererService::class);
+                                $fieldModelMap = [
+                                    'raf' => \App\Models\RafFormField::class,
+                                    'dar' => \App\Models\DarFormField::class,
+                                    'dcr' => \App\Models\DcrFormField::class,
+                                    'srf' => \App\Models\SrfFormField::class,
+                                ];
+                                $fieldModel = $fieldModelMap[$type] ?? null;
+                                if ($fieldModel) {
+                                    $fields = $fieldModel::where($type . '_form_id', $form->id)
+                                        ->where('field_section', $section['name'])
+                                        ->where('is_active', true)
+                                        ->ordered()
+                                        ->get();
+                                } else {
+                                    $fields = collect();
+                                }
+                            @endphp
+                            @foreach($fields as $field)
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 py-2 border-b border-gray-100 last:border-b-0">
+                                <div class="md:col-span-1">
+                                    <span class="text-sm font-semibold text-gray-700">{{ $field->field_label }}@if($field->is_required) <span class="text-red-500">*</span>@endif:</span>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <span class="text-sm text-gray-900" 
+                                          x-text="currentStep === totalSteps ? getFieldValue('{{ $field->field_name }}') : 'Not provided'"
+                                          x-init="$watch('currentStep', () => { if (currentStep === totalSteps) { $el.textContent = getFieldValue('{{ $field->field_name }}'); } })"></span>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                
+                <!-- Terms Agreement (At bottom of preview) -->
+                <div class="flex items-start space-x-3 mt-10 pt-8 border-t-2 border-gray-200">
+                    <input type="checkbox" id="terms_agreement" name="terms_agreement" required
+                           class="mt-1 h-5 w-5 text-primary-600 focus:ring-2 focus:ring-primary-500 border-gray-300 rounded cursor-pointer transition-all flex-shrink-0">
+                    <label for="terms_agreement" class="text-sm text-gray-700 leading-relaxed cursor-pointer flex-1">
+                        I acknowledge that I have read and agree to the <a href="#" class="text-primary-600 hover:text-primary-700 font-semibold underline transition-colors">Terms and Conditions</a> 
+                        and <a href="#" class="text-primary-600 hover:text-primary-700 font-semibold underline transition-colors">Privacy Policy</a> 
+                        <span class="text-red-500 font-bold ml-1">*</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between items-center mt-10 pt-8 border-t-2 border-gray-200">
+                <!-- Previous Button -->
+                <button type="button" 
+                        @click="if (currentStep > 1) currentStep--"
+                        x-show="currentStep > 1 && totalSteps > 1"
+                        class="px-5 py-2 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-all duration-300 flex items-center shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    <i class='bx bx-chevron-left mr-1.5 text-sm'></i>
+                    Previous
+                </button>
+                <div x-show="currentStep === 1"></div>
+                
+                <!-- Next/Submit Button -->
+                <div class="ml-auto flex gap-3">
+                    <button type="button" 
+                            x-show="currentStep < totalSteps - 1 && totalSteps > 1"
+                            @click="if (window.validateStep(currentStep)) { currentStep++; }"
+                            class="btn-primary text-white px-5 py-2 rounded-lg font-semibold text-xs shadow-md hover:shadow-lg transition-all duration-300 flex items-center focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                        Continue
+                        <i class='bx bx-chevron-right ml-1.5 text-sm'></i>
+                    </button>
+                    <button type="button" 
+                            x-show="currentStep === totalSteps - 1 && totalSteps > 1"
+                            @click="if (window.validateStep(currentStep)) { collectFormData(); setTimeout(() => { currentStep++; }, 100); }"
+                            class="btn-primary text-white px-5 py-2 rounded-lg font-semibold text-xs shadow-md hover:shadow-lg transition-all duration-300 flex items-center focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                        Review & Continue
+                        <i class='bx bx-show ml-1.5 text-sm'></i>
+                    </button>
+                    <button type="submit" 
+                            x-show="currentStep === totalSteps"
+                            onclick="event.preventDefault(); submitForm('{{ $type }}-form', 'Form submitted successfully!');" 
+                            class="btn-primary text-white px-6 py-2 rounded-lg font-semibold text-xs shadow-md hover:shadow-lg transition-all duration-300 flex items-center focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                        <i class='bx bx-check-circle mr-1.5 text-sm'></i>
+                        Submit Application
+                    </button>
+                </div>
+            </div>
+        </form>
+        </div>
+        <!-- End White Card Container -->
+    </div>
+</section>
+
+@push('scripts')
+<script>
+    // Form wizard Alpine.js data - must be available globally before Alpine initializes
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('formWizard', () => {
+            return {
+            currentStep: 1,
+            totalSteps: {{ count($sections) > 0 ? count($sections) + 1 : 2 }},
+            sections: @js($sections ?? []),
+            formData: {},
+            init() {
+                const formId = '{{ $type }}-form';
+                const form = document.getElementById(formId);
+                if (form) {
+                    form.addEventListener('input', () => this.collectFormData());
+                    form.addEventListener('change', () => this.collectFormData());
+                }
+            },
+            collectFormData() {
+                const formId = '{{ $type }}-form';
+                const form = document.getElementById(formId);
+                if (!form) return;
+                const formDataObj = {};
+                const inputs = form.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    if (input.type === 'checkbox') {
+                        if (input.checked) {
+                            if (input.name.endsWith('[]')) {
+                                const name = input.name.replace('[]', '');
+                                if (!formDataObj[name]) formDataObj[name] = [];
+                                formDataObj[name].push(input.value);
+                            } else {
+                                formDataObj[input.name] = input.value;
+                            }
+                        }
+                    } else if (input.type === 'radio') {
+                        const checked = form.querySelector('[name=\"' + input.name + '\"]:checked');
+                        if (checked) formDataObj[input.name] = checked.value;
+                    } else {
+                        if (input.value) formDataObj[input.name] = input.value;
+                    }
+                });
+                this.formData = formDataObj;
+            },
+            getFieldValue(fieldName) {
+                return window.getFormFieldValue('{{ $type }}-form', fieldName);
+            }
+            };
+        });
+    });
+    
+    // Form field value getter function
+    window.getFormFieldValue = function(formId, fieldName) {
+        const form = document.getElementById(formId);
+        if (!form) {
+            console.warn('Form not found:', formId);
+            return 'Not provided';
+        }
+        
+        // Try exact name match first
+        let input = form.querySelector('[name="' + fieldName + '"]');
+        
+        // If not found, try to find within all inputs (including hidden ones)
+        if (!input) {
+            // Get all inputs in the form (even hidden)
+            const allInputs = form.querySelectorAll('input, select, textarea');
+            input = Array.from(allInputs).find(el => el.name === fieldName);
+        }
+        
+        // If still not found, try with array notation
+        if (!input) {
+            input = form.querySelector('[name="' + fieldName + '[]"]');
+        }
+        
+        // If still not found, try partial match for radio buttons
+        if (!input) {
+            const inputs = form.querySelectorAll('input[type="radio"][name*="' + fieldName + '"]');
+            if (inputs.length > 0) {
+                const checked = Array.from(inputs).find(i => i.checked);
+                if (checked) {
+                    return checked.value || 'Not provided';
+                }
+                return 'Not provided';
+            }
+        }
+        
+        // If still not found, try checkbox groups
+        if (!input) {
+            const inputs = form.querySelectorAll('input[type="checkbox"][name*="' + fieldName + '"]');
+            if (inputs.length > 0) {
+                const checked = Array.from(inputs).filter(i => i.checked);
+                if (checked.length > 0) {
+                    return checked.map(i => i.value).join(', ');
+                }
+                return 'Not provided';
+            }
+        }
+        
+        if (!input) {
+            console.warn('Input not found for field:', fieldName, 'Form ID:', formId);
+            // Debug: log all available field names
+            const allFields = form.querySelectorAll('input, select, textarea');
+            const fieldNames = Array.from(allFields).map(el => el.name).filter(n => n);
+            console.log('Available field names:', fieldNames);
+            return 'Not provided';
+        }
+        
+        // Handle different input types
+        if (input.type === 'checkbox') {
+            return input.checked ? (input.value || 'Yes') : 'No';
+        }
+        
+        if (input.type === 'radio') {
+            const checked = form.querySelector('[name="' + fieldName + '"]:checked');
+            return checked ? (checked.value || 'Not provided') : 'Not provided';
+        }
+        
+        if (input.tagName === 'SELECT') {
+            const selected = input.options[input.selectedIndex];
+            if (selected && selected.value && selected.value !== '' && selected.value !== '-- Select') {
+                return selected.text || selected.value;
+            }
+            return 'Not provided';
+        }
+        
+        if (input.tagName === 'TEXTAREA') {
+            const value = input.value ? input.value.trim() : '';
+            return value || 'Not provided';
+        }
+        
+        // For text inputs and other types
+        const value = input.value ? input.value.trim() : '';
+        if (!value || value === '') return 'Not provided';
+        return value;
+    };
+    
+    // Step validation function (accessible globally)
+    window.validateStep = function(stepNumber) {
+        const currentStepElement = document.querySelector(`[data-step="${stepNumber}"]`);
+        if (!currentStepElement) {
+            console.warn('Step element not found:', stepNumber);
+            return true;
+        }
+        
+        // Clear previous validation errors
+        currentStepElement.querySelectorAll('.border-red-500').forEach(field => {
+            field.classList.remove('border-red-500');
+        });
+        
+        const requiredFields = currentStepElement.querySelectorAll('[required]');
+        let isValid = true;
+        let firstInvalidField = null;
+        
+        requiredFields.forEach(field => {
+            // Skip hidden fields (conditional fields that are not shown)
+            if (field.closest('.form-field') && field.closest('.form-field').style.display === 'none') {
+                return;
+            }
+            
+            // Check if field is visible
+            const fieldVisible = field.offsetParent !== null;
+            if (!fieldVisible) return;
+            
+            let fieldValue = '';
+            if (field.type === 'checkbox' || field.type === 'radio') {
+                const checkedField = currentStepElement.querySelector(`[name="${field.name}"]:checked`);
+                fieldValue = checkedField ? checkedField.value : '';
+            } else {
+                fieldValue = field.value ? field.value.trim() : '';
+            }
+            
+            if (!fieldValue) {
+                field.classList.add('border-red-500');
+                isValid = false;
+                if (!firstInvalidField) {
+                    firstInvalidField = field;
+                }
+            } else {
+                field.classList.remove('border-red-500');
+            }
+        });
+        
+        if (!isValid && firstInvalidField) {
+            // Scroll to the step container first
+            currentStepElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Then scroll to the invalid field
+            setTimeout(() => {
+                firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalidField.focus();
+            }, 300);
+            
+            // Show error message
+            Swal.fire({
+                icon: 'warning',
+                title: 'Validation Error',
+                text: 'Please fill in all required fields before proceeding.',
+                confirmButtonColor: '#FE8000',
+                timer: 4000,
+                showConfirmButton: true
+            });
+        }
+        
+        return isValid;
+    };
+    
+    // Handle conditional field show/hide
+    document.addEventListener('DOMContentLoaded', function() {
+        const conditionalFields = document.querySelectorAll('[data-show-if-field]');
+        
+        conditionalFields.forEach(function(field) {
+            const showIfField = field.getAttribute('data-show-if-field');
+            const showIfOperator = field.getAttribute('data-show-if-operator') || 'equals';
+            const showIfValue = field.getAttribute('data-show-if-value');
+            
+            const targetField = document.querySelector(`[name="${showIfField}"]`);
+            
+            if (targetField) {
+                // Initially hide conditional field
+                field.style.display = 'none';
+                
+                // Function to check condition
+                function checkCondition() {
+                    const targetValue = targetField.value;
+                    let shouldShow = false;
+                    
+                    if (showIfOperator === 'equals') {
+                        shouldShow = targetValue === showIfValue;
+                    } else if (showIfOperator === 'contains') {
+                        shouldShow = targetValue.includes(showIfValue);
+                    } else if (showIfOperator === 'not_equals') {
+                        shouldShow = targetValue !== showIfValue;
+                    }
+                    
+                    if (shouldShow) {
+                        field.style.display = 'block';
+                    } else {
+                        field.style.display = 'none';
+                    }
+                }
+                
+                // Check on change
+                targetField.addEventListener('change', checkCondition);
+                targetField.addEventListener('input', checkCondition);
+                
+                // Initial check
+                checkCondition();
+            }
+        });
+        
+        // Handle hide conditions
+        const hideFields = document.querySelectorAll('[data-hide-if-field]');
+        hideFields.forEach(function(field) {
+            const hideIfField = field.getAttribute('data-hide-if-field');
+            const hideIfOperator = field.getAttribute('data-hide-if-operator') || 'equals';
+            const hideIfValue = field.getAttribute('data-hide-if-value');
+            
+            const targetField = document.querySelector(`[name="${hideIfField}"]`);
+            
+            if (targetField) {
+                function checkHideCondition() {
+                    const targetValue = targetField.value;
+                    let shouldHide = false;
+                    
+                    if (hideIfOperator === 'equals') {
+                        shouldHide = targetValue === hideIfValue;
+                    } else if (hideIfOperator === 'contains') {
+                        shouldHide = targetValue.includes(hideIfValue);
+                    }
+                    
+                    if (shouldHide) {
+                        field.style.display = 'none';
+                    } else {
+                        field.style.display = 'block';
+                    }
+                }
+                
+                targetField.addEventListener('change', checkHideCondition);
+                targetField.addEventListener('input', checkHideCondition);
+                checkHideCondition();
+            }
+        });
+    });
+</script>
+@endpush
+@endsection
+

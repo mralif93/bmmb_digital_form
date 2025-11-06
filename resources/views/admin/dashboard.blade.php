@@ -158,4 +158,75 @@
     </div>
 </div>
 
+<!-- Form Builder Quick Links -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-100 dark:border-gray-700 mb-6">
+    <div class="flex items-center justify-between mb-4">
+        <div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Form Builder</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Configure dynamic form fields</p>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        @php
+            $rafForm = \App\Models\RemittanceApplicationForm::first();
+            $darForm = \App\Models\DataAccessRequestForm::first();
+            $dcrForm = \App\Models\DataCorrectionRequestForm::first();
+            $srfForm = \App\Models\ServiceRequestForm::first();
+        @endphp
+        
+        @if($rafForm)
+            <a href="{{ route('admin.form-builder.index', ['type' => 'raf', 'formId' => $rafForm->id]) }}" 
+               class="flex items-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg border border-blue-200 dark:border-blue-800/30 hover:shadow-md transition-all">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg flex items-center justify-center mr-3">
+                    <i class='bx bx-money text-lg text-blue-600 dark:text-blue-400'></i>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-900 dark:text-white">RAF Builder</p>
+                    <p class="text-xs text-gray-600 dark:text-gray-400">Remittance Form</p>
+                </div>
+            </a>
+        @endif
+        
+        @if($darForm)
+            <a href="{{ route('admin.form-builder.index', ['type' => 'dar', 'formId' => $darForm->id]) }}" 
+               class="flex items-center p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg border border-green-200 dark:border-green-800/30 hover:shadow-md transition-all">
+                <div class="w-10 h-10 bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-800/30 rounded-lg flex items-center justify-center mr-3">
+                    <i class='bx bx-data text-lg text-green-600 dark:text-green-400'></i>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-900 dark:text-white">DAR Builder</p>
+                    <p class="text-xs text-gray-600 dark:text-gray-400">Data Access Form</p>
+                </div>
+            </a>
+        @endif
+        
+        @if($dcrForm)
+            <a href="{{ route('admin.form-builder.index', ['type' => 'dcr', 'formId' => $dcrForm->id]) }}" 
+               class="flex items-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg border border-purple-200 dark:border-purple-800/30 hover:shadow-md transition-all">
+                <div class="w-10 h-10 bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/30 dark:to-purple-800/30 rounded-lg flex items-center justify-center mr-3">
+                    <i class='bx bx-edit text-lg text-purple-600 dark:text-purple-400'></i>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-900 dark:text-white">DCR Builder</p>
+                    <p class="text-xs text-gray-600 dark:text-gray-400">Data Correction Form</p>
+                </div>
+            </a>
+        @endif
+        
+        @if($srfForm)
+            <a href="{{ route('admin.form-builder.index', ['type' => 'srf', 'formId' => $srfForm->id]) }}" 
+               class="flex items-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg border border-orange-200 dark:border-orange-800/30 hover:shadow-md transition-all">
+                <div class="w-10 h-10 bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30 rounded-lg flex items-center justify-center mr-3">
+                    <i class='bx bx-cog text-lg text-orange-600 dark:text-orange-400'></i>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-900 dark:text-white">SRF Builder</p>
+                    <p class="text-xs text-gray-600 dark:text-gray-400">Service Request Form</p>
+                </div>
+            </a>
+        @endif
+    </div>
+</div>
+
 @endsection

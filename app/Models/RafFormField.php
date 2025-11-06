@@ -26,6 +26,7 @@ class RafFormField extends Model
         'field_options',
         'field_settings',
         'sort_order',
+        'grid_column',
         'is_active',
         'css_class',
         'custom_attributes',
@@ -151,13 +152,15 @@ class RafFormField extends Model
 
     public static function getFieldSections(): array
     {
-        return [
-            'applicant_info' => 'Applicant Information',
-            'remittance_details' => 'Remittance Details',
-            'beneficiary_info' => 'Beneficiary Information',
-            'payment_info' => 'Payment Information',
-            'documents' => 'Supporting Documents',
-            'compliance' => 'Compliance & Verification',
-        ];
+        // Get sections from database
+        $sections = \App\Models\FormSection::getSectionsForFormType('raf');
+        
+        // If no sections in database, initialize defaults
+        if (empty($sections)) {
+            \App\Models\FormSection::initializeDefaults('raf');
+            $sections = \App\Models\FormSection::getSectionsForFormType('raf');
+        }
+        
+        return $sections;
     }
 }

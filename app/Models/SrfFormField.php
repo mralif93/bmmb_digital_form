@@ -26,6 +26,7 @@ class SrfFormField extends Model
         'field_options',
         'field_settings',
         'sort_order',
+        'grid_column',
         'is_active',
         'css_class',
         'custom_attributes',
@@ -164,14 +165,15 @@ class SrfFormField extends Model
 
     public static function getFieldSections(): array
     {
-        return [
-            'customer_info' => 'Customer Information',
-            'account_info' => 'Account Information',
-            'service_details' => 'Service Details',
-            'financial_info' => 'Financial Information',
-            'compliance' => 'Compliance & Risk',
-            'documents' => 'Supporting Documents',
-            'delivery' => 'Service Delivery',
-        ];
+        // Get sections from database
+        $sections = \App\Models\FormSection::getSectionsForFormType('srf');
+        
+        // If no sections in database, initialize defaults
+        if (empty($sections)) {
+            \App\Models\FormSection::initializeDefaults('srf');
+            $sections = \App\Models\FormSection::getSectionsForFormType('srf');
+        }
+        
+        return $sections;
     }
 }

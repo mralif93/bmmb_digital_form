@@ -2,7 +2,11 @@
 
 use App\Http\Controllers\Admin\AuditTrailController;
 use App\Http\Controllers\Admin\BranchController;
+use App\Http\Controllers\Admin\FormController;
+use App\Http\Controllers\Admin\FormBuilderController;
+use App\Http\Controllers\Admin\FormSectionController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\SubmissionController;
 use App\Http\Controllers\Admin\QrCodeController;
 use App\Http\Controllers\Admin\QrCodeManagementController;
 use App\Http\Controllers\Auth\AuthController;
@@ -22,43 +26,19 @@ Route::get('/branch/{tiAgentCode}', [PublicBranchController::class, 'show'])->na
 // Public Form Routes (with optional branch parameter)
 Route::prefix('forms')->name('public.forms.')->group(function () {
     Route::get('/raf/{branch?}', function ($branch = null) {
-        if ($branch) {
-            $branchModel = \App\Models\Branch::where('ti_agent_code', $branch)->first();
-            if ($branchModel) {
-                session(['submission_branch_id' => $branchModel->id]);
-            }
-        }
-        return view('public.forms.raf');
+        return app(\App\Http\Controllers\Public\FormController::class)->show('raf', $branch);
     })->name('raf');
     
     Route::get('/dar/{branch?}', function ($branch = null) {
-        if ($branch) {
-            $branchModel = \App\Models\Branch::where('ti_agent_code', $branch)->first();
-            if ($branchModel) {
-                session(['submission_branch_id' => $branchModel->id]);
-            }
-        }
-        return view('public.forms.dar');
+        return app(\App\Http\Controllers\Public\FormController::class)->show('dar', $branch);
     })->name('dar');
     
     Route::get('/dcr/{branch?}', function ($branch = null) {
-        if ($branch) {
-            $branchModel = \App\Models\Branch::where('ti_agent_code', $branch)->first();
-            if ($branchModel) {
-                session(['submission_branch_id' => $branchModel->id]);
-            }
-        }
-        return view('public.forms.dcr');
+        return app(\App\Http\Controllers\Public\FormController::class)->show('dcr', $branch);
     })->name('dcr');
     
     Route::get('/srf/{branch?}', function ($branch = null) {
-        if ($branch) {
-            $branchModel = \App\Models\Branch::where('ti_agent_code', $branch)->first();
-            if ($branchModel) {
-                session(['submission_branch_id' => $branchModel->id]);
-            }
-        }
-        return view('public.forms.srf');
+        return app(\App\Http\Controllers\Public\FormController::class)->show('srf', $branch);
     })->name('srf');
     
     // Public Form Submission Routes
@@ -144,4 +124,43 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Audit Trail
     Route::get('/audit-trails', [AuditTrailController::class, 'index'])->name('audit-trails.index');
     Route::get('/audit-trails/{auditTrail}', [AuditTrailController::class, 'show'])->name('audit-trails.show');
+    
+    // Dynamic Forms Management (Custom Forms)
+    Route::resource('forms', FormController::class);
+    
+    // Form Builder (Dynamic Form Management)
+    // Form Sections Management
+    Route::prefix('form-sections/{type}')->name('form-sections.')->where(['type' => 'raf|dar|dcr|srf'])->group(function () {
+        Route::get('/', [FormSectionController::class, 'index'])->name('index');
+        Route::get('/create', [FormSectionController::class, 'create'])->name('create');
+        Route::post('/', [FormSectionController::class, 'store'])->name('store');
+        Route::get('/{section}', [FormSectionController::class, 'show'])->name('show');
+        Route::get('/{section}/edit', [FormSectionController::class, 'edit'])->name('edit');
+        Route::put('/{section}', [FormSectionController::class, 'update'])->name('update');
+        Route::delete('/{section}', [FormSectionController::class, 'destroy'])->name('destroy');
+        Route::post('/reorder', [FormSectionController::class, 'reorder'])->name('reorder');
+    });
+
+    Route::prefix('form-builder/{type}/{formId}')->name('form-builder.')->where(['type' => 'raf|dar|dcr|srf'])->group(function () {
+        Route::get('/', [FormBuilderController::class, 'index'])->name('index');
+        Route::get('/fields/{fieldId}', [FormBuilderController::class, 'getField'])->name('fields.show');
+        Route::post('/fields', [FormBuilderController::class, 'storeField'])->name('fields.store');
+        Route::put('/fields/{fieldId}', [FormBuilderController::class, 'updateField'])->name('fields.update');
+        Route::delete('/fields/{fieldId}', [FormBuilderController::class, 'destroyField'])->name('fields.destroy');
+        Route::post('/fields/reorder', [FormBuilderController::class, 'reorderFields'])->name('fields.reorder');
+        Route::put('/fields/{fieldId}/column', [FormBuilderController::class, 'updateFieldColumn'])->name('fields.column');
+    });
+    
+    // Form Submissions
+    Route::prefix('submissions')->name('submissions.')->group(function () {
+        Route::get('/raf', [SubmissionController::class, 'raf'])->name('raf');
+        Route::get('/dar', [SubmissionController::class, 'dar'])->name('dar');
+        Route::get('/dcr', [SubmissionController::class, 'dcr'])->name('dcr');
+        Route::get('/srf', [SubmissionController::class, 'srf'])->name('srf');
+        Route::get('/show-raf/{id}', [SubmissionController::class, 'showRaf'])->name('show-raf');
+        Route::get('/show-dar/{id}', [SubmissionController::class, 'showDar'])->name('show-dar');
+        Route::get('/show-dcr/{id}', [SubmissionController::class, 'showDcr'])->name('show-dcr');
+        Route::get('/show-srf/{id}', [SubmissionController::class, 'showSrf'])->name('show-srf');
+        Route::put('/{type}/{id}/status', [SubmissionController::class, 'updateStatus'])->name('status.update');
+    });
 });

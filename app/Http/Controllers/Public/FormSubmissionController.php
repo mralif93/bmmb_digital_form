@@ -11,6 +11,7 @@ use App\Models\RafFormSubmission;
 use App\Models\DarFormSubmission;
 use App\Models\DcrFormSubmission;
 use App\Models\SrfFormSubmission;
+use App\Services\FormRendererService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -74,8 +75,20 @@ class FormSubmissionController extends Controller
             ], 404);
         }
 
+        // Get dynamic validation rules from FormRendererService
+        $formRenderer = app(FormRendererService::class);
+        $validationRules = $formRenderer->getValidationRules($form->id, $type);
+
+        // Validate form data using dynamic rules
+        if (!empty($validationRules)) {
+            $validated = $request->validate($validationRules);
+        } else {
+            // Fallback: validate all submitted fields
+            $validated = $request->except(['_token', 'terms_agreement']);
+        }
+
         // Get form data
-        $formData = $request->except(['_token', 'terms_agreement']);
+        $formData = $validated;
         
         // Extract field responses
         $fieldResponses = [];

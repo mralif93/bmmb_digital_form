@@ -26,6 +26,7 @@ class DarFormField extends Model
         'field_options',
         'field_settings',
         'sort_order',
+        'grid_column',
         'is_active',
         'css_class',
         'custom_attributes',
@@ -146,14 +147,15 @@ class DarFormField extends Model
 
     public static function getFieldSections(): array
     {
-        return [
-            'requester_info' => 'Requester Information',
-            'data_subject_info' => 'Data Subject Information',
-            'request_details' => 'Request Details',
-            'legal_basis' => 'Legal Basis',
-            'data_processing' => 'Data Processing Information',
-            'documents' => 'Supporting Documents',
-            'compliance' => 'Compliance & Verification',
-        ];
+        // Get sections from database
+        $sections = \App\Models\FormSection::getSectionsForFormType('dar');
+        
+        // If no sections in database, initialize defaults
+        if (empty($sections)) {
+            \App\Models\FormSection::initializeDefaults('dar');
+            $sections = \App\Models\FormSection::getSectionsForFormType('dar');
+        }
+        
+        return $sections;
     }
 }

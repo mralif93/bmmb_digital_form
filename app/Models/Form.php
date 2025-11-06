@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
+
+class Form extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'status',
+        'is_public',
+        'allow_multiple_submissions',
+        'submission_limit',
+        'settings',
+    ];
+
+    protected $casts = [
+        'is_public' => 'boolean',
+        'allow_multiple_submissions' => 'boolean',
+        'settings' => 'array',
+    ];
+
+    /**
+     * Boot the model
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($form) {
+            if (empty($form->slug)) {
+                $form->slug = Str::slug($form->name);
+            }
+        });
+    }
+
+    /**
+     * Relationship: Form has many fields
+     */
+    public function fields(): HasMany
+    {
+        return $this->hasMany(FormField::class)->orderBy('sort_order');
+    }
+
+    /**
+     * Relationship: Form has many active fields
+     */
+    public function activeFields(): HasMany
+    {
+        return $this->hasMany(FormField::class)->where('is_active', true)->orderBy('sort_order');
+    }
+
+    /**
+     * Get form status options
+     */
+    public static function getStatusOptions(): array
+    {
+        return [
+            'draft' => 'Draft',
+            'active' => 'Active',
+            'inactive' => 'Inactive',
+        ];
+    }
+}
