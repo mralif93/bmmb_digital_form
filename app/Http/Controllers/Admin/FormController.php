@@ -84,9 +84,40 @@ class FormController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Form $form): View
+    public function show(Form $form)
     {
-        $form->load('fields');
+        $form->load(['sections' => function($query) {
+            $query->ordered();
+        }, 'fields' => function($query) {
+            $query->ordered();
+        }]);
+        
+        // Return JSON if requested via AJAX
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'form' => $form,
+                'sections' => $form->sections->map(function($section) {
+                    return [
+                        'id' => $section->id,
+                        'section_key' => $section->section_key,
+                        'section_label' => $section->section_label,
+                        'section_description' => $section->section_description,
+                        'sort_order' => $section->sort_order,
+                        'is_active' => $section->is_active,
+                        'fields_count' => $section->fields->count(),
+                        'fields' => $section->fields->map(function($field) {
+                            return [
+                                'id' => $field->id,
+                                'field_name' => $field->field_name,
+                                'field_label' => $field->field_label,
+                                'field_type' => $field->field_type,
+                            ];
+                        }),
+                    ];
+                }),
+            ]);
+        }
         
         return view('admin.forms.show', compact('form'));
     }

@@ -4,13 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class FormSection extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'form_type',
+        'form_id',
         'section_key',
         'section_label',
         'section_description',
@@ -23,10 +25,34 @@ class FormSection extends Model
         'sort_order' => 'integer',
     ];
 
-    // Scopes
-    public function scopeForFormType($query, string $formType)
+    /**
+     * Relationship: FormSection belongs to Form
+     */
+    public function form(): BelongsTo
     {
-        return $query->where('form_type', $formType);
+        return $this->belongsTo(Form::class);
+    }
+
+    /**
+     * Relationship: FormSection has many fields
+     */
+    public function fields(): HasMany
+    {
+        return $this->hasMany(FormField::class, 'section_id')->orderBy('sort_order');
+    }
+
+    /**
+     * Relationship: FormSection has many active fields
+     */
+    public function activeFields(): HasMany
+    {
+        return $this->hasMany(FormField::class, 'section_id')->where('is_active', true)->orderBy('sort_order');
+    }
+
+    // Scopes
+    public function scopeForForm($query, $formId)
+    {
+        return $query->where('form_id', $formId);
     }
 
     public function scopeActive($query)
@@ -40,9 +66,9 @@ class FormSection extends Model
     }
 
     // Static Methods
-    public static function getSectionsForFormType(string $formType): array
+    public static function getSectionsForForm($formId): array
     {
-        return static::forFormType($formType)
+        return static::forForm($formId)
             ->active()
             ->ordered()
             ->get()
@@ -98,11 +124,11 @@ class FormSection extends Model
     }
 
     /**
-     * Initialize default sections for a form type if none exist
+     * Initialize default sections for a form if none exist
      */
-    public static function initializeDefaults(string $formType): void
+    public static function initializeDefaults($formId, string $formType): void
     {
-        $existing = static::forFormType($formType)->count();
+        $existing = static::forForm($formId)->count();
         if ($existing > 0) {
             return; // Already initialized
         }
@@ -112,7 +138,7 @@ class FormSection extends Model
 
         foreach ($defaults as $key => $label) {
             static::create([
-                'form_type' => $formType,
+                'form_id' => $formId,
                 'section_key' => $key,
                 'section_label' => $label,
                 'sort_order' => $sortOrder++,

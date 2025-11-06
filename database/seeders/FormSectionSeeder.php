@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Form;
 use App\Models\FormSection;
 use Illuminate\Database\Seeder;
 
@@ -12,10 +13,12 @@ class FormSectionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Initialize default sections for all form types
-        FormSection::initializeDefaults('raf');
-        FormSection::initializeDefaults('dar');
-        FormSection::initializeDefaults('dcr');
-        FormSection::initializeDefaults('srf');
+        // Get forms by slug and initialize default sections
+        $forms = Form::whereIn('slug', ['raf', 'dar', 'dcr', 'srf'])->get();
+        
+        foreach ($forms as $form) {
+            // Initialize default sections for each form
+            FormSection::initializeDefaults($form->id, $form->slug);
+        }
     }
 }

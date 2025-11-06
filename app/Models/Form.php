@@ -43,6 +43,22 @@ class Form extends Model
     }
 
     /**
+     * Relationship: Form has many sections
+     */
+    public function sections(): HasMany
+    {
+        return $this->hasMany(FormSection::class)->orderBy('sort_order');
+    }
+
+    /**
+     * Relationship: Form has many active sections
+     */
+    public function activeSections(): HasMany
+    {
+        return $this->hasMany(FormSection::class)->where('is_active', true)->orderBy('sort_order');
+    }
+
+    /**
      * Relationship: Form has many fields
      */
     public function fields(): HasMany
@@ -56,6 +72,14 @@ class Form extends Model
     public function activeFields(): HasMany
     {
         return $this->hasMany(FormField::class)->where('is_active', true)->orderBy('sort_order');
+    }
+
+    /**
+     * Relationship: Form has many submissions
+     */
+    public function submissions(): HasMany
+    {
+        return $this->hasMany(FormSubmission::class);
     }
 
     /**

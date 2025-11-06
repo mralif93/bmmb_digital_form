@@ -3,14 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\RemittanceApplicationForm;
-use App\Models\DataAccessRequestForm;
-use App\Models\DataCorrectionRequestForm;
-use App\Models\ServiceRequestForm;
-use App\Models\RafFormField;
-use App\Models\DarFormField;
-use App\Models\DcrFormField;
-use App\Models\SrfFormField;
+use App\Models\Form;
+use App\Models\FormSection;
+use App\Models\FormField;
 use App\Traits\LogsAuditTrail;
 use Illuminate\Http\Request;
 
@@ -18,103 +13,43 @@ class FormBuilderController extends Controller
 {
     use LogsAuditTrail;
 
-    private $formModelMap = [
-        'raf' => [
-            'model' => RemittanceApplicationForm::class,
-            'field_model' => RafFormField::class,
-            'form_id_field' => 'raf_form_id',
-            'title' => 'Remittance Application Form',
-        ],
-        'dar' => [
-            'model' => DataAccessRequestForm::class,
-            'field_model' => DarFormField::class,
-            'form_id_field' => 'dar_form_id',
-            'title' => 'Data Access Request Form',
-        ],
-        'dcr' => [
-            'model' => DataCorrectionRequestForm::class,
-            'field_model' => DcrFormField::class,
-            'form_id_field' => 'dcr_form_id',
-            'title' => 'Data Correction Request Form',
-        ],
-        'srf' => [
-            'model' => ServiceRequestForm::class,
-            'field_model' => SrfFormField::class,
-            'form_id_field' => 'srf_form_id',
-            'title' => 'Service Request Form',
-        ],
-    ];
-
     /**
      * Display form builder for a specific form
      */
-    public function index($type, $formId)
+    public function index(Form $form)
     {
-        if (!isset($this->formModelMap[$type])) {
-            abort(404);
-        }
+        $form->load(['sections' => function($query) {
+            $query->ordered();
+        }, 'fields' => function($query) {
+            $query->ordered();
+        }]);
 
-        $config = $this->formModelMap[$type];
-        $formModel = $config['model'];
-        $fieldModel = $config['field_model'];
-
-        $form = $formModel::findOrFail($formId);
-        $fields = $fieldModel::where($config['form_id_field'], $formId)
-            ->ordered()
-            ->get()
-            ->groupBy('field_section');
-
-        $fieldTypes = $fieldModel::getFieldTypes();
+        // Group fields by section
+        $fieldsBySection = $form->fields->groupBy('section_id');
         
-        // Get sections from database, fallback to defaults if none exist
-        $sections = \App\Models\FormSection::getSectionsForFormType($type);
-        if (empty($sections)) {
-            \App\Models\FormSection::initializeDefaults($type);
-            $sections = \App\Models\FormSection::getSectionsForFormType($type);
-        }
-
-        // Sort fields by section sort_order from database
-        $dbSections = \App\Models\FormSection::forFormType($type)
-            ->active()
-            ->ordered()
-            ->get()
-            ->keyBy('section_key');
-        
-        // Build an array with sort_order as key, then sort by key
-        $fieldsWithOrder = [];
-        foreach ($fields as $sectionName => $sectionFields) {
-            $dbSection = $dbSections->get($sectionName);
-            $sortOrder = $dbSection ? $dbSection->sort_order : 999;
-            $fieldsWithOrder[$sortOrder] = [
-                'name' => $sectionName,
-                'fields' => $sectionFields,
+        // Get sections with their fields
+        $sectionsWithFields = [];
+        foreach ($form->sections as $section) {
+            $sectionsWithFields[$section->id] = [
+                'section' => $section,
+                'fields' => $fieldsBySection->get($section->id, collect())->sortBy('sort_order'),
             ];
         }
-        ksort($fieldsWithOrder);
-        
-        // Rebuild the collection with sorted sections
-        $sortedFields = collect();
-        foreach ($fieldsWithOrder as $sectionData) {
-            $sortedFields[$sectionData['name']] = $sectionData['fields'];
-        }
-        $fields = $sortedFields;
 
-        return view('admin.form-builder.index', compact('form', 'type', 'config', 'fields', 'fieldTypes', 'sections'));
+        $fieldTypes = FormField::getFieldTypes();
+
+        return view('admin.form-builder.index', compact('form', 'sectionsWithFields', 'fieldTypes'));
     }
 
     /**
      * Get a single field (for editing)
      */
-    public function getField($type, $formId, $fieldId)
+    public function getField(Form $form, FormField $field)
     {
-        if (!isset($this->formModelMap[$type])) {
+        // Ensure field belongs to this form
+        if ($field->form_id !== $form->id) {
             abort(404);
         }
-
-        $config = $this->formModelMap[$type];
-        $fieldModel = $config['field_model'];
-
-        $field = $fieldModel::findOrFail($fieldId);
 
         // Convert field_options from array to text format for editing
         $fieldOptionsText = '';
@@ -136,18 +71,11 @@ class FormBuilderController extends Controller
     /**
      * Store a new field
      */
-    public function storeField(Request $request, $type, $formId)
+    public function storeField(Request $request, Form $form)
     {
-        if (!isset($this->formModelMap[$type])) {
-            abort(404);
-        }
-
-        $config = $this->formModelMap[$type];
-        $fieldModel = $config['field_model'];
-
         $validated = $request->validate([
-            'field_section' => 'required|string',
-            'field_name' => 'required|string|max:255',
+            'section_id' => 'required|exists:form_sections,id',
+            'field_name' => 'required|string|max:255|unique:form_fields,field_name,NULL,id,form_id,' . $form->id,
             'field_label' => 'required|string|max:255',
             'field_type' => 'required|string',
             'field_placeholder' => 'nullable|string|max:255',
@@ -164,50 +92,51 @@ class FormBuilderController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        // Verify section belongs to this form
+        $section = FormSection::where('id', $validated['section_id'])
+            ->where('form_id', $form->id)
+            ->firstOrFail();
+
         // Get max sort_order for this section
-        $maxOrder = $fieldModel::where($config['form_id_field'], $formId)
-            ->where('field_section', $validated['field_section'])
+        $maxOrder = FormField::where('form_id', $form->id)
+            ->where('section_id', $validated['section_id'])
             ->max('sort_order') ?? 0;
 
-        $validated[$config['form_id_field']] = $formId;
+        $validated['form_id'] = $form->id;
         $validated['sort_order'] = $validated['sort_order'] ?? ($maxOrder + 1);
         $validated['grid_column'] = $validated['grid_column'] ?? 'left';
         $validated['is_required'] = $request->has('is_required');
         $validated['is_conditional'] = $request->has('is_conditional');
-        $validated['is_active'] = $request->has('is_active', true);
+        $validated['is_active'] = $request->has('is_active') ? true : false;
 
-        $field = $fieldModel::create($validated);
+        $field = FormField::create($validated);
 
         // Log audit trail
         $this->logAuditTrail(
             action: 'create',
-            description: "Added field '{$field->field_label}' to {$config['title']}",
-            modelType: $fieldModel,
+            description: "Added field '{$field->field_label}' to form '{$form->name}'",
+            modelType: FormField::class,
             modelId: $field->id,
             newValues: $field->toArray()
         );
 
-        return redirect()->route('admin.form-builder.index', [$type, $formId])
+        return redirect()->route('admin.form-builder.index', $form)
             ->with('success', 'Field added successfully!');
     }
 
     /**
      * Update a field
      */
-    public function updateField(Request $request, $type, $formId, $fieldId)
+    public function updateField(Request $request, Form $form, FormField $field)
     {
-        if (!isset($this->formModelMap[$type])) {
+        // Ensure field belongs to this form
+        if ($field->form_id !== $form->id) {
             abort(404);
         }
 
-        $config = $this->formModelMap[$type];
-        $fieldModel = $config['field_model'];
-
-        $field = $fieldModel::findOrFail($fieldId);
-
         $validated = $request->validate([
-            'field_section' => 'required|string',
-            'field_name' => 'required|string|max:255',
+            'section_id' => 'required|exists:form_sections,id',
+            'field_name' => 'required|string|max:255|unique:form_fields,field_name,' . $field->id . ',id,form_id,' . $form->id,
             'field_label' => 'required|string|max:255',
             'field_type' => 'required|string',
             'field_placeholder' => 'nullable|string|max:255',
@@ -223,6 +152,11 @@ class FormBuilderController extends Controller
             'grid_column' => 'nullable|in:left,right,full',
             'is_active' => 'boolean',
         ]);
+
+        // Verify section belongs to this form
+        $section = FormSection::where('id', $validated['section_id'])
+            ->where('form_id', $form->id)
+            ->firstOrFail();
 
         $oldValues = $field->toArray();
         $validated['is_required'] = $request->has('is_required') && $request->input('is_required') == '1';
@@ -235,30 +169,27 @@ class FormBuilderController extends Controller
         // Log audit trail
         $this->logAuditTrail(
             action: 'update',
-            description: "Updated field '{$field->field_label}' in {$config['title']}",
-            modelType: $fieldModel,
+            description: "Updated field '{$field->field_label}' in form '{$form->name}'",
+            modelType: FormField::class,
             modelId: $field->id,
             oldValues: $oldValues,
             newValues: $field->toArray()
         );
 
-        return redirect()->route('admin.form-builder.index', [$type, $formId])
+        return redirect()->route('admin.form-builder.index', $form)
             ->with('success', 'Field updated successfully!');
     }
 
     /**
      * Delete a field
      */
-    public function destroyField($type, $formId, $fieldId)
+    public function destroyField(Form $form, FormField $field)
     {
-        if (!isset($this->formModelMap[$type])) {
+        // Ensure field belongs to this form
+        if ($field->form_id !== $form->id) {
             abort(404);
         }
 
-        $config = $this->formModelMap[$type];
-        $fieldModel = $config['field_model'];
-
-        $field = $fieldModel::findOrFail($fieldId);
         $oldValues = $field->toArray();
         $fieldLabel = $field->field_label;
         
@@ -267,44 +198,40 @@ class FormBuilderController extends Controller
         // Log audit trail
         $this->logAuditTrail(
             action: 'delete',
-            description: "Deleted field '{$fieldLabel}' from {$config['title']}",
-            modelType: $fieldModel,
-            modelId: $fieldId,
+            description: "Deleted field '{$fieldLabel}' from form '{$form->name}'",
+            modelType: FormField::class,
+            modelId: $field->id,
             oldValues: $oldValues
         );
 
-        return redirect()->route('admin.form-builder.index', [$type, $formId])
+        return redirect()->route('admin.form-builder.index', $form)
             ->with('success', 'Field deleted successfully!');
     }
 
     /**
      * Reorder fields
      */
-    public function reorderFields(Request $request, $type, $formId)
+    public function reorderFields(Request $request, Form $form)
     {
-        if (!isset($this->formModelMap[$type])) {
-            abort(404);
-        }
-
-        $config = $this->formModelMap[$type];
-        $fieldModel = $config['field_model'];
-
         $request->validate([
             'fields' => 'required|array',
-            'fields.*.id' => 'required|exists:' . (new $fieldModel)->getTable() . ',id',
+            'fields.*.id' => 'required|exists:form_fields,id',
             'fields.*.sort_order' => 'required|integer',
         ]);
 
         foreach ($request->fields as $fieldData) {
-            $field = $fieldModel::find($fieldData['id']);
+            $field = FormField::where('id', $fieldData['id'])
+                ->where('form_id', $form->id)
+                ->first();
+            
             if ($field) {
                 $oldValues = $field->toArray();
                 $field->update(['sort_order' => $fieldData['sort_order']]);
                 
                 $this->logAuditTrail(
                     action: 'update',
-                    description: "Reordered field '{$field->field_label}' in {$config['title']}",
-                    modelType: $fieldModel,
+                    description: "Reordered field '{$field->field_label}' in form '{$form->name}'",
+                    modelType: FormField::class,
                     modelId: $field->id,
                     oldValues: $oldValues,
                     newValues: $field->toArray()
@@ -318,27 +245,24 @@ class FormBuilderController extends Controller
     /**
      * Update field column position
      */
-    public function updateFieldColumn(Request $request, $type, $formId, $fieldId)
+    public function updateFieldColumn(Request $request, Form $form, FormField $field)
     {
-        if (!isset($this->formModelMap[$type])) {
+        // Ensure field belongs to this form
+        if ($field->form_id !== $form->id) {
             abort(404);
         }
-
-        $config = $this->formModelMap[$type];
-        $fieldModel = $config['field_model'];
 
         $request->validate([
             'grid_column' => 'required|in:left,right,full',
         ]);
 
-        $field = $fieldModel::findOrFail($fieldId);
         $oldValues = $field->toArray();
         $field->update(['grid_column' => $request->grid_column]);
 
         $this->logAuditTrail(
             action: 'update',
-            description: "Updated column position of field '{$field->field_label}' to '{$request->grid_column}' in {$config['title']}",
-            modelType: $fieldModel,
+            description: "Updated column position of field '{$field->field_label}' to '{$request->grid_column}' in form '{$form->name}'",
+            modelType: FormField::class,
             modelId: $field->id,
             oldValues: $oldValues,
             newValues: $field->toArray()
@@ -347,4 +271,3 @@ class FormBuilderController extends Controller
         return response()->json(['success' => true, 'message' => 'Field column updated successfully']);
     }
 }
-

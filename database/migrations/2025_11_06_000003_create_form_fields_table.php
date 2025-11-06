@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('form_fields'); // Drop if exists to recreate with new structure
         Schema::create('form_fields', function (Blueprint $table) {
             $table->id();
             $table->foreignId('form_id')->constrained('forms')->onDelete('cascade');
-            $table->string('field_section'); // Section name for grouping fields
+            $table->foreignId('section_id')->constrained('form_sections')->onDelete('cascade');
             $table->string('field_name'); // Unique identifier within the form
             $table->string('field_label');
             $table->text('field_description')->nullable();
@@ -39,7 +40,7 @@ return new class extends Migration
             $table->timestamps();
             
             $table->index('form_id');
-            $table->index('field_section');
+            $table->index('section_id');
             $table->index('field_type');
             $table->index('sort_order');
             $table->index('is_active');

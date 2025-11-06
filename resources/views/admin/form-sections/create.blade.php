@@ -2,18 +2,18 @@
 
 @section('title', 'Create Form Section - BMMB Digital Forms')
 @section('page-title', 'Create New Section')
-@section('page-description', 'Add a new section for ' . ucfirst($type) . ' form')
+@section('page-description', 'Add a new section for ' . $form->name)
 
 @section('content')
 <div class="mb-4">
-    <a href="{{ route('admin.form-sections.index', $type) }}" class="inline-flex items-center px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+    <a href="{{ route('admin.form-sections.index', $form) }}" class="inline-flex items-center px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
         <i class='bx bx-arrow-back mr-1.5'></i>
         Back to Sections
     </a>
 </div>
 
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-    <form action="{{ route('admin.form-sections.store', $type) }}" method="POST">
+    <form action="{{ route('admin.form-sections.store', $form) }}" method="POST">
         @csrf
 
         <div class="space-y-4">
@@ -82,7 +82,7 @@
         </div>
 
         <div class="mt-6 flex items-center justify-end space-x-3">
-            <a href="{{ route('admin.form-sections.index', $type) }}" class="px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
+            <a href="{{ route('admin.form-sections.index', $form) }}" class="px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
                 Cancel
             </a>
             <button type="submit" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors">

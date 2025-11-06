@@ -1,33 +1,17 @@
 @extends('layouts.public')
 
-@section('title', ($type == 'raf' ? 'Remittance Application Form' : ($type == 'dar' ? 'Data Access Request Form' : ($type == 'dcr' ? 'Data Correction Request Form' : 'Service Request Form'))) . ' - BMMB Digital Forms')
+@section('title', ($form->name ?? ($type == 'raf' ? 'Remittance Application Form' : ($type == 'dar' ? 'Data Access Request Form' : ($type == 'dcr' ? 'Data Correction Request Form' : 'Service Request Form')))) . ' - BMMB Digital Forms')
 
 @section('content')
 <!-- Hero Section -->
 <section class="form-section py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
             <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">
-                @if($type == 'raf')
-                    Remittance Application Form
-                @elseif($type == 'dar')
-                    Data Access Request Form
-                @elseif($type == 'dcr')
-                    Data Correction Request Form
-                @else
-                    Service Request Form
-                @endif
+                {{ $form->name ?? ($type == 'raf' ? 'Remittance Application Form' : ($type == 'dar' ? 'Data Access Request Form' : ($type == 'dcr' ? 'Data Correction Request Form' : 'Service Request Form'))) }}
             </h1>
             <p class="text-lg text-white/90 mb-6 max-w-2xl mx-auto">
-                @if($type == 'raf')
-                    Submit your remittance application for international money transfers and financial transactions.
-                @elseif($type == 'dar')
-                    Request access to your personal data and information in compliance with data protection regulations.
-                @elseif($type == 'dcr')
-                    Request correction of your personal data in compliance with data protection regulations.
-                @else
-                    Submit your service request for banking and financial services.
-                @endif
+                {{ $form->description ?? ($type == 'raf' ? 'Submit your remittance application for international money transfers and financial transactions.' : ($type == 'dar' ? 'Request access to your personal data and information in compliance with data protection regulations.' : ($type == 'dcr' ? 'Request correction of your personal data in compliance with data protection regulations.' : 'Submit your service request for banking and financial services.'))) }}
             </p>
         </div>
     </div>
@@ -35,7 +19,7 @@
 
 <!-- Form Section -->
 <section class="py-12 bg-gradient-to-br from-gray-50 to-gray-100" x-data="formWizard" x-init="init()">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         @if(isset($error))
             <div class="bg-red-50 border-l-4 border-red-500 text-red-700 px-6 py-4 mb-6 rounded-lg">
                 <div class="flex items-center">

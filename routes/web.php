@@ -25,6 +25,7 @@ Route::get('/branch/{tiAgentCode}', [PublicBranchController::class, 'show'])->na
 
 // Public Form Routes (with optional branch parameter)
 Route::prefix('forms')->name('public.forms.')->group(function () {
+    // Legacy routes for backward compatibility (raf, dar, dcr, srf)
     Route::get('/raf/{branch?}', function ($branch = null) {
         return app(\App\Http\Controllers\Public\FormController::class)->show('raf', $branch);
     })->name('raf');
@@ -41,9 +42,14 @@ Route::prefix('forms')->name('public.forms.')->group(function () {
         return app(\App\Http\Controllers\Public\FormController::class)->show('srf', $branch);
     })->name('srf');
     
+    // Dynamic form route for new form management system
+    Route::get('/{slug}/{branch?}', [\App\Http\Controllers\Public\FormController::class, 'showBySlug'])
+        ->where('slug', '[a-z0-9-]+')
+        ->name('slug');
+    
     // Public Form Submission Routes
     Route::post('/{type}/submit', [\App\Http\Controllers\Public\FormSubmissionController::class, 'store'])
-        ->where(['type' => 'raf|dar|dcr|srf'])
+        ->where(['type' => '[a-z0-9-]+'])
         ->name('submit');
 });
 
@@ -130,7 +136,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     
     // Form Builder (Dynamic Form Management)
     // Form Sections Management
-    Route::prefix('form-sections/{type}')->name('form-sections.')->where(['type' => 'raf|dar|dcr|srf'])->group(function () {
+    Route::prefix('forms/{form}/sections')->name('form-sections.')->group(function () {
         Route::get('/', [FormSectionController::class, 'index'])->name('index');
         Route::get('/create', [FormSectionController::class, 'create'])->name('create');
         Route::post('/', [FormSectionController::class, 'store'])->name('store');
@@ -141,14 +147,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::post('/reorder', [FormSectionController::class, 'reorder'])->name('reorder');
     });
 
-    Route::prefix('form-builder/{type}/{formId}')->name('form-builder.')->where(['type' => 'raf|dar|dcr|srf'])->group(function () {
+    // Form Builder Routes
+    Route::prefix('forms/{form}/builder')->name('form-builder.')->group(function () {
         Route::get('/', [FormBuilderController::class, 'index'])->name('index');
-        Route::get('/fields/{fieldId}', [FormBuilderController::class, 'getField'])->name('fields.show');
+        Route::get('/fields/{field}', [FormBuilderController::class, 'getField'])->name('fields.show');
         Route::post('/fields', [FormBuilderController::class, 'storeField'])->name('fields.store');
-        Route::put('/fields/{fieldId}', [FormBuilderController::class, 'updateField'])->name('fields.update');
-        Route::delete('/fields/{fieldId}', [FormBuilderController::class, 'destroyField'])->name('fields.destroy');
+        Route::put('/fields/{field}', [FormBuilderController::class, 'updateField'])->name('fields.update');
+        Route::delete('/fields/{field}', [FormBuilderController::class, 'destroyField'])->name('fields.destroy');
         Route::post('/fields/reorder', [FormBuilderController::class, 'reorderFields'])->name('fields.reorder');
-        Route::put('/fields/{fieldId}/column', [FormBuilderController::class, 'updateFieldColumn'])->name('fields.column');
+        Route::put('/fields/{field}/column', [FormBuilderController::class, 'updateFieldColumn'])->name('fields.column');
     });
     
     // Form Submissions

@@ -2,49 +2,45 @@
 
 namespace App\Services;
 
-use App\Models\RafFormField;
-use App\Models\DarFormField;
-use App\Models\DcrFormField;
-use App\Models\SrfFormField;
+use App\Models\Form;
+use App\Models\FormField;
+use App\Models\FormSection;
 
 class FormRendererService
 {
-    private $fieldModelMap = [
-        'raf' => RafFormField::class,
-        'dar' => DarFormField::class,
-        'dcr' => DcrFormField::class,
-        'srf' => SrfFormField::class,
-    ];
 
     /**
      * Render a complete form dynamically from database fields
      */
     public function renderForm($formId, $formType = 'raf'): string
     {
-        if (!isset($this->fieldModelMap[$formType])) {
-            throw new \InvalidArgumentException("Invalid form type: {$formType}");
+        // Get form to verify it exists
+        $form = Form::find($formId);
+        if (!$form) {
+            return '<p class="text-gray-500">Form not found. Please contact administrator.</p>';
         }
-
-        $fieldModel = $this->fieldModelMap[$formType];
         
-        // Get all active fields for this form, grouped by section
-        $fields = $fieldModel::where($formType . '_form_id', $formId)
+        // Use new FormField model
+        $fields = FormField::where('form_id', $formId)
             ->where('is_active', true)
+            ->with('section')
             ->ordered()
             ->get();
-
+        
         if ($fields->isEmpty()) {
             return '<p class="text-gray-500">No form fields configured. Please configure fields in admin panel.</p>';
         }
-
-        // Ensure sections are initialized
-        \App\Models\FormSection::initializeDefaults($formType);
-
-        // Group fields by section
-        $sections = $fields->groupBy('field_section');
         
-        // Get ALL section order from database (not just active) for proper sorting
-        $dbSections = \App\Models\FormSection::forFormType($formType)
+        // Ensure sections are initialized
+        FormSection::initializeDefaults($formId, $formType);
+        
+        // Group fields by section
+        $sections = $fields->groupBy(function($field) {
+            return $field->section ? $field->section->section_key : 'other';
+        });
+        
+        // Get sections from database
+        $dbSections = FormSection::forForm($formId)
             ->ordered()
             ->get()
             ->keyBy('section_key');
@@ -88,28 +84,33 @@ class FormRendererService
      */
     public function getSections($formId, $formType = 'raf'): array
     {
-        if (!isset($this->fieldModelMap[$formType])) {
+        // Get form to verify it exists
+        $form = Form::find($formId);
+        if (!$form) {
             return [];
         }
-
-        // Ensure sections are initialized
-        \App\Models\FormSection::initializeDefaults($formType);
-
-        $fieldModel = $this->fieldModelMap[$formType];
         
-        $fields = $fieldModel::where($formType . '_form_id', $formId)
+        // Use new FormField model
+        $fields = FormField::where('form_id', $formId)
             ->where('is_active', true)
+            ->with('section')
             ->ordered()
             ->get();
-
+        
         if ($fields->isEmpty()) {
             return [];
         }
-
-        $sections = $fields->groupBy('field_section');
         
-        // Get ALL section order from database (not just active) for proper sorting
-        $dbSections = \App\Models\FormSection::forFormType($formType)
+        // Ensure sections are initialized
+        FormSection::initializeDefaults($formId, $formType);
+        
+        // Group fields by section
+        $sections = $fields->groupBy(function($field) {
+            return $field->section ? $field->section->section_key : 'other';
+        });
+        
+        // Get sections from database
+        $dbSections = FormSection::forForm($formId)
             ->ordered()
             ->get()
             ->keyBy('section_key');
@@ -143,9 +144,11 @@ class FormRendererService
 
         foreach ($sectionsWithOrder as $sectionData) {
             $dbSection = $dbSections->get($sectionData['name']);
+            // Get section label from database section if available
+            $sectionLabel = $dbSection ? $dbSection->section_label : $this->getSectionLabel($sectionData['name']);
             $sectionsData[] = [
                 'name' => $sectionData['name'],
-                'label' => $this->getSectionLabel($sectionData['name']),
+                'label' => $sectionLabel,
                 'step' => $stepIndex,
                 'sort_order' => $dbSection ? $dbSection->sort_order : 999,
             ];
@@ -160,7 +163,19 @@ class FormRendererService
      */
     private function renderSection(string $sectionName, $fields, string $formType, int $stepIndex = 1): string
     {
-        $sectionLabel = $this->getSectionLabel($sectionName);
+        // Try to get section label from FormSection model first
+        $sectionLabel = null;
+        if (class_exists(\App\Models\FormSection::class)) {
+            $section = \App\Models\FormSection::where('section_key', $sectionName)->first();
+            if ($section) {
+                $sectionLabel = $section->section_label;
+            }
+        }
+        
+        // Fallback to default label method
+        if (!$sectionLabel) {
+            $sectionLabel = $this->getSectionLabel($sectionName);
+        }
         
         $html = '<div class="form-step" data-section="' . htmlspecialchars($sectionName) . '" data-step="' . $stepIndex . '" x-show="currentStep === ' . $stepIndex . '" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-x-4" x-transition:enter-end="opacity-100 transform translate-x-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 transform translate-x-0" x-transition:leave-end="opacity-0 transform -translate-x-4">';
         // Section content - 2 column grid layout with better spacing
@@ -783,13 +798,14 @@ class FormRendererService
      */
     public function getValidationRules($formId, $formType = 'raf'): array
     {
-        if (!isset($this->fieldModelMap[$formType])) {
+        // Get form to verify it exists
+        $form = Form::find($formId);
+        if (!$form) {
             return [];
         }
-
-        $fieldModel = $this->fieldModelMap[$formType];
         
-        $fields = $fieldModel::where($formType . '_form_id', $formId)
+        // Use new FormField model
+        $fields = FormField::where('form_id', $formId)
             ->where('is_active', true)
             ->get();
 

@@ -17,9 +17,11 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             BranchSeeder::class,
             QrCodeSeeder::class,
-            FormSectionSeeder::class, // Initialize form sections for all form types
-            FormSeeder::class, // Create main form records for all 4 forms
-            FormFieldsSeeder::class, // Add form fields for dynamic forms
+            FormManagementSeeder::class, // Creates Forms → Sections → Fields for all 4 forms
+            // Old form seeders (kept for backward compatibility if needed)
+            // FormSeeder::class, // Create main form records for all 4 forms (old models)
+            // FormSectionSeeder::class, // Initialize form sections for all form types
+            // FormFieldsSeeder::class, // Add form fields for dynamic forms (old models)
             RafSubmissionSeeder::class,
             DarSubmissionSeeder::class,
             DcrSubmissionSeeder::class,

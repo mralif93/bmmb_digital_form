@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('forms'); // Drop if exists to recreate with new structure
         Schema::create('forms', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // Form name/title

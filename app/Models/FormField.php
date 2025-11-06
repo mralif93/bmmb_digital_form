@@ -12,7 +12,7 @@ class FormField extends Model
 
     protected $fillable = [
         'form_id',
-        'field_section',
+        'section_id',
         'field_name',
         'field_label',
         'field_description',
@@ -52,6 +52,14 @@ class FormField extends Model
     }
 
     /**
+     * Relationship: FormField belongs to FormSection
+     */
+    public function section(): BelongsTo
+    {
+        return $this->belongsTo(FormSection::class, 'section_id');
+    }
+
+    /**
      * Scopes
      */
     public function scopeActive($query)
@@ -64,9 +72,9 @@ class FormField extends Model
         return $query->orderBy('sort_order');
     }
 
-    public function scopeBySection($query, $section)
+    public function scopeBySection($query, $sectionId)
     {
-        return $query->where('field_section', $section);
+        return $query->where('section_id', $sectionId);
     }
 
     /**
