@@ -86,17 +86,21 @@
                         </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody id="fieldsTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     @foreach($sectionsWithFields as $sectionId => $sectionData)
                         @php
                             $section = $sectionData['section'];
                             $sectionFields = $sectionData['fields'];
                         @endphp
                         @foreach($sectionFields as $field)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors" data-field-id="{{ $field->id }}" data-section="{{ $section->id }}" data-sort-order="{{ $field->sort_order }}">
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors sortable-row" 
+                            data-field-id="{{ $field->id }}" 
+                            data-section="{{ $section->id }}" 
+                            data-sort-order="{{ $field->sort_order }}"
+                            data-section-id="{{ $section->id }}">
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <div class="flex items-center space-x-2">
-                                    <div class="cursor-move text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                    <div class="cursor-move text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 drag-handle">
                                         <i class='bx bx-menu text-lg'></i>
                                     </div>
                                     <span class="text-xs font-medium text-gray-900 dark:text-white">
@@ -144,19 +148,26 @@
                                 <div class="flex items-center justify-end space-x-2">
                                     <button onclick="moveFieldUp({{ $field->id }}, {{ $section->id }})" 
                                             class="inline-flex items-center px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 rounded transition-colors" title="Move Up">
-                                        <i class='bx bx-chevron-up'></i>
+                                        <i class='bx bx-chevron-right'></i>
                                     </button>
                                     <button onclick="moveFieldDown({{ $field->id }}, {{ $section->id }})" 
                                             class="inline-flex items-center px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 rounded transition-colors" title="Move Down">
                                         <i class='bx bx-chevron-down'></i>
                                     </button>
+                                    <button onclick="openViewFieldModal({{ $field->id }})" 
+                                            class="inline-flex items-center justify-center px-2 lg:px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 rounded-lg transition-colors" title="View Field">
+                                        <i class='bx bx-show lg:mr-1'></i>
+                                        <span class="hidden lg:inline">View</span>
+                                    </button>
                                     <button onclick="editField({{ $field->id }})" 
-                                            class="inline-flex items-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 dark:text-orange-400 rounded-lg transition-colors">
-                                        Edit
+                                            class="inline-flex items-center justify-center px-2 lg:px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 dark:text-orange-400 rounded-lg transition-colors" title="Edit Field">
+                                        <i class='bx bx-edit lg:mr-1'></i>
+                                        <span class="hidden lg:inline">Edit</span>
                                     </button>
                                     <button onclick="deleteField({{ $field->id }})" 
-                                            class="inline-flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg transition-colors">
-                                        Delete
+                                            class="inline-flex items-center justify-center px-2 lg:px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg transition-colors" title="Delete Field">
+                                        <i class='bx bx-trash lg:mr-1'></i>
+                                        <span class="hidden lg:inline">Delete</span>
                                     </button>
                                 </div>
                             </td>
@@ -210,8 +221,28 @@
     </div>
 </div>
 
+<!-- View Field Modal -->
+<div id="viewFieldModal" class="fixed inset-0 bg-black bg-opacity-0 hidden z-50 flex items-center justify-center transition-opacity duration-300 p-2 sm:p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300 opacity-0">
+        <div class="p-4 sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Field Details</h3>
+                <button onclick="closeViewFieldModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <i class='bx bx-x text-xl'></i>
+                </button>
+            </div>
+            <div id="viewFieldModalContent">
+                <!-- Field details will be loaded here -->
+                <div class="flex items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Delete Field Confirmation Modal -->
-<div id="deleteFieldModal" class="fixed inset-0 bg-black bg-opacity-0 hidden z-50 flex items-center justify-center transition-opacity duration-300">
+<div id="deleteFieldModal" class="fixed inset-0 bg-black bg-opacity-0 hidden z-50 flex items-center justify-center transition-opacity duration-300 p-2 sm:p-4">
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4 transform scale-95 transition-all duration-300 opacity-0">
         <div class="p-6">
             <div class="flex items-center justify-center mb-4 relative">
@@ -776,6 +807,264 @@
             deleteModal.classList.add('hidden');
         }, 300);
     }
+
+    function openViewFieldModal(fieldId) {
+        const modal = document.getElementById('viewFieldModal');
+        const modalContent = modal.querySelector('div');
+        const contentContainer = document.getElementById('viewFieldModalContent');
+        
+        // Show modal with loading state
+        modal.classList.remove('hidden');
+        contentContainer.innerHTML = `
+            <div class="flex items-center justify-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+            </div>
+        `;
+        
+        // Trigger animation
+        setTimeout(() => {
+            modal.classList.remove('bg-opacity-0');
+            modal.classList.add('bg-opacity-50');
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
+        
+        // Fetch field data
+        fetch(`{{ route('admin.form-builder.fields.view', [$form, ':field']) }}`.replace(':field', fieldId), {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.field) {
+                const field = data.field;
+                const statusColors = {
+                    'active': 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+                    'inactive': 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+                };
+                
+                // Format field options
+                let fieldOptionsHtml = '-';
+                if (field.field_options && typeof field.field_options === 'object') {
+                    const options = Object.entries(field.field_options).map(([value, label]) => `${value}: ${label}`).join(', ');
+                    fieldOptionsHtml = options || '-';
+                }
+                
+                contentContainer.innerHTML = `
+                    <!-- Field Details Card -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+                        <!-- Title Section -->
+                        <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h2 class="text-sm font-semibold text-gray-900 dark:text-white">${field.field_label || field.field_name || ''}</h2>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">${field.field_help_text || 'No help text provided'}</p>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${field.is_active ? statusColors['active'] : statusColors['inactive']}">
+                                        ${field.is_active ? 'Active' : 'Inactive'}
+                                    </span>
+                                    ${field.is_required ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">Required</span>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Field Details List -->
+                        <div class="px-4 py-2">
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Field Name</span>
+                                <span class="text-xs font-mono text-gray-900 dark:text-white">${field.field_name || ''}</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Field Type</span>
+                                <span class="text-xs text-gray-900 dark:text-white">${field.field_type ? field.field_type.charAt(0).toUpperCase() + field.field_type.slice(1) : ''}</span>
+                            </div>
+                            ${field.section ? `
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Section</span>
+                                <span class="text-xs text-gray-900 dark:text-white">${field.section.section_label || field.section.section_key || ''}</span>
+                            </div>
+                            ` : ''}
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Grid Column</span>
+                                <span class="text-xs text-gray-900 dark:text-white">${field.grid_column ? field.grid_column.charAt(0).toUpperCase() + field.grid_column.slice(1) : 'Left'}</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Sort Order</span>
+                                <span class="text-xs text-gray-900 dark:text-white">${field.sort_order || ''}</span>
+                            </div>
+                            ${field.field_placeholder ? `
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Placeholder</span>
+                                <span class="text-xs text-gray-600 dark:text-gray-400">${field.field_placeholder}</span>
+                            </div>
+                            ` : ''}
+                            ${field.field_default_value ? `
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Default Value</span>
+                                <span class="text-xs text-gray-600 dark:text-gray-400">${field.field_default_value}</span>
+                            </div>
+                            ` : ''}
+                            ${fieldOptionsHtml !== '-' ? `
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Options</span>
+                                <span class="text-xs text-gray-600 dark:text-gray-400 max-w-xs truncate" title="${fieldOptionsHtml}">${fieldOptionsHtml}</span>
+                            </div>
+                            ` : ''}
+                            ${field.is_conditional ? `
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Conditional Field</span>
+                                <span class="text-xs text-gray-600 dark:text-gray-400">${field.conditional_field || '-'}</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Conditional Value</span>
+                                <span class="text-xs text-gray-600 dark:text-gray-400">${field.conditional_value || '-'}</span>
+                            </div>
+                            ` : ''}
+                            ${field.field_validation_rules ? `
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Validation Rules</span>
+                                <span class="text-xs text-gray-600 dark:text-gray-400 max-w-xs truncate" title="${field.field_validation_rules}">${field.field_validation_rules}</span>
+                            </div>
+                            ` : ''}
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Created At</span>
+                                <span class="text-xs text-gray-600 dark:text-gray-400">${field.created_at || ''}</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2 last:border-b-0">
+                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Updated At</span>
+                                <span class="text-xs text-gray-600 dark:text-gray-400">${field.updated_at || ''}</span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+                            <div class="flex items-center justify-end space-x-2">
+                                <button onclick="closeViewFieldModal(); setTimeout(() => editField(${fieldId}), 300);" class="inline-flex items-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 dark:text-orange-400 rounded-lg text-xs transition-colors">
+                                    <i class='bx bx-edit mr-1'></i>
+                                    Edit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                contentContainer.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-red-600 dark:text-red-400 text-sm">Failed to load field details</div>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching field:', error);
+            contentContainer.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="text-red-600 dark:text-red-400 text-sm">Error loading field details</div>
+                </div>
+            `;
+        });
+    }
+
+    function closeViewFieldModal() {
+        const modal = document.getElementById('viewFieldModal');
+        const modalContent = modal.querySelector('div');
+        // Start exit animation
+        modal.classList.remove('bg-opacity-50');
+        modal.classList.add('bg-opacity-0');
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        // Hide after animation
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            const container = document.getElementById('viewFieldModalContent');
+            container.innerHTML = '';
+        }, 300);
+    }
+
+    // Initialize drag-and-drop for fields
+    document.addEventListener('DOMContentLoaded', function() {
+        const tbody = document.getElementById('fieldsTableBody');
+        if (tbody && typeof Sortable !== 'undefined') {
+            new Sortable(tbody, {
+                handle: '.drag-handle',
+                animation: 150,
+                ghostClass: 'opacity-50',
+                chosenClass: 'sortable-chosen',
+                onEnd: function(evt) {
+                    const rows = Array.from(tbody.querySelectorAll('tr[data-field-id]'));
+                    
+                    // Group fields by section based on their new positions in the table
+                    const sectionGroups = {};
+                    rows.forEach((row) => {
+                        const sectionId = parseInt(row.dataset.sectionId);
+                        if (!sectionGroups[sectionId]) {
+                            sectionGroups[sectionId] = [];
+                        }
+                        sectionGroups[sectionId].push({
+                            row: row,
+                            fieldId: parseInt(row.dataset.fieldId)
+                        });
+                    });
+                    
+                    // Update sort orders for each section based on their position within that section
+                    const updatePromises = [];
+                    Object.keys(sectionGroups).forEach(sectionId => {
+                        const sectionFields = sectionGroups[sectionId];
+                        const fields = sectionFields.map((item, index) => ({
+                            id: item.fieldId,
+                            sort_order: index + 1
+                        }));
+                        
+                        const promise = fetch(`{{ route('admin.form-builder.fields.reorder', $form) }}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ fields: fields })
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                // Update sort order numbers in the UI for this section
+                                sectionFields.forEach((item, index) => {
+                                    const orderSpan = item.row.querySelector('td span');
+                                    if (orderSpan) {
+                                        orderSpan.textContent = index + 1;
+                                    }
+                                    item.row.dataset.sortOrder = index + 1;
+                                });
+                                return true;
+                            } else {
+                                throw new Error(data.message || 'Failed to reorder fields');
+                            }
+                        });
+                        
+                        updatePromises.push(promise);
+                    });
+                    
+                    // Wait for all updates to complete
+                    Promise.all(updatePromises)
+                        .catch(error => {
+                            console.error('Error updating sort order:', error);
+                            alert('Failed to update field order. Please refresh the page.');
+                            // Reload page on error to restore original order
+                            location.reload();
+                        });
+                }
+            });
+        }
+    });
 </script>
 @endpush
 @endsection

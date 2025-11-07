@@ -151,6 +151,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::prefix('forms/{form}/builder')->name('form-builder.')->group(function () {
         Route::get('/', [FormBuilderController::class, 'index'])->name('index');
         Route::get('/fields/{field}', [FormBuilderController::class, 'getField'])->name('fields.show');
+        Route::get('/fields/{field}/view', [FormBuilderController::class, 'show'])->name('fields.view');
         Route::post('/fields', [FormBuilderController::class, 'storeField'])->name('fields.store');
         Route::put('/fields/{field}', [FormBuilderController::class, 'updateField'])->name('fields.update');
         Route::delete('/fields/{field}', [FormBuilderController::class, 'destroyField'])->name('fields.destroy');

@@ -11,7 +11,7 @@
 </div>
 @endif
 
-<div class="mb-4 flex items-center justify-between">
+<div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
     <div class="flex items-center space-x-3">
         <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
             <i class='bx bx-file-blank text-orange-600 dark:text-orange-400 text-xl'></i>
@@ -21,7 +21,7 @@
             <p class="text-xs text-gray-600 dark:text-gray-400">Total: {{ $forms->total() }} forms</p>
         </div>
     </div>
-    <button onclick="openCreateFormModal()" class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors">
+    <button onclick="openCreateFormModal()" class="inline-flex items-center justify-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors w-full sm:w-auto">
         <i class='bx bx-plus mr-1.5'></i>
         Create New Form
     </button>
@@ -29,30 +29,30 @@
 
 <!-- Forms Table -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+    <div class="overflow-x-auto" style="-webkit-overflow-scrolling: touch;">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" style="min-width: 900px; width: 100%;">
             <thead class="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                        Form Name
-                    </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                        Slug
-                    </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                        Status
-                    </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                        Public
-                    </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                        Created
-                    </th>
-                    <th class="px-4 py-3 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                        Actions
-                    </th>
-                </tr>
-            </thead>
+                    <tr>
+                        <th class="px-3 sm:px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            Form Name
+                        </th>
+                        <th class="px-3 sm:px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">
+                            Slug
+                        </th>
+                        <th class="px-3 sm:px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            Status
+                        </th>
+                        <th class="px-3 sm:px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden md:table-cell">
+                            Public
+                        </th>
+                        <th class="px-3 sm:px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden lg:table-cell">
+                            Created
+                        </th>
+                        <th class="px-2 sm:px-4 py-3 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 @forelse($forms as $form)
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
@@ -64,22 +64,25 @@
                     data-form-is-public="{{ $form->is_public ? '1' : '0' }}"
                     data-form-allow-multiple="{{ $form->allow_multiple_submissions ? '1' : '0' }}"
                     data-form-submission-limit="{{ $form->submission_limit ?? '' }}">
-                    <td class="px-4 py-3">
+                    <td class="px-3 sm:px-4 py-3">
                         <div class="text-xs font-semibold text-gray-900 dark:text-white">
                             {{ $form->name }}
                         </div>
                         @if($form->description)
-                        <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                        <div class="text-xs text-gray-600 dark:text-gray-400 mt-1 hidden sm:block">
                             {{ Str::limit($form->description, 50) }}
                         </div>
                         @endif
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 sm:hidden font-mono">
+                            {{ $form->slug }}
+                        </div>
                     </td>
-                    <td class="px-4 py-3 whitespace-nowrap">
+                    <td class="px-3 sm:px-4 py-3 whitespace-nowrap hidden sm:table-cell">
                         <div class="text-xs text-gray-600 dark:text-gray-400 font-mono">
                             {{ $form->slug }}
                         </div>
                     </td>
-                    <td class="px-4 py-3 whitespace-nowrap">
+                    <td class="px-3 sm:px-4 py-3 whitespace-nowrap">
                         @php
                             $statusColors = [
                                 'draft' => 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
@@ -91,7 +94,7 @@
                             {{ ucfirst($form->status) }}
                         </span>
                     </td>
-                    <td class="px-4 py-3 whitespace-nowrap">
+                    <td class="px-3 sm:px-4 py-3 whitespace-nowrap hidden md:table-cell">
                         @if($form->is_public)
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
                                 Yes
@@ -102,29 +105,32 @@
                             </span>
                         @endif
                     </td>
-                    <td class="px-4 py-3 whitespace-nowrap">
+                    <td class="px-3 sm:px-4 py-3 whitespace-nowrap hidden lg:table-cell">
                         <div class="text-xs text-gray-600 dark:text-gray-400">
                             {{ $form->created_at->format('M d, Y') }}
                         </div>
                     </td>
-                    <td class="px-4 py-3 whitespace-nowrap text-right text-xs font-medium">
-                        <div class="flex items-center justify-end space-x-2">
-                            <a href="{{ route('admin.form-builder.index', $form) }}" class="inline-flex items-center px-3 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-700 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 dark:text-purple-400 rounded-lg text-xs transition-colors" title="Form Builder">
-                                <i class='bx bx-code-alt mr-1'></i>
-                                Builder
+                    <td class="px-2 sm:px-4 py-3 text-right text-xs font-medium">
+                        <div class="flex flex-wrap items-center justify-end gap-1 sm:gap-2">
+                            <a href="{{ route('admin.form-builder.index', $form) }}" class="inline-flex items-center justify-center px-2 lg:px-3 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-700 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 dark:text-purple-400 rounded-lg text-xs transition-colors" title="Form Builder">
+                                <i class='bx bx-code-alt lg:mr-1'></i>
+                                <span class="hidden lg:inline">Builder</span>
                             </a>
-                            <a href="{{ route('admin.form-sections.index', $form) }}" class="inline-flex items-center px-3 py-1.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 dark:text-indigo-400 rounded-lg text-xs transition-colors" title="Sections">
-                                <i class='bx bx-list-ul mr-1'></i>
-                                Sections
+                            <a href="{{ route('admin.form-sections.index', $form) }}" class="inline-flex items-center justify-center px-2 lg:px-3 py-1.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 dark:text-indigo-400 rounded-lg text-xs transition-colors" title="Sections">
+                                <i class='bx bx-list-ul lg:mr-1'></i>
+                                <span class="hidden lg:inline">Sections</span>
                             </a>
-                            <button onclick="openViewFormModal({{ $form->id }})" class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 rounded-lg text-xs transition-colors">
-                                View
+                            <button onclick="openViewFormModal({{ $form->id }})" class="inline-flex items-center justify-center px-2 lg:px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 rounded-lg text-xs transition-colors" title="View Form">
+                                <i class='bx bx-show lg:mr-1'></i>
+                                <span class="hidden lg:inline">View</span>
                             </button>
-                            <button onclick="openEditFormModal({{ $form->id }})" class="inline-flex items-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 dark:text-orange-400 rounded-lg text-xs transition-colors">
-                                Edit
+                            <button onclick="openEditFormModal({{ $form->id }})" class="inline-flex items-center justify-center px-2 lg:px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 dark:text-orange-400 rounded-lg text-xs transition-colors" title="Edit Form">
+                                <i class='bx bx-edit lg:mr-1'></i>
+                                <span class="hidden lg:inline">Edit</span>
                             </button>
-                            <button onclick="openDeleteFormModal({{ $form->id }}, '{{ $form->name }}')" class="inline-flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg text-xs transition-colors">
-                                Delete
+                            <button onclick="openDeleteFormModal({{ $form->id }}, '{{ $form->name }}')" class="inline-flex items-center justify-center px-2 lg:px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg text-xs transition-colors" title="Delete Form">
+                                <i class='bx bx-trash lg:mr-1'></i>
+                                <span class="hidden lg:inline">Delete</span>
                             </button>
                         </div>
                     </td>
@@ -156,9 +162,9 @@
 </div>
 
 <!-- Create Form Modal -->
-<div id="createFormModal" class="fixed inset-0 bg-black bg-opacity-0 hidden z-50 flex items-center justify-center transition-opacity duration-300">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300 opacity-0">
-        <div class="p-6">
+<div id="createFormModal" class="fixed inset-0 bg-black bg-opacity-0 hidden z-50 flex items-center justify-center transition-opacity duration-300 p-2 sm:p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300 opacity-0">
+        <div class="p-4 sm:p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Create New Form</h3>
                 <button onclick="closeCreateFormModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
@@ -176,9 +182,9 @@
 </div>
 
 <!-- Edit Form Modal -->
-<div id="editFormModal" class="fixed inset-0 bg-black bg-opacity-0 hidden z-50 flex items-center justify-center transition-opacity duration-300">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300 opacity-0">
-        <div class="p-6">
+<div id="editFormModal" class="fixed inset-0 bg-black bg-opacity-0 hidden z-50 flex items-center justify-center transition-opacity duration-300 p-2 sm:p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300 opacity-0">
+        <div class="p-4 sm:p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Edit Form</h3>
                 <button onclick="closeEditFormModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
@@ -197,9 +203,9 @@
 </div>
 
 <!-- View Form Modal -->
-<div id="viewFormModal" class="fixed inset-0 bg-black bg-opacity-0 hidden z-50 flex items-center justify-center transition-opacity duration-300">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300 opacity-0">
-        <div class="p-6">
+<div id="viewFormModal" class="fixed inset-0 bg-black bg-opacity-0 hidden z-50 flex items-center justify-center transition-opacity duration-300 p-2 sm:p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300 opacity-0">
+        <div class="p-4 sm:p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Form Details</h3>
                 <button onclick="closeViewFormModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
@@ -217,9 +223,9 @@
 </div>
 
 <!-- Delete Form Confirmation Modal -->
-<div id="deleteFormModal" class="fixed inset-0 bg-black bg-opacity-0 hidden z-50 flex items-center justify-center transition-opacity duration-300">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4 transform scale-95 transition-all duration-300 opacity-0">
-        <div class="p-6">
+<div id="deleteFormModal" class="fixed inset-0 bg-black bg-opacity-0 hidden z-50 flex items-center justify-center transition-opacity duration-300 p-2 sm:p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full transform scale-95 transition-all duration-300 opacity-0">
+        <div class="p-4 sm:p-6">
             <div class="flex items-center justify-center mb-4 relative">
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-white text-center">Delete Form</h3>
                 <button onclick="closeDeleteFormModal()" class="absolute right-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">

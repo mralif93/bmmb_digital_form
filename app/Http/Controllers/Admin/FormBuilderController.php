@@ -69,6 +69,54 @@ class FormBuilderController extends Controller
     }
 
     /**
+     * Display the specified field (for viewing)
+     */
+    public function show(Form $form, FormField $field)
+    {
+        // Ensure field belongs to this form
+        if ($field->form_id !== $form->id) {
+            abort(404);
+        }
+
+        // Load relationships
+        $field->load('section');
+
+        // Return JSON if requested via AJAX
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'field' => [
+                    'id' => $field->id,
+                    'field_name' => $field->field_name,
+                    'field_label' => $field->field_label,
+                    'field_type' => $field->field_type,
+                    'field_options' => $field->field_options,
+                    'field_placeholder' => $field->field_placeholder,
+                    'field_help_text' => $field->field_help_text,
+                    'field_default_value' => $field->field_default_value,
+                    'field_validation_rules' => $field->field_validation_rules,
+                    'grid_column' => $field->grid_column,
+                    'sort_order' => $field->sort_order,
+                    'is_active' => $field->is_active,
+                    'is_required' => $field->is_required,
+                    'is_conditional' => $field->is_conditional,
+                    'conditional_field' => $field->conditional_field,
+                    'conditional_value' => $field->conditional_value,
+                    'created_at' => $field->created_at?->format('Y-m-d H:i:s'),
+                    'updated_at' => $field->updated_at?->format('Y-m-d H:i:s'),
+                    'section' => $field->section ? [
+                        'id' => $field->section->id,
+                        'section_key' => $field->section->section_key,
+                        'section_label' => $field->section->section_label,
+                    ] : null,
+                ],
+            ]);
+        }
+
+        return view('admin.form-builder.show', compact('form', 'field'));
+    }
+
+    /**
      * Store a new field
      */
     public function storeField(Request $request, Form $form)

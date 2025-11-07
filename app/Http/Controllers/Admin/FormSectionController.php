@@ -70,11 +70,40 @@ class FormSectionController extends Controller
     /**
      * Display the specified section.
      */
-    public function show(Form $form, FormSection $section): View
+    public function show(Form $form, FormSection $section)
     {
         // Ensure section belongs to this form
         if ($section->form_id !== $form->id) {
             abort(404);
+        }
+
+        // Load relationships
+        $section->load('fields');
+
+        // Return JSON if requested via AJAX
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'section' => [
+                    'id' => $section->id,
+                    'section_key' => $section->section_key,
+                    'section_label' => $section->section_label,
+                    'section_description' => $section->section_description,
+                    'sort_order' => $section->sort_order,
+                    'is_active' => $section->is_active,
+                    'created_at' => $section->created_at?->format('Y-m-d H:i:s'),
+                    'updated_at' => $section->updated_at?->format('Y-m-d H:i:s'),
+                    'fields_count' => $section->fields->count(),
+                    'fields' => $section->fields->map(function($field) {
+                        return [
+                            'id' => $field->id,
+                            'field_name' => $field->field_name,
+                            'field_label' => $field->field_label,
+                            'field_type' => $field->field_type,
+                        ];
+                    }),
+                ],
+            ]);
         }
 
         return view('admin.form-sections.show', compact('form', 'section'));
@@ -168,7 +197,7 @@ class FormSectionController extends Controller
     /**
      * Reorder sections
      */
-    public function reorder(Request $request, Form $form): RedirectResponse
+    public function reorder(Request $request, Form $form)
     {
         $request->validate([
             'sections' => 'required|array',
@@ -195,6 +224,11 @@ class FormSectionController extends Controller
                     newValues: $section->toArray()
                 );
             }
+        }
+
+        // Return JSON for AJAX requests
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Sections reordered successfully']);
         }
 
         return redirect()->route('admin.form-sections.index', $form)

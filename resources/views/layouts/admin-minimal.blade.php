@@ -19,6 +19,19 @@
     <!-- Alpine.js CDN -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
+    <!-- SortableJS CDN for drag-and-drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    
+    <!-- Custom styles for drag-and-drop -->
+    <style>
+        .sortable-chosen {
+            background-color: rgb(239 246 255) !important; /* bg-blue-50 */
+        }
+        .dark .sortable-chosen {
+            background-color: rgba(30, 58, 138, 0.2) !important; /* dark:bg-blue-900/20 */
+        }
+    </style>
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -169,16 +182,20 @@
 <body class="font-sans">
     <!-- Header -->
     <header class="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700">
-        <div class="px-6 py-4">
+        <div class="px-4 sm:px-6 py-4">
             <div class="flex items-center justify-between">
-                <!-- Logo & Title -->
+                <!-- Mobile Menu Button & Logo & Title -->
                 <div class="flex items-center space-x-3">
+                    <!-- Mobile Menu Toggle -->
+                    <button onclick="window.dispatchEvent(new CustomEvent('toggle-sidebar'))" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-label="Toggle menu" type="button">
+                        <i class='bx bx-menu text-gray-600 dark:text-gray-300 text-xl'></i>
+                    </button>
                     <div class="w-8 h-8 bg-gradient-to-br from-orange-600 to-orange-700 rounded-lg shadow-lg flex items-center justify-center">
                         <i class='bx bx-edit-alt text-white text-sm'></i>
                     </div>
                     <div>
-                        <h1 class="text-lg font-bold text-gray-900 dark:text-white">BMMB Digital Forms</h1>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Admin Panel</p>
+                        <h1 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white">BMMB Digital Forms</h1>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">Admin Panel</p>
                     </div>
                 </div>
                 
@@ -241,205 +258,72 @@
     </header>
 
     <!-- Main Content -->
-    <div class="flex min-h-screen">
-        <!-- Sidebar -->
-        <div class="w-56 bg-white dark:bg-gray-800 shadow-lg border-r border-gray-200 dark:border-gray-700">
-            <nav class="p-4 space-y-1">
-                <div class="mb-8">
-                    <div class="space-y-0.5">
-                        <a href="{{ route('admin.dashboard') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.dashboard') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                            <i class='bx bx-home-alt-2 mr-3 text-base'></i>
-                            <span class="font-medium">Dashboard</span>
-                        </a>
-                        
-                        <a href="{{ route('admin.users.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
-                            <i class='bx bx-user mr-3 text-base'></i>
-                            <span class="font-medium">Users</span>
-                        </a>
-                        
-                        <a href="{{ route('admin.branches.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.branches*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                            <i class='bx bx-building mr-3 text-base'></i>
-                            <span class="font-medium">Branches</span>
-                        </a>
-                        
-                        <a href="{{ route('admin.qr-codes.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.qr-codes*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                            <i class='bx bx-qr-scan mr-3 text-base'></i>
-                            <span class="font-medium">QR Codes</span>
-                        </a>
-                        
-                        <a href="{{ route('admin.audit-trails.index') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.audit-trails*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                            <i class='bx bx-history mr-3 text-base'></i>
-                            <span class="font-medium">Audit Trail</span>
-                        </a>
-                    </div>
+    <div class="flex min-h-screen" x-data="{ sidebarOpen: false }" x-init="
+        window.addEventListener('toggle-sidebar', () => { sidebarOpen = !sidebarOpen; });
+        window.addEventListener('close-sidebar', () => { sidebarOpen = false; });
+    ">
+        <!-- Mobile Sidebar Overlay -->
+        <div class="lg:hidden">
+            <!-- Overlay -->
+            <div x-show="sidebarOpen" 
+                 x-cloak
+                 @click="sidebarOpen = false"
+                 x-transition:enter="transition-opacity ease-linear duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition-opacity ease-linear duration-300"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 bg-gray-600 bg-opacity-75 z-40"></div>
+            
+            <!-- Mobile Sidebar -->
+            <div x-show="sidebarOpen"
+                 x-cloak
+                 @click.away="sidebarOpen = false"
+                 x-transition:enter="transition ease-in-out duration-300 transform"
+                 x-transition:enter-start="-translate-x-full"
+                 x-transition:enter-end="translate-x-0"
+                 x-transition:leave="transition ease-in-out duration-300 transform"
+                 x-transition:leave-start="translate-x-0"
+                 x-transition:leave-end="-translate-x-full"
+                 class="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg z-50 overflow-y-auto">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                    <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Menu</h2>
+                    <button @click="sidebarOpen = false" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Close menu">
+                        <i class='bx bx-x text-gray-600 dark:text-gray-300 text-xl'></i>
+                    </button>
                 </div>
+                @include('layouts.partials.sidebar-content')
+            </div>
+        </div>
 
-                <!-- Form Management Section -->
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-                    <div x-data="{ open: {{ request()->routeIs('admin.forms.*') || request()->routeIs('admin.form-builder.*') || request()->routeIs('admin.form-sections.*') || request()->routeIs('admin.submissions.*') ? 'true' : 'false' }} }">
-                        <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.forms.*') || request()->routeIs('admin.form-builder.*') || request()->routeIs('admin.form-sections.*') || request()->routeIs('admin.submissions.*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                            <div class="flex items-center">
-                                <i class='bx bx-file-blank mr-3 text-base'></i>
-                                <span class="font-medium">Form Management</span>
-                            </div>
-                            <i class='bx bx-chevron-up text-xs transition-transform' :class="{ 'rotate-180': open }"></i>
-                        </button>
-                        <div x-show="open" x-transition class="mt-1 space-y-0.5">
-                            <!-- Forms -->
-                            <a href="{{ route('admin.forms.index') }}" class="flex items-center px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.forms.*') && !request()->routeIs('admin.form-builder.*') && !request()->routeIs('admin.form-sections.*') ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                <span>Form</span>
-                            </a>
-                            
-                            <!-- Form Sections -->
-                            <div x-data="{ openSections: {{ request()->routeIs('admin.form-sections.*') ? 'true' : 'false' }} }">
-                                <button @click="openSections = !openSections" class="w-full flex items-center justify-between px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-sections.*') ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                    <div class="flex items-center">
-                                        <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                        <span>Form Sections</span>
-                                    </div>
-                                    <i class='bx bx-chevron-up text-xs transition-transform' :class="{ 'rotate-180': openSections }"></i>
-                                </button>
-                                <div x-show="openSections" x-transition class="ml-4 mt-1 space-y-0.5">
-                                    @php
-                                        $forms = \App\Models\Form::whereIn('slug', ['raf', 'dar', 'dcr', 'srf'])->get()->keyBy('slug');
-                                    @endphp
-                                    @if($forms->has('raf'))
-                                        <a href="{{ route('admin.form-sections.index', $forms->get('raf')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-sections.*') && request()->route('form') && request()->route('form')->slug == 'raf' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                            <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                            RAF Sections
-                                        </a>
-                                    @endif
-                                    @if($forms->has('dar'))
-                                        <a href="{{ route('admin.form-sections.index', $forms->get('dar')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-sections.*') && request()->route('form') && request()->route('form')->slug == 'dar' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                            <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                            DAR Sections
-                                        </a>
-                                    @endif
-                                    @if($forms->has('dcr'))
-                                        <a href="{{ route('admin.form-sections.index', $forms->get('dcr')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-sections.*') && request()->route('form') && request()->route('form')->slug == 'dcr' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                            <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                            DCR Sections
-                                        </a>
-                                    @endif
-                                    @if($forms->has('srf'))
-                                        <a href="{{ route('admin.form-sections.index', $forms->get('srf')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-sections.*') && request()->route('form') && request()->route('form')->slug == 'srf' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                            <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                            SRF Sections
-                                        </a>
-                                    @endif
-                                </div>
-                            </div>
-                            
-                            <!-- Form Builders -->
-                            <div x-data="{ openBuilders: {{ request()->routeIs('admin.form-builder.*') ? 'true' : 'false' }} }">
-                                <button @click="openBuilders = !openBuilders" class="w-full flex items-center justify-between px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-builder.*') ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                    <div class="flex items-center">
-                                        <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                        <span>Form Builders</span>
-                                    </div>
-                                    <i class='bx bx-chevron-up text-xs transition-transform' :class="{ 'rotate-180': openBuilders }"></i>
-                                </button>
-                                <div x-show="openBuilders" x-transition class="ml-4 mt-1 space-y-0.5">
-                                    @php
-                                        $forms = \App\Models\Form::whereIn('slug', ['raf', 'dar', 'dcr', 'srf'])->get()->keyBy('slug');
-                                    @endphp
-                                    
-                                    @if($forms->has('raf'))
-                                        <a href="{{ route('admin.form-builder.index', $forms->get('raf')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-builder.*') && request()->route('form') && request()->route('form')->slug == 'raf' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                            <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                            RAF Builder
-                                        </a>
-                                    @endif
-                                    
-                                    @if($forms->has('dar'))
-                                        <a href="{{ route('admin.form-builder.index', $forms->get('dar')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-builder.*') && request()->route('form') && request()->route('form')->slug == 'dar' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                            <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                            DAR Builder
-                                        </a>
-                                    @endif
-                                    
-                                    @if($forms->has('dcr'))
-                                        <a href="{{ route('admin.form-builder.index', $forms->get('dcr')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-builder.*') && request()->route('form') && request()->route('form')->slug == 'dcr' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                            <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                            DCR Builder
-                                        </a>
-                                    @endif
-                                    
-                                    @if($forms->has('srf'))
-                                        <a href="{{ route('admin.form-builder.index', $forms->get('srf')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-builder.*') && request()->route('form') && request()->route('form')->slug == 'srf' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                            <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                            SRF Builder
-                                        </a>
-                                    @endif
-                                </div>
-                            </div>
-                            
-                            <!-- Form Submissions -->
-                            <div x-data="{ openSubmissions: {{ request()->routeIs('admin.submissions.*') ? 'true' : 'false' }} }">
-                                <button @click="openSubmissions = !openSubmissions" class="w-full flex items-center justify-between px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.submissions.*') ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                    <div class="flex items-center">
-                                        <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                        <span>Form Submission</span>
-                                    </div>
-                                    <i class='bx bx-chevron-up text-xs transition-transform' :class="{ 'rotate-180': openSubmissions }"></i>
-                                </button>
-                                <div x-show="openSubmissions" x-transition class="ml-4 mt-1 space-y-0.5">
-                                    <a href="{{ route('admin.submissions.raf') }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.submissions.raf*') ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                        <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                        RAF Submissions
-                                    </a>
-                                    <a href="{{ route('admin.submissions.dar') }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.submissions.dar*') ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                        <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                        DAR Submissions
-                                    </a>
-                                    <a href="{{ route('admin.submissions.dcr') }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.submissions.dcr*') ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                        <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                        DCR Submissions
-                                    </a>
-                                    <a href="{{ route('admin.submissions.srf') }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.submissions.srf*') ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                        <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                        SRF Submissions
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-                    <div class="space-y-0.5">
-                        <a href="{{ route('admin.settings') }}" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-400 transition-colors {{ request()->routeIs('admin.settings*') ? 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400' : '' }}">
-                            <i class='bx bx-cog mr-3 text-base'></i>
-                            <span class="font-medium">Settings</span>
-                        </a>
-                    </div>
-                </div>
-            </nav>
+        <!-- Desktop Sidebar -->
+        <div class="hidden lg:block w-56 bg-white dark:bg-gray-800 shadow-lg border-r border-gray-200 dark:border-gray-700">
+            @include('layouts.partials.sidebar-content')
         </div>
 
         <!-- Content Area -->
-        <div class="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900">
+        <div class="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 w-full">
             <!-- Page Header -->
-            <div class="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+            <div class="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-4">
                 <div>
-                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">@yield('page-title', 'Dashboard')</h2>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-0.5">@yield('page-description', 'Welcome to your admin dashboard')</p>
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">@yield('page-title', 'Dashboard')</h2>
+                    <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-0.5">@yield('page-description', 'Welcome to your admin dashboard')</p>
                 </div>
             </div>
 
             <!-- Page Content -->
             <main class="flex-1 bg-gray-50 dark:bg-gray-900">
-                <div class="p-6">
+                <div class="p-4 sm:p-6">
                     @yield('content')
                 </div>
             </main>
 
             <!-- Footer -->
             <footer class="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 py-3">
-                <div class="px-4">
+                <div class="px-4 sm:px-6">
                     <div class="flex items-center justify-center">
-                        <p class="text-xs text-gray-600 dark:text-gray-400">&copy; {{ date('Y') }} BMMB Digital Forms. All rights reserved.</p>
+                        <p class="text-xs text-gray-600 dark:text-gray-400 text-center">&copy; {{ date('Y') }} BMMB Digital Forms. All rights reserved.</p>
                     </div>
                 </div>
             </footer>

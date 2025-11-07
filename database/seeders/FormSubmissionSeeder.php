@@ -1,0 +1,229 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Branch;
+use App\Models\Form;
+use App\Models\FormField;
+use App\Models\FormSection;
+use App\Models\FormSubmission;
+use App\Models\FormSubmissionData;
+use App\Models\User;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
+
+class FormSubmissionSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        // Get all forms
+        $forms = Form::whereIn('slug', ['raf', 'dar', 'dcr', 'srf'])->get();
+        
+        if ($forms->isEmpty()) {
+            $this->command->warn('No forms found. Please run FormManagementSeeder first.');
+            return;
+        }
+
+        // Get branches and users
+        $branches = Branch::all();
+        $users = User::all();
+
+        if ($branches->isEmpty() || $users->isEmpty()) {
+            $this->command->warn('No branches or users found. Please seed branches and users first.');
+            return;
+        }
+
+        // Status options
+        $statuses = ['draft', 'submitted', 'under_review', 'approved', 'rejected', 'completed', 'in_progress'];
+
+        foreach ($forms as $form) {
+            // Load form with sections and fields
+            $form->load(['sections.fields' => function($query) {
+                $query->where('is_active', true)->ordered();
+            }]);
+
+            // Create 10-15 submissions per form
+            $submissionCount = rand(10, 15);
+            
+            for ($i = 1; $i <= $submissionCount; $i++) {
+                $startedAt = now()->subDays(rand(1, 90))->subHours(rand(1, 23));
+                $status = $statuses[array_rand($statuses)];
+                $submittedAt = in_array($status, ['draft']) 
+                    ? null 
+                    : $startedAt->copy()->addMinutes(rand(15, 120));
+                
+                $branch = $branches->random();
+                $user = $users->random();
+                $reviewedBy = in_array($status, ['under_review', 'approved', 'rejected', 'completed']) 
+                    ? $users->random() 
+                    : null;
+
+                // Generate submission data based on form fields
+                $submissionData = [];
+                $fieldResponses = [];
+                $fileUploads = [];
+
+                foreach ($form->sections as $section) {
+                    foreach ($section->fields as $field) {
+                        if (!$field->is_active) {
+                            continue;
+                        }
+
+                        $fieldValue = $this->generateFieldValue($field);
+                        $fieldName = $field->field_name;
+                        
+                        $submissionData[$fieldName] = $fieldValue;
+                        $fieldResponses[$fieldName] = $fieldValue;
+
+                        // Handle file uploads
+                        if (in_array($field->field_type, ['file', 'image'])) {
+                            $fileUploads[] = [
+                                'field_name' => $fieldName,
+                                'field_label' => $field->field_label,
+                                'name' => 'document_' . uniqid() . '.pdf',
+                                'path' => 'uploads/' . $form->slug . '/' . uniqid() . '.pdf',
+                                'size' => rand(100000, 5000000),
+                                'mime_type' => 'application/pdf',
+                            ];
+                        }
+                    }
+                }
+
+                // Create submission
+                $submission = FormSubmission::create([
+                    'form_id' => $form->id,
+                    'user_id' => $user->id,
+                    'branch_id' => $branch->id,
+                    'submission_token' => strtolower($form->slug) . '_' . uniqid() . '_' . time(),
+                    'status' => $status,
+                    'submission_data' => $submissionData,
+                    'field_responses' => $fieldResponses,
+                    'file_uploads' => !empty($fileUploads) ? $fileUploads : null,
+                    'ip_address' => fake()->ipv4(),
+                    'user_agent' => fake()->userAgent(),
+                    'session_id' => Str::random(40),
+                    'started_at' => $startedAt,
+                    'submitted_at' => $submittedAt,
+                    'last_modified_at' => $submittedAt ?? $startedAt,
+                    'reviewed_by' => $reviewedBy?->id,
+                    'reviewed_at' => $reviewedBy ? ($submittedAt ? $submittedAt->copy()->addHours(rand(1, 48)) : null) : null,
+                    'review_notes' => in_array($status, ['approved', 'rejected']) ? fake()->sentence() : null,
+                    'rejection_reason' => $status === 'rejected' ? fake()->sentence() : null,
+                    'audit_trail' => [
+                        [
+                            'action' => 'created',
+                            'timestamp' => $startedAt->toIso8601String(),
+                            'user_id' => $user->id,
+                        ],
+                        $submittedAt ? [
+                            'action' => 'submitted',
+                            'timestamp' => $submittedAt->toIso8601String(),
+                            'user_id' => $user->id,
+                        ] : null,
+                    ],
+                    'compliance_checks' => in_array($status, ['approved', 'rejected']) ? [
+                        'aml_check' => $status === 'approved' ? 'passed' : 'failed',
+                        'kyc_check' => $status === 'approved' ? 'passed' : 'pending',
+                        'sanctions_check' => $status === 'approved' ? 'passed' : 'pending',
+                    ] : null,
+                    'internal_notes' => rand(0, 1) ? fake()->paragraph() : null,
+                ]);
+
+                // Create submission data entries for each field
+                foreach ($form->sections as $section) {
+                    foreach ($section->fields as $field) {
+                        if (!$field->is_active) {
+                            continue;
+                        }
+
+                        $fieldValue = $submissionData[$field->field_name] ?? null;
+                        
+                        if ($fieldValue !== null) {
+                            $isJsonField = in_array($field->field_type, ['checkbox', 'multiselect']);
+                            
+                            // Find file path if this is a file field
+                            $filePath = null;
+                            if (in_array($field->field_type, ['file', 'image']) && !empty($fileUploads)) {
+                                $fileIndex = array_search($field->field_name, array_column($fileUploads, 'field_name'));
+                                if ($fileIndex !== false && isset($fileUploads[$fileIndex]['path'])) {
+                                    $filePath = $fileUploads[$fileIndex]['path'];
+                                }
+                            }
+                            
+                            FormSubmissionData::create([
+                                'submission_id' => $submission->id,
+                                'field_id' => $field->id,
+                                'field_value' => $isJsonField ? null : (string)$fieldValue,
+                                'field_value_json' => $isJsonField ? (is_array($fieldValue) ? $fieldValue : [$fieldValue]) : null,
+                                'file_path' => $filePath,
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            $this->command->info("Created {$submissionCount} submissions for form: {$form->name}");
+        }
+    }
+
+    /**
+     * Generate a realistic value based on field type
+     */
+    private function generateFieldValue($field): mixed
+    {
+        switch ($field->field_type) {
+            case 'text':
+            case 'textarea':
+                return fake()->sentence();
+            
+            case 'email':
+                return fake()->email();
+            
+            case 'phone':
+            case 'tel':
+                return fake()->phoneNumber();
+            
+            case 'number':
+                return (string)rand(1, 10000);
+            
+            case 'date':
+                return fake()->date('Y-m-d');
+            
+            case 'select':
+            case 'radio':
+                if ($field->field_options && is_array($field->field_options)) {
+                    $options = array_keys($field->field_options);
+                    return $options[array_rand($options)] ?? null;
+                }
+                return null;
+            
+            case 'checkbox':
+            case 'multiselect':
+                if ($field->field_options && is_array($field->field_options)) {
+                    $options = array_keys($field->field_options);
+                    if (empty($options)) {
+                        return [];
+                    }
+                    $count = min(rand(1, 3), count($options));
+                    shuffle($options);
+                    return array_slice($options, 0, $count);
+                }
+                return [];
+            
+            case 'boolean':
+            case 'yes_no':
+                return rand(0, 1) ? 'yes' : 'no';
+            
+            case 'file':
+            case 'image':
+                return 'document_' . uniqid() . '.pdf';
+            
+            default:
+                return fake()->word();
+        }
+    }
+}
+

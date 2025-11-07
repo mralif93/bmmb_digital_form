@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Form;
+use App\Models\FormSubmission;
 use App\Models\DarFormSubmission;
 use App\Models\DcrFormSubmission;
 use App\Models\RafFormSubmission;
@@ -16,7 +18,17 @@ class SubmissionController extends Controller
      */
     public function dar()
     {
-        $submissions = DarFormSubmission::with('user')->orderBy('created_at', 'desc')->paginate(15);
+        // Try to get submissions from new dynamic form system first
+        $form = Form::where('slug', 'dar')->first();
+        if ($form) {
+            $submissions = FormSubmission::where('form_id', $form->id)
+                ->with(['user', 'branch', 'form', 'reviewedBy'])
+                ->orderBy('created_at', 'desc')
+                ->paginate(15);
+        } else {
+            // Fallback to old system
+            $submissions = DarFormSubmission::with('user')->orderBy('created_at', 'desc')->paginate(15);
+        }
         return view('admin.submissions.dar', compact('submissions'));
     }
 
@@ -25,7 +37,17 @@ class SubmissionController extends Controller
      */
     public function dcr()
     {
-        $submissions = DcrFormSubmission::with('user')->orderBy('created_at', 'desc')->paginate(15);
+        // Try to get submissions from new dynamic form system first
+        $form = Form::where('slug', 'dcr')->first();
+        if ($form) {
+            $submissions = FormSubmission::where('form_id', $form->id)
+                ->with(['user', 'branch', 'form', 'reviewedBy'])
+                ->orderBy('created_at', 'desc')
+                ->paginate(15);
+        } else {
+            // Fallback to old system
+            $submissions = DcrFormSubmission::with('user')->orderBy('created_at', 'desc')->paginate(15);
+        }
         return view('admin.submissions.dcr', compact('submissions'));
     }
 
@@ -34,7 +56,17 @@ class SubmissionController extends Controller
      */
     public function raf()
     {
-        $submissions = RafFormSubmission::with('user')->orderBy('created_at', 'desc')->paginate(15);
+        // Try to get submissions from new dynamic form system first
+        $form = Form::where('slug', 'raf')->first();
+        if ($form) {
+            $submissions = FormSubmission::where('form_id', $form->id)
+                ->with(['user', 'branch', 'form', 'reviewedBy'])
+                ->orderBy('created_at', 'desc')
+                ->paginate(15);
+        } else {
+            // Fallback to old system
+            $submissions = RafFormSubmission::with('user')->orderBy('created_at', 'desc')->paginate(15);
+        }
         return view('admin.submissions.raf', compact('submissions'));
     }
 
@@ -43,7 +75,17 @@ class SubmissionController extends Controller
      */
     public function srf()
     {
-        $submissions = SrfFormSubmission::with('user')->orderBy('created_at', 'desc')->paginate(15);
+        // Try to get submissions from new dynamic form system first
+        $form = Form::where('slug', 'srf')->first();
+        if ($form) {
+            $submissions = FormSubmission::where('form_id', $form->id)
+                ->with(['user', 'branch', 'form', 'reviewedBy'])
+                ->orderBy('created_at', 'desc')
+                ->paginate(15);
+        } else {
+            // Fallback to old system
+            $submissions = SrfFormSubmission::with('user')->orderBy('created_at', 'desc')->paginate(15);
+        }
         return view('admin.submissions.srf', compact('submissions'));
     }
 
@@ -52,7 +94,16 @@ class SubmissionController extends Controller
      */
     public function showDar($id)
     {
-        $submission = DarFormSubmission::with(['user', 'branch', 'reviewedBy', 'darForm'])->findOrFail($id);
+        // Try new system first
+        $form = Form::where('slug', 'dar')->first();
+        if ($form) {
+            $submission = FormSubmission::where('form_id', $form->id)
+                ->with(['user', 'branch', 'form', 'reviewedBy', 'submissionData.field'])
+                ->findOrFail($id);
+        } else {
+            // Fallback to old system
+            $submission = DarFormSubmission::with(['user', 'branch', 'reviewedBy', 'darForm'])->findOrFail($id);
+        }
         return view('admin.submissions.show-dar', compact('submission'));
     }
 
@@ -61,7 +112,16 @@ class SubmissionController extends Controller
      */
     public function showDcr($id)
     {
-        $submission = DcrFormSubmission::with(['user', 'branch', 'reviewedBy', 'dcrForm'])->findOrFail($id);
+        // Try new system first
+        $form = Form::where('slug', 'dcr')->first();
+        if ($form) {
+            $submission = FormSubmission::where('form_id', $form->id)
+                ->with(['user', 'branch', 'form', 'reviewedBy', 'submissionData.field'])
+                ->findOrFail($id);
+        } else {
+            // Fallback to old system
+            $submission = DcrFormSubmission::with(['user', 'branch', 'reviewedBy', 'dcrForm'])->findOrFail($id);
+        }
         return view('admin.submissions.show-dcr', compact('submission'));
     }
 
@@ -70,7 +130,16 @@ class SubmissionController extends Controller
      */
     public function showRaf($id)
     {
-        $submission = RafFormSubmission::with(['user', 'branch', 'reviewedBy', 'rafForm'])->findOrFail($id);
+        // Try new system first
+        $form = Form::where('slug', 'raf')->first();
+        if ($form) {
+            $submission = FormSubmission::where('form_id', $form->id)
+                ->with(['user', 'branch', 'form', 'reviewedBy', 'submissionData.field'])
+                ->findOrFail($id);
+        } else {
+            // Fallback to old system
+            $submission = RafFormSubmission::with(['user', 'branch', 'reviewedBy', 'rafForm'])->findOrFail($id);
+        }
         return view('admin.submissions.show-raf', compact('submission'));
     }
 
@@ -79,7 +148,16 @@ class SubmissionController extends Controller
      */
     public function showSrf($id)
     {
-        $submission = SrfFormSubmission::with(['user', 'branch', 'reviewedBy', 'srfForm'])->findOrFail($id);
+        // Try new system first
+        $form = Form::where('slug', 'srf')->first();
+        if ($form) {
+            $submission = FormSubmission::where('form_id', $form->id)
+                ->with(['user', 'branch', 'form', 'reviewedBy', 'submissionData.field'])
+                ->findOrFail($id);
+        } else {
+            // Fallback to old system
+            $submission = SrfFormSubmission::with(['user', 'branch', 'reviewedBy', 'srfForm'])->findOrFail($id);
+        }
         return view('admin.submissions.show-srf', compact('submission'));
     }
 
@@ -89,19 +167,26 @@ class SubmissionController extends Controller
     public function updateStatus(Request $request, $type, $id)
     {
         $request->validate([
-            'status' => 'required|in:draft,submitted,under_review,approved,rejected,completed,expired',
+            'status' => 'required|in:draft,submitted,under_review,approved,rejected,completed,expired,in_progress,cancelled',
             'notes' => 'nullable|string',
         ]);
 
-        $model = match($type) {
-            'dar' => DarFormSubmission::class,
-            'dcr' => DcrFormSubmission::class,
-            'raf' => RafFormSubmission::class,
-            'srf' => SrfFormSubmission::class,
-            default => throw new \Exception('Invalid submission type'),
-        };
+        // Try new system first
+        $form = Form::where('slug', $type)->first();
+        if ($form) {
+            $submission = FormSubmission::where('form_id', $form->id)->findOrFail($id);
+        } else {
+            // Fallback to old system
+            $model = match($type) {
+                'dar' => DarFormSubmission::class,
+                'dcr' => DcrFormSubmission::class,
+                'raf' => RafFormSubmission::class,
+                'srf' => SrfFormSubmission::class,
+                default => throw new \Exception('Invalid submission type'),
+            };
+            $submission = $model::findOrFail($id);
+        }
 
-        $submission = $model::findOrFail($id);
         $submission->status = $request->status;
         if ($request->has('notes')) {
             $submission->review_notes = $request->notes;
