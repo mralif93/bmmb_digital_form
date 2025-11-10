@@ -34,6 +34,15 @@
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    @php
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', [
+            'default_theme' => 'light',
+            'primary_color' => '#FE8000',
+        ]);
+        $primaryColor = $settings['primary_color'] ?? '#FE8000';
+        $defaultTheme = $settings['default_theme'] ?? 'light';
+        $colorShades = \App\Helpers\ColorHelper::generateColorShades($primaryColor);
+    @endphp
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -44,16 +53,16 @@
                     },
                     colors: {
                         primary: {
-                            50: '#fff7ed',
-                            100: '#ffedd5',
-                            200: '#fed7aa',
-                            300: '#fdba74',
-                            400: '#fb923c',
-                            500: '#FE8000',
-                            600: '#ea580c',
-                            700: '#c2410c',
-                            800: '#9a3412',
-                            900: '#7c2d12',
+                            50: '{{ $colorShades[50] }}',
+                            100: '{{ $colorShades[100] }}',
+                            200: '{{ $colorShades[200] }}',
+                            300: '{{ $colorShades[300] }}',
+                            400: '{{ $colorShades[400] }}',
+                            500: '{{ $colorShades[500] }}',
+                            600: '{{ $colorShades[600] }}',
+                            700: '{{ $colorShades[700] }}',
+                            800: '{{ $colorShades[800] }}',
+                            900: '{{ $colorShades[900] }}',
                         },
                         'blue-50': '#eff6ff',
                         'blue-100': '#dbeafe',
@@ -137,11 +146,18 @@
     
     <!-- Dark Mode Script -->
     <script>
-        // Check for saved theme preference or default to light mode
+        // Check for saved theme preference or use system default
         function getThemePreference() {
             const saved = localStorage.getItem('darkMode');
             if (saved !== null) {
                 return saved === 'true';
+            }
+            // Use system default theme setting
+            const defaultTheme = '{{ $defaultTheme }}';
+            if (defaultTheme === 'dark') {
+                return true;
+            } else if (defaultTheme === 'auto') {
+                return window.matchMedia('(prefers-color-scheme: dark)').matches;
             }
             // Default to light mode
             return false;

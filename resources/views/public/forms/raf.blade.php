@@ -18,79 +18,121 @@
 </section>
 
 <!-- Form Section -->
-<section class="py-16 bg-gray-50">
+<section class="py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="form-card rounded-xl p-8 shadow-xl" x-data="{ currentStep: 1 }">
             <!-- Progress Indicator -->
             <div class="mb-8">
-                <div class="flex items-center justify-between relative">
+                <!-- Desktop Stepper -->
+                <div class="hidden md:flex items-center justify-between relative">
                     <!-- Step 1 -->
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 1">
-                        <div class="w-10 h-10 bg-orange-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300" 
-                             :class="{ 'ring-4 ring-orange-200 scale-110': currentStep === 1 }">
+                        <div class="w-10 h-10 bg-primary-600 dark:bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300" 
+                             :class="{ 'ring-4 ring-primary-200 dark:ring-primary-800 scale-110': currentStep === 1 }">
                             <i class='bx bx-user text-lg' x-show="currentStep > 1"></i>
                             <span x-show="currentStep <= 1">1</span>
                         </div>
-                        <div class="ml-3">
-                            <span class="text-sm font-semibold text-gray-700 block" 
-                                  :class="{ 'text-blue-600': currentStep >= 1 }">Personal Information</span>
-                            <span class="text-xs text-gray-500" x-show="currentStep > 1">Completed</span>
+                        <div class="ml-3 hidden lg:block">
+                            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300 block" 
+                                  :class="{ 'text-blue-600 dark:text-blue-400': currentStep >= 1 }">Personal Information</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400" x-show="currentStep > 1">Completed</span>
                         </div>
                     </div>
                     
                     <!-- Connector Line 1 -->
-                    <div class="flex-1 h-0.5 bg-gray-300 mx-6" 
-                         :class="{ 'bg-orange-600': currentStep > 1 }"></div>
+                    <div class="flex-1 h-0.5 bg-gray-300 dark:bg-gray-600 mx-2 md:mx-4 lg:mx-6" 
+                         :class="{ 'bg-primary-600 dark:bg-primary-500': currentStep > 1 }"></div>
                     
                     <!-- Step 2 -->
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 2">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300"
-                             :class="currentStep >= 2 ? 'bg-orange-600 text-white ring-4 ring-orange-200 scale-110' : 'bg-gray-300 text-gray-600'">
+                             :class="currentStep >= 2 ? 'bg-primary-600 dark:bg-primary-500 text-white ring-4 ring-primary-200 dark:ring-primary-800 scale-110' : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300'">
                             <i class='bx bx-money text-lg' x-show="currentStep > 2"></i>
                             <span x-show="currentStep <= 2">2</span>
                         </div>
-                        <div class="ml-3">
+                        <div class="ml-3 hidden lg:block">
                             <span class="text-sm font-semibold block"
-                                  :class="currentStep >= 2 ? 'text-blue-600' : 'text-gray-500'">Remittance Details</span>
-                            <span class="text-xs text-gray-500" x-show="currentStep > 2">Completed</span>
+                                  :class="currentStep >= 2 ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'">Remittance Details</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400" x-show="currentStep > 2">Completed</span>
                         </div>
                     </div>
                     
                     <!-- Connector Line 2 -->
-                    <div class="flex-1 h-0.5 bg-gray-300 mx-6" 
-                         :class="{ 'bg-orange-600': currentStep > 2 }"></div>
+                    <div class="flex-1 h-0.5 bg-gray-300 dark:bg-gray-600 mx-2 md:mx-4 lg:mx-6" 
+                         :class="{ 'bg-primary-600 dark:bg-primary-500': currentStep > 2 }"></div>
                     
                     <!-- Step 3 -->
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 3">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300"
-                             :class="currentStep >= 3 ? 'bg-orange-600 text-white ring-4 ring-orange-200 scale-110' : 'bg-gray-300 text-gray-600'">
+                             :class="currentStep >= 3 ? 'bg-primary-600 text-white ring-4 ring-primary-200 dark:ring-primary-800 scale-110' : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300'">
                             <i class='bx bx-user-check text-lg' x-show="currentStep > 3"></i>
                             <span x-show="currentStep <= 3">3</span>
                         </div>
-                        <div class="ml-3">
+                        <div class="ml-3 hidden lg:block">
                             <span class="text-sm font-semibold block"
-                                  :class="currentStep >= 3 ? 'text-blue-600' : 'text-gray-500'">Beneficiary Information</span>
-                            <span class="text-xs text-gray-500" x-show="currentStep > 3">Completed</span>
+                                  :class="currentStep >= 3 ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'">Beneficiary Information</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400" x-show="currentStep > 3">Completed</span>
                         </div>
                     </div>
                     
                     <!-- Connector Line 3 -->
-                    <div class="flex-1 h-0.5 bg-gray-300 mx-6" 
-                         :class="{ 'bg-orange-600': currentStep > 3 }"></div>
+                    <div class="flex-1 h-0.5 bg-gray-300 dark:bg-gray-600 mx-2 md:mx-4 lg:mx-6" 
+                         :class="{ 'bg-primary-600 dark:bg-primary-500': currentStep > 3 }"></div>
                     
                     <!-- Step 4 -->
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 4">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300"
-                             :class="currentStep >= 4 ? 'bg-orange-600 text-white ring-4 ring-orange-200 scale-110' : 'bg-gray-300 text-gray-600'">
+                             :class="currentStep >= 4 ? 'bg-primary-600 text-white ring-4 ring-primary-200 dark:ring-primary-800 scale-110' : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300'">
                             <i class='bx bx-check text-lg' x-show="currentStep > 4"></i>
                             <span x-show="currentStep <= 4">4</span>
                         </div>
-                        <div class="ml-3">
+                        <div class="ml-3 hidden lg:block">
                             <span class="text-sm font-semibold block"
-                                  :class="currentStep >= 4 ? 'text-blue-600' : 'text-gray-500'">Review & Submit</span>
-                            <span class="text-xs text-gray-500" x-show="currentStep > 4">Completed</span>
+                                  :class="currentStep >= 4 ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'">Review & Submit</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400" x-show="currentStep > 4">Completed</span>
                         </div>
                     </div>
+                </div>
+                
+                <!-- Mobile Stepper -->
+                <div class="md:hidden flex items-center justify-between relative">
+                    <div class="flex items-center relative z-10 flex-1" @click="currentStep = 1">
+                        <div class="w-7 h-7 bg-primary-600 dark:bg-primary-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-lg transition-all duration-300" 
+                             :class="{ 'ring-2 ring-primary-200 dark:ring-primary-800 scale-110': currentStep === 1 }">
+                            <i class='bx bx-check text-xs' x-show="currentStep > 1"></i>
+                            <span x-show="currentStep <= 1">1</span>
+                        </div>
+                        <div class="flex-1 h-0.5 mx-1.5 bg-gray-300 dark:bg-gray-600" :class="{ 'bg-primary-600 dark:bg-primary-500': currentStep > 1 }"></div>
+                    </div>
+                    <div class="flex items-center relative z-10 flex-1" @click="currentStep = 2">
+                        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shadow-lg transition-all duration-300"
+                             :class="currentStep >= 2 ? 'bg-primary-600 dark:bg-primary-500 text-white ring-2 ring-primary-200 dark:ring-primary-800 scale-110' : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300'">
+                            <i class='bx bx-check text-xs' x-show="currentStep > 2"></i>
+                            <span x-show="currentStep <= 2">2</span>
+                        </div>
+                        <div class="flex-1 h-0.5 mx-1.5 bg-gray-300 dark:bg-gray-600" :class="{ 'bg-primary-600 dark:bg-primary-500': currentStep > 2 }"></div>
+                    </div>
+                    <div class="flex items-center relative z-10 flex-1" @click="currentStep = 3">
+                        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shadow-lg transition-all duration-300"
+                             :class="currentStep >= 3 ? 'bg-primary-600 text-white ring-2 ring-primary-200 dark:ring-primary-800 scale-110' : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300'">
+                            <i class='bx bx-check text-xs' x-show="currentStep > 3"></i>
+                            <span x-show="currentStep <= 3">3</span>
+                        </div>
+                        <div class="flex-1 h-0.5 mx-1.5 bg-gray-300 dark:bg-gray-600" :class="{ 'bg-primary-600 dark:bg-primary-500': currentStep > 3 }"></div>
+                    </div>
+                    <div class="flex items-center relative z-10" @click="currentStep = 4">
+                        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shadow-lg transition-all duration-300"
+                             :class="currentStep >= 4 ? 'bg-primary-600 text-white ring-2 ring-primary-200 dark:ring-primary-800 scale-110' : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300'">
+                            <i class='bx bx-check text-xs' x-show="currentStep > 4"></i>
+                            <span x-show="currentStep <= 4">4</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Current Step Label (Mobile) -->
+                <div class="md:hidden mt-3 text-center">
+                    <span class="text-xs font-semibold text-primary-700 dark:text-primary-400" 
+                          x-text="currentStep === 1 ? 'Personal Information' : currentStep === 2 ? 'Remittance Details' : currentStep === 3 ? 'Beneficiary Information' : 'Review & Submit'"></span>
                 </div>
             </div>
 
@@ -100,39 +142,39 @@
                 
                 <!-- Step 1: Personal Information -->
                 <div x-show="currentStep === 1" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-x-4" x-transition:enter-end="opacity-100 transform translate-x-0">
-                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Personal Information</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Personal Information</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="applicant_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="applicant_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Full Name <span class="text-red-500">*</span>
                             </label>
                             <input type="text" id="applicant_name" name="applicant_name" required
-                                   class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="form-input w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label for="applicant_email" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="applicant_email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Email Address <span class="text-red-500">*</span>
                             </label>
                             <input type="email" id="applicant_email" name="applicant_email" required
-                                   class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="form-input w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label for="applicant_phone" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="applicant_phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Phone Number <span class="text-red-500">*</span>
                             </label>
                             <input type="tel" id="applicant_phone" name="applicant_phone" required
-                                   class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="form-input w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label for="applicant_id_type" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="applicant_id_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 ID Type <span class="text-red-500">*</span>
                             </label>
                             <select id="applicant_id_type" name="applicant_id_type" required
-                                    class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    class="form-input w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                 <option value="">Select ID Type</option>
                                 <option value="passport">Passport</option>
                                 <option value="national_id">National ID</option>
@@ -142,11 +184,11 @@
                         </div>
                         
                         <div>
-                            <label for="applicant_id_number" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="applicant_id_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 ID Number <span class="text-red-500">*</span>
                             </label>
                             <input type="text" id="applicant_id_number" name="applicant_id_number" required
-                                   class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                   class="form-input w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>

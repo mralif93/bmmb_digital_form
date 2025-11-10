@@ -18,7 +18,7 @@
 </section>
 
 <!-- Form Section -->
-<section class="py-16 bg-gray-50">
+<section class="py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="form-card rounded-xl p-8 shadow-xl" x-data="{ currentStep: 1 }">
             <!-- Progress Indicator -->
@@ -26,8 +26,8 @@
                 <div class="flex items-center justify-between relative">
                     <!-- Step 1 -->
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 1">
-                        <div class="w-10 h-10 bg-orange-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300" 
-                             :class="{ 'ring-4 ring-orange-200 scale-110': currentStep === 1 }">
+                        <div class="w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300" 
+                             :class="{ 'ring-4 ring-primary-200 scale-110': currentStep === 1 }">
                             <i class='bx bx-user text-lg' x-show="currentStep > 1"></i>
                             <span x-show="currentStep <= 1">1</span>
                         </div>
@@ -40,12 +40,12 @@
                     
                     <!-- Connector Line 1 -->
                     <div class="flex-1 h-0.5 bg-gray-300 mx-6" 
-                         :class="{ 'bg-orange-600': currentStep > 1 }"></div>
+                         :class="{ 'bg-primary-600': currentStep > 1 }"></div>
                     
                     <!-- Step 2 -->
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 2">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300"
-                             :class="currentStep >= 2 ? 'bg-orange-600 text-white ring-4 ring-orange-200 scale-110' : 'bg-gray-300 text-gray-600'">
+                             :class="currentStep >= 2 ? 'bg-primary-600 text-white ring-4 ring-primary-200 scale-110' : 'bg-gray-300 text-gray-600'">
                             <i class='bx bx-cog text-lg' x-show="currentStep > 2"></i>
                             <span x-show="currentStep <= 2">2</span>
                         </div>
@@ -58,12 +58,12 @@
                     
                     <!-- Connector Line 2 -->
                     <div class="flex-1 h-0.5 bg-gray-300 mx-6" 
-                         :class="{ 'bg-orange-600': currentStep > 2 }"></div>
+                         :class="{ 'bg-primary-600': currentStep > 2 }"></div>
                     
                     <!-- Step 3 -->
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 3">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300"
-                             :class="currentStep >= 3 ? 'bg-orange-600 text-white ring-4 ring-orange-200 scale-110' : 'bg-gray-300 text-gray-600'">
+                             :class="currentStep >= 3 ? 'bg-primary-600 text-white ring-4 ring-primary-200 scale-110' : 'bg-gray-300 text-gray-600'">
                             <i class='bx bx-list-check text-lg' x-show="currentStep > 3"></i>
                             <span x-show="currentStep <= 3">3</span>
                         </div>
@@ -76,12 +76,12 @@
                     
                     <!-- Connector Line 3 -->
                     <div class="flex-1 h-0.5 bg-gray-300 mx-6" 
-                         :class="{ 'bg-orange-600': currentStep > 3 }"></div>
+                         :class="{ 'bg-primary-600': currentStep > 3 }"></div>
                     
                     <!-- Step 4 -->
                     <div class="flex items-center relative z-10 group cursor-pointer" @click="currentStep = 4">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg transition-all duration-300"
-                             :class="currentStep >= 4 ? 'bg-orange-600 text-white ring-4 ring-orange-200 scale-110' : 'bg-gray-300 text-gray-600'">
+                             :class="currentStep >= 4 ? 'bg-primary-600 text-white ring-4 ring-primary-200 scale-110' : 'bg-gray-300 text-gray-600'">
                             <i class='bx bx-check text-lg' x-show="currentStep > 4"></i>
                             <span x-show="currentStep <= 4">4</span>
                         </div>

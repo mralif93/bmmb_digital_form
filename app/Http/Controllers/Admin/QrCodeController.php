@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Form;
+use App\Traits\LogsAuditTrail;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class QrCodeController extends Controller
 {
+    use LogsAuditTrail;
     public function generate(Request $request)
     {
         $request->validate([
@@ -32,6 +34,15 @@ class QrCodeController extends Controller
         $filePath = 'qr-codes/' . $fileName;
         
         \Storage::disk('public')->put($filePath, $qrCode);
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'create',
+            description: 'Generated QR code',
+            modelType: null,
+            modelId: null,
+            newValues: ['url' => $url, 'size' => $size, 'format' => $format, 'file_name' => $fileName]
+        );
 
         return response()->json([
             'success' => true,
@@ -89,6 +100,15 @@ class QrCodeController extends Controller
                 'form_url' => $formUrl,
             ];
         }
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'create',
+            description: 'Bulk generated QR codes for ' . count($generated) . ' form(s)',
+            modelType: Form::class,
+            modelId: null,
+            newValues: ['forms_count' => count($generated), 'form_ids' => $request->forms]
+        );
 
         return response()->json([
             'success' => true,

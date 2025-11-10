@@ -31,25 +31,77 @@ class BranchController extends Controller
             abort(403, 'This QR code is not active or has been deactivated. Please contact the administrator.');
         }
         
-        // Validate token if QR code has one
-        if ($qrCode->validation_token) {
-            $token = $request->query('token');
-            if ($token !== $qrCode->validation_token) {
-                abort(403, 'This QR code has expired or been regenerated. Please scan the latest QR code.');
-            }
-        }
-        
-        // Check if QR code is expired and auto-regenerate if needed
-        if ($qrCode->isExpired()) {
+        // Check if QR code is expired and auto-regenerate if needed FIRST
+        // This must happen before token validation to avoid token mismatch errors
+        $wasExpired = $qrCode->isExpired();
+        if ($wasExpired) {
             $this->regenerateQrCode($qrCode);
             // Reload the QR code to get updated data
             $qrCode->refresh();
         }
         
+        // Validate token if QR code has one
+        // Token verification is required for security
+        if ($qrCode->validation_token) {
+            $token = $request->query('token');
+            
+            // If no token provided, reject access
+            if (empty($token)) {
+                abort(403, 'Invalid QR code. Token is required. Please scan the QR code again.');
+            }
+            
+            // If token doesn't match, reject access
+            // Exception: If QR code was just auto-regenerated (wasExpired = true), allow access
+            // because the old QR code image still has the old token, but we just regenerated
+            if ($token !== $qrCode->validation_token) {
+                // Only allow if QR code was just auto-regenerated in this request
+                if ($wasExpired) {
+                    // QR code was expired and auto-regenerated, so old token is expected
+                    // Log this for security monitoring
+                    Log::info('QR code accessed with old token after auto-regeneration', [
+                        'qr_code_id' => $qrCode->id,
+                        'branch_id' => $branch->id,
+                        'old_token_provided' => substr($token, 0, 8) . '...',
+                        'new_token' => substr($qrCode->validation_token, 0, 8) . '...',
+                    ]);
+                    // Allow access since we just regenerated
+                } else {
+                    // Token doesn't match and QR code wasn't just regenerated - reject
+                    Log::warning('QR code accessed with invalid token', [
+                        'qr_code_id' => $qrCode->id,
+                        'branch_id' => $branch->id,
+                        'expected_token' => substr($qrCode->validation_token, 0, 8) . '...',
+                        'provided_token' => substr($token, 0, 8) . '...',
+                        'is_expired' => $qrCode->isExpired(),
+                    ]);
+                    abort(403, 'Invalid QR code token. This QR code may have been regenerated. Please scan the latest QR code.');
+                }
+            } else {
+                // Token matches - valid access
+                Log::debug('QR code accessed with valid token', [
+                    'qr_code_id' => $qrCode->id,
+                    'branch_id' => $branch->id,
+                ]);
+            }
+        }
+        
         // Store branch_id in session for form submissions
         session(['submission_branch_id' => $branch->id]);
         
-        return view('public.branch', compact('branch'));
+        // Pass QR code info to view for display/debugging
+        $token = $request->query('token');
+        $tokenValid = $qrCode->validation_token && $token === $qrCode->validation_token;
+        
+        $qrCodeInfo = [
+            'is_expired' => $wasExpired,
+            'expires_at' => $qrCode->expires_at,
+            'last_regenerated_at' => $qrCode->last_regenerated_at,
+            'has_token' => !empty($qrCode->validation_token),
+            'token_provided' => !empty($token),
+            'token_valid' => $tokenValid,
+        ];
+        
+        return view('public.branch', compact('branch', 'qrCodeInfo'));
     }
     
     /**

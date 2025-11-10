@@ -148,7 +148,7 @@
                                 <div class="flex items-center justify-end space-x-2">
                                     <button onclick="moveFieldUp({{ $field->id }}, {{ $section->id }})" 
                                             class="inline-flex items-center px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 rounded transition-colors" title="Move Up">
-                                        <i class='bx bx-chevron-right'></i>
+                                        <i class='bx bx-chevron-up'></i>
                                     </button>
                                     <button onclick="moveFieldDown({{ $field->id }}, {{ $section->id }})" 
                                             class="inline-flex items-center px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 rounded transition-colors" title="Move Down">

@@ -5,7 +5,7 @@
 @section('content')
 <!-- Hero Section -->
 <section class="form-section py-12">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
             <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">
                 {{ $form->name ?? ($type == 'raf' ? 'Remittance Application Form' : ($type == 'dar' ? 'Data Access Request Form' : ($type == 'dcr' ? 'Data Correction Request Form' : 'Service Request Form'))) }}
@@ -18,8 +18,8 @@
 </section>
 
 <!-- Form Section -->
-<section class="py-12 bg-gradient-to-br from-gray-50 to-gray-100" x-data="formWizard" x-init="init()">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="py-12" x-data="formWizard" x-init="init()">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         @if(isset($error))
             <div class="bg-red-50 border-l-4 border-red-500 text-red-700 px-6 py-4 mb-6 rounded-lg">
                 <div class="flex items-center">
@@ -33,9 +33,9 @@
         <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
             <!-- Stepper Progress Indicator -->
             @if(count($sections ?? []) > 0)
-            <div class="w-full pt-6 pb-4 border-b border-gray-200 bg-gradient-to-b from-gray-50 to-white">
+            <div class="w-full pt-6 pb-4 border-b border-gray-200 bg-white">
                 <!-- Stepper (Desktop) -->
-                <div class="flex items-center justify-between relative px-4 sm:px-6 lg:px-8">
+                <div class="hidden md:flex items-center justify-between relative px-4 sm:px-6 lg:px-8">
                     @foreach($sections as $index => $section)
                         @php
                             $stepNumber = $section['step'] ?? ($index + 1);
@@ -45,8 +45,8 @@
                                 <!-- Step Circle -->
                                 <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 shadow-md"
                                      :class="{
-                                         'bg-gradient-to-br from-primary-500 to-primary-600 text-white ring-2 ring-primary-200 scale-105 shadow-lg': currentStep === {{ $stepNumber }},
-                                         'bg-gradient-to-br from-primary-600 to-primary-700 text-white ring-1 ring-primary-300 shadow-sm': currentStep > {{ $stepNumber }},
+                                         'bg-primary-500 text-white ring-2 ring-primary-200 scale-105 shadow-lg': currentStep === {{ $stepNumber }},
+                                         'bg-primary-600 text-white ring-1 ring-primary-300 shadow-sm': currentStep > {{ $stepNumber }},
                                          'bg-gray-200 text-gray-500 shadow-sm': currentStep < {{ $stepNumber }}
                                      }">
                                     <i class='bx bx-check text-sm font-bold' x-show="currentStep > {{ $stepNumber }}"></i>
@@ -67,7 +67,7 @@
                             <!-- Connector Line -->
                             <div class="flex-1 h-0.5 mx-3 transition-all duration-300 rounded-full"
                                  :class="{
-                                     'bg-gradient-to-r from-primary-500 to-primary-600 shadow-sm': currentStep > {{ $stepNumber }},
+                                     'bg-primary-500 shadow-sm': currentStep > {{ $stepNumber }},
                                      'bg-gray-200': currentStep <= {{ $stepNumber }}
                                  }"></div>
                         </div>
@@ -78,8 +78,8 @@
                             <!-- Step Circle -->
                             <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 shadow-md"
                                  :class="{
-                                     'bg-gradient-to-br from-primary-500 to-primary-600 text-white ring-2 ring-primary-200 scale-105 shadow-lg': currentStep === {{ count($sections) + 1 }},
-                                     'bg-gradient-to-br from-primary-600 to-primary-700 text-white ring-1 ring-primary-300 shadow-sm': currentStep > {{ count($sections) + 1 }},
+                                     'bg-primary-500 text-white ring-2 ring-primary-200 scale-105 shadow-lg': currentStep === {{ count($sections) + 1 }},
+                                     'bg-primary-600 text-white ring-1 ring-primary-300 shadow-sm': currentStep > {{ count($sections) + 1 }},
                                      'bg-gray-200 text-gray-500 shadow-sm': currentStep < {{ count($sections) + 1 }}
                                  }">
                                 <i class='bx bx-check text-sm font-bold' x-show="currentStep > {{ count($sections) + 1 }}"></i>
@@ -99,6 +99,52 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                
+                <!-- Stepper (Mobile) -->
+                <div class="md:hidden flex items-center justify-between relative px-4">
+                    @foreach($sections as $index => $section)
+                        @php
+                            $stepNumber = $section['step'] ?? ($index + 1);
+                        @endphp
+                        <div class="flex items-center relative z-10 flex-1" :class="{ 'cursor-pointer': currentStep > {{ $stepNumber }} }" @click="if (currentStep > {{ $stepNumber }}) currentStep = {{ $stepNumber }}">
+                            <!-- Step Circle -->
+                            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 shadow-md"
+                                 :class="{
+                                     'bg-primary-500 text-white ring-2 ring-primary-200 scale-110 shadow-lg': currentStep === {{ $stepNumber }},
+                                     'bg-primary-600 text-white ring-1 ring-primary-300 shadow-sm': currentStep > {{ $stepNumber }},
+                                     'bg-gray-200 text-gray-500 shadow-sm': currentStep < {{ $stepNumber }}
+                                 }">
+                                <i class='bx bx-check text-xs font-bold' x-show="currentStep > {{ $stepNumber }}"></i>
+                                <span class="text-xs" x-show="currentStep <= {{ $stepNumber }}">{{ $stepNumber }}</span>
+                            </div>
+                            <!-- Connector Line -->
+                            <div class="flex-1 h-0.5 mx-1.5 transition-all duration-300 rounded-full"
+                                 :class="{
+                                     'bg-primary-500 shadow-sm': currentStep > {{ $stepNumber }},
+                                     'bg-gray-200': currentStep <= {{ $stepNumber }}
+                                 }"></div>
+                        </div>
+                    @endforeach
+                    <!-- Preview Step -->
+                    <div class="flex items-center relative z-10">
+                        <!-- Step Circle -->
+                        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 shadow-md"
+                             :class="{
+                                 'bg-primary-500 text-white ring-2 ring-primary-200 scale-110 shadow-lg': currentStep === {{ count($sections) + 1 }},
+                                 'bg-primary-600 text-white ring-1 ring-primary-300 shadow-sm': currentStep > {{ count($sections) + 1 }},
+                                 'bg-gray-200 text-gray-500 shadow-sm': currentStep < {{ count($sections) + 1 }}
+                             }">
+                            <i class='bx bx-check text-xs font-bold' x-show="currentStep > {{ count($sections) + 1 }}"></i>
+                            <i class='bx bx-show text-xs font-bold' x-show="currentStep === {{ count($sections) + 1 }}"></i>
+                            <span class="text-xs" x-show="currentStep < {{ count($sections) + 1 }}">{{ count($sections) + 1 }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Current Step Label (Mobile) -->
+                <div class="md:hidden px-4 pt-3 text-center">
+                    <span class="text-xs font-semibold text-primary-700" x-text="getCurrentStepLabel()"></span>
                 </div>
             </div>
             @endif
@@ -269,6 +315,13 @@
             },
             getFieldValue(fieldName) {
                 return window.getFormFieldValue('{{ $type }}-form', fieldName);
+            },
+            getCurrentStepLabel() {
+                if (this.currentStep === this.totalSteps) {
+                    return 'Review & Submit';
+                }
+                const section = this.sections.find(s => (s.step ?? (this.sections.indexOf(s) + 1)) === this.currentStep);
+                return section ? section.label : `Step ${this.currentStep}`;
             }
             };
         });

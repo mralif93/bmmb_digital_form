@@ -17,10 +17,56 @@ class QrCodeManagementController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $qrCodes = QrCode::with(['branch', 'creator'])->orderBy('created_at', 'desc')->paginate(15);
-        return view('admin.qr-codes.index', compact('qrCodes'));
+        $query = QrCode::with(['branch', 'creator']);
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('content', 'like', "%{$search}%")
+                  ->orWhereHas('branch', function ($branchQuery) use ($search) {
+                      $branchQuery->where('branch_name', 'like', "%{$search}%")
+                                  ->orWhere('ti_agent_code', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by type
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by branch
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        // Filter by expired status
+        if ($request->filled('expired')) {
+            if ($request->expired === 'yes') {
+                $query->where('expires_at', '<', now());
+            } elseif ($request->expired === 'no') {
+                $query->where(function ($q) {
+                    $q->where('expires_at', '>=', now())
+                      ->orWhereNull('expires_at');
+                });
+            }
+        }
+
+        $qrCodes = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+        
+        // Get branches for filter dropdown
+        $branches = Branch::orderBy('branch_name')->get();
+        
+        return view('admin.qr-codes.index', compact('qrCodes', 'branches'));
     }
 
     /**
@@ -266,6 +312,64 @@ class QrCodeManagementController extends Controller
                 return $content;
             default:
                 return $content;
+        }
+    }
+
+    /**
+     * Regenerate a single QR code
+     */
+    public function regenerate(QrCode $qr_code)
+    {
+        try {
+            if ($qr_code->status !== 'active') {
+                return redirect()->route('admin.qr-codes.index')
+                    ->with('error', 'Only active QR codes can be regenerated.');
+            }
+
+            // Generate new validation token
+            $validationToken = bin2hex(random_bytes(16));
+            
+            // Generate QR code content based on type
+            $qrContent = $this->generateQrContent($qr_code->type, $qr_code->content, $qr_code->branch_id, $validationToken);
+
+            // Delete old QR code image
+            if ($qr_code->qr_code_image) {
+                Storage::disk('public')->delete('qr-codes/' . $qr_code->qr_code_image);
+            }
+
+            // Generate new QR code image
+            $qrCodeImage = QrCodeGenerator::format($qr_code->format)
+                ->size($qr_code->size)
+                ->margin(2)
+                ->generate($qrContent);
+
+            // Save new QR code image
+            $fileName = 'qr_' . time() . '_' . uniqid() . '.' . $qr_code->format;
+            $filePath = 'qr-codes/' . $fileName;
+            Storage::disk('public')->put($filePath, $qrCodeImage);
+
+            // Update QR code record with new expiration and token
+            $qr_code->update([
+                'qr_code_image' => $fileName,
+                'content' => $qrContent,
+                'last_regenerated_at' => now(),
+                'expires_at' => now()->addMinutes($this->getQrCodeExpirationMinutes()),
+                'validation_token' => $validationToken,
+            ]);
+
+            // Log audit trail
+            $this->logAuditTrail(
+                action: 'update',
+                description: "Regenerated QR code: {$qr_code->name}",
+                modelType: QrCode::class,
+                modelId: $qr_code->id
+            );
+
+            return redirect()->route('admin.qr-codes.index')
+                ->with('success', 'QR code regenerated successfully! A new QR code image has been generated with a new token. Old QR codes are now invalid.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.qr-codes.index')
+                ->with('error', 'Failed to regenerate QR code: ' . $e->getMessage());
         }
     }
 

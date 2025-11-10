@@ -54,44 +54,20 @@ Route::prefix('forms')->name('public.forms.')->group(function () {
 });
 
 // Auth routes
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register');
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 
-Route::get('/forgot-password', function () {
-    return view('auth.forgot-password');
-})->name('password.request');
-
-Route::post('/forgot-password', function () {
-    request()->validate([
-        'email' => 'required|email',
-    ]);
-
-    $status = Password::sendResetLink(
-        request()->only('email')
-    );
-
-    return $status === Password::RESET_LINK_SENT
-        ? back()->with(['status' => __($status)])
-        : back()->withErrors(['email' => __($status)]);
-})->name('password.email');
+Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware('auth')->name('dashboard');
 
-Route::post('/logout', function () {
-    auth()->logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-    return redirect('/');
-})->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
@@ -116,6 +92,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     
     // QR Code Management (CRUD)
     Route::resource('qr-codes', QrCodeManagementController::class);
+    Route::post('/qr-codes/{qr_code}/regenerate', [QrCodeManagementController::class, 'regenerate'])->name('qr-codes.regenerate');
     Route::post('/qr-codes/regenerate-all', [QrCodeManagementController::class, 'regenerateAll'])->name('qr-codes.regenerate-all');
     
     // Profile
@@ -133,6 +110,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     
     // Dynamic Forms Management (Custom Forms)
     Route::resource('forms', FormController::class);
+    Route::post('/forms/reorder', [FormController::class, 'reorder'])->name('forms.reorder');
     
     // Form Builder (Dynamic Form Management)
     // Form Sections Management

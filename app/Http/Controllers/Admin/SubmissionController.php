@@ -9,10 +9,12 @@ use App\Models\DarFormSubmission;
 use App\Models\DcrFormSubmission;
 use App\Models\RafFormSubmission;
 use App\Models\SrfFormSubmission;
+use App\Traits\LogsAuditTrail;
 use Illuminate\Http\Request;
 
 class SubmissionController extends Controller
 {
+    use LogsAuditTrail;
     /**
      * Display DAR submissions
      */
@@ -187,11 +189,22 @@ class SubmissionController extends Controller
             $submission = $model::findOrFail($id);
         }
 
+        $oldStatus = $submission->status;
         $submission->status = $request->status;
         if ($request->has('notes')) {
             $submission->review_notes = $request->notes;
         }
         $submission->save();
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'update',
+            description: "Updated submission status from '{$oldStatus}' to '{$request->status}'",
+            modelType: get_class($submission),
+            modelId: $submission->id,
+            oldValues: ['status' => $oldStatus],
+            newValues: ['status' => $request->status, 'notes' => $request->notes ?? null]
+        );
 
         return back()->with('success', 'Submission status updated successfully.');
     }

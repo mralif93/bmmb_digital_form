@@ -33,6 +33,9 @@
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" style="min-width: 900px; width: 100%;">
             <thead class="bg-gray-50 dark:bg-gray-700">
                     <tr>
+                        <th class="px-3 sm:px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider w-10">
+                            <i class='bx bx-menu text-gray-400'></i>
+                        </th>
                         <th class="px-3 sm:px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                             Form Name
                         </th>
@@ -53,10 +56,11 @@
                         </th>
                     </tr>
                 </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody id="formsTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 @forelse($forms as $form)
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                     data-form-id="{{ $form->id }}"
+                    data-sort-order="{{ $form->sort_order }}"
                     data-form-name="{{ $form->name }}"
                     data-form-slug="{{ $form->slug }}"
                     data-form-description="{{ $form->description ?? '' }}"
@@ -64,6 +68,11 @@
                     data-form-is-public="{{ $form->is_public ? '1' : '0' }}"
                     data-form-allow-multiple="{{ $form->allow_multiple_submissions ? '1' : '0' }}"
                     data-form-submission-limit="{{ $form->submission_limit ?? '' }}">
+                    <td class="px-3 sm:px-4 py-3">
+                        <div class="drag-handle cursor-move text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                            <i class='bx bx-menu text-lg'></i>
+                        </div>
+                    </td>
                     <td class="px-3 sm:px-4 py-3">
                         <div class="text-xs font-semibold text-gray-900 dark:text-white">
                             {{ $form->name }}
@@ -740,6 +749,57 @@
             container.innerHTML = '';
         }, 300);
     }
+
+    // Initialize SortableJS for form reordering
+    document.addEventListener('DOMContentLoaded', function() {
+        const tbody = document.getElementById('formsTableBody');
+        if (tbody && typeof Sortable !== 'undefined') {
+            new Sortable(tbody, {
+                handle: '.drag-handle',
+                animation: 150,
+                ghostClass: 'opacity-50',
+                chosenClass: 'sortable-chosen',
+                onEnd: function(evt) {
+                    const rows = Array.from(tbody.querySelectorAll('tr[data-form-id]'));
+                    const forms = rows.map((row, index) => ({
+                        id: parseInt(row.dataset.formId),
+                        sort_order: index + 1
+                    }));
+                    
+                    fetch('{{ route("admin.forms.reorder") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ forms: forms })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            rows.forEach((row, index) => {
+                                row.dataset.sortOrder = index + 1;
+                            });
+                        } else {
+                            throw new Error(data.message || 'Failed to reorder forms');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error updating sort order:', error);
+                        alert('Failed to update form order. Please refresh the page.');
+                        location.reload();
+                    });
+                }
+            });
+        }
+    });
 </script>
 @endpush
 @endsection

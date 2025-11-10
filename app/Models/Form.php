@@ -20,6 +20,7 @@ class Form extends Model
         'allow_multiple_submissions',
         'submission_limit',
         'settings',
+        'sort_order',
     ];
 
     protected $casts = [

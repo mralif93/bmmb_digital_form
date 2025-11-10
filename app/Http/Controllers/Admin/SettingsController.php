@@ -36,6 +36,8 @@ class SettingsController extends Controller
             'enable_offline_mode' => 'nullable|boolean',
             'enable_email_notifications' => 'nullable|boolean',
             'enable_analytics' => 'nullable|boolean',
+            'default_theme' => 'nullable|string|in:light,dark,auto',
+            'primary_color' => ['nullable', 'string', 'regex:/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/'],
         ]);
 
         // Get current settings
@@ -71,7 +73,11 @@ class SettingsController extends Controller
      */
     private function getSettings()
     {
-        return Cache::remember('system_settings', 3600, function () {
+        // First check if settings exist in cache
+        $settings = Cache::get('system_settings');
+        
+        // If not in cache, return defaults
+        if (!$settings) {
             return [
                 'app_name' => 'BMMB Digital Forms',
                 'app_url' => url('/'),
@@ -83,8 +89,26 @@ class SettingsController extends Controller
                 'enable_offline_mode' => true,
                 'enable_email_notifications' => true,
                 'enable_analytics' => false,
+                'default_theme' => 'light',
+                'primary_color' => '#FE8000', // Default orange color
             ];
-        });
+        }
+        
+        // Merge with defaults to ensure all keys exist
+        return array_merge([
+            'app_name' => 'BMMB Digital Forms',
+            'app_url' => url('/'),
+            'app_description' => 'Digital form management system for BMMB',
+            'timezone' => 'UTC',
+            'language' => 'en',
+            'qr_code_expiration_minutes' => 60,
+            'enable_registration' => true,
+            'enable_offline_mode' => true,
+            'enable_email_notifications' => true,
+            'enable_analytics' => false,
+            'default_theme' => 'light',
+            'primary_color' => '#FE8000',
+        ], $settings);
     }
 }
 

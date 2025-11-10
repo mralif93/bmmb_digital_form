@@ -20,7 +20,7 @@ trait LogsAuditTrail
      * @param array|null $requestData Request data (sanitized)
      * @return AuditTrail
      */
-    public static function logAuditTrail(
+    public function logAuditTrail(
         string $action,
         ?string $description = null,
         ?string $modelType = null,

@@ -7,24 +7,39 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'BMMB Digital Forms')</title>
     
+    <!-- Google Fonts - Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Tailwind CSS CDN - Play CDN (More Reliable) -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+    @php
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', [
+            'default_theme' => 'light',
+            'primary_color' => '#FE8000',
+        ]);
+        $primaryColor = $settings['primary_color'] ?? '#FE8000';
+        $defaultTheme = $settings['default_theme'] ?? 'light';
+        $colorShades = \App\Helpers\ColorHelper::generateColorShades($primaryColor);
+    @endphp
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
                         primary: {
-                            50: '#fff8f0',
-                            100: '#ffeed6',
-                            200: '#ffd9ad',
-                            300: '#ffbe73',
-                            400: '#ff9a3d',
-                            500: '#FE8000',
-                            600: '#e66f00',
-                            700: '#cc5e00',
-                            800: '#b34d00',
-                            900: '#993c00',
+                            50: '{{ $colorShades[50] }}',
+                            100: '{{ $colorShades[100] }}',
+                            200: '{{ $colorShades[200] }}',
+                            300: '{{ $colorShades[300] }}',
+                            400: '{{ $colorShades[400] }}',
+                            500: '{{ $colorShades[500] }}',
+                            600: '{{ $colorShades[600] }}',
+                            700: '{{ $colorShades[700] }}',
+                            800: '{{ $colorShades[800] }}',
+                            900: '{{ $colorShades[900] }}',
                         }
                     },
                     animation: {
@@ -32,7 +47,7 @@
                         'slide-down': 'slideDown 0.3s ease-out',
                     },
                     fontFamily: {
-                        'sans': ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif'],
+                        'sans': ['Poppins', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif'],
                     }
                 }
             }
@@ -81,20 +96,29 @@
         html {
             line-height: 1.5;
             -webkit-text-size-adjust: 100%;
-            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            font-family: 'Poppins', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
         }
         
         body {
             margin: 0;
             line-height: inherit;
             font-size: 14px;
-            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Poppins', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        /* Dark mode body background */
+        body.dark {
+            background: #111827;
+        }
+        
+        .dark body {
+            background: #111827;
         }
         
         [x-cloak] { display: none !important; }
         
         .form-section {
-            background: #FE8000;
+            background: {{ $primaryColor }};
         }
         
         .form-card {
@@ -102,15 +126,19 @@
             background: rgba(255, 255, 255, 0.95);
         }
         
+        .dark .form-card {
+            background: rgba(31, 41, 55, 0.95);
+        }
+        
         .btn-primary {
-            background: #FE8000;
+            background: {{ $primaryColor }};
             transition: all 0.3s ease;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(254, 128, 0, 0.4);
-            background: #E87700;
+            box-shadow: 0 10px 25px {{ $primaryColor }}66;
+            background: {{ $colorShades[600] }};
         }
         
         .form-input {
@@ -119,7 +147,7 @@
         
         .form-input:focus {
             transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(254, 128, 0, 0.2);
+            box-shadow: 0 5px 15px {{ $primaryColor }}33;
         }
         
         .step-indicator {
@@ -142,7 +170,7 @@
         }
         
         .step-indicator.active::after {
-            background: #FE8000;
+            background: {{ $primaryColor }};
         }
         
         /* Animations */
@@ -182,12 +210,12 @@
         }
         
         ::-webkit-scrollbar-thumb {
-            background: #FE8000;
+            background: {{ $primaryColor }};
             border-radius: 4px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: #E87700;
+            background: {{ $colorShades[600] }};
         }
         
         /* Navigation Styles */
@@ -237,6 +265,23 @@
             background: rgba(255, 255, 255, 0.95);
         }
         
+        .dark .sticky {
+            background: rgba(31, 41, 55, 0.95);
+        }
+        
+        /* Dark mode scrollbar */
+        .dark ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        
+        .dark ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+        }
+        
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+        
         /* Dropdown animation */
         [x-cloak] { display: none !important; }
         
@@ -259,73 +304,73 @@
     
     @stack('styles')
 </head>
-<body class="bg-gray-50 min-h-screen" x-data="{ mobileMenuOpen: false }">
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col" x-data="{ mobileMenuOpen: false }">
     <!-- Header -->
-    <header class="backdrop-blur-md shadow-md border-b border-primary-100 sticky top-0 z-50">
+    <header class="backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-700 bg-white/98 dark:bg-gray-800/98 sticky top-0 z-50 flex-shrink-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-14">
+            <div class="flex justify-between items-center h-16 md:h-18">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="{{ route('home') }}" class="flex items-center space-x-2 group">
-                        <img src="{{ asset('assets/images/Logo_BMMB_Full.png') }}" alt="BMMB Logo" class="h-10 object-contain group-hover:scale-105 transition-transform duration-300">
+                    <a href="{{ route('home') }}" class="flex items-center space-x-3 group">
+                        <img src="{{ asset('assets/images/Logo_BMMB_Full.png') }}" alt="BMMB Logo" class="h-10 md:h-12 object-contain group-hover:scale-105 transition-transform duration-300">
                     </a>
                 </div>
                 
                 <!-- Desktop Navigation -->
-                <nav class="hidden xl:flex items-center space-x-2">
-                    <a href="{{ route('home') }}" class="relative px-2.5 py-1 text-xs font-semibold text-gray-700 hover:text-primary-600 rounded-lg hover:bg-primary-100 transition-all duration-300 group {{ request()->routeIs('home') ? 'text-primary-600 bg-primary-100' : '' }}">
-                        <i class='bx bx-home mr-1.5 text-sm'></i>
+                <nav class="hidden xl:flex items-center space-x-1">
+                    <a href="{{ route('home') }}" class="relative px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-300 group {{ request()->routeIs('home') ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : '' }}">
+                        <i class='bx bx-home mr-2 text-base'></i>
                         <span>Home</span>
                     </a>
                     
                     <!-- Forms Dropdown -->
                     <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" @click.away="open = false" class="flex items-center px-2.5 py-1 text-xs font-semibold text-gray-700 hover:text-primary-600 rounded-lg hover:bg-primary-100 transition-all duration-300 group">
-                            <i class='bx bx-file-blank mr-1.5 text-sm'></i>
+                        <button @click="open = !open" @click.away="open = false" class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-300 group">
+                            <i class='bx bx-file-blank mr-2 text-base'></i>
                             <span>Forms</span>
-                            <i class='bx bx-chevron-down ml-1.5 text-xs transition-transform duration-200' :class="open ? 'rotate-180' : ''"></i>
+                            <i class='bx bx-chevron-down ml-1.5 text-sm transition-transform duration-200' :class="open ? 'rotate-180' : ''"></i>
                         </button>
                         
                         <!-- Dropdown Menu -->
-                        <div x-show="open" x-cloak class="absolute right-0 mt-3 w-80 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-100 py-3 z-50">
-                            <div class="px-3 py-2 border-b border-gray-100">
-                                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Available Forms</h3>
+                        <div x-show="open" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-1" class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 backdrop-blur-md rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 z-50">
+                            <div class="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
+                                <h3 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Available Forms</h3>
                             </div>
-                            <div class="py-2">
-                                <a href="{{ route('public.forms.raf') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-green-50 hover:text-green-700 transition-all duration-200 group">
-                                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-200">
+                            <div class="py-1">
+                                <a href="{{ route('public.forms.raf') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-green-900/30 hover:text-green-700 dark:hover:text-green-400 transition-all duration-200 group">
+                                    <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
                                         <i class='bx bx-money text-white text-lg'></i>
                                     </div>
                                     <div>
                                         <div class="font-semibold text-sm">Remittance Application</div>
-                                        <div class="text-xs text-gray-500">Financial transactions & transfers</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">Financial transactions & transfers</div>
                                     </div>
                                 </a>
-                                <a href="{{ route('public.forms.dar') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group">
-                                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-200">
+                                <a href="{{ route('public.forms.dar') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-400 transition-all duration-200 group">
+                                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
                                         <i class='bx bx-data text-white text-lg'></i>
                                     </div>
                                     <div>
                                         <div class="font-semibold text-sm">Data Access Request</div>
-                                        <div class="text-xs text-gray-500">Personal data access & privacy</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">Personal data access & privacy</div>
                                     </div>
                                 </a>
-                                <a href="{{ route('public.forms.dcr') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-all duration-200 group">
-                                    <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-200">
+                                <a href="{{ route('public.forms.dcr') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:text-primary-700 dark:hover:text-primary-400 transition-all duration-200 group">
+                                    <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
                                         <i class='bx bx-edit text-white text-lg'></i>
                                     </div>
                                     <div>
                                         <div class="font-semibold text-sm">Data Correction</div>
-                                        <div class="text-xs text-gray-500">Update & correct personal data</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">Update & correct personal data</div>
                                     </div>
                                 </a>
-                                <a href="{{ route('public.forms.srf') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-all duration-200 group">
-                                    <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-200">
+                                <a href="{{ route('public.forms.srf') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:text-purple-700 dark:hover:text-purple-400 transition-all duration-200 group">
+                                    <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
                                         <i class='bx bx-cog text-white text-lg'></i>
                                     </div>
                                     <div>
                                         <div class="font-semibold text-sm">Service Request</div>
-                                        <div class="text-xs text-gray-500">General services & support</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">General services & support</div>
                                     </div>
                                 </a>
                             </div>
@@ -334,79 +379,89 @@
                 </nav>
                 
                 <!-- Action Buttons -->
-                <div class="hidden xl:flex items-center space-x-2">
-                    <a href="{{ route('login') }}" class="px-2.5 py-1 text-xs font-semibold text-primary-600 bg-primary-100 hover:bg-primary-200 rounded-lg transition-all duration-300">
+                <div class="hidden xl:flex items-center space-x-3">
+                    <!-- Dark Mode Toggle -->
+                    <button onclick="toggleDarkMode()" class="p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-300" title="Toggle Dark Mode">
+                        <i class='bx bx-moon text-xl dark:hidden' id="darkModeIcon"></i>
+                        <i class='bx bx-sun text-xl hidden dark:inline-block' id="lightModeIcon"></i>
+                    </button>
+                    <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-semibold text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
                         Sign In
                     </a>
                 </div>
                 
                 <!-- Mobile menu button -->
-                <div class="xl:hidden">
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-1.5 text-gray-700 hover:text-primary-600 rounded-lg hover:bg-primary-100 transition-all duration-300">
-                        <i class='bx bx-menu text-lg' x-show="!mobileMenuOpen"></i>
-                        <i class='bx bx-x text-lg' x-show="mobileMenuOpen"></i>
+                <div class="xl:hidden flex items-center space-x-2">
+                    <!-- Dark Mode Toggle (Mobile) -->
+                    <button onclick="toggleDarkMode()" class="p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-300" title="Toggle Dark Mode">
+                        <i class='bx bx-moon text-xl dark:hidden' id="darkModeIconMobile"></i>
+                        <i class='bx bx-sun text-xl hidden dark:inline-block' id="lightModeIconMobile"></i>
+                    </button>
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-300">
+                        <i class='bx bx-menu text-xl' x-show="!mobileMenuOpen"></i>
+                        <i class='bx bx-x text-xl' x-show="mobileMenuOpen"></i>
                     </button>
                 </div>
             </div>
         </div>
         
         <!-- Mobile menu -->
-        <div x-show="mobileMenuOpen" x-cloak class="xl:hidden backdrop-blur-md border-t border-primary-100 shadow-xl">
-            <div class="px-3 py-3 space-y-2">
+        <div x-show="mobileMenuOpen" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-1" class="xl:hidden backdrop-blur-md border-t border-gray-200 dark:border-gray-700 shadow-xl bg-white/98 dark:bg-gray-800/98">
+            <div class="px-4 py-4 space-y-1">
                 <!-- Mobile Home Link -->
-                <a href="{{ route('home') }}" class="flex items-center px-2.5 py-1.5 text-gray-700 hover:bg-primary-100 hover:text-primary-600 rounded-lg transition-all duration-300 group {{ request()->routeIs('home') ? 'bg-primary-100 text-primary-600' : '' }}">
-                    <i class='bx bx-home text-sm mr-2'></i>
-                    <span class="text-sm font-semibold">Home</span>
+                <a href="{{ route('home') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg transition-all duration-300 group {{ request()->routeIs('home') ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400' : '' }}">
+                    <i class='bx bx-home text-lg mr-3'></i>
+                    <span class="text-base font-medium">Home</span>
                 </a>
                 
                 <!-- Mobile Forms Section -->
-                <div class="border-t border-gray-100 pt-4">
-                    <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4 px-4">Available Forms</div>
-                    <div class="space-y-2">
-                        <a href="{{ route('public.forms.raf') }}" class="flex items-center px-4 py-4 text-gray-700 hover:bg-green-50 hover:text-green-700 rounded-xl transition-all duration-300 group {{ request()->routeIs('public.forms.raf') ? 'bg-green-50 text-green-700' : '' }}">
-                            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-200">
-                                <i class='bx bx-money text-white text-xl'></i>
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
+                    <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 px-4">Available Forms</div>
+                    <div class="space-y-1">
+                        <a href="{{ route('public.forms.raf') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-green-900/30 hover:text-green-700 dark:hover:text-green-400 rounded-lg transition-all duration-300 group {{ request()->routeIs('public.forms.raf') ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400' : '' }}">
+                            <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
+                                <i class='bx bx-money text-white text-lg'></i>
                             </div>
                             <div>
-                                <div class="font-semibold text-base">Remittance Application</div>
-                                <div class="text-sm text-gray-500">Financial transactions & transfers</div>
+                                <div class="font-semibold text-sm">Remittance Application</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">Financial transactions & transfers</div>
                             </div>
                         </a>
-                        <a href="{{ route('public.forms.dar') }}" class="flex items-center px-4 py-4 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl transition-all duration-300 group {{ request()->routeIs('public.forms.dar') ? 'bg-blue-50 text-blue-700' : '' }}">
-                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-200">
-                                <i class='bx bx-data text-white text-xl'></i>
+                        <a href="{{ route('public.forms.dar') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-400 rounded-lg transition-all duration-300 group {{ request()->routeIs('public.forms.dar') ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' : '' }}">
+                            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
+                                <i class='bx bx-data text-white text-lg'></i>
                             </div>
                             <div>
-                                <div class="font-semibold text-base">Data Access Request</div>
-                                <div class="text-sm text-gray-500">Personal data access & privacy</div>
+                                <div class="font-semibold text-sm">Data Access Request</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">Personal data access & privacy</div>
                             </div>
                         </a>
-                        <a href="{{ route('public.forms.dcr') }}" class="flex items-center px-4 py-4 text-gray-700 hover:bg-orange-50 hover:text-orange-700 rounded-xl transition-all duration-300 group {{ request()->routeIs('public.forms.dcr') ? 'bg-orange-50 text-orange-700' : '' }}">
-                            <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-200">
-                                <i class='bx bx-edit text-white text-xl'></i>
+                        <a href="{{ route('public.forms.dcr') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:text-primary-700 dark:hover:text-primary-400 rounded-lg transition-all duration-300 group {{ request()->routeIs('public.forms.dcr') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : '' }}">
+                            <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
+                                <i class='bx bx-edit text-white text-lg'></i>
                             </div>
                             <div>
-                                <div class="font-semibold text-base">Data Correction</div>
-                                <div class="text-sm text-gray-500">Update & correct personal data</div>
+                                <div class="font-semibold text-sm">Data Correction</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">Update & correct personal data</div>
                             </div>
                         </a>
-                        <a href="{{ route('public.forms.srf') }}" class="flex items-center px-4 py-4 text-gray-700 hover:bg-purple-50 hover:text-purple-700 rounded-xl transition-all duration-300 group {{ request()->routeIs('public.forms.srf') ? 'bg-purple-50 text-purple-700' : '' }}">
-                            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-200">
-                                <i class='bx bx-cog text-white text-xl'></i>
+                        <a href="{{ route('public.forms.srf') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:text-purple-700 dark:hover:text-purple-400 rounded-lg transition-all duration-300 group {{ request()->routeIs('public.forms.srf') ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' : '' }}">
+                            <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
+                                <i class='bx bx-cog text-white text-lg'></i>
                             </div>
                             <div>
-                                <div class="font-semibold text-base">Service Request</div>
-                                <div class="text-sm text-gray-500">General services & support</div>
+                                <div class="font-semibold text-sm">Service Request</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">General services & support</div>
                             </div>
                         </a>
                     </div>
                 </div>
                 
                 <!-- Mobile Action Buttons -->
-                <div class="border-t border-primary-100 pt-2 space-y-2">
-                    <a href="{{ route('login') }}" class="flex items-center px-2.5 py-1.5 text-primary-600 bg-primary-100 hover:bg-primary-200 rounded-lg transition-all duration-300">
-                        <i class='bx bx-log-in text-sm mr-2'></i>
-                        <span class="text-sm font-semibold">Sign In</span>
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
+                    <a href="{{ route('login') }}" class="flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
+                        <i class='bx bx-log-in text-lg mr-2'></i>
+                        <span>Sign In</span>
                     </a>
                 </div>
             </div>
@@ -414,21 +469,21 @@
     </header>
 
     <!-- Main Content -->
-    <main class="min-h-screen">
+    <main class="flex-grow">
         @yield('content')
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200">
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
-                <div class="text-gray-600 text-xs">
+                <div class="text-gray-600 dark:text-gray-400 text-xs">
                     © {{ date('Y') }} BMMB Digital Forms. All rights reserved.
                 </div>
                 <div class="flex space-x-4 text-xs">
-                    <a href="#" class="text-gray-600 hover:text-primary-600 transition-colors duration-300">Privacy Policy</a>
-                    <a href="#" class="text-gray-600 hover:text-primary-600 transition-colors duration-300">Terms of Service</a>
-                    <a href="#" class="text-gray-600 hover:text-primary-600 transition-colors duration-300">Cookie Policy</a>
+                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-300">Privacy Policy</a>
+                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-300">Terms of Service</a>
+                    <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-300">Cookie Policy</a>
                 </div>
             </div>
         </div>
@@ -436,6 +491,60 @@
 
     <!-- Scripts -->
     <script>
+        // Dark Mode Functions
+        function getThemePreference() {
+            const saved = localStorage.getItem('darkMode');
+            if (saved !== null) {
+                return saved === 'true';
+            }
+            // Use system default theme setting
+            const defaultTheme = '{{ $defaultTheme }}';
+            if (defaultTheme === 'dark') {
+                return true;
+            } else if (defaultTheme === 'auto') {
+                return window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+            // Default to light mode
+            return false;
+        }
+        
+        function applyTheme(isDark) {
+            const html = document.documentElement;
+            if (isDark) {
+                html.classList.add('dark');
+            } else {
+                html.classList.remove('dark');
+            }
+            updateDarkModeIcons(isDark);
+        }
+        
+        function updateDarkModeIcons(isDark) {
+            const darkIcons = document.querySelectorAll('#darkModeIcon, #darkModeIconMobile');
+            const lightIcons = document.querySelectorAll('#lightModeIcon, #lightModeIconMobile');
+            
+            darkIcons.forEach(icon => {
+                icon.classList.toggle('hidden', isDark);
+            });
+            lightIcons.forEach(icon => {
+                icon.classList.toggle('hidden', !isDark);
+            });
+        }
+        
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            const newTheme = !isDark;
+            
+            applyTheme(newTheme);
+            localStorage.setItem('darkMode', newTheme.toString());
+        }
+        
+        // Apply theme on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const isDark = getThemePreference();
+            applyTheme(isDark);
+        });
+        
         // Mobile menu toggle
         document.addEventListener('alpine:init', () => {
             Alpine.data('mobileMenu', () => ({
@@ -470,7 +579,7 @@
                     icon: 'error',
                     title: 'Validation Error',
                     text: 'Please fill in all required fields.',
-                    confirmButtonColor: '#FE8000'
+                    confirmButtonColor: '{{ $primaryColor }}'
                 });
                 return false;
             }
@@ -511,7 +620,7 @@
                         icon: 'success',
                         title: 'Success!',
                         text: data.message || successMessage,
-                        confirmButtonColor: '#FE8000'
+                        confirmButtonColor: '{{ $primaryColor }}'
                     }).then(() => {
                         form.reset();
                         // Optionally redirect to a thank you page
@@ -522,7 +631,7 @@
                         icon: 'error',
                         title: 'Submission Failed',
                         text: data.message || 'An error occurred. Please try again.',
-                        confirmButtonColor: '#FE8000'
+                        confirmButtonColor: '{{ $primaryColor }}'
                     });
                 }
             })
@@ -532,7 +641,7 @@
                     icon: 'error',
                     title: 'Submission Failed',
                     text: 'An error occurred. Please try again.',
-                    confirmButtonColor: '#FE8000'
+                    confirmButtonColor: '{{ $primaryColor }}'
                 });
             });
             

@@ -11,12 +11,16 @@ use App\Models\RafFormSubmission;
 use App\Models\DarFormSubmission;
 use App\Models\DcrFormSubmission;
 use App\Models\SrfFormSubmission;
+use App\Models\FormSubmission;
+use App\Models\Form;
 use App\Services\FormRendererService;
+use App\Traits\LogsAuditTrail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class FormSubmissionController extends Controller
 {
+    use LogsAuditTrail;
     private $formConfig = [
         'raf' => [
             'form_model' => RemittanceApplicationForm::class,
@@ -123,6 +127,28 @@ class FormSubmissionController extends Controller
 
         // Create submission
         $submission = $submissionModel::create($submissionData);
+
+        // Log audit trail (public submissions don't have authenticated users)
+        // Note: user_id will be null for public submissions
+        try {
+            $this->logAuditTrail(
+                action: 'create',
+                description: "Public form submission created: {$config['title']}",
+                modelType: get_class($submission),
+                modelId: $submission->id,
+                newValues: [
+                    'form_type' => $type,
+                    'form_id' => $form->id,
+                    'branch_id' => $branchId,
+                    'submission_token' => $submissionToken,
+                    'status' => 'submitted',
+                    'ip_address' => $request->ip(),
+                ]
+            );
+        } catch (\Exception $e) {
+            // Log error but don't fail the submission
+            \Log::warning('Failed to log audit trail for public form submission: ' . $e->getMessage());
+        }
 
         // Clear branch session
         session()->forget('submission_branch_id');

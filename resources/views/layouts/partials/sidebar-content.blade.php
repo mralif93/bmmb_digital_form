@@ -1,43 +1,35 @@
 <nav class="p-4 space-y-1">
     <div class="mb-8">
         <div class="space-y-0.5">
-            <a href="{{ route('admin.dashboard') }}" @click="if (window.innerWidth < 1024) { setTimeout(() => { window.dispatchEvent(new CustomEvent('close-sidebar')); }, 100); }" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.dashboard') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
+            <a href="{{ route('admin.dashboard') }}" @click="if (window.innerWidth < 1024) { setTimeout(() => { window.dispatchEvent(new CustomEvent('close-sidebar')); }, 100); }" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-colors {{ request()->routeIs('admin.dashboard') ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400' : '' }}">
                 <i class='bx bx-home-alt-2 mr-3 text-base'></i>
                 <span class="font-medium">Dashboard</span>
             </a>
             
-            <a href="{{ route('admin.users.index') }}" @click="if (window.innerWidth < 1024) { setTimeout(() => { const event = new CustomEvent('close-sidebar'); window.dispatchEvent(event); }, 100); }" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+            <a href="{{ route('admin.users.index') }}" @click="if (window.innerWidth < 1024) { setTimeout(() => { const event = new CustomEvent('close-sidebar'); window.dispatchEvent(event); }, 100); }" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                 <i class='bx bx-user mr-3 text-base'></i>
                 <span class="font-medium">Users</span>
             </a>
             
-            <a href="{{ route('admin.branches.index') }}" @click="if (window.innerWidth < 1024) { setTimeout(() => { const event = new CustomEvent('close-sidebar'); window.dispatchEvent(event); }, 100); }" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.branches*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
+            <a href="{{ route('admin.branches.index') }}" @click="if (window.innerWidth < 1024) { setTimeout(() => { const event = new CustomEvent('close-sidebar'); window.dispatchEvent(event); }, 100); }" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-colors {{ request()->routeIs('admin.branches*') ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400' : '' }}">
                 <i class='bx bx-building mr-3 text-base'></i>
                 <span class="font-medium">Branches</span>
             </a>
             
-            <a href="{{ route('admin.qr-codes.index') }}" @click="if (window.innerWidth < 1024) { setTimeout(() => { const event = new CustomEvent('close-sidebar'); window.dispatchEvent(event); }, 100); }" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.qr-codes*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
+            <a href="{{ route('admin.qr-codes.index') }}" @click="if (window.innerWidth < 1024) { setTimeout(() => { const event = new CustomEvent('close-sidebar'); window.dispatchEvent(event); }, 100); }" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-colors {{ request()->routeIs('admin.qr-codes*') ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400' : '' }}">
                 <i class='bx bx-qr-scan mr-3 text-base'></i>
                 <span class="font-medium">QR Codes</span>
             </a>
             
-            <a href="{{ route('admin.audit-trails.index') }}" @click="if (window.innerWidth < 1024) { setTimeout(() => { const event = new CustomEvent('close-sidebar'); window.dispatchEvent(event); }, 100); }" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.audit-trails*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                <i class='bx bx-history mr-3 text-base'></i>
-                <span class="font-medium">Audit Trail</span>
-            </a>
-        </div>
-    </div>
-
-    <!-- Form Management Section -->
-    <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-        <div x-data="{ open: {{ request()->routeIs('admin.forms.*') || request()->routeIs('admin.form-builder.*') || request()->routeIs('admin.form-sections.*') || request()->routeIs('admin.submissions.*') ? 'true' : 'false' }} }">
-            <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('admin.forms.*') || request()->routeIs('admin.form-builder.*') || request()->routeIs('admin.form-sections.*') || request()->routeIs('admin.submissions.*') ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : '' }}">
-                <div class="flex items-center">
-                    <i class='bx bx-file-blank mr-3 text-base'></i>
-                    <span class="font-medium">Form Management</span>
-                </div>
-                <i class='bx bx-chevron-right text-xs transition-transform' :class="{ 'rotate-90': open }"></i>
-            </button>
+            <!-- Forms Section -->
+            <div x-data="{ open: {{ request()->routeIs('admin.forms.*') || request()->routeIs('admin.form-builder.*') || request()->routeIs('admin.form-sections.*') || request()->routeIs('admin.submissions.*') ? 'true' : 'false' }} }">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-colors {{ request()->routeIs('admin.forms.*') || request()->routeIs('admin.form-builder.*') || request()->routeIs('admin.form-sections.*') || request()->routeIs('admin.submissions.*') ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400' : '' }}">
+                    <div class="flex items-center">
+                        <i class='bx bx-file-blank mr-3 text-base'></i>
+                        <span class="font-medium">Forms</span>
+                    </div>
+                    <i class='bx bx-chevron-right text-xs transition-transform' :class="{ 'rotate-90': open }"></i>
+                </button>
             <div x-show="open" x-transition class="mt-1 space-y-0.5">
                 <!-- Forms -->
                 <a href="{{ route('admin.forms.index') }}" class="flex items-center px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.forms.*') && !request()->routeIs('admin.form-builder.*') && !request()->routeIs('admin.form-sections.*') ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
@@ -158,6 +150,12 @@
                     </div>
                 </div>
             </div>
+            </div>
+            
+            <a href="{{ route('admin.audit-trails.index') }}" @click="if (window.innerWidth < 1024) { setTimeout(() => { const event = new CustomEvent('close-sidebar'); window.dispatchEvent(event); }, 100); }" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-colors {{ request()->routeIs('admin.audit-trails*') ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400' : '' }}">
+                <i class='bx bx-history mr-3 text-base'></i>
+                <span class="font-medium">Audit Trail</span>
+            </a>
         </div>
     </div>
 

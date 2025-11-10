@@ -55,24 +55,10 @@ class FormController extends Controller
     }
 
     /**
-     * Display public form (legacy method for backward compatibility)
+     * Display public form (uses new form management system)
      */
     public function show($type, $branch = null)
     {
-        if (!isset($this->formModelMap[$type])) {
-            // Try to find form by slug in new Form model
-            $form = Form::where('slug', $type)
-                ->where('status', 'active')
-                ->where('is_public', true)
-                ->first();
-            
-            if ($form) {
-                return $this->showBySlug($type, $branch);
-            }
-            
-            abort(404);
-        }
-
         // Handle branch linking
         if ($branch) {
             $branchModel = \App\Models\Branch::where('ti_agent_code', $branch)->first();
@@ -81,49 +67,24 @@ class FormController extends Controller
             }
         }
 
-        // Try to get form from new Form model first
+        // Get form from new Form model (required - no fallback to old system)
         $form = Form::where('slug', $type)
             ->where('status', 'active')
             ->where('is_public', true)
             ->first();
 
-        if ($form) {
-            // Use new form management system
-            $formRenderer = app(FormRendererService::class);
-            $formHtml = $formRenderer->renderForm($form->id, $type);
-            $sections = $formRenderer->getSections($form->id, $type);
-            
-            return view('public.forms.dynamic', compact('form', 'type', 'formHtml', 'sections'));
+        if (!$form) {
+            abort(404, 'Form not found or not available. Please contact administrator.');
         }
 
-        // Fallback to old form models for backward compatibility
-        $formModel = $this->formModelMap[$type];
-        $oldForm = $formModel::where('status', '!=', 'draft')->first();
-        
-        if (!$oldForm) {
-            $oldForm = $formModel::first();
-        }
+        // Get form type from settings or slug
+        $formType = $form->settings['type'] ?? $form->slug;
 
-        if (!$oldForm) {
-            return view('public.forms.' . $type)->with('error', 'No form available. Please contact administrator.');
-        }
-
-        // Ensure sections are initialized
-        \App\Models\FormSection::initializeDefaults($oldForm->id, $type);
-
-        // Get form renderer service
+        // Use new form management system with FormRendererService
         $formRenderer = app(FormRendererService::class);
-        $formHtml = $formRenderer->renderForm($oldForm->id, $type);
-        $sections = $formRenderer->getSections($oldForm->id, $type);
-
-        // Create a temporary form object for the view
-        $form = (object) [
-            'id' => $oldForm->id,
-            'name' => $oldForm->name ?? ucfirst($type) . ' Form',
-            'slug' => $type,
-            'description' => null,
-        ];
-
+        $formHtml = $formRenderer->renderForm($form->id, $formType);
+        $sections = $formRenderer->getSections($form->id, $formType);
+        
         return view('public.forms.dynamic', compact('form', 'type', 'formHtml', 'sections'));
     }
 }

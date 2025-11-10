@@ -19,7 +19,7 @@ class FormController extends Controller
      */
     public function index(): View
     {
-        $forms = Form::latest()->paginate(15);
+        $forms = Form::orderBy('sort_order')->orderBy('name')->paginate(15);
         
         return view('admin.forms.index', compact('forms'));
     }
@@ -202,5 +202,40 @@ class FormController extends Controller
 
         return redirect()->route('admin.forms.index')
             ->with('success', 'Form deleted successfully!');
+    }
+
+    /**
+     * Reorder forms
+     */
+    public function reorder(Request $request)
+    {
+        $request->validate([
+            'forms' => 'required|array',
+            'forms.*.id' => 'required|exists:forms,id',
+            'forms.*.sort_order' => 'required|integer|min:0',
+        ]);
+
+        foreach ($request->forms as $formData) {
+            Form::where('id', $formData['id'])
+                ->update(['sort_order' => $formData['sort_order']]);
+        }
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'update',
+            description: 'Reordered forms',
+            modelType: Form::class,
+            modelId: null
+        );
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Forms reordered successfully',
+            ]);
+        }
+
+        return redirect()->route('admin.forms.index')
+            ->with('success', 'Forms reordered successfully!');
     }
 }

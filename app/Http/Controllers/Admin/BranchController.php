@@ -13,9 +13,35 @@ class BranchController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $branches = Branch::orderBy('branch_name')->paginate(15);
+        $query = Branch::query();
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('branch_name', 'like', "%{$search}%")
+                  ->orWhere('ti_agent_code', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('address', 'like', "%{$search}%")
+                  ->orWhere('state', 'like', "%{$search}%")
+                  ->orWhere('region', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by state
+        if ($request->filled('state')) {
+            $query->where('state', $request->state);
+        }
+
+        // Filter by region
+        if ($request->filled('region')) {
+            $query->where('region', $request->region);
+        }
+
+        $branches = $query->orderBy('branch_name')->paginate(15)->withQueryString();
+        
         return view('admin.branches.index', compact('branches'));
     }
 
