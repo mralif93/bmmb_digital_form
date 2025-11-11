@@ -37,14 +37,14 @@
                     <i class='bx bx-chevron-right text-xs transition-transform' :class="{ 'rotate-90': open }"></i>
                 </button>
             <div x-show="open" x-transition class="mt-1 space-y-0.5">
-                <!-- Forms (Admin Only) -->
+                <!-- Forms (Admin and HQ) -->
                 @if(auth()->user()->canManageForms())
                 <a href="{{ route('admin.forms.index') }}" class="flex items-center px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.forms.*') && !request()->routeIs('admin.form-builder.*') && !request()->routeIs('admin.form-sections.*') ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
                     <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
                     <span>Form</span>
                 </a>
                 
-                <!-- Form Sections (Admin Only) -->
+                <!-- Form Sections (Admin and HQ) -->
                 <div x-data="{ openSections: {{ request()->routeIs('admin.form-sections.*') ? 'true' : 'false' }} }">
                     <button @click="openSections = !openSections" class="w-full flex items-center justify-between px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-sections.*') ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
                         <div class="flex items-center">
@@ -84,7 +84,7 @@
                     </div>
                 </div>
                 
-                <!-- Form Builders (Admin Only) -->
+                <!-- Form Builders (Admin and HQ) -->
                 <div x-data="{ openBuilders: {{ request()->routeIs('admin.form-builder.*') ? 'true' : 'false' }} }">
                     <button @click="openBuilders = !openBuilders" class="w-full flex items-center justify-between px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-builder.*') ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
                         <div class="flex items-center">
@@ -185,6 +185,13 @@
             <a href="{{ route('admin.audit-trails.index') }}" @click="if (window.innerWidth < 1024) { setTimeout(() => { const event = new CustomEvent('close-sidebar'); window.dispatchEvent(event); }, 100); }" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-colors {{ request()->routeIs('admin.audit-trails*') ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400' : '' }}">
                 <i class='bx bx-history mr-3 text-base'></i>
                 <span class="font-medium">Audit Trail</span>
+            </a>
+            @endif
+            
+            @if(auth()->user()->isAdmin())
+            <a href="{{ route('admin.information') }}" @click="if (window.innerWidth < 1024) { setTimeout(() => { const event = new CustomEvent('close-sidebar'); window.dispatchEvent(event); }, 100); }" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-colors {{ request()->routeIs('admin.information*') ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400' : '' }}">
+                <i class='bx bx-info-circle mr-3 text-base'></i>
+                <span class="font-medium">Information</span>
             </a>
             @endif
         </div>

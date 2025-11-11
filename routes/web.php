@@ -162,8 +162,128 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
                 ->limit(5)
                 ->get();
                 
+        } elseif ($user->isBM()) {
+            // BM: Branch submissions overview
+            $branchId = $user->branch_id;
+            $branchQuery = $branchId ? \App\Models\FormSubmission::where('branch_id', $branchId) : \App\Models\FormSubmission::whereNull('branch_id');
+            
+            $stats = [
+                'branch_submissions' => $branchQuery->count(),
+                'branch_approved' => (clone $branchQuery)->where('status', 'approved')->count(),
+                'branch_pending' => (clone $branchQuery)->whereIn('status', ['submitted', 'under_review'])->count(),
+                'branch_rejected' => (clone $branchQuery)->where('status', 'rejected')->count(),
+                'branch_in_progress' => (clone $branchQuery)->where('status', 'in_progress')->count(),
+                'branch_completed' => (clone $branchQuery)->where('status', 'completed')->count(),
+                'my_submissions' => \App\Models\FormSubmission::where('user_id', $user->id)->count(),
+            ];
+            
+            $stats['branch_conversion_rate'] = $stats['branch_submissions'] > 0 
+                ? round(($stats['branch_approved'] / $stats['branch_submissions']) * 100) 
+                : 0;
+            
+            // Submission counts by form type (branch)
+            $submissionCounts = [
+                'raf' => (clone $branchQuery)->whereHas('form', function($q) { $q->where('slug', 'raf'); })->count(),
+                'dar' => (clone $branchQuery)->whereHas('form', function($q) { $q->where('slug', 'dar'); })->count(),
+                'dcr' => (clone $branchQuery)->whereHas('form', function($q) { $q->where('slug', 'dcr'); })->count(),
+                'srf' => (clone $branchQuery)->whereHas('form', function($q) { $q->where('slug', 'srf'); })->count(),
+            ];
+            
+            // Recent branch submissions
+            $recentSubmissions = (clone $branchQuery)
+                ->with(['form', 'user', 'branch'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+                
+        } elseif ($user->isABM()) {
+            // ABM: Branch submissions overview (similar to BM)
+            $branchId = $user->branch_id;
+            $branchQuery = $branchId ? \App\Models\FormSubmission::where('branch_id', $branchId) : \App\Models\FormSubmission::whereNull('branch_id');
+            
+            $stats = [
+                'branch_submissions' => $branchQuery->count(),
+                'branch_approved' => (clone $branchQuery)->where('status', 'approved')->count(),
+                'branch_pending' => (clone $branchQuery)->whereIn('status', ['submitted', 'under_review'])->count(),
+                'branch_rejected' => (clone $branchQuery)->where('status', 'rejected')->count(),
+                'branch_in_progress' => (clone $branchQuery)->where('status', 'in_progress')->count(),
+                'branch_completed' => (clone $branchQuery)->where('status', 'completed')->count(),
+                'my_submissions' => \App\Models\FormSubmission::where('user_id', $user->id)->count(),
+            ];
+            
+            $stats['branch_conversion_rate'] = $stats['branch_submissions'] > 0 
+                ? round(($stats['branch_approved'] / $stats['branch_submissions']) * 100) 
+                : 0;
+            
+            // Submission counts by form type (branch)
+            $submissionCounts = [
+                'raf' => (clone $branchQuery)->whereHas('form', function($q) { $q->where('slug', 'raf'); })->count(),
+                'dar' => (clone $branchQuery)->whereHas('form', function($q) { $q->where('slug', 'dar'); })->count(),
+                'dcr' => (clone $branchQuery)->whereHas('form', function($q) { $q->where('slug', 'dcr'); })->count(),
+                'srf' => (clone $branchQuery)->whereHas('form', function($q) { $q->where('slug', 'srf'); })->count(),
+            ];
+            
+            // Recent branch submissions
+            $recentSubmissions = (clone $branchQuery)
+                ->with(['form', 'user', 'branch'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+                
+        } elseif ($user->isOO()) {
+            // OO: Operations Officer dashboard
+            $branchId = $user->branch_id;
+            $branchQuery = $branchId ? \App\Models\FormSubmission::where('branch_id', $branchId) : \App\Models\FormSubmission::whereNull('branch_id');
+            
+            $stats = [
+                'available_to_take_up' => (clone $branchQuery)->where('status', 'submitted')->count(),
+                'pending_process' => (clone $branchQuery)->where('status', 'pending_process')->count(),
+                'taken_up_by_me' => (clone $branchQuery)->where('taken_up_by', $user->id)->where('status', 'pending_process')->count(),
+                'completed_by_me' => \App\Models\FormSubmission::where('completed_by', $user->id)
+                    ->where('status', 'completed')
+                    ->whereMonth('completed_at', now()->month)
+                    ->count(),
+                'total_completed' => \App\Models\FormSubmission::where('completed_by', $user->id)->where('status', 'completed')->count(),
+                'branch_submissions' => $branchQuery->count(),
+            ];
+            
+            $stats['completion_rate'] = $stats['taken_up_by_me'] > 0 
+                ? round(($stats['total_completed'] / ($stats['taken_up_by_me'] + $stats['total_completed'])) * 100) 
+                : 0;
+            
+            // Submission counts by form type (branch)
+            $submissionCounts = [
+                'raf' => (clone $branchQuery)->whereHas('form', function($q) { $q->where('slug', 'raf'); })->count(),
+                'dar' => (clone $branchQuery)->whereHas('form', function($q) { $q->where('slug', 'dar'); })->count(),
+                'dcr' => (clone $branchQuery)->whereHas('form', function($q) { $q->where('slug', 'dcr'); })->count(),
+                'srf' => (clone $branchQuery)->whereHas('form', function($q) { $q->where('slug', 'srf'); })->count(),
+            ];
+            
+            // Available submissions to take up
+            $availableSubmissions = (clone $branchQuery)
+                ->where('status', 'submitted')
+                ->with(['form', 'user', 'branch'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+            
+            // Pending process submissions (ready to complete)
+            $pendingProcessSubmissions = (clone $branchQuery)
+                ->where('status', 'pending_process')
+                ->with(['form', 'user', 'branch', 'takenUpBy'])
+                ->orderBy('taken_up_at', 'desc')
+                ->limit(5)
+                ->get();
+            
+            // My recent completions
+            $myCompletions = \App\Models\FormSubmission::with(['form', 'branch'])
+                ->where('completed_by', $user->id)
+                ->where('status', 'completed')
+                ->orderBy('completed_at', 'desc')
+                ->limit(5)
+                ->get();
         } else {
-            // BM, ABM, OO: Their own submissions
+            // Fallback: Their own submissions
             $stats = [
                 'my_submissions' => \App\Models\FormSubmission::where('user_id', $user->id)->count(),
                 'my_approved' => \App\Models\FormSubmission::where('user_id', $user->id)->where('status', 'approved')->count(),
@@ -193,22 +313,32 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
                 ->get();
         }
         
-        return view('admin.dashboard', compact('stats', 'topForms', 'submissionCounts', 'recentSubmissions', 'mySubmissions', 'user'));
+        // Prepare variables for view based on role
+        $viewData = compact('stats', 'topForms', 'submissionCounts', 'recentSubmissions', 'mySubmissions', 'user');
+        
+        // Add OO-specific data
+        if ($user->isOO()) {
+            $viewData['availableSubmissions'] = $availableSubmissions ?? collect();
+            $viewData['pendingProcessSubmissions'] = $pendingProcessSubmissions ?? collect();
+            $viewData['myCompletions'] = $myCompletions ?? collect();
+        }
+        
+        return view('admin.dashboard', $viewData);
     })->name('dashboard');
     
-        // User Management (Admin Only)
-        Route::middleware('admin-only')->group(function () {
+        // User Management (Admin and IAM)
+        Route::middleware('admin-or-iam')->group(function () {
             Route::resource('users', UserController::class);
             Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
         });
         
-        // Branch Management (Admin Only)
-        Route::middleware('admin-only')->group(function () {
+        // Branch Management (Admin and HQ)
+        Route::middleware('admin-or-hq')->group(function () {
             Route::resource('branches', BranchController::class);
         });
         
-        // QR Code Management (Admin Only)
-        Route::middleware('admin-only')->group(function () {
+        // QR Code Management (Admin and HQ)
+        Route::middleware('admin-or-hq')->group(function () {
             // QR Code Generation Routes
             Route::prefix('qr-codes')->name('qr-codes.')->group(function () {
                 Route::post('/generate', [QrCodeController::class, 'generate'])->name('generate');
@@ -231,14 +361,19 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings');
     Route::put('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
     
+    // Project Information (Admin Only)
+    Route::middleware('admin-only')->group(function () {
+        Route::get('/information', [\App\Http\Controllers\Admin\InformationController::class, 'index'])->name('information');
+    });
+    
     // Audit Trail (Admin Only)
     Route::middleware('admin-only')->group(function () {
         Route::get('/audit-trails', [AuditTrailController::class, 'index'])->name('audit-trails.index');
         Route::get('/audit-trails/{auditTrail}', [AuditTrailController::class, 'show'])->name('audit-trails.show');
     });
     
-    // Dynamic Forms Management (Admin Only)
-    Route::middleware('admin-only')->group(function () {
+    // Dynamic Forms Management (Admin and HQ)
+    Route::middleware('admin-or-hq')->group(function () {
         Route::resource('forms', FormController::class);
         Route::post('/forms/reorder', [FormController::class, 'reorder'])->name('forms.reorder');
         

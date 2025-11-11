@@ -57,6 +57,7 @@
                     <option value="assistant_branch_manager" {{ request('role') === 'assistant_branch_manager' ? 'selected' : '' }}>Assistant Branch Manager</option>
                     <option value="operation_officer" {{ request('role') === 'operation_officer' ? 'selected' : '' }}>Operations Officer</option>
                     <option value="headquarters" {{ request('role') === 'headquarters' ? 'selected' : '' }}>Headquarters</option>
+                    <option value="iam" {{ request('role') === 'iam' ? 'selected' : '' }}>Identity & Access Management</option>
                 </select>
             </div>
             

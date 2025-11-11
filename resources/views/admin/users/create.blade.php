@@ -89,6 +89,7 @@
                         <option value="assistant_branch_manager" {{ old('role') === 'assistant_branch_manager' ? 'selected' : '' }}>Assistant Branch Manager</option>
                         <option value="operation_officer" {{ old('role') === 'operation_officer' ? 'selected' : '' }}>Operations Officer</option>
                         <option value="headquarters" {{ old('role') === 'headquarters' ? 'selected' : '' }}>Headquarters</option>
+                        <option value="iam" {{ old('role') === 'iam' ? 'selected' : '' }}>Identity & Access Management</option>
                     </select>
                     @error('role')
                         <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>

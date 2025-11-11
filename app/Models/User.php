@@ -106,6 +106,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user is IAM (Identity and Access Management).
+     */
+    public function isIAM(): bool
+    {
+        return $this->role === 'iam';
+    }
+
+    /**
      * Get role display name.
      */
     public function getRoleDisplayAttribute(): string
@@ -116,6 +124,7 @@ class User extends Authenticatable
             'assistant_branch_manager' => 'Assistant Branch Manager',
             'operation_officer' => 'Operations Officer',
             'headquarters' => 'Headquarters',
+            'iam' => 'Identity & Access Management',
             default => ucfirst(str_replace('_', ' ', $this->role)),
         };
     }
@@ -133,15 +142,15 @@ class User extends Authenticatable
      */
     public function hasAdminAccess(): bool
     {
-        return in_array($this->role, ['admin', 'headquarters', 'branch_manager', 'assistant_branch_manager', 'operation_officer']);
+        return in_array($this->role, ['admin', 'headquarters', 'branch_manager', 'assistant_branch_manager', 'operation_officer', 'iam']);
     }
 
     /**
-     * Check if user can manage users (admin only).
+     * Check if user can manage users (admin and IAM).
      */
     public function canManageUsers(): bool
     {
-        return $this->isAdmin();
+        return $this->isAdmin() || $this->isIAM();
     }
 
     /**
@@ -161,27 +170,27 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user can manage forms (admin only).
+     * Check if user can manage forms (admin and HQ).
      */
     public function canManageForms(): bool
     {
-        return $this->isAdmin();
+        return $this->isAdmin() || $this->isHQ();
     }
 
     /**
-     * Check if user can manage branches (admin only).
+     * Check if user can manage branches (admin and HQ).
      */
     public function canManageBranches(): bool
     {
-        return $this->isAdmin();
+        return $this->isAdmin() || $this->isHQ();
     }
 
     /**
-     * Check if user can manage QR codes (admin only).
+     * Check if user can manage QR codes (admin and HQ).
      */
     public function canManageQrCodes(): bool
     {
-        return $this->isAdmin();
+        return $this->isAdmin() || $this->isHQ();
     }
 
     /**

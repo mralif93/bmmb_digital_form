@@ -1,13 +1,28 @@
-<!-- BM/ABM/OO Dashboard: My Submissions -->
-<!-- My Stats Overview -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+<!-- ABM Dashboard: Branch Submissions Overview -->
+<!-- Branch Information -->
+@if($user->branch)
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-100 dark:border-gray-700 mb-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white">{{ $user->branch->name }}</h2>
+            <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">Assistant Branch Manager Dashboard</p>
+        </div>
+        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
+            <i class='bx bx-building text-xl text-primary-600 dark:text-primary-400'></i>
+        </div>
+    </div>
+</div>
+@endif
+
+<!-- Branch Stats Overview -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-300">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">My Submissions</p>
-                <p class="text-xl font-bold text-gray-900 dark:text-white mt-1">{{ $stats['my_submissions'] ?? 0 }}</p>
+                <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Branch Submissions</p>
+                <p class="text-xl font-bold text-gray-900 dark:text-white mt-1">{{ $stats['branch_submissions'] ?? 0 }}</p>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
-                    Total submitted
+                    All forms
                 </p>
             </div>
             <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center shadow-sm">
@@ -20,9 +35,9 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Approved</p>
-                <p class="text-xl font-bold text-green-600 mt-1">{{ $stats['my_approved'] ?? 0 }}</p>
+                <p class="text-xl font-bold text-green-600 mt-1">{{ $stats['branch_approved'] ?? 0 }}</p>
                 <p class="text-xs text-green-600 dark:text-green-400 mt-1.5 font-medium">
-                    {{ $stats['my_conversion_rate'] ?? 0 }}% success rate
+                    {{ $stats['branch_conversion_rate'] ?? 0 }}% approval rate
                 </p>
             </div>
             <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center shadow-sm">
@@ -34,10 +49,10 @@
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-300">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Pending</p>
-                <p class="text-xl font-bold text-yellow-600 mt-1">{{ $stats['my_pending'] ?? 0 }}</p>
+                <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Pending Review</p>
+                <p class="text-xl font-bold text-yellow-600 mt-1">{{ $stats['branch_pending'] ?? 0 }}</p>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
-                    Awaiting review
+                    Awaiting action
                 </p>
             </div>
             <div class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center shadow-sm">
@@ -45,27 +60,30 @@
             </div>
         </div>
     </div>
-</div>
 
-<!-- Additional My Stats -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-100 dark:border-gray-700">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-300">
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">In Progress</p>
-                <p class="text-2xl font-bold text-blue-600 mt-1">{{ $stats['my_in_progress'] ?? 0 }}</p>
+                <p class="text-xl font-bold text-blue-600 mt-1">{{ $stats['branch_in_progress'] ?? 0 }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
+                    Being processed
+                </p>
             </div>
-            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center shadow-sm">
                 <i class='bx bx-loader-circle text-base text-blue-600 dark:text-blue-400'></i>
             </div>
         </div>
     </div>
+</div>
 
+<!-- Additional Branch Stats -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-100 dark:border-gray-700">
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Completed</p>
-                <p class="text-2xl font-bold text-purple-600 mt-1">{{ $stats['my_completed'] ?? 0 }}</p>
+                <p class="text-2xl font-bold text-purple-600 mt-1">{{ $stats['branch_completed'] ?? 0 }}</p>
             </div>
             <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
                 <i class='bx bx-check-double text-base text-purple-600 dark:text-purple-400'></i>
@@ -77,21 +95,33 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Rejected</p>
-                <p class="text-2xl font-bold text-red-600 mt-1">{{ $stats['my_rejected'] ?? 0 }}</p>
+                <p class="text-2xl font-bold text-red-600 mt-1">{{ $stats['branch_rejected'] ?? 0 }}</p>
             </div>
             <div class="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
                 <i class='bx bx-x-circle text-base text-red-600 dark:text-red-400'></i>
             </div>
         </div>
     </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-100 dark:border-gray-700">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">My Submissions</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1">{{ $stats['my_submissions'] ?? 0 }}</p>
+            </div>
+            <div class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center">
+                <i class='bx bx-user text-base text-indigo-600 dark:text-indigo-400'></i>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- My Submissions by Form Type -->
+<!-- Branch Submissions by Form Type -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-100 dark:border-gray-700 mb-6">
     <div class="flex items-center justify-between mb-4">
         <div>
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white">My Submissions by Form Type</h3>
-            <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Breakdown of your form submissions</p>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Branch Submissions by Form Type</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Breakdown of submissions from your branch</p>
         </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -130,20 +160,20 @@
     </div>
 </div>
 
-<!-- My Recent Submissions -->
-@if($mySubmissions->isNotEmpty())
+<!-- Recent Branch Submissions -->
+@if($recentSubmissions->isNotEmpty())
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-100 dark:border-gray-700">
     <div class="flex items-center justify-between mb-4">
         <div>
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white">My Recent Submissions</h3>
-            <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Your latest form submissions</p>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Recent Branch Submissions</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Latest submissions from your branch</p>
         </div>
         <a href="{{ route('admin.submissions.index', 'raf') }}" class="text-xs text-primary-600 dark:text-primary-400 hover:underline">
             View All
         </a>
     </div>
     <div class="space-y-3">
-        @foreach($mySubmissions as $submission)
+        @foreach($recentSubmissions as $submission)
             <a href="{{ route('admin.submissions.show', [$submission->form->slug, $submission->id]) }}" class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                 <div class="flex items-center space-x-3">
                     <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
@@ -152,10 +182,10 @@
                     <div>
                         <p class="text-xs font-semibold text-gray-900 dark:text-white">{{ $submission->form->name ?? 'N/A' }} #{{ $submission->id }}</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">
-                            @if($submission->branch)
-                                {{ $submission->branch->name }}
+                            @if($submission->user)
+                                {{ $submission->user->first_name }} {{ $submission->user->last_name }}
                             @else
-                                No branch assigned
+                                Guest
                             @endif
                             • {{ $submission->created_at->format('M d, Y') }}
                         </p>
@@ -186,19 +216,8 @@
         <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mx-auto mb-3">
             <i class='bx bx-clipboard text-2xl text-gray-400 dark:text-gray-500'></i>
         </div>
-        <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">No Submissions Yet</h4>
-        <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">You haven't submitted any forms yet</p>
-        <div class="flex items-center justify-center space-x-2">
-            @php
-                $forms = \App\Models\Form::where('status', 'active')->orderBy('sort_order')->get();
-            @endphp
-            @foreach($forms->take(2) as $form)
-                <a href="{{ route('admin.submissions.index', $form->slug) }}" class="inline-flex items-center px-3 py-2 text-xs font-semibold bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors">
-                    <i class='bx bx-plus mr-1.5'></i>
-                    View {{ strtoupper($form->slug) }}
-                </a>
-            @endforeach
-        </div>
+        <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">No Branch Submissions Yet</h4>
+        <p class="text-xs text-gray-500 dark:text-gray-400">No submissions have been made from your branch yet</p>
     </div>
 </div>
 @endif

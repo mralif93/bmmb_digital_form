@@ -11,8 +11,17 @@
 @elseif($user->isHQ())
     <!-- HQ Dashboard -->
     @include('admin.dashboard.hq')
+@elseif($user->isBM())
+    <!-- BM Dashboard -->
+    @include('admin.dashboard.bm')
+@elseif($user->isABM())
+    <!-- ABM Dashboard -->
+    @include('admin.dashboard.abm')
+@elseif($user->isOO())
+    <!-- OO Dashboard -->
+    @include('admin.dashboard.oo')
 @else
-    <!-- BM/ABM/OO Dashboard -->
+    <!-- Fallback: Staff Dashboard -->
     @include('admin.dashboard.staff')
 @endif
 @endsection
