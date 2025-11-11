@@ -73,27 +73,154 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard
     Route::get('/dashboard', function () {
-        return view('admin.dashboard');
+        $user = auth()->user();
+        
+        if (!$user) {
+            \Log::error('Dashboard: User not authenticated');
+            abort(403, 'User not authenticated');
+        }
+        
+        // Initialize base stats
+        $stats = [];
+        $topForms = collect();
+        $submissionCounts = [];
+        $recentSubmissions = collect();
+        $mySubmissions = collect();
+        
+        if ($user->isAdmin()) {
+            // Admin: Full system stats
+            $stats = [
+                'total_forms' => \App\Models\Form::count(),
+                'active_forms' => \App\Models\Form::where('status', 'active')->count(),
+                'total_submissions' => \App\Models\FormSubmission::count(),
+                'approved_submissions' => \App\Models\FormSubmission::where('status', 'approved')->count(),
+                'pending_submissions' => \App\Models\FormSubmission::whereIn('status', ['submitted', 'under_review'])->count(),
+                'rejected_submissions' => \App\Models\FormSubmission::where('status', 'rejected')->count(),
+                'active_users' => \App\Models\User::where('status', 'active')->count(),
+                'total_branches' => \App\Models\Branch::count(),
+                'total_qr_codes' => \App\Models\QrCode::count(),
+            ];
+            
+            $stats['conversion_rate'] = $stats['total_submissions'] > 0 
+                ? round(($stats['approved_submissions'] / $stats['total_submissions']) * 100) 
+                : 0;
+            
+            // Top performing forms
+            $topForms = \App\Models\Form::withCount('submissions')
+                ->where('status', 'active')
+                ->orderBy('submissions_count', 'desc')
+                ->limit(3)
+                ->get();
+            
+            // Submission counts by form type
+            $submissionCounts = [
+                'raf' => \App\Models\FormSubmission::whereHas('form', function($q) { $q->where('slug', 'raf'); })->count(),
+                'dar' => \App\Models\FormSubmission::whereHas('form', function($q) { $q->where('slug', 'dar'); })->count(),
+                'dcr' => \App\Models\FormSubmission::whereHas('form', function($q) { $q->where('slug', 'dcr'); })->count(),
+                'srf' => \App\Models\FormSubmission::whereHas('form', function($q) { $q->where('slug', 'srf'); })->count(),
+            ];
+            
+            // Recent submissions
+            $recentSubmissions = \App\Models\FormSubmission::with(['form', 'user', 'branch'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+                
+        } elseif ($user->isHQ()) {
+            // HQ: All submissions overview
+            $stats = [
+                'total_submissions' => \App\Models\FormSubmission::count(),
+                'approved_submissions' => \App\Models\FormSubmission::where('status', 'approved')->count(),
+                'pending_submissions' => \App\Models\FormSubmission::whereIn('status', ['submitted', 'under_review'])->count(),
+                'rejected_submissions' => \App\Models\FormSubmission::where('status', 'rejected')->count(),
+                'in_progress_submissions' => \App\Models\FormSubmission::where('status', 'in_progress')->count(),
+                'completed_submissions' => \App\Models\FormSubmission::where('status', 'completed')->count(),
+            ];
+            
+            $stats['conversion_rate'] = $stats['total_submissions'] > 0 
+                ? round(($stats['approved_submissions'] / $stats['total_submissions']) * 100) 
+                : 0;
+            
+            // Top performing forms
+            $topForms = \App\Models\Form::withCount('submissions')
+                ->where('status', 'active')
+                ->orderBy('submissions_count', 'desc')
+                ->limit(3)
+                ->get();
+            
+            // Submission counts by form type
+            $submissionCounts = [
+                'raf' => \App\Models\FormSubmission::whereHas('form', function($q) { $q->where('slug', 'raf'); })->count(),
+                'dar' => \App\Models\FormSubmission::whereHas('form', function($q) { $q->where('slug', 'dar'); })->count(),
+                'dcr' => \App\Models\FormSubmission::whereHas('form', function($q) { $q->where('slug', 'dcr'); })->count(),
+                'srf' => \App\Models\FormSubmission::whereHas('form', function($q) { $q->where('slug', 'srf'); })->count(),
+            ];
+            
+            // Recent submissions
+            $recentSubmissions = \App\Models\FormSubmission::with(['form', 'user', 'branch'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+                
+        } else {
+            // BM, ABM, OO: Their own submissions
+            $stats = [
+                'my_submissions' => \App\Models\FormSubmission::where('user_id', $user->id)->count(),
+                'my_approved' => \App\Models\FormSubmission::where('user_id', $user->id)->where('status', 'approved')->count(),
+                'my_pending' => \App\Models\FormSubmission::where('user_id', $user->id)->whereIn('status', ['submitted', 'under_review'])->count(),
+                'my_rejected' => \App\Models\FormSubmission::where('user_id', $user->id)->where('status', 'rejected')->count(),
+                'my_in_progress' => \App\Models\FormSubmission::where('user_id', $user->id)->where('status', 'in_progress')->count(),
+                'my_completed' => \App\Models\FormSubmission::where('user_id', $user->id)->where('status', 'completed')->count(),
+            ];
+            
+            $stats['my_conversion_rate'] = $stats['my_submissions'] > 0 
+                ? round(($stats['my_approved'] / $stats['my_submissions']) * 100) 
+                : 0;
+            
+            // My submissions by form type
+            $submissionCounts = [
+                'raf' => \App\Models\FormSubmission::where('user_id', $user->id)->whereHas('form', function($q) { $q->where('slug', 'raf'); })->count(),
+                'dar' => \App\Models\FormSubmission::where('user_id', $user->id)->whereHas('form', function($q) { $q->where('slug', 'dar'); })->count(),
+                'dcr' => \App\Models\FormSubmission::where('user_id', $user->id)->whereHas('form', function($q) { $q->where('slug', 'dcr'); })->count(),
+                'srf' => \App\Models\FormSubmission::where('user_id', $user->id)->whereHas('form', function($q) { $q->where('slug', 'srf'); })->count(),
+            ];
+            
+            // My recent submissions
+            $mySubmissions = \App\Models\FormSubmission::with(['form', 'branch'])
+                ->where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+        }
+        
+        return view('admin.dashboard', compact('stats', 'topForms', 'submissionCounts', 'recentSubmissions', 'mySubmissions', 'user'));
     })->name('dashboard');
     
-    // User Management
-    Route::resource('users', UserController::class);
-    Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
-    
-    // Branch Management
-    Route::resource('branches', BranchController::class);
-    
-    // QR Code Generation Routes (must be before resource route to avoid conflicts)
-    Route::prefix('qr-codes')->name('qr-codes.')->group(function () {
-        Route::post('/generate', [QrCodeController::class, 'generate'])->name('generate');
-        Route::post('/bulk-generate', [QrCodeController::class, 'bulkGenerate'])->name('bulk-generate');
-        Route::get('/download/{fileName}', [QrCodeController::class, 'download'])->name('download');
-    });
-    
-    // QR Code Management (CRUD)
-    Route::resource('qr-codes', QrCodeManagementController::class);
-    Route::post('/qr-codes/{qr_code}/regenerate', [QrCodeManagementController::class, 'regenerate'])->name('qr-codes.regenerate');
-    Route::post('/qr-codes/regenerate-all', [QrCodeManagementController::class, 'regenerateAll'])->name('qr-codes.regenerate-all');
+        // User Management (Admin Only)
+        Route::middleware('admin-only')->group(function () {
+            Route::resource('users', UserController::class);
+            Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+        });
+        
+        // Branch Management (Admin Only)
+        Route::middleware('admin-only')->group(function () {
+            Route::resource('branches', BranchController::class);
+        });
+        
+        // QR Code Management (Admin Only)
+        Route::middleware('admin-only')->group(function () {
+            // QR Code Generation Routes
+            Route::prefix('qr-codes')->name('qr-codes.')->group(function () {
+                Route::post('/generate', [QrCodeController::class, 'generate'])->name('generate');
+                Route::post('/bulk-generate', [QrCodeController::class, 'bulkGenerate'])->name('bulk-generate');
+                Route::get('/download/{fileName}', [QrCodeController::class, 'download'])->name('download');
+            });
+            
+            // QR Code Management (CRUD)
+            Route::resource('qr-codes', QrCodeManagementController::class);
+            Route::post('/qr-codes/{qr_code}/regenerate', [QrCodeManagementController::class, 'regenerate'])->name('qr-codes.regenerate');
+            Route::post('/qr-codes/regenerate-all', [QrCodeManagementController::class, 'regenerateAll'])->name('qr-codes.regenerate-all');
+        });
     
     // Profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
@@ -104,41 +231,45 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings');
     Route::put('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
     
-    // Audit Trail
-    Route::get('/audit-trails', [AuditTrailController::class, 'index'])->name('audit-trails.index');
-    Route::get('/audit-trails/{auditTrail}', [AuditTrailController::class, 'show'])->name('audit-trails.show');
-    
-    // Dynamic Forms Management (Custom Forms)
-    Route::resource('forms', FormController::class);
-    Route::post('/forms/reorder', [FormController::class, 'reorder'])->name('forms.reorder');
-    
-    // Form Builder (Dynamic Form Management)
-    // Form Sections Management
-    Route::prefix('forms/{form}/sections')->name('form-sections.')->group(function () {
-        Route::get('/', [FormSectionController::class, 'index'])->name('index');
-        Route::get('/create', [FormSectionController::class, 'create'])->name('create');
-        Route::post('/', [FormSectionController::class, 'store'])->name('store');
-        Route::get('/{section}', [FormSectionController::class, 'show'])->name('show');
-        Route::get('/{section}/edit', [FormSectionController::class, 'edit'])->name('edit');
-        Route::put('/{section}', [FormSectionController::class, 'update'])->name('update');
-        Route::delete('/{section}', [FormSectionController::class, 'destroy'])->name('destroy');
-        Route::post('/reorder', [FormSectionController::class, 'reorder'])->name('reorder');
+    // Audit Trail (Admin Only)
+    Route::middleware('admin-only')->group(function () {
+        Route::get('/audit-trails', [AuditTrailController::class, 'index'])->name('audit-trails.index');
+        Route::get('/audit-trails/{auditTrail}', [AuditTrailController::class, 'show'])->name('audit-trails.show');
     });
+    
+    // Dynamic Forms Management (Admin Only)
+    Route::middleware('admin-only')->group(function () {
+        Route::resource('forms', FormController::class);
+        Route::post('/forms/reorder', [FormController::class, 'reorder'])->name('forms.reorder');
+        
+        // Form Sections Management
+        Route::prefix('forms/{form}/sections')->name('form-sections.')->group(function () {
+            Route::get('/', [FormSectionController::class, 'index'])->name('index');
+            Route::get('/create', [FormSectionController::class, 'create'])->name('create');
+            Route::post('/', [FormSectionController::class, 'store'])->name('store');
+            Route::get('/{section}', [FormSectionController::class, 'show'])->name('show');
+            Route::get('/{section}/edit', [FormSectionController::class, 'edit'])->name('edit');
+            Route::put('/{section}', [FormSectionController::class, 'update'])->name('update');
+            Route::delete('/{section}', [FormSectionController::class, 'destroy'])->name('destroy');
+            Route::post('/reorder', [FormSectionController::class, 'reorder'])->name('reorder');
+        });
 
-    // Form Builder Routes
-    Route::prefix('forms/{form}/builder')->name('form-builder.')->group(function () {
-        Route::get('/', [FormBuilderController::class, 'index'])->name('index');
-        Route::get('/fields/{field}', [FormBuilderController::class, 'getField'])->name('fields.show');
-        Route::get('/fields/{field}/view', [FormBuilderController::class, 'show'])->name('fields.view');
-        Route::post('/fields', [FormBuilderController::class, 'storeField'])->name('fields.store');
-        Route::put('/fields/{field}', [FormBuilderController::class, 'updateField'])->name('fields.update');
-        Route::delete('/fields/{field}', [FormBuilderController::class, 'destroyField'])->name('fields.destroy');
-        Route::post('/fields/reorder', [FormBuilderController::class, 'reorderFields'])->name('fields.reorder');
-        Route::put('/fields/{field}/column', [FormBuilderController::class, 'updateFieldColumn'])->name('fields.column');
+        // Form Builder Routes
+        Route::prefix('forms/{form}/builder')->name('form-builder.')->group(function () {
+            Route::get('/', [FormBuilderController::class, 'index'])->name('index');
+            Route::get('/fields/{field}', [FormBuilderController::class, 'getField'])->name('fields.show');
+            Route::get('/fields/{field}/view', [FormBuilderController::class, 'show'])->name('fields.view');
+            Route::post('/fields', [FormBuilderController::class, 'storeField'])->name('fields.store');
+            Route::put('/fields/{field}', [FormBuilderController::class, 'updateField'])->name('fields.update');
+            Route::delete('/fields/{field}', [FormBuilderController::class, 'destroyField'])->name('fields.destroy');
+            Route::post('/fields/reorder', [FormBuilderController::class, 'reorderFields'])->name('fields.reorder');
+            Route::put('/fields/{field}/column', [FormBuilderController::class, 'updateFieldColumn'])->name('fields.column');
+        });
     });
     
-    // Form Submissions
+    // Form Submissions (Dynamic)
     Route::prefix('submissions')->name('submissions.')->group(function () {
+        // Legacy routes for backward compatibility (must come before dynamic routes)
         Route::get('/raf', [SubmissionController::class, 'raf'])->name('raf');
         Route::get('/dar', [SubmissionController::class, 'dar'])->name('dar');
         Route::get('/dcr', [SubmissionController::class, 'dcr'])->name('dcr');
@@ -147,6 +278,31 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('/show-dar/{id}', [SubmissionController::class, 'showDar'])->name('show-dar');
         Route::get('/show-dcr/{id}', [SubmissionController::class, 'showDcr'])->name('show-dcr');
         Route::get('/show-srf/{id}', [SubmissionController::class, 'showSrf'])->name('show-srf');
-        Route::put('/{type}/{id}/status', [SubmissionController::class, 'updateStatus'])->name('status.update');
+        
+        // Dynamic routes for new form management system (must come after legacy routes)
+        Route::get('/{formSlug}/trashed', [SubmissionController::class, 'trashed'])->name('trashed');
+        Route::get('/{formSlug}', [SubmissionController::class, 'index'])->name('index');
+        
+        // Create and Store (Admin Only) - must come before show route
+        Route::middleware('admin-only')->group(function () {
+            Route::get('/{formSlug}/create', [SubmissionController::class, 'create'])->name('create');
+            Route::post('/{formSlug}', [SubmissionController::class, 'store'])->name('store');
+        });
+        
+        Route::get('/{formSlug}/{id}', [SubmissionController::class, 'show'])->name('show');
+        
+        // OO Actions: Take Up and Complete
+        Route::post('/{formSlug}/{id}/take-up', [SubmissionController::class, 'takeUp'])->name('take-up');
+        Route::post('/{formSlug}/{id}/complete', [SubmissionController::class, 'complete'])->name('complete');
+        
+        // Edit, Update, Delete, Restore, and Force Delete (Admin Only)
+        Route::middleware('admin-only')->group(function () {
+            Route::get('/{formSlug}/{id}/edit', [SubmissionController::class, 'edit'])->name('edit');
+            Route::put('/{formSlug}/{id}', [SubmissionController::class, 'update'])->name('update');
+            Route::delete('/{formSlug}/{id}', [SubmissionController::class, 'destroy'])->name('destroy');
+            Route::post('/{formSlug}/{id}/restore', [SubmissionController::class, 'restore'])->name('restore');
+            Route::delete('/{formSlug}/{id}/force', [SubmissionController::class, 'forceDelete'])->name('force-delete');
+            Route::put('/{formSlug}/{id}/status', [SubmissionController::class, 'updateStatus'])->name('status.update');
+        });
     });
 });

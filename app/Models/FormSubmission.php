@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FormSubmission extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'form_id',
@@ -33,6 +34,10 @@ class FormSubmission extends Model
         'audit_trail',
         'compliance_checks',
         'internal_notes',
+        'taken_up_by',
+        'taken_up_at',
+        'completed_by',
+        'completed_at',
     ];
 
     protected $casts = [
@@ -45,6 +50,8 @@ class FormSubmission extends Model
         'submitted_at' => 'datetime',
         'last_modified_at' => 'datetime',
         'reviewed_at' => 'datetime',
+        'taken_up_at' => 'datetime',
+        'completed_at' => 'datetime',
     ];
 
     public function form(): BelongsTo
@@ -65,6 +72,16 @@ class FormSubmission extends Model
     public function reviewedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function takenUpBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'taken_up_by');
+    }
+
+    public function completedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'completed_by');
     }
 
     public function submissionData(): HasMany

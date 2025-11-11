@@ -21,10 +21,13 @@
                         <div class="flex items-center space-x-4 mt-2">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
                                 @if($user->role === 'admin') bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400
-                                @elseif($user->role === 'moderator') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400
-                                @else bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
+                                @elseif($user->role === 'branch_manager') bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400
+                                @elseif($user->role === 'assistant_branch_manager') bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400
+                                @elseif($user->role === 'operation_officer') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400
+                                @elseif($user->role === 'headquarters') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
+                                @else bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400
                                 @endif">
-                                {{ ucfirst($user->role) }}
+                                {{ $user->role_display }}
                             </span>
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
                                 @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
@@ -37,11 +40,11 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <a href="{{ route('admin.users.edit', $user) }}" class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    <a href="{{ route('admin.users.edit', $user) }}" class="inline-flex items-center justify-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium rounded-lg transition-colors">
                         <i class='bx bx-edit mr-2'></i>
                         Edit User
                     </a>
-                    <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors">
+                    <a href="{{ route('admin.users.index') }}" class="inline-flex items-center justify-center px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg transition-colors">
                         <i class='bx bx-arrow-back mr-2'></i>
                         Back to Users
                     </a>
@@ -71,6 +74,18 @@
                         <div>
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Phone Number</dt>
                             <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $user->phone ?: 'Not provided' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Branch</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                @if($user->branch)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                                        {{ $user->branch->name }} ({{ $user->branch->code }})
+                                    </span>
+                                @else
+                                    <span class="text-gray-400 dark:text-gray-500">No branch assigned</span>
+                                @endif
+                            </dd>
                         </div>
                     </dl>
                 </div>

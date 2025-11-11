@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('sort_order')->default(0)->index();
             $table->boolean('is_active')->default(true)->index();
             $table->timestamps();
+            $table->softDeletes();
             
             // Unique constraint: section_key must be unique per form
             $table->unique(['form_id', 'section_key']);

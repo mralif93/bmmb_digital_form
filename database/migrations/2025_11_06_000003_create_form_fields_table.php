@@ -38,6 +38,7 @@ return new class extends Migration
             $table->string('css_class')->nullable();
             $table->json('custom_attributes')->nullable();
             $table->timestamps();
+            $table->softDeletes();
             
             $table->index('form_id');
             $table->index('section_id');

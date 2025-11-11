@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('method')->nullable(); // HTTP method (GET, POST, PUT, DELETE)
             $table->json('request_data')->nullable(); // Request data (sanitized)
             $table->timestamps();
+            $table->softDeletes();
             
             // Indexes for performance
             $table->index('user_id');

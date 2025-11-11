@@ -3,16 +3,9 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Models\DataAccessRequestForm;
-use App\Models\DataCorrectionRequestForm;
-use App\Models\RemittanceApplicationForm;
-use App\Models\ServiceRequestForm;
-use App\Models\RafFormSubmission;
-use App\Models\DarFormSubmission;
-use App\Models\DcrFormSubmission;
-use App\Models\SrfFormSubmission;
-use App\Models\FormSubmission;
 use App\Models\Form;
+use App\Models\FormSubmission;
+use App\Models\FormField;
 use App\Services\FormRendererService;
 use App\Traits\LogsAuditTrail;
 use Illuminate\Http\Request;
@@ -21,69 +14,102 @@ use Illuminate\Support\Str;
 class FormSubmissionController extends Controller
 {
     use LogsAuditTrail;
-    private $formConfig = [
-        'raf' => [
-            'form_model' => RemittanceApplicationForm::class,
-            'submission_model' => RafFormSubmission::class,
-            'form_id_field' => 'raf_form_id',
-            'title' => 'Remittance Application Form',
-        ],
-        'dar' => [
-            'form_model' => DataAccessRequestForm::class,
-            'submission_model' => DarFormSubmission::class,
-            'form_id_field' => 'dar_form_id',
-            'title' => 'Data Access Request Form',
-        ],
-        'dcr' => [
-            'form_model' => DataCorrectionRequestForm::class,
-            'submission_model' => DcrFormSubmission::class,
-            'form_id_field' => 'dcr_form_id',
-            'title' => 'Data Correction Request Form',
-        ],
-        'srf' => [
-            'form_model' => ServiceRequestForm::class,
-            'submission_model' => SrfFormSubmission::class,
-            'form_id_field' => 'srf_form_id',
-            'title' => 'Service Request Form',
-        ],
-    ];
 
     /**
-     * Store a public form submission.
+     * Store a public form submission using the new form management system.
      */
     public function store(Request $request, $type)
     {
-        if (!isset($this->formConfig[$type])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid form type.'
-            ], 404);
-        }
-
-        $config = $this->formConfig[$type];
-        $formModel = $config['form_model'];
-        $submissionModel = $config['submission_model'];
-
-        // Get the first active form of this type (or create one if none exists)
-        $form = $formModel::where('status', '!=', 'draft')->first();
-        
-        if (!$form) {
-            // If no active form exists, get the first available form
-            $form = $formModel::first();
-        }
+        // Get form from new Form model using slug
+        $form = Form::where('slug', $type)
+            ->where('status', 'active')
+            ->where('is_public', true)
+            ->first();
 
         if (!$form) {
             return response()->json([
                 'success' => false,
-                'message' => 'No form available for submission.'
+                'message' => 'Form not found or not available for submission.'
             ], 404);
+        }
+
+        // Check submission limit if set
+        if ($form->submission_limit) {
+            $submissionCount = FormSubmission::where('form_id', $form->id)
+                ->where('status', '!=', 'cancelled')
+                ->count();
+            
+            if ($submissionCount >= $form->submission_limit) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This form has reached its submission limit.'
+                ], 403);
+            }
+        }
+
+        // Check if multiple submissions are allowed
+        if (!$form->allow_multiple_submissions) {
+            $branchId = session('submission_branch_id');
+            $existingSubmission = FormSubmission::where('form_id', $form->id)
+                ->where('branch_id', $branchId)
+                ->where('status', '!=', 'cancelled')
+                ->first();
+            
+            if ($existingSubmission) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You have already submitted this form. Multiple submissions are not allowed.'
+                ], 403);
+            }
         }
 
         // Get dynamic validation rules from FormRendererService
         $formRenderer = app(FormRendererService::class);
-        $validationRules = $formRenderer->getValidationRules($form->id, $type);
+        $formType = $form->settings['type'] ?? $form->slug;
+        $validationRules = $formRenderer->getValidationRules($form->id, $formType);
 
-        // Validate form data using dynamic rules
+        // Build validation rules from form fields
+        $fields = FormField::where('form_id', $form->id)
+            ->where('is_active', true)
+            ->get();
+
+        foreach ($fields as $field) {
+            $fieldName = $field->field_name;
+            $fieldRules = [];
+
+            if ($field->is_required) {
+                $fieldRules[] = 'required';
+            } else {
+                $fieldRules[] = 'nullable';
+            }
+
+            // Add type-specific validation
+            switch ($field->field_type) {
+                case 'email':
+                    $fieldRules[] = 'email';
+                    break;
+                case 'number':
+                    $fieldRules[] = 'numeric';
+                    break;
+                case 'date':
+                    $fieldRules[] = 'date';
+                    break;
+                case 'file':
+                    $fieldRules[] = 'file';
+                    break;
+            }
+
+            // Add custom validation rules if defined
+            if ($field->validation_rules && is_array($field->validation_rules)) {
+                $fieldRules = array_merge($fieldRules, $field->validation_rules);
+            }
+
+            if (!empty($fieldRules)) {
+                $validationRules[$fieldName] = implode('|', $fieldRules);
+            }
+        }
+
+        // Validate form data
         if (!empty($validationRules)) {
             $validated = $request->validate($validationRules);
         } else {
@@ -108,9 +134,9 @@ class FormSubmissionController extends Controller
         // Generate unique submission token
         $submissionToken = Str::random(32) . '-' . time();
 
-        // Prepare submission data
+        // Prepare submission data using new FormSubmission model
         $submissionData = [
-            $config['form_id_field'] => $form->id,
+            'form_id' => $form->id,
             'user_id' => null, // Public submissions don't require user login
             'branch_id' => $branchId,
             'submission_token' => $submissionToken,
@@ -125,20 +151,21 @@ class FormSubmissionController extends Controller
             'submitted_at' => now(),
         ];
 
-        // Create submission
-        $submission = $submissionModel::create($submissionData);
+        // Create submission using new FormSubmission model
+        $submission = FormSubmission::create($submissionData);
 
         // Log audit trail (public submissions don't have authenticated users)
         // Note: user_id will be null for public submissions
         try {
             $this->logAuditTrail(
                 action: 'create',
-                description: "Public form submission created: {$config['title']}",
-                modelType: get_class($submission),
+                description: "Public form submission created: {$form->name}",
+                modelType: FormSubmission::class,
                 modelId: $submission->id,
                 newValues: [
-                    'form_type' => $type,
                     'form_id' => $form->id,
+                    'form_name' => $form->name,
+                    'form_slug' => $form->slug,
                     'branch_id' => $branchId,
                     'submission_token' => $submissionToken,
                     'status' => 'submitted',
@@ -155,7 +182,7 @@ class FormSubmissionController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => $config['title'] . ' submitted successfully!',
+            'message' => $form->name . ' submitted successfully!',
             'submission_token' => $submissionToken,
             'submission_id' => $submission->id,
         ]);

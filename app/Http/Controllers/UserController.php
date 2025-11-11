@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Branch;
 use App\Traits\LogsAuditTrail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -39,7 +40,7 @@ class UserController extends Controller
             $query->where('status', $request->status);
         }
 
-        $users = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+        $users = $query->with('branch')->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         
         return view('admin.users.index', compact('users'));
     }
@@ -49,7 +50,8 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('admin.users.create');
+        $branches = Branch::orderBy('branch_name')->get();
+        return view('admin.users.create', compact('branches'));
     }
 
     /**
@@ -63,9 +65,10 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string|max:20',
-            'role' => 'required|in:admin,user,moderator',
+            'role' => 'required|in:admin,branch_manager,assistant_branch_manager,operation_officer,headquarters',
             'status' => 'required|in:active,inactive,suspended',
             'bio' => 'nullable|string|max:1000',
+            'branch_id' => 'nullable|exists:branches,id',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -92,6 +95,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        $user->load('branch');
         return view('admin.users.show', compact('user'));
     }
 
@@ -100,7 +104,8 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        return view('admin.users.edit', compact('user'));
+        $branches = Branch::orderBy('branch_name')->get();
+        return view('admin.users.edit', compact('user', 'branches'));
     }
 
     /**
@@ -113,9 +118,10 @@ class UserController extends Controller
             'last_name' => 'required|string|max:255',
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'phone' => 'nullable|string|max:20',
-            'role' => 'required|in:admin,user,moderator',
+            'role' => 'required|in:admin,branch_manager,assistant_branch_manager,operation_officer,headquarters',
             'status' => 'required|in:active,inactive,suspended',
             'bio' => 'nullable|string|max:1000',
+            'branch_id' => 'nullable|exists:branches,id',
         ]);
 
         // Only update password if provided

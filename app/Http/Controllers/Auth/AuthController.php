@@ -60,7 +60,8 @@ class AuthController extends Controller
             );
 
             // Redirect based on user role
-            if ($user->isAdmin()) {
+            // Admin and staff roles (HQ, BM, ABM, OO) go to admin dashboard
+            if ($user->isAdmin() || $user->isHQ() || $user->isBM() || $user->isABM() || $user->isOO()) {
                 return redirect()->route('admin.dashboard');
             }
 

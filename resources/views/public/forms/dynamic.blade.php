@@ -179,23 +179,14 @@
                         </div>
                         <div class="p-4 space-y-4">
                             @php
-                                $formRenderer = app(\App\Services\FormRendererService::class);
-                                $fieldModelMap = [
-                                    'raf' => \App\Models\RafFormField::class,
-                                    'dar' => \App\Models\DarFormField::class,
-                                    'dcr' => \App\Models\DcrFormField::class,
-                                    'srf' => \App\Models\SrfFormField::class,
-                                ];
-                                $fieldModel = $fieldModelMap[$type] ?? null;
-                                if ($fieldModel) {
-                                    $fields = $fieldModel::where($type . '_form_id', $form->id)
-                                        ->where('field_section', $section['name'])
-                                        ->where('is_active', true)
-                                        ->ordered()
-                                        ->get();
-                                } else {
-                                    $fields = collect();
-                                }
+                                // Use unified FormField model with form_id (new system)
+                                $fields = \App\Models\FormField::where('form_id', $form->id)
+                                    ->whereHas('section', function($q) use ($section) {
+                                        $q->where('section_key', $section['name']);
+                                    })
+                                    ->where('is_active', true)
+                                    ->ordered()
+                                    ->get();
                             @endphp
                             @foreach($fields as $field)
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 py-2 border-b border-gray-100 last:border-b-0">

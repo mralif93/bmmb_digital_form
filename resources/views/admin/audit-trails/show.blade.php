@@ -5,9 +5,9 @@
 @section('page-description', 'View detailed information about this action')
 
 @section('content')
-<div class="mb-4">
-    <a href="{{ route('admin.audit-trails.index') }}" class="inline-flex items-center text-xs text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
-        <i class='bx bx-arrow-back mr-1'></i>
+<div class="mb-4 flex items-center justify-end">
+    <a href="{{ route('admin.audit-trails.index') }}" class="inline-flex items-center px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
+        <i class='bx bx-arrow-back mr-1.5'></i>
         Back to Audit Trail
     </a>
 </div>

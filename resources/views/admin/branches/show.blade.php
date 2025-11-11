@@ -6,16 +6,17 @@
 
 @section('content')
 <div class="mb-4 flex items-center justify-between">
-    <a href="{{ route('admin.branches.index') }}" class="inline-flex items-center px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-        <i class='bx bx-arrow-back mr-1.5'></i>
-        Back to List
-    </a>
+    <div></div>
     <div class="flex items-center space-x-2">
-        <a href="{{ route('admin.branches.edit', $branch->id) }}" class="inline-flex items-center px-4 py-2 text-xs font-semibold bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors">
+        <a href="{{ route('admin.branches.index') }}" class="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
+            <i class='bx bx-arrow-back mr-1.5'></i>
+            Back to List
+        </a>
+        <a href="{{ route('admin.branches.edit', $branch->id) }}" class="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors">
             <i class='bx bx-edit mr-1.5'></i>
             Edit Branch
         </a>
-        <button onclick="deleteBranch({{ $branch->id }})" class="inline-flex items-center px-4 py-2 text-xs font-semibold bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+        <button onclick="deleteBranch({{ $branch->id }})" class="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
             <i class='bx bx-trash mr-1.5'></i>
             Delete Branch
         </button>

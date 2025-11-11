@@ -84,9 +84,11 @@
                     <select name="role" id="role" 
                             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('role') border-red-500 @enderror" required>
                         <option value="">Select Role</option>
-                        <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>User</option>
-                        <option value="moderator" {{ old('role') === 'moderator' ? 'selected' : '' }}>Moderator</option>
-                        <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Administrator</option>
+                        <option value="branch_manager" {{ old('role') === 'branch_manager' ? 'selected' : '' }}>Branch Manager</option>
+                        <option value="assistant_branch_manager" {{ old('role') === 'assistant_branch_manager' ? 'selected' : '' }}>Assistant Branch Manager</option>
+                        <option value="operation_officer" {{ old('role') === 'operation_officer' ? 'selected' : '' }}>Operations Officer</option>
+                        <option value="headquarters" {{ old('role') === 'headquarters' ? 'selected' : '' }}>Headquarters</option>
                     </select>
                     @error('role')
                         <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -106,6 +108,23 @@
                         <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
                 </div>
+            </div>
+
+            <!-- Branch -->
+            <div class="mb-6">
+                <label for="branch_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Branch</label>
+                <select name="branch_id" id="branch_id" 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('branch_id') border-red-500 @enderror">
+                    <option value="">No Branch Assigned</option>
+                    @foreach($branches ?? [] as $branch)
+                        <option value="{{ $branch->id }}" {{ old('branch_id') == $branch->id ? 'selected' : '' }}>
+                            {{ $branch->name }} ({{ $branch->code }})
+                        </option>
+                    @endforeach
+                </select>
+                @error('branch_id')
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Bio -->

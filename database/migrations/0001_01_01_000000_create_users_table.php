@@ -19,7 +19,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('phone')->nullable();
-            $table->enum('role', ['admin', 'user', 'moderator'])->default('user');
+            $table->enum('role', ['admin', 'branch_manager', 'assistant_branch_manager', 'operation_officer', 'headquarters'])->default('headquarters');
+            $table->unsignedBigInteger('branch_id')->nullable()->after('role');
             $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
             $table->string('avatar')->nullable();
             $table->text('bio')->nullable();
@@ -27,9 +28,11 @@ return new class extends Migration
             $table->string('last_login_ip')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index(['role', 'status']);
             $table->index('email');
+            $table->index('branch_id');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

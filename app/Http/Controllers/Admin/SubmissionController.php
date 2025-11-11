@@ -5,90 +5,657 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Form;
 use App\Models\FormSubmission;
-use App\Models\DarFormSubmission;
-use App\Models\DcrFormSubmission;
-use App\Models\RafFormSubmission;
-use App\Models\SrfFormSubmission;
+use App\Models\FormSection;
+use App\Models\FormField;
+use App\Models\User;
+use App\Models\Branch;
 use App\Traits\LogsAuditTrail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SubmissionController extends Controller
 {
     use LogsAuditTrail;
+
+    /**
+     * Display submissions for a specific form (dynamic)
+     */
+    public function index(Request $request, $formSlug)
+    {
+        $form = Form::where('slug', $formSlug)->firstOrFail();
+        $user = auth()->user();
+        
+        // Only show active (non-deleted) submissions
+        $query = FormSubmission::where('form_id', $form->id);
+        
+        // Filter by role: BM/ABM/OO can only see submissions from their branch
+        // Admin and HQ can see all submissions
+        if (!$user->isAdmin() && !$user->isHQ()) {
+            // BM, ABM, OO: Only submissions from their branch
+            if ($user->branch_id) {
+                $query->where('branch_id', $user->branch_id);
+            } else {
+                // If user has no branch assigned, show no submissions
+                $query->whereRaw('1 = 0');
+            }
+        }
+        
+        // Load relationships - use withTrashed for related models if needed
+        $query->with([
+            'user' => function($q) {
+                $q->withTrashed();
+            },
+            'branch' => function($q) {
+                $q->withTrashed();
+            },
+            'form' => function($q) {
+                $q->withTrashed();
+            },
+            'reviewedBy' => function($q) {
+                $q->withTrashed();
+            }
+        ]);
+        
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('id', 'like', "%{$search}%")
+                  ->orWhere('submission_token', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($userQuery) use ($search) {
+                      $userQuery->where('first_name', 'like', "%{$search}%")
+                                ->orWhere('last_name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('branch', function ($branchQuery) use ($search) {
+                      $branchQuery->where('branch_name', 'like', "%{$search}%")
+                                  ->orWhere('ti_agent_code', 'like', "%{$search}%");
+                  })
+                  ->orWhereJsonContains('field_responses', $search)
+                  ->orWhereJsonContains('submission_data', $search);
+            });
+        }
+        
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        // Filter by branch (only for Admin and HQ)
+        if ($request->filled('branch_id') && ($user->isAdmin() || $user->isHQ())) {
+            $query->where('branch_id', $request->branch_id);
+        }
+        
+        // Filter by date range
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+        
+        $submissions = $query->orderBy('created_at', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+        
+        $branches = Branch::orderBy('branch_name')->get();
+        
+        return view('admin.submissions.index', compact('submissions', 'branches', 'form'));
+    }
+
+    /**
+     * Display trashed (deleted) submissions for a specific form
+     */
+    public function trashed(Request $request, $formSlug)
+    {
+        $form = Form::where('slug', $formSlug)->firstOrFail();
+        $user = auth()->user();
+        
+        // Only show trashed submissions
+        $query = FormSubmission::onlyTrashed()->where('form_id', $form->id);
+        
+        // Filter by role: BM/ABM/OO can only see trashed submissions from their branch
+        // Admin and HQ can see all trashed submissions
+        if (!$user->isAdmin() && !$user->isHQ()) {
+            // BM, ABM, OO: Only trashed submissions from their branch
+            if ($user->branch_id) {
+                $query->where('branch_id', $user->branch_id);
+            } else {
+                // If user has no branch assigned, show no submissions
+                $query->whereRaw('1 = 0');
+            }
+        }
+        
+        // Load relationships - use withTrashed for related models if needed
+        $query->with([
+            'user' => function($q) {
+                $q->withTrashed();
+            },
+            'branch' => function($q) {
+                $q->withTrashed();
+            },
+            'form' => function($q) {
+                $q->withTrashed();
+            },
+            'reviewedBy' => function($q) {
+                $q->withTrashed();
+            }
+        ]);
+        
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('id', 'like', "%{$search}%")
+                  ->orWhere('submission_token', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($userQuery) use ($search) {
+                      $userQuery->where('first_name', 'like', "%{$search}%")
+                                ->orWhere('last_name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('branch', function ($branchQuery) use ($search) {
+                      $branchQuery->where('branch_name', 'like', "%{$search}%")
+                                  ->orWhere('ti_agent_code', 'like', "%{$search}%");
+                  })
+                  ->orWhereJsonContains('field_responses', $search)
+                  ->orWhereJsonContains('submission_data', $search);
+            });
+        }
+        
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        // Filter by branch (only for Admin and HQ)
+        if ($request->filled('branch_id') && ($user->isAdmin() || $user->isHQ())) {
+            $query->where('branch_id', $request->branch_id);
+        }
+        
+        // Filter by date range
+        if ($request->filled('date_from')) {
+            $query->whereDate('deleted_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('deleted_at', '<=', $request->date_to);
+        }
+        
+        $submissions = $query->orderBy('deleted_at', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+        
+        $branches = Branch::orderBy('branch_name')->get();
+        
+        return view('admin.submissions.trashed', compact('submissions', 'branches', 'form'));
+    }
+
+    /**
+     * Show the form for creating a new submission (admin only)
+     */
+    public function create($formSlug)
+    {
+        $form = Form::where('slug', $formSlug)->firstOrFail();
+
+        // Get form sections with fields
+        $sections = FormSection::where('form_id', $form->id)
+            ->with(['fields' => function ($query) {
+                $query->where('is_active', true)->orderBy('sort_order');
+            }])
+            ->orderBy('sort_order')
+            ->get();
+
+        // Get users and branches for selection
+        $users = User::where('status', 'active')->orderBy('first_name')->get();
+        $branches = Branch::orderBy('branch_name')->get();
+
+        return view('admin.submissions.create', compact('form', 'sections', 'users', 'branches'));
+    }
+
+    /**
+     * Store a new submission (admin only)
+     */
+    public function store(Request $request, $formSlug)
+    {
+        $form = Form::where('slug', $formSlug)->firstOrFail();
+
+        // Get all form fields for validation
+        $fields = FormField::where('form_id', $form->id)
+            ->where('is_active', true)
+            ->get();
+
+        // Build validation rules
+        $rules = [
+            'user_id' => 'nullable|exists:users,id',
+            'branch_id' => 'nullable|exists:branches,id',
+            'status' => 'required|in:draft,submitted,pending_process,under_review,approved,rejected,completed,expired,in_progress,cancelled',
+        ];
+
+        foreach ($fields as $field) {
+            $fieldName = $field->field_name;
+            $fieldRules = [];
+
+            if ($field->is_required) {
+                $fieldRules[] = 'required';
+            } else {
+                $fieldRules[] = 'nullable';
+            }
+
+            // Add type-specific validation
+            switch ($field->field_type) {
+                case 'email':
+                    $fieldRules[] = 'email';
+                    break;
+                case 'number':
+                case 'currency':
+                    $fieldRules[] = 'numeric';
+                    break;
+                case 'date':
+                    $fieldRules[] = 'date';
+                    break;
+                case 'datetime':
+                    $fieldRules[] = 'date';
+                    break;
+                case 'file':
+                    $fieldRules[] = 'file';
+                    break;
+            }
+
+            // Add custom validation rules if any
+            if (!empty($field->validation_rules) && is_array($field->validation_rules)) {
+                $fieldRules = array_merge($fieldRules, $field->validation_rules);
+            }
+
+            $rules[$fieldName] = implode('|', $fieldRules);
+        }
+
+        $validated = $request->validate($rules);
+
+        // Prepare submission data
+        $fieldResponses = [];
+        $submissionDataArray = [];
+        $fileUploads = [];
+
+        foreach ($fields as $field) {
+            $fieldName = $field->field_name;
+            $value = $validated[$fieldName] ?? null;
+
+            if ($field->field_type === 'file' && $request->hasFile($fieldName)) {
+                $file = $request->file($fieldName);
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('submissions/' . $form->slug, $fileName, 'public');
+                
+                $fileUploads[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $filePath,
+                    'size' => $file->getSize(),
+                    'mime' => $file->getMimeType(),
+                ];
+
+                $value = $filePath;
+            }
+
+            if ($value !== null) {
+                $fieldResponses[$fieldName] = $value;
+                $submissionDataArray[$fieldName] = $value;
+            }
+        }
+
+        // Generate unique submission token
+        $submissionToken = \Illuminate\Support\Str::random(32) . '-' . time();
+
+        // Create submission
+        $submission = FormSubmission::create([
+            'form_id' => $form->id,
+            'user_id' => $validated['user_id'] ?? auth()->id(),
+            'branch_id' => $validated['branch_id'] ?? null,
+            'submission_token' => $submissionToken,
+            'status' => $validated['status'] ?? 'draft',
+            'field_responses' => $fieldResponses,
+            'submission_data' => $submissionDataArray,
+            'file_uploads' => $fileUploads,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'session_id' => session()->getId(),
+            'started_at' => now(),
+            'submitted_at' => $validated['status'] === 'submitted' ? now() : null,
+            'last_modified_at' => now(),
+        ]);
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'create',
+            description: "Created new submission #{$submission->id} for form '{$form->name}'",
+            modelType: get_class($submission),
+            modelId: $submission->id,
+            newValues: [
+                'form_id' => $form->id,
+                'user_id' => $submission->user_id,
+                'branch_id' => $submission->branch_id,
+                'status' => $submission->status,
+                'field_responses' => $fieldResponses,
+            ]
+        );
+
+        return redirect()
+            ->route('admin.submissions.show', [$form->slug, $submission->id])
+            ->with('success', 'Submission created successfully.');
+    }
+
+    /**
+     * Show specific submission details (dynamic)
+     */
+    public function show($formSlug, $id)
+    {
+        $form = Form::where('slug', $formSlug)->firstOrFail();
+        $user = auth()->user();
+        
+        $submission = FormSubmission::withTrashed()
+            ->where('form_id', $form->id)
+            ->with(['user', 'branch', 'form', 'reviewedBy', 'takenUpBy', 'completedBy', 'submissionData.field'])
+            ->findOrFail($id);
+        
+        // Check access: BM/ABM/OO can only view submissions from their branch
+        // Admin and HQ can view all submissions
+        if (!$user->isAdmin() && !$user->isHQ()) {
+            if ($user->branch_id && $submission->branch_id !== $user->branch_id) {
+                abort(403, 'You can only view submissions from your branch.');
+            } elseif (!$user->branch_id) {
+                abort(403, 'You are not assigned to a branch.');
+            }
+        }
+        
+        return view('admin.submissions.show', compact('submission', 'form'));
+    }
     /**
      * Display DAR submissions
      */
-    public function dar()
+    public function dar(Request $request)
     {
+        $user = auth()->user();
         // Try to get submissions from new dynamic form system first
         $form = Form::where('slug', 'dar')->first();
         if ($form) {
-            $submissions = FormSubmission::where('form_id', $form->id)
-                ->with(['user', 'branch', 'form', 'reviewedBy'])
-                ->orderBy('created_at', 'desc')
-                ->paginate(15);
+            $query = FormSubmission::where('form_id', $form->id)
+                ->with(['user', 'branch', 'form', 'reviewedBy']);
+            
+            // Filter by role: BM/ABM/OO can only see submissions from their branch
+            if (!$user->isAdmin() && !$user->isHQ()) {
+                if ($user->branch_id) {
+                    $query->where('branch_id', $user->branch_id);
+                } else {
+                    // If user has no branch assigned, show no submissions
+                    $query->whereRaw('1 = 0');
+                }
+            }
+            
+            // Search functionality
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('id', 'like', "%{$search}%")
+                      ->orWhere('submission_token', 'like', "%{$search}%")
+                      ->orWhereHas('user', function ($userQuery) use ($search) {
+                          $userQuery->where('first_name', 'like', "%{$search}%")
+                                    ->orWhere('last_name', 'like', "%{$search}%")
+                                    ->orWhere('email', 'like', "%{$search}%");
+                      })
+                      ->orWhereHas('branch', function ($branchQuery) use ($search) {
+                          $branchQuery->where('name', 'like', "%{$search}%")
+                                      ->orWhere('code', 'like', "%{$search}%");
+                      })
+                      ->orWhereJsonContains('field_responses', $search)
+                      ->orWhereJsonContains('submission_data', $search);
+                });
+            }
+            
+            // Filter by status
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+            
+            // Filter by branch (only for Admin and HQ)
+            if ($request->filled('branch_id') && ($user->isAdmin() || $user->isHQ())) {
+                $query->where('branch_id', $request->branch_id);
+            }
+            
+            // Filter by date range
+            if ($request->filled('date_from')) {
+                $query->whereDate('created_at', '>=', $request->date_from);
+            }
+            if ($request->filled('date_to')) {
+                $query->whereDate('created_at', '<=', $request->date_to);
+            }
+            
+            $submissions = $query->orderBy('created_at', 'desc')
+                ->paginate(15)
+                ->withQueryString();
         } else {
-            // Fallback to old system
-            $submissions = DarFormSubmission::with('user')->orderBy('created_at', 'desc')->paginate(15);
+            // Form not found - redirect to forms list
+            return redirect()->route('admin.forms.index')
+                ->with('error', 'Form not found. Please create the form first.');
         }
-        return view('admin.submissions.dar', compact('submissions'));
+        $branches = Branch::orderBy('branch_name')->get();
+        
+        return view('admin.submissions.index', compact('submissions', 'branches', 'form'));
     }
 
     /**
      * Display DCR submissions
      */
-    public function dcr()
+    public function dcr(Request $request)
     {
+        $user = auth()->user();
         // Try to get submissions from new dynamic form system first
         $form = Form::where('slug', 'dcr')->first();
         if ($form) {
-            $submissions = FormSubmission::where('form_id', $form->id)
-                ->with(['user', 'branch', 'form', 'reviewedBy'])
-                ->orderBy('created_at', 'desc')
-                ->paginate(15);
+            $query = FormSubmission::where('form_id', $form->id)
+                ->with(['user', 'branch', 'form', 'reviewedBy']);
+            
+            // Filter by role: BM/ABM/OO can only see submissions from their branch
+            if (!$user->isAdmin() && !$user->isHQ()) {
+                if ($user->branch_id) {
+                    $query->where('branch_id', $user->branch_id);
+                } else {
+                    // If user has no branch assigned, show no submissions
+                    $query->whereRaw('1 = 0');
+                }
+            }
+            
+            // Search functionality
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('id', 'like', "%{$search}%")
+                      ->orWhere('submission_token', 'like', "%{$search}%")
+                      ->orWhereHas('user', function ($userQuery) use ($search) {
+                          $userQuery->where('first_name', 'like', "%{$search}%")
+                                    ->orWhere('last_name', 'like', "%{$search}%")
+                                    ->orWhere('email', 'like', "%{$search}%");
+                      })
+                      ->orWhereHas('branch', function ($branchQuery) use ($search) {
+                          $branchQuery->where('name', 'like', "%{$search}%")
+                                      ->orWhere('code', 'like', "%{$search}%");
+                      })
+                      ->orWhereJsonContains('field_responses', $search)
+                      ->orWhereJsonContains('submission_data', $search);
+                });
+            }
+            
+            // Filter by status
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+            
+            // Filter by branch (only for Admin and HQ)
+            if ($request->filled('branch_id') && ($user->isAdmin() || $user->isHQ())) {
+                $query->where('branch_id', $request->branch_id);
+            }
+            
+            // Filter by date range
+            if ($request->filled('date_from')) {
+                $query->whereDate('created_at', '>=', $request->date_from);
+            }
+            if ($request->filled('date_to')) {
+                $query->whereDate('created_at', '<=', $request->date_to);
+            }
+            
+            $submissions = $query->orderBy('created_at', 'desc')
+                ->paginate(15)
+                ->withQueryString();
         } else {
-            // Fallback to old system
-            $submissions = DcrFormSubmission::with('user')->orderBy('created_at', 'desc')->paginate(15);
+            // Form not found - redirect to forms list
+            return redirect()->route('admin.forms.index')
+                ->with('error', 'Form not found. Please create the form first.');
         }
-        return view('admin.submissions.dcr', compact('submissions'));
+        $branches = Branch::orderBy('branch_name')->get();
+        
+        return view('admin.submissions.index', compact('submissions', 'branches', 'form'));
     }
 
     /**
      * Display RAF submissions
      */
-    public function raf()
+    public function raf(Request $request)
     {
+        $user = auth()->user();
         // Try to get submissions from new dynamic form system first
         $form = Form::where('slug', 'raf')->first();
         if ($form) {
-            $submissions = FormSubmission::where('form_id', $form->id)
-                ->with(['user', 'branch', 'form', 'reviewedBy'])
-                ->orderBy('created_at', 'desc')
-                ->paginate(15);
+            $query = FormSubmission::where('form_id', $form->id)
+                ->with(['user', 'branch', 'form', 'reviewedBy']);
+            
+            // Filter by role: BM/ABM/OO can only see submissions from their branch
+            if (!$user->isAdmin() && !$user->isHQ()) {
+                if ($user->branch_id) {
+                    $query->where('branch_id', $user->branch_id);
+                } else {
+                    // If user has no branch assigned, show no submissions
+                    $query->whereRaw('1 = 0');
+                }
+            }
+            
+            // Search functionality
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('id', 'like', "%{$search}%")
+                      ->orWhere('submission_token', 'like', "%{$search}%")
+                      ->orWhereHas('user', function ($userQuery) use ($search) {
+                          $userQuery->where('first_name', 'like', "%{$search}%")
+                                    ->orWhere('last_name', 'like', "%{$search}%")
+                                    ->orWhere('email', 'like', "%{$search}%");
+                      })
+                      ->orWhereHas('branch', function ($branchQuery) use ($search) {
+                          $branchQuery->where('name', 'like', "%{$search}%")
+                                      ->orWhere('code', 'like', "%{$search}%");
+                      })
+                      ->orWhereJsonContains('field_responses', $search)
+                      ->orWhereJsonContains('submission_data', $search);
+                });
+            }
+            
+            // Filter by status
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+            
+            // Filter by branch (only for Admin and HQ)
+            if ($request->filled('branch_id') && ($user->isAdmin() || $user->isHQ())) {
+                $query->where('branch_id', $request->branch_id);
+            }
+            
+            // Filter by date range
+            if ($request->filled('date_from')) {
+                $query->whereDate('created_at', '>=', $request->date_from);
+            }
+            if ($request->filled('date_to')) {
+                $query->whereDate('created_at', '<=', $request->date_to);
+            }
+            
+            $submissions = $query->orderBy('created_at', 'desc')
+                ->paginate(15)
+                ->withQueryString();
         } else {
-            // Fallback to old system
-            $submissions = RafFormSubmission::with('user')->orderBy('created_at', 'desc')->paginate(15);
+            // Form not found - redirect to forms list
+            return redirect()->route('admin.forms.index')
+                ->with('error', 'Form not found. Please create the form first.');
         }
-        return view('admin.submissions.raf', compact('submissions'));
+        $branches = Branch::orderBy('branch_name')->get();
+        
+        return view('admin.submissions.index', compact('submissions', 'branches', 'form'));
     }
 
     /**
      * Display SRF submissions
      */
-    public function srf()
+    public function srf(Request $request)
     {
+        $user = auth()->user();
         // Try to get submissions from new dynamic form system first
         $form = Form::where('slug', 'srf')->first();
         if ($form) {
-            $submissions = FormSubmission::where('form_id', $form->id)
-                ->with(['user', 'branch', 'form', 'reviewedBy'])
-                ->orderBy('created_at', 'desc')
-                ->paginate(15);
+            $query = FormSubmission::where('form_id', $form->id)
+                ->with(['user', 'branch', 'form', 'reviewedBy']);
+            
+            // Filter by role: BM/ABM/OO can only see submissions from their branch
+            if (!$user->isAdmin() && !$user->isHQ()) {
+                if ($user->branch_id) {
+                    $query->where('branch_id', $user->branch_id);
+                } else {
+                    // If user has no branch assigned, show no submissions
+                    $query->whereRaw('1 = 0');
+                }
+            }
+            
+            // Search functionality
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('id', 'like', "%{$search}%")
+                      ->orWhere('submission_token', 'like', "%{$search}%")
+                      ->orWhereHas('user', function ($userQuery) use ($search) {
+                          $userQuery->where('first_name', 'like', "%{$search}%")
+                                    ->orWhere('last_name', 'like', "%{$search}%")
+                                    ->orWhere('email', 'like', "%{$search}%");
+                      })
+                      ->orWhereHas('branch', function ($branchQuery) use ($search) {
+                          $branchQuery->where('name', 'like', "%{$search}%")
+                                      ->orWhere('code', 'like', "%{$search}%");
+                      })
+                      ->orWhereJsonContains('field_responses', $search)
+                      ->orWhereJsonContains('submission_data', $search);
+                });
+            }
+            
+            // Filter by status
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+            
+            // Filter by branch (only for Admin and HQ)
+            if ($request->filled('branch_id') && ($user->isAdmin() || $user->isHQ())) {
+                $query->where('branch_id', $request->branch_id);
+            }
+            
+            // Filter by date range
+            if ($request->filled('date_from')) {
+                $query->whereDate('created_at', '>=', $request->date_from);
+            }
+            if ($request->filled('date_to')) {
+                $query->whereDate('created_at', '<=', $request->date_to);
+            }
+            
+            $submissions = $query->orderBy('created_at', 'desc')
+                ->paginate(15)
+                ->withQueryString();
         } else {
-            // Fallback to old system
-            $submissions = SrfFormSubmission::with('user')->orderBy('created_at', 'desc')->paginate(15);
+            // Form not found - redirect to forms list
+            return redirect()->route('admin.forms.index')
+                ->with('error', 'Form not found. Please create the form first.');
         }
-        return view('admin.submissions.srf', compact('submissions'));
+        $branches = Branch::orderBy('branch_name')->get();
+        
+        return view('admin.submissions.index', compact('submissions', 'branches', 'form'));
     }
 
     /**
@@ -96,17 +663,11 @@ class SubmissionController extends Controller
      */
     public function showDar($id)
     {
-        // Try new system first
-        $form = Form::where('slug', 'dar')->first();
-        if ($form) {
-            $submission = FormSubmission::where('form_id', $form->id)
-                ->with(['user', 'branch', 'form', 'reviewedBy', 'submissionData.field'])
-                ->findOrFail($id);
-        } else {
-            // Fallback to old system
-            $submission = DarFormSubmission::with(['user', 'branch', 'reviewedBy', 'darForm'])->findOrFail($id);
-        }
-        return view('admin.submissions.show-dar', compact('submission'));
+        $form = Form::where('slug', 'dar')->firstOrFail();
+        $submission = FormSubmission::where('form_id', $form->id)
+            ->with(['user', 'branch', 'form', 'reviewedBy', 'submissionData.field'])
+            ->findOrFail($id);
+        return view('admin.submissions.show', compact('submission', 'form'));
     }
 
     /**
@@ -114,17 +675,11 @@ class SubmissionController extends Controller
      */
     public function showDcr($id)
     {
-        // Try new system first
-        $form = Form::where('slug', 'dcr')->first();
-        if ($form) {
-            $submission = FormSubmission::where('form_id', $form->id)
-                ->with(['user', 'branch', 'form', 'reviewedBy', 'submissionData.field'])
-                ->findOrFail($id);
-        } else {
-            // Fallback to old system
-            $submission = DcrFormSubmission::with(['user', 'branch', 'reviewedBy', 'dcrForm'])->findOrFail($id);
-        }
-        return view('admin.submissions.show-dcr', compact('submission'));
+        $form = Form::where('slug', 'dcr')->firstOrFail();
+        $submission = FormSubmission::where('form_id', $form->id)
+            ->with(['user', 'branch', 'form', 'reviewedBy', 'submissionData.field'])
+            ->findOrFail($id);
+        return view('admin.submissions.show', compact('submission', 'form'));
     }
 
     /**
@@ -132,17 +687,11 @@ class SubmissionController extends Controller
      */
     public function showRaf($id)
     {
-        // Try new system first
-        $form = Form::where('slug', 'raf')->first();
-        if ($form) {
-            $submission = FormSubmission::where('form_id', $form->id)
-                ->with(['user', 'branch', 'form', 'reviewedBy', 'submissionData.field'])
-                ->findOrFail($id);
-        } else {
-            // Fallback to old system
-            $submission = RafFormSubmission::with(['user', 'branch', 'reviewedBy', 'rafForm'])->findOrFail($id);
-        }
-        return view('admin.submissions.show-raf', compact('submission'));
+        $form = Form::where('slug', 'raf')->firstOrFail();
+        $submission = FormSubmission::where('form_id', $form->id)
+            ->with(['user', 'branch', 'form', 'reviewedBy', 'submissionData.field'])
+            ->findOrFail($id);
+        return view('admin.submissions.show', compact('submission', 'form'));
     }
 
     /**
@@ -150,50 +699,204 @@ class SubmissionController extends Controller
      */
     public function showSrf($id)
     {
-        // Try new system first
-        $form = Form::where('slug', 'srf')->first();
-        if ($form) {
-            $submission = FormSubmission::where('form_id', $form->id)
-                ->with(['user', 'branch', 'form', 'reviewedBy', 'submissionData.field'])
-                ->findOrFail($id);
-        } else {
-            // Fallback to old system
-            $submission = SrfFormSubmission::with(['user', 'branch', 'reviewedBy', 'srfForm'])->findOrFail($id);
-        }
-        return view('admin.submissions.show-srf', compact('submission'));
+        $form = Form::where('slug', 'srf')->firstOrFail();
+        $submission = FormSubmission::where('form_id', $form->id)
+            ->with(['user', 'branch', 'form', 'reviewedBy', 'submissionData.field'])
+            ->findOrFail($id);
+        return view('admin.submissions.show', compact('submission', 'form'));
     }
 
     /**
-     * Update submission status
+     * Show the form for editing a submission (admin only)
      */
-    public function updateStatus(Request $request, $type, $id)
+    public function edit($formSlug, $id)
     {
+        $form = Form::where('slug', $formSlug)->firstOrFail();
+        
+        $submission = FormSubmission::where('form_id', $form->id)
+            ->with(['user', 'branch', 'form', 'reviewedBy', 'submissionData.field'])
+            ->findOrFail($id);
+
+        // Prevent editing deleted submissions
+        if ($submission->trashed()) {
+            return redirect()
+                ->route('admin.submissions.show', [$form->slug, $submission->id])
+                ->with('error', 'Cannot edit a deleted submission. Please restore it first.');
+        }
+
+        // Get form sections with fields
+        $sections = FormSection::where('form_id', $form->id)
+            ->with(['fields' => function ($query) {
+                $query->where('is_active', true)->orderBy('sort_order');
+            }])
+            ->orderBy('sort_order')
+            ->get();
+
+        // Get current submission data
+        $submissionData = array_merge(
+            $submission->field_responses ?? [],
+            $submission->submission_data ?? []
+        );
+
+        return view('admin.submissions.edit', compact('submission', 'form', 'sections', 'submissionData'));
+    }
+
+    /**
+     * Update a submission (admin only)
+     */
+    public function update(Request $request, $formSlug, $id)
+    {
+        $form = Form::where('slug', $formSlug)->firstOrFail();
+        $submission = FormSubmission::where('form_id', $form->id)->findOrFail($id);
+
+        // Get all form fields for validation
+        $fields = FormField::where('form_id', $form->id)
+            ->where('is_active', true)
+            ->get();
+
+        // Build validation rules
+        $rules = [];
+        foreach ($fields as $field) {
+            $fieldName = $field->field_name;
+            $fieldRules = [];
+
+            if ($field->is_required) {
+                $fieldRules[] = 'required';
+            } else {
+                $fieldRules[] = 'nullable';
+            }
+
+            // Add type-specific validation
+            switch ($field->field_type) {
+                case 'email':
+                    $fieldRules[] = 'email';
+                    break;
+                case 'number':
+                case 'currency':
+                    $fieldRules[] = 'numeric';
+                    break;
+                case 'date':
+                    $fieldRules[] = 'date';
+                    break;
+                case 'datetime':
+                    $fieldRules[] = 'date';
+                    break;
+                case 'file':
+                    // File is optional if already exists, but if provided must be a file
+                    if ($field->is_required && !isset($submission->field_responses[$fieldName])) {
+                        // Only require if no existing file
+                    } else {
+                        // Make file optional if editing
+                        $fieldRules = array_filter($fieldRules, fn($r) => $r !== 'required');
+                        $fieldRules[] = 'nullable';
+                    }
+                    $fieldRules[] = 'file';
+                    break;
+            }
+
+            // Add custom validation rules if any
+            if (!empty($field->validation_rules) && is_array($field->validation_rules)) {
+                $fieldRules = array_merge($fieldRules, $field->validation_rules);
+            }
+
+            $rules[$fieldName] = implode('|', $fieldRules);
+        }
+
+        $validated = $request->validate($rules);
+
+        // Store old values for audit trail
+        $oldValues = [
+            'field_responses' => $submission->field_responses,
+            'submission_data' => $submission->submission_data,
+        ];
+
+        // Prepare submission data
+        $fieldResponses = [];
+        $submissionDataArray = [];
+        $fileUploads = $submission->file_uploads ?? [];
+
+        foreach ($fields as $field) {
+            $fieldName = $field->field_name;
+            $value = $validated[$fieldName] ?? null;
+
+            if ($field->field_type === 'file' && $request->hasFile($fieldName)) {
+                $file = $request->file($fieldName);
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('submissions/' . $form->slug, $fileName, 'public');
+                
+                $fileUploads[] = [
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $filePath,
+                    'size' => $file->getSize(),
+                    'mime' => $file->getMimeType(),
+                ];
+
+                $value = $filePath;
+            }
+
+            if ($value !== null) {
+                $fieldResponses[$fieldName] = $value;
+                $submissionDataArray[$fieldName] = $value;
+            }
+        }
+
+        // Update submission
+        $submission->field_responses = $fieldResponses;
+        $submission->submission_data = $submissionDataArray;
+        $submission->file_uploads = $fileUploads;
+        $submission->last_modified_at = now();
+        $submission->save();
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'update',
+            description: "Edited submission #{$submission->id} for form '{$form->name}'",
+            modelType: get_class($submission),
+            modelId: $submission->id,
+            oldValues: $oldValues,
+            newValues: [
+                'field_responses' => $fieldResponses,
+                'submission_data' => $submissionDataArray,
+            ]
+        );
+
+        return redirect()
+            ->route('admin.submissions.show', [$form->slug, $submission->id])
+            ->with('success', 'Submission updated successfully.');
+    }
+
+    /**
+     * Update submission status (dynamic)
+     */
+    public function updateStatus(Request $request, $formSlug, $id)
+    {
+        // Only admin can update status
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Only administrators can update submission status.');
+        }
+
         $request->validate([
-            'status' => 'required|in:draft,submitted,under_review,approved,rejected,completed,expired,in_progress,cancelled',
+            'status' => 'required|in:draft,submitted,pending_process,under_review,approved,rejected,completed,expired,in_progress,cancelled',
             'notes' => 'nullable|string',
         ]);
 
-        // Try new system first
-        $form = Form::where('slug', $type)->first();
-        if ($form) {
-            $submission = FormSubmission::where('form_id', $form->id)->findOrFail($id);
-        } else {
-            // Fallback to old system
-            $model = match($type) {
-                'dar' => DarFormSubmission::class,
-                'dcr' => DcrFormSubmission::class,
-                'raf' => RafFormSubmission::class,
-                'srf' => SrfFormSubmission::class,
-                default => throw new \Exception('Invalid submission type'),
-            };
-            $submission = $model::findOrFail($id);
-        }
+        $form = Form::where('slug', $formSlug)->firstOrFail();
+        $submission = FormSubmission::where('form_id', $form->id)->findOrFail($id);
 
         $oldStatus = $submission->status;
         $submission->status = $request->status;
         if ($request->has('notes')) {
             $submission->review_notes = $request->notes;
         }
+        
+        // Update reviewed_by and reviewed_at when admin updates status
+        $user = auth()->user();
+        if ($user->isAdmin()) {
+            $submission->reviewed_by = $user->id;
+            $submission->reviewed_at = now();
+        }
+        
+        $submission->last_modified_at = now();
         $submission->save();
 
         // Log audit trail
@@ -207,5 +910,217 @@ class SubmissionController extends Controller
         );
 
         return back()->with('success', 'Submission status updated successfully.');
+    }
+
+    /**
+     * Delete a submission (admin only)
+     */
+    public function destroy($formSlug, $id)
+    {
+        $form = Form::where('slug', $formSlug)->firstOrFail();
+        $submission = FormSubmission::where('form_id', $form->id)->findOrFail($id);
+
+        // Store old values for audit trail
+        $oldValues = [
+            'id' => $submission->id,
+            'form_id' => $submission->form_id,
+            'user_id' => $submission->user_id,
+            'branch_id' => $submission->branch_id,
+            'status' => $submission->status,
+            'submission_token' => $submission->submission_token,
+        ];
+
+        // Delete uploaded files if any
+        if ($submission->file_uploads && is_array($submission->file_uploads)) {
+            foreach ($submission->file_uploads as $file) {
+                if (isset($file['path']) && $file['path']) {
+                    Storage::disk('public')->delete($file['path']);
+                }
+            }
+        }
+
+        $submissionId = $submission->id;
+        $submission->delete();
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'delete',
+            description: "Deleted submission #{$submissionId} for form '{$form->name}'",
+            modelType: FormSubmission::class,
+            modelId: $submissionId,
+            oldValues: $oldValues
+        );
+
+        return redirect()
+            ->route('admin.submissions.index', $form->slug)
+            ->with('success', 'Submission deleted successfully.');
+    }
+
+    /**
+     * Restore a soft-deleted submission (admin only)
+     */
+    public function restore($formSlug, $id)
+    {
+        $form = Form::where('slug', $formSlug)->firstOrFail();
+        $submission = FormSubmission::withTrashed()
+            ->where('form_id', $form->id)
+            ->findOrFail($id);
+
+        if (!$submission->trashed()) {
+            return redirect()
+                ->route('admin.submissions.show', [$form->slug, $submission->id])
+                ->with('error', 'Submission is not deleted.');
+        }
+
+        $submission->restore();
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'restore',
+            description: "Restored submission #{$submission->id} for form '{$form->name}'",
+            modelType: FormSubmission::class,
+            modelId: $submission->id,
+            newValues: ['restored_at' => now()]
+        );
+
+        return redirect()
+            ->route('admin.submissions.show', [$form->slug, $submission->id])
+            ->with('success', 'Submission restored successfully.');
+    }
+
+    /**
+     * Permanently delete a submission (admin only)
+     */
+    public function forceDelete($formSlug, $id)
+    {
+        $form = Form::where('slug', $formSlug)->firstOrFail();
+        $submission = FormSubmission::withTrashed()
+            ->where('form_id', $form->id)
+            ->findOrFail($id);
+
+        // Store old values for audit trail
+        $oldValues = [
+            'id' => $submission->id,
+            'form_id' => $submission->form_id,
+            'user_id' => $submission->user_id,
+            'branch_id' => $submission->branch_id,
+            'status' => $submission->status,
+            'submission_token' => $submission->submission_token,
+        ];
+
+        // Delete uploaded files if any
+        if ($submission->file_uploads && is_array($submission->file_uploads)) {
+            foreach ($submission->file_uploads as $file) {
+                if (isset($file['path']) && $file['path']) {
+                    Storage::disk('public')->delete($file['path']);
+                }
+            }
+        }
+
+        $submissionId = $submission->id;
+        $submission->forceDelete();
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'force_delete',
+            description: "Permanently deleted submission #{$submissionId} for form '{$form->name}'",
+            modelType: FormSubmission::class,
+            modelId: $submissionId,
+            oldValues: $oldValues
+        );
+
+        return redirect()
+            ->route('admin.submissions.index', $form->slug)
+            ->with('success', 'Submission permanently deleted.');
+    }
+
+    /**
+     * OO takes up a submitted application (changes status from 'submitted' to 'pending_process')
+     */
+    public function takeUp($formSlug, $id)
+    {
+        $user = auth()->user();
+        
+        // Only OO can take up submissions
+        if (!$user->isOO()) {
+            abort(403, 'Only Operations Officers can take up submissions.');
+        }
+
+        $form = Form::where('slug', $formSlug)->firstOrFail();
+        $submission = FormSubmission::where('form_id', $form->id)->findOrFail($id);
+
+        // Check if submission belongs to OO's branch
+        if ($user->branch_id && $submission->branch_id !== $user->branch_id) {
+            abort(403, 'You can only take up submissions from your branch.');
+        }
+
+        // Only allow taking up submissions with status 'submitted'
+        if ($submission->status !== 'submitted') {
+            return back()->with('error', 'Only submitted applications can be taken up.');
+        }
+
+        $oldStatus = $submission->status;
+        $submission->status = 'pending_process';
+        $submission->taken_up_by = $user->id;
+        $submission->taken_up_at = now();
+        $submission->last_modified_at = now();
+        $submission->save();
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'update',
+            description: "OO ({$user->full_name}) took up submission #{$submission->id} for form '{$form->name}'",
+            modelType: get_class($submission),
+            modelId: $submission->id,
+            oldValues: ['status' => $oldStatus],
+            newValues: ['status' => 'pending_process', 'taken_up_by' => $user->id, 'taken_up_at' => now()]
+        );
+
+        return back()->with('success', 'Submission taken up successfully. Status changed to pending process.');
+    }
+
+    /**
+     * OO marks a submission as complete (changes status from 'pending_process' to 'completed')
+     */
+    public function complete($formSlug, $id)
+    {
+        $user = auth()->user();
+        
+        // Only OO can complete submissions
+        if (!$user->isOO()) {
+            abort(403, 'Only Operations Officers can complete submissions.');
+        }
+
+        $form = Form::where('slug', $formSlug)->firstOrFail();
+        $submission = FormSubmission::where('form_id', $form->id)->findOrFail($id);
+
+        // Check if submission belongs to OO's branch
+        if ($user->branch_id && $submission->branch_id !== $user->branch_id) {
+            abort(403, 'You can only complete submissions from your branch.');
+        }
+
+        // Only allow completing submissions with status 'pending_process'
+        if ($submission->status !== 'pending_process') {
+            return back()->with('error', 'Only pending process submissions can be completed.');
+        }
+
+        $oldStatus = $submission->status;
+        $submission->status = 'completed';
+        $submission->completed_by = $user->id;
+        $submission->completed_at = now();
+        $submission->last_modified_at = now();
+        $submission->save();
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'update',
+            description: "OO ({$user->full_name}) completed submission #{$submission->id} for form '{$form->name}'",
+            modelType: get_class($submission),
+            modelId: $submission->id,
+            oldValues: ['status' => $oldStatus],
+            newValues: ['status' => 'completed', 'completed_by' => $user->id, 'completed_at' => now()]
+        );
+
+        return back()->with('success', 'Submission marked as completed successfully.');
     }
 }

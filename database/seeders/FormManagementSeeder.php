@@ -50,6 +50,7 @@ class FormManagementSeeder extends Seeder
                 'is_public' => true,
                 'allow_multiple_submissions' => true,
                 'submission_limit' => null,
+                'sort_order' => 1,
                 'settings' => [
                     'type' => 'raf',
                     'version' => '5.0',
@@ -89,6 +90,7 @@ class FormManagementSeeder extends Seeder
                 'is_public' => true,
                 'allow_multiple_submissions' => true,
                 'submission_limit' => null,
+                'sort_order' => 2,
                 'settings' => [
                     'type' => 'dar',
                     'version' => '1.0',
@@ -127,6 +129,7 @@ class FormManagementSeeder extends Seeder
                 'is_public' => true,
                 'allow_multiple_submissions' => true,
                 'submission_limit' => null,
+                'sort_order' => 3,
                 'settings' => [
                     'type' => 'dcr',
                     'version' => '1.0',
@@ -166,6 +169,7 @@ class FormManagementSeeder extends Seeder
                 'is_public' => true,
                 'allow_multiple_submissions' => true,
                 'submission_limit' => null,
+                'sort_order' => 4,
                 'settings' => [
                     'type' => 'srf',
                     'version' => '16.0',

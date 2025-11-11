@@ -29,9 +29,9 @@ class FormSubmissionSeeder extends Seeder
 
         // Get branches and users
         $branches = Branch::all();
-        $users = User::all();
+        $allUsers = User::all();
 
-        if ($branches->isEmpty() || $users->isEmpty()) {
+        if ($branches->isEmpty() || $allUsers->isEmpty()) {
             $this->command->warn('No branches or users found. Please seed branches and users first.');
             return;
         }
@@ -55,10 +55,36 @@ class FormSubmissionSeeder extends Seeder
                     ? null 
                     : $startedAt->copy()->addMinutes(rand(15, 120));
                 
-                $branch = $branches->random();
-                $user = $users->random();
+                // Strategy: Create submissions that match the branch filtering logic
+                // BM/ABM/OO users should see submissions from their branch
+                // Admin/HQ users can see all submissions
+                
+                // Get branch users (BM, ABM, OO) and non-branch users (Admin, HQ)
+                $branchUsers = $allUsers->whereNotNull('branch_id'); // BM, ABM, OO
+                $nonBranchUsers = $allUsers->whereNull('branch_id'); // Admin, HQ
+                
+                // 70% chance: Create submission for a branch user (from their branch)
+                // 30% chance: Create submission for admin/HQ (any branch)
+                if ($branchUsers->isNotEmpty() && rand(0, 9) < 7) {
+                    // Select a branch user and use their branch for the submission
+                    $user = $branchUsers->random();
+                    $branch = $branches->where('id', $user->branch_id)->first();
+                    
+                    // Fallback: if user's branch doesn't exist, use random branch
+                    if (!$branch) {
+                        $branch = $branches->random();
+                    }
+                } else {
+                    // Use admin/HQ user, submission can be from any branch
+                    $user = $nonBranchUsers->isNotEmpty() 
+                        ? $nonBranchUsers->random() 
+                        : $allUsers->random();
+                    $branch = $branches->random();
+                }
+                
+                // Reviewer can be any user (admin/HQ typically review)
                 $reviewedBy = in_array($status, ['under_review', 'approved', 'rejected', 'completed']) 
-                    ? $users->random() 
+                    ? $allUsers->random() 
                     : null;
 
                 // Generate submission data based on form fields

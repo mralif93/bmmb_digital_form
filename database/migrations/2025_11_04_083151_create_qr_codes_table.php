@@ -26,6 +26,7 @@ return new class extends Migration
             $table->timestamp('expires_at')->nullable(); // Expiration timestamp (when QR code expires)
             $table->string('validation_token')->nullable(); // Token for URL validation (invalidates old QR codes)
             $table->timestamps();
+            $table->softDeletes();
             
             $table->index('name');
             $table->index('type');

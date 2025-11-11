@@ -5,8 +5,8 @@
 @section('page-description', 'Update branch information')
 
 @section('content')
-<div class="mb-4">
-    <a href="{{ route('admin.branches.show', $branch->id) }}" class="inline-flex items-center px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+<div class="mb-4 flex items-center justify-end">
+    <a href="{{ route('admin.branches.show', $branch->id) }}" class="inline-flex items-center px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
         <i class='bx bx-arrow-back mr-1.5'></i>
         Back to View
     </a>

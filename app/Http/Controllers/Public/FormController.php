@@ -3,22 +3,12 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Models\DataAccessRequestForm;
-use App\Models\DataCorrectionRequestForm;
-use App\Models\RemittanceApplicationForm;
-use App\Models\ServiceRequestForm;
 use App\Models\Form;
 use App\Services\FormRendererService;
 use Illuminate\Http\Request;
 
 class FormController extends Controller
 {
-    private $formModelMap = [
-        'raf' => RemittanceApplicationForm::class,
-        'dar' => DataAccessRequestForm::class,
-        'dcr' => DataCorrectionRequestForm::class,
-        'srf' => ServiceRequestForm::class,
-    ];
 
     /**
      * Display public form by slug (new form management system)

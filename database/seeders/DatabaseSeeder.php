@@ -14,24 +14,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            UserSeeder::class,
-            BranchSeeder::class,
-            QrCodeSeeder::class,
+            BranchSeeder::class, // Must run first - creates branches
+            UserSeeder::class, // Runs after branches to assign users to branches
+            QrCodeSeeder::class, // Requires branches
             FormManagementSeeder::class, // Creates Forms → Sections → Fields for all 4 forms
-            FormSubmissionSeeder::class, // Creates form submissions for dynamic forms
-            // Old form seeders (kept for backward compatibility if needed)
-            // FormSeeder::class, // Create main form records for all 4 forms (old models)
-            // FormSectionSeeder::class, // Initialize form sections for all form types
-            // FormFieldsSeeder::class, // Add form fields for dynamic forms (old models)
-            RafSubmissionSeeder::class,
-            DarSubmissionSeeder::class,
-            DcrSubmissionSeeder::class,
-            SrfSubmissionSeeder::class,
-            // Public form submissions (optional - run separately if needed)
-            // PublicRafSubmissionSeeder::class,
-            // PublicDarSubmissionSeeder::class,
-            // PublicDcrSubmissionSeeder::class,
-            // PublicSrfSubmissionSeeder::class,
+            FormSubmissionSeeder::class, // Creates form submissions for dynamic forms (requires forms, branches, users)
+            // Old form seeders removed - they use deprecated models (RemittanceApplicationForm, etc.)
+            // These models no longer exist as we've migrated to the new Form system
+            // If you need old form data, use FormSubmissionSeeder which works with the new system
         ]);
     }
 }

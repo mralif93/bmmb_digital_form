@@ -21,16 +21,18 @@ return new class extends Migration
             $table->string('state'); // "Wilayah Persekutuan Kuala Lumpur"
             $table->string('region'); // "Central 1"
             $table->timestamps();
+            $table->softDeletes();
             
             $table->index('branch_name');
             $table->index('state');
             $table->index('region');
         });
 
-        // Note: Foreign key constraints for branch_id in submission tables
-        // are added after the branches table is created to avoid SQLite issues.
-        // They will be added in a separate migration if needed, but SQLite doesn't
-        // handle foreign keys on existing tables well, so we rely on application-level integrity.
+        // Add foreign key constraint for branch_id in users table
+        // This is safe because branches table is created before this constraint is added
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('set null');
+        });
     }
 
     /**
@@ -38,6 +40,11 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Drop foreign key constraint before dropping branches table
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign(['branch_id']);
+        });
+        
         Schema::dropIfExists('branches');
     }
 };

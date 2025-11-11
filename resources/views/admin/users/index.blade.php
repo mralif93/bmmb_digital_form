@@ -52,9 +52,11 @@
                         id="role"
                         class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
                     <option value="">All Roles</option>
-                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
-                    <option value="moderator" {{ request('role') === 'moderator' ? 'selected' : '' }}>Moderator</option>
-                    <option value="user" {{ request('role') === 'user' ? 'selected' : '' }}>User</option>
+                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Administrator</option>
+                    <option value="branch_manager" {{ request('role') === 'branch_manager' ? 'selected' : '' }}>Branch Manager</option>
+                    <option value="assistant_branch_manager" {{ request('role') === 'assistant_branch_manager' ? 'selected' : '' }}>Assistant Branch Manager</option>
+                    <option value="operation_officer" {{ request('role') === 'operation_officer' ? 'selected' : '' }}>Operations Officer</option>
+                    <option value="headquarters" {{ request('role') === 'headquarters' ? 'selected' : '' }}>Headquarters</option>
                 </select>
             </div>
             
@@ -101,6 +103,9 @@
                         Role
                     </th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                        Branch
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                         Status
                     </th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
@@ -125,11 +130,26 @@
                     <td class="px-4 py-3 whitespace-nowrap">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                             @if($user->role === 'admin') bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400
-                            @elseif($user->role === 'moderator') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400
-                            @else bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
+                            @elseif($user->role === 'branch_manager') bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400
+                            @elseif($user->role === 'assistant_branch_manager') bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400
+                            @elseif($user->role === 'operation_officer') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400
+                            @elseif($user->role === 'headquarters') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
+                            @else bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400
                             @endif">
-                            {{ ucfirst($user->role) }}
+                            {{ $user->role_display }}
                         </span>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        @if($user->branch)
+                            <div class="text-xs font-medium text-gray-900 dark:text-white">
+                                {{ $user->branch->name }}
+                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                {{ $user->branch->code }}
+                            </div>
+                        @else
+                            <span class="text-xs text-gray-400 dark:text-gray-500">No branch</span>
+                        @endif
                     </td>
                     <td class="px-4 py-3 whitespace-nowrap">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
@@ -150,17 +170,17 @@
                             <form action="{{ route('admin.users.toggle-status', $user) }}" method="POST" class="inline">
                                 @csrf
                                 @method('PATCH')
-                                <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 dark:bg-yellow-900/30 dark:hover:bg-yellow-900/50 dark:text-yellow-400 rounded-lg text-xs transition-colors">
+                                <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 dark:bg-yellow-900/30 dark:hover:bg-yellow-900/50 dark:text-yellow-400 rounded-lg text-xs transition-colors">
                                     Toggle Status
                                 </button>
                             </form>
-                            <a href="{{ route('admin.users.show', $user) }}" class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 rounded-lg text-xs transition-colors">
+                            <a href="{{ route('admin.users.show', $user) }}" class="inline-flex items-center justify-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 rounded-lg text-xs transition-colors">
                                 View
                             </a>
-                            <a href="{{ route('admin.users.edit', $user) }}" class="inline-flex items-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 dark:text-orange-400 rounded-lg text-xs transition-colors">
+                            <a href="{{ route('admin.users.edit', $user) }}" class="inline-flex items-center justify-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 dark:text-orange-400 rounded-lg text-xs transition-colors">
                                 Edit
                             </a>
-                            <button onclick="deleteUser({{ $user->id }})" class="inline-flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg text-xs transition-colors">
+                            <button onclick="deleteUser({{ $user->id }})" class="inline-flex items-center justify-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg text-xs transition-colors">
                                 Delete
                             </button>
                         </div>
