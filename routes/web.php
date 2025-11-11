@@ -80,17 +80,24 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
             abort(403, 'User not authenticated');
         }
         
-        // Initialize base stats
-        $stats = [];
+        // Initialize base stats - Common stats for all roles
+        $stats = [
+            'total_forms' => \App\Models\Form::count(),
+            'total_active_forms' => \App\Models\Form::where('status', 'active')->count(),
+            'active_forms' => \App\Models\Form::where('status', 'active')->count(), // Alias for compatibility
+            'total_form_submissions' => \App\Models\FormSubmission::count(),
+            'total_submissions' => \App\Models\FormSubmission::count(), // Alias for compatibility
+            'total_completed_submissions' => \App\Models\FormSubmission::where('status', 'completed')->count(),
+        ];
+        
         $topForms = collect();
         $submissionCounts = [];
         $recentSubmissions = collect();
         $mySubmissions = collect();
         
         if ($user->isAdmin()) {
-            // Admin: Full system stats
-            $stats = [
-                'total_forms' => \App\Models\Form::count(),
+            // Admin: Full system stats (merge with common stats)
+            $stats = array_merge($stats, [
                 'active_forms' => \App\Models\Form::where('status', 'active')->count(),
                 'total_submissions' => \App\Models\FormSubmission::count(),
                 'approved_submissions' => \App\Models\FormSubmission::where('status', 'approved')->count(),
@@ -99,7 +106,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
                 'active_users' => \App\Models\User::where('status', 'active')->count(),
                 'total_branches' => \App\Models\Branch::count(),
                 'total_qr_codes' => \App\Models\QrCode::count(),
-            ];
+            ]);
             
             $stats['conversion_rate'] = $stats['total_submissions'] > 0 
                 ? round(($stats['approved_submissions'] / $stats['total_submissions']) * 100) 
@@ -323,6 +330,89 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
             $viewData['myCompletions'] = $myCompletions ?? collect();
         }
         
+        // Ensure common stats are always available
+        if (!isset($stats['total_forms'])) {
+            $stats['total_forms'] = \App\Models\Form::count();
+        }
+        if (!isset($stats['total_active_forms'])) {
+            $stats['total_active_forms'] = \App\Models\Form::where('status', 'active')->count();
+        }
+        if (!isset($stats['total_form_submissions'])) {
+            $stats['total_form_submissions'] = \App\Models\FormSubmission::count();
+        }
+        if (!isset($stats['total_completed_submissions'])) {
+            $stats['total_completed_submissions'] = \App\Models\FormSubmission::where('status', 'completed')->count();
+        }
+        
+        // Get paginated form submissions (latest to oldest) with search and filters
+        $submissionsQuery = \App\Models\FormSubmission::with(['form', 'user', 'branch']);
+        
+        // Apply role-based filtering
+        $request = request();
+        if (!$user->isAdmin() && !$user->isHQ()) {
+            // BM, ABM, OO: Only submissions from their branch
+            if ($user->branch_id) {
+                $submissionsQuery->where('branch_id', $user->branch_id);
+            } else {
+                // If user has no branch assigned, show no submissions
+                $submissionsQuery->whereRaw('1 = 0');
+            }
+        }
+        
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $submissionsQuery->where(function ($q) use ($search) {
+                $q->where('id', 'like', "%{$search}%")
+                  ->orWhere('submission_token', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($userQuery) use ($search) {
+                      $userQuery->where('first_name', 'like', "%{$search}%")
+                                ->orWhere('last_name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('branch', function ($branchQuery) use ($search) {
+                      $branchQuery->where('branch_name', 'like', "%{$search}%")
+                                  ->orWhere('ti_agent_code', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('form', function ($formQuery) use ($search) {
+                      $formQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('slug', 'like', "%{$search}%");
+                  });
+            });
+        }
+        
+        // Filter by status
+        if ($request->filled('status')) {
+            $submissionsQuery->where('status', $request->status);
+        }
+        
+        // Filter by branch (Admin and HQ only)
+        if (($user->isAdmin() || $user->isHQ()) && $request->filled('branch_id')) {
+            $submissionsQuery->where('branch_id', $request->branch_id);
+        }
+        
+        // Filter by form
+        if ($request->filled('form_id')) {
+            $submissionsQuery->where('form_id', $request->form_id);
+        }
+        
+        // Order by latest first
+        $submissions = $submissionsQuery->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+        
+        // Get branches for filter dropdown (Admin and HQ only)
+        $branches = collect();
+        if ($user->isAdmin() || $user->isHQ()) {
+            $branches = \App\Models\Branch::orderBy('branch_name')->get();
+        }
+        
+        // Get forms for filter dropdown
+        $forms = \App\Models\Form::where('status', 'active')->orderBy('name')->get();
+        
+        $viewData['stats'] = $stats;
+        $viewData['submissions'] = $submissions;
+        $viewData['branches'] = $branches;
+        $viewData['forms'] = $forms;
+        
         return view('admin.dashboard', $viewData);
     })->name('dashboard');
     
@@ -425,6 +515,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         });
         
         Route::get('/{formSlug}/{id}', [SubmissionController::class, 'show'])->name('show');
+        Route::get('/{formSlug}/{id}/details', [SubmissionController::class, 'details'])->name('details');
         
         // OO Actions: Take Up and Complete
         Route::post('/{formSlug}/{id}/take-up', [SubmissionController::class, 'takeUp'])->name('take-up');

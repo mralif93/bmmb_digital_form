@@ -366,6 +366,45 @@ class SubmissionController extends Controller
         
         return view('admin.submissions.show', compact('submission', 'form'));
     }
+
+    /**
+     * Get submission details for modal (AJAX)
+     */
+    public function details($formSlug, $id)
+    {
+        $form = Form::where('slug', $formSlug)->firstOrFail();
+        $user = auth()->user();
+        
+        $submission = FormSubmission::withTrashed()
+            ->where('form_id', $form->id)
+            ->with(['user', 'branch', 'form', 'reviewedBy', 'takenUpBy', 'completedBy', 'submissionData.field'])
+            ->findOrFail($id);
+        
+        // Check access: BM/ABM/OO can only view submissions from their branch
+        // Admin and HQ can view all submissions
+        if (!$user->isAdmin() && !$user->isHQ()) {
+            if ($user->branch_id && $submission->branch_id !== $user->branch_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You can only view submissions from your branch.'
+                ], 403);
+            } elseif (!$user->branch_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are not assigned to a branch.'
+                ], 403);
+            }
+        }
+        
+        // Render the submission details partial
+        $html = view('admin.submissions.modal-content', compact('submission', 'form'))->render();
+        
+        return response()->json([
+            'success' => true,
+            'html' => $html
+        ]);
+    }
+
     /**
      * Display DAR submissions
      */
