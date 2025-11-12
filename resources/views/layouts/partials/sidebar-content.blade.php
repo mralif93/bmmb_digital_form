@@ -199,6 +199,7 @@
         </div>
     </div>
 
+    @if(auth()->user()->isAdmin() || auth()->user()->isHQ())
     <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
         <div class="space-y-0.5">
             <a href="{{ route('admin.settings') }}" @click="if (window.innerWidth < 1024) { setTimeout(() => { window.dispatchEvent(new CustomEvent('close-sidebar')); }, 100); }" class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-400 transition-colors {{ request()->routeIs('admin.settings*') ? 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400' : '' }}">
@@ -207,5 +208,6 @@
             </a>
         </div>
     </div>
+    @endif
 </nav>
 

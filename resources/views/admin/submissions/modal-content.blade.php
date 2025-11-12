@@ -108,6 +108,16 @@
                 </dd>
             </div>
             @endif
+            @if($submission->completion_notes)
+            <div class="flex items-start gap-4">
+                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                    Completion Notes
+                </dt>
+                <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left whitespace-pre-wrap">
+                    {{ $submission->completion_notes }}
+                </dd>
+            </div>
+            @endif
         </div>
     </div>
 

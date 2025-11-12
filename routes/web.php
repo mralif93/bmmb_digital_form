@@ -485,6 +485,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
             Route::get('/users/{user}/details', [UserController::class, 'details'])->name('users.details');
             Route::get('/users/{user}/edit-modal', [UserController::class, 'editModal'])->name('users.edit-modal');
             Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+            Route::post('/users/{user}/verify-email', [UserController::class, 'verifyEmail'])->name('users.verify-email');
+            Route::post('/users/{user}/unverify-email', [UserController::class, 'unverifyEmail'])->name('users.unverify-email');
             Route::get('/users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
             Route::post('/users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
             Route::delete('/users/{id}/force-delete', [UserController::class, 'forceDelete'])->name('users.force-delete');
@@ -516,9 +518,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
     
-    // System Settings
-    Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings');
-    Route::put('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
+    // System Settings (Admin and HQ only)
+    Route::middleware('admin-or-hq')->group(function () {
+        Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings');
+        Route::put('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
+    });
     
     // Project Information (Admin Only)
     Route::middleware('admin-only')->group(function () {

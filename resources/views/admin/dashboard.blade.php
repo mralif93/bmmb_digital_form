@@ -5,6 +5,15 @@
 @section('page-description', 'Overview of your form management system')
 
 @section('content')
+@if(session('success'))
+<div class="mb-4 p-3 bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700 rounded-lg text-sm text-green-800 dark:text-green-400 flex items-center justify-between">
+    <span>{{ session('success') }}</span>
+    <button onclick="this.parentElement.remove()" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">
+        <i class='bx bx-x text-lg'></i>
+    </button>
+</div>
+@endif
+
 <!-- User Information Card -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6">
     <div class="flex items-center justify-between">
@@ -844,6 +853,7 @@
         const formData = new FormData(form);
         const submitButton = form.querySelector('button[type="submit"]');
         const originalText = submitButton.textContent;
+        const content = document.getElementById('userEditModalContent');
         
         // Disable submit button and show loading
         submitButton.disabled = true;
@@ -854,39 +864,83 @@
             body: formData,
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
             }
         })
         .then(response => {
-            if (response.redirected) {
-                // Success - close modal, show success toast, then reload
-                closeUserEditModal();
-                showSuccessToast('User Updated', 'User has been updated successfully!');
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-            } else {
-                return response.text().then(html => {
-                    // If there are validation errors, replace the form content
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const newForm = doc.querySelector('form');
-                    if (newForm) {
-                        form.innerHTML = newForm.innerHTML;
-                        // Re-attach submit handler
-                        form.addEventListener('submit', handleUserEditFormSubmit);
+            return response.json().then(data => {
+                if (response.ok && data.success) {
+                    // Success - close modal, then redirect
+                    closeUserEditModal();
+                    
+                    // If redirecting to dashboard, redirect immediately (session message will be shown)
+                    if (data.redirect && data.redirect.includes('/dashboard')) {
+                        window.location.href = data.redirect;
                     } else {
-                        // Show error message
-                        const content = document.getElementById('userEditModalContent');
-                        content.innerHTML = '<div class="text-center py-12 text-red-600 dark:text-red-400">Error updating user. Please try again.</div>';
+                        // For other redirects, show toast then redirect
+                        showSuccessToast('User Updated', data.message || 'User has been updated successfully!');
+                        setTimeout(() => {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                            } else {
+                                window.location.reload();
+                            }
+                        }, 1500);
                     }
-                });
-            }
+                } else {
+                    // Handle validation errors or other errors
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalText;
+                    
+                    if (data.errors) {
+                        // Display validation errors
+                        let errorHtml = '<div class="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg text-sm text-red-800 dark:text-red-400"><ul class="list-disc list-inside space-y-1">';
+                        Object.keys(data.errors).forEach(field => {
+                            data.errors[field].forEach(error => {
+                                errorHtml += `<li>${error}</li>`;
+                            });
+                        });
+                        errorHtml += '</ul></div>';
+                        
+                        // Insert errors at the top of the form
+                        const formContainer = form.parentElement;
+                        const existingErrors = formContainer.querySelector('.validation-errors');
+                        if (existingErrors) {
+                            existingErrors.remove();
+                        }
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'validation-errors';
+                        errorDiv.innerHTML = errorHtml;
+                        formContainer.insertBefore(errorDiv, form);
+                    } else {
+                        // Show general error message
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg text-sm text-red-800 dark:text-red-400';
+                        errorDiv.textContent = data.message || 'Error updating user. Please try again.';
+                        const formContainer = form.parentElement;
+                        const existingErrors = formContainer.querySelector('.validation-errors');
+                        if (existingErrors) {
+                            existingErrors.remove();
+                        }
+                        formContainer.insertBefore(errorDiv, form);
+                    }
+                }
+            });
         })
         .catch(error => {
             console.error('Error:', error);
             submitButton.disabled = false;
             submitButton.textContent = originalText;
-            alert('An error occurred while updating the user. Please try again.');
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg text-sm text-red-800 dark:text-red-400';
+            errorDiv.textContent = 'An error occurred while updating the user. Please try again.';
+            const formContainer = form.parentElement;
+            const existingErrors = formContainer.querySelector('.validation-errors');
+            if (existingErrors) {
+                existingErrors.remove();
+            }
+            formContainer.insertBefore(errorDiv, form);
         });
     }
     
@@ -960,6 +1014,7 @@
         const formData = new FormData(form);
         const submitButton = form.querySelector('button[type="submit"]');
         const originalText = submitButton.textContent;
+        const content = document.getElementById('userCreateModalContent');
         
         // Disable submit button and show loading
         submitButton.disabled = true;
@@ -970,39 +1025,334 @@
             body: formData,
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
             }
         })
         .then(response => {
-            if (response.redirected) {
-                // Success - close modal, show success toast, then reload
-                closeUserCreateModal();
-                showSuccessToast('User Created', 'User has been created successfully!');
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-            } else {
-                return response.text().then(html => {
-                    // If there are validation errors, replace the form content
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const newForm = doc.querySelector('form');
-                    if (newForm) {
-                        form.innerHTML = newForm.innerHTML;
-                        // Re-attach submit handler
-                        form.addEventListener('submit', handleUserCreateFormSubmit);
+            return response.json().then(data => {
+                if (response.ok && data.success) {
+                    // Success - close modal, then redirect to dashboard
+                    closeUserCreateModal();
+                    
+                    // If redirecting to dashboard, redirect immediately (session message will be shown)
+                    if (data.redirect && data.redirect.includes('/dashboard')) {
+                        window.location.href = data.redirect;
                     } else {
-                        // Show error message
-                        const content = document.getElementById('userCreateModalContent');
-                        content.innerHTML = '<div class="text-center py-12 text-red-600 dark:text-red-400">Error creating user. Please try again.</div>';
+                        // For other redirects, show toast then redirect
+                        showSuccessToast('User Created', data.message || 'User has been created successfully!');
+                        setTimeout(() => {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                            } else {
+                                window.location.reload();
+                            }
+                        }, 1500);
                     }
-                });
-            }
+                } else {
+                    // Handle validation errors or other errors
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalText;
+                    
+                    if (data.errors) {
+                        // Display validation errors
+                        let errorHtml = '<div class="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg text-sm text-red-800 dark:text-red-400"><ul class="list-disc list-inside space-y-1">';
+                        Object.keys(data.errors).forEach(field => {
+                            data.errors[field].forEach(error => {
+                                errorHtml += `<li>${error}</li>`;
+                            });
+                        });
+                        errorHtml += '</ul></div>';
+                        
+                        // Insert errors at the top of the form
+                        const formContainer = form.parentElement;
+                        const existingErrors = formContainer.querySelector('.validation-errors');
+                        if (existingErrors) {
+                            existingErrors.remove();
+                        }
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'validation-errors';
+                        errorDiv.innerHTML = errorHtml;
+                        formContainer.insertBefore(errorDiv, form);
+                    } else {
+                        // Show general error message
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg text-sm text-red-800 dark:text-red-400';
+                        errorDiv.textContent = data.message || 'Error creating user. Please try again.';
+                        const formContainer = form.parentElement;
+                        const existingErrors = formContainer.querySelector('.validation-errors');
+                        if (existingErrors) {
+                            existingErrors.remove();
+                        }
+                        formContainer.insertBefore(errorDiv, form);
+                    }
+                }
+            });
         })
         .catch(error => {
             console.error('Error:', error);
             submitButton.disabled = false;
             submitButton.textContent = originalText;
-            alert('An error occurred while creating the user. Please try again.');
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg text-sm text-red-800 dark:text-red-400';
+            errorDiv.textContent = 'An error occurred while creating the user. Please try again.';
+            const formContainer = form.parentElement;
+            const existingErrors = formContainer.querySelector('.validation-errors');
+            if (existingErrors) {
+                existingErrors.remove();
+            }
+            formContainer.insertBefore(errorDiv, form);
+        });
+    }
+    
+    // Handle toggle status from modal
+    function handleToggleStatus(userId, currentStatus) {
+        const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+        const actionText = currentStatus === 'active' ? 'inactive' : 'active';
+        
+        Swal.fire({
+            title: `Set User to ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}?`,
+            html: `
+                <div class="text-center">
+                    <p class="mb-2">Are you sure you want to set this user to <strong>${actionText}</strong>?</p>
+                </div>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: `Yes, Set ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}`,
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: newStatus === 'active' ? '#10b981' : '#6b7280',
+            cancelButtonColor: '#6b7280',
+            customClass: {
+                popup: 'rounded-lg',
+                htmlContainer: 'text-center',
+                confirmButton: 'rounded-lg',
+                cancelButton: 'rounded-lg'
+            },
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('toggleStatusForm');
+                if (!form) return;
+                
+                const submitButton = form.querySelector('button[type="button"]');
+                const originalText = submitButton.textContent;
+                submitButton.disabled = true;
+                submitButton.textContent = 'Updating...';
+                
+                // Create form data
+                const formData = new FormData();
+                formData.append('_token', '{{ csrf_token() }}');
+                formData.append('_method', 'PATCH');
+                
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    }
+                })
+                .then(response => {
+                    return response.json().then(data => {
+                        if (response.ok && data.success) {
+                            // Show success message
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Status Updated',
+                                text: data.message || 'User status has been updated successfully.',
+                                confirmButtonColor: '#10b981',
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                // Reload the modal content to show updated status
+                                openUserViewModal(userId);
+                            });
+                        } else {
+                            submitButton.disabled = false;
+                            submitButton.textContent = originalText;
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message || 'Failed to update user status. Please try again.',
+                                confirmButtonColor: '#dc2626'
+                            });
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalText;
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while updating the status. Please try again.',
+                        confirmButtonColor: '#dc2626'
+                    });
+                });
+            }
+        });
+    }
+    
+    // Handle reset password (placeholder function)
+    function handleResetPassword(userId) {
+        // Placeholder function - functionality to be implemented later
+        Swal.fire({
+            icon: 'info',
+            title: 'Reset Password',
+            text: 'Reset password functionality will be implemented here.',
+            confirmButtonColor: '#FE8000'
+        });
+    }
+    
+    // Handle verify email
+    function handleVerifyEmail(userId) {
+        Swal.fire({
+            title: 'Verify Email?',
+            html: `
+                <div class="text-center">
+                    <p class="mb-2">Are you sure you want to verify this user's email address?</p>
+                    <p class="text-sm text-gray-600">This will mark the email as verified.</p>
+                </div>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Verify Email',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#10b981',
+            cancelButtonColor: '#6b7280',
+            customClass: {
+                popup: 'rounded-lg',
+                htmlContainer: 'text-center',
+                confirmButton: 'rounded-lg',
+                cancelButton: 'rounded-lg'
+            },
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Create form data
+                const formData = new FormData();
+                formData.append('_token', '{{ csrf_token() }}');
+                formData.append('_method', 'POST');
+                
+                fetch(`/admin/users/${userId}/verify-email`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    }
+                })
+                .then(response => {
+                    return response.json().then(data => {
+                        if (response.ok && data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Email Verified',
+                                text: data.message || 'Email has been verified successfully.',
+                                confirmButtonColor: '#10b981',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                // Reload the modal content to show updated status
+                                openUserViewModal(userId);
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message || 'Failed to verify email. Please try again.',
+                                confirmButtonColor: '#dc2626'
+                            });
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while verifying the email. Please try again.',
+                        confirmButtonColor: '#dc2626'
+                    });
+                });
+            }
+        });
+    }
+    
+    // Handle unverify email
+    function handleUnverifyEmail(userId) {
+        Swal.fire({
+            title: 'Unverify Email?',
+            html: `
+                <div class="text-center">
+                    <p class="mb-2">Are you sure you want to unverify this user's email address?</p>
+                    <p class="text-sm text-gray-600">This will mark the email as not verified.</p>
+                </div>
+            `,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Unverify Email',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#6b7280',
+            customClass: {
+                popup: 'rounded-lg',
+                htmlContainer: 'text-center',
+                confirmButton: 'rounded-lg',
+                cancelButton: 'rounded-lg'
+            },
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Create form data
+                const formData = new FormData();
+                formData.append('_token', '{{ csrf_token() }}');
+                formData.append('_method', 'POST');
+                
+                fetch(`/admin/users/${userId}/unverify-email`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    }
+                })
+                .then(response => {
+                    return response.json().then(data => {
+                        if (response.ok && data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Email Unverified',
+                                text: data.message || 'Email has been unverified successfully.',
+                                confirmButtonColor: '#10b981',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                // Reload the modal content to show updated status
+                                openUserViewModal(userId);
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message || 'Failed to unverify email. Please try again.',
+                                confirmButtonColor: '#dc2626'
+                            });
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while unverifying the email. Please try again.',
+                        confirmButtonColor: '#dc2626'
+                    });
+                });
+            }
         });
     }
     

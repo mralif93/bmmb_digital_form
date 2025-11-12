@@ -67,13 +67,24 @@
                     Status
                 </dt>
                 <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                        @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
-                        @elseif($user->status === 'inactive') bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400
-                        @else bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400
-                        @endif">
-                        {{ ucfirst($user->status) }}
-                    </span>
+                    @if($user->status === 'active')
+                        <div class="flex flex-col">
+                            <span class="inline-flex items-center text-green-600 dark:text-green-400 font-medium">
+                                <i class='bx bx-check-circle mr-1.5'></i>
+                                Active
+                            </span>
+                        </div>
+                    @elseif($user->status === 'inactive')
+                        <span class="inline-flex items-center text-red-600 dark:text-red-400">
+                            <i class='bx bx-x-circle mr-1.5'></i>
+                            Inactive
+                        </span>
+                    @else
+                        <span class="inline-flex items-center text-red-600 dark:text-red-400">
+                            <i class='bx bx-x-circle mr-1.5'></i>
+                            {{ ucfirst($user->status) }}
+                        </span>
+                    @endif
                 </dd>
             </div>
             <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
@@ -94,9 +105,20 @@
                 </dt>
                 <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
                     @if($user->email_verified_at)
-                        <span class="text-green-600 dark:text-green-400">Verified</span>
+                        <div class="flex flex-col">
+                            <span class="inline-flex items-center text-green-600 dark:text-green-400 font-medium">
+                                <i class='bx bx-check-circle mr-1.5'></i>
+                                Verified
+                            </span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                {{ \App\Helpers\TimezoneHelper::toSystemTimezone($user->email_verified_at)->format('M d, Y h:i A') }}
+                            </span>
+                        </div>
                     @else
-                        <span class="text-red-600 dark:text-red-400">Not verified</span>
+                        <span class="inline-flex items-center text-red-600 dark:text-red-400">
+                            <i class='bx bx-x-circle mr-1.5'></i>
+                            Not verified
+                        </span>
                     @endif
                 </dd>
             </div>
@@ -135,6 +157,46 @@
             </div>
             @endif
         </dl>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="flex items-center justify-end space-x-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <button type="button" 
+                onclick="handleResetPassword({{ $user->id }})"
+                class="inline-flex items-center justify-center px-4 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 dark:text-purple-400 rounded-lg text-xs font-semibold transition-colors">
+            <i class='bx bx-key mr-1.5'></i>
+            Reset Password
+        </button>
+        @if(!$user->email_verified_at)
+        <button type="button" 
+                onclick="handleVerifyEmail({{ $user->id }})"
+                class="inline-flex items-center justify-center px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-400 rounded-lg text-xs font-semibold transition-colors">
+            <i class='bx bx-check-circle mr-1.5'></i>
+            Verify Email
+        </button>
+        @else
+        <button type="button" 
+                onclick="handleUnverifyEmail({{ $user->id }})"
+                class="inline-flex items-center justify-center px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg text-xs font-semibold transition-colors">
+            <i class='bx bx-x-circle mr-1.5'></i>
+            Unverify Email
+        </button>
+        @endif
+        <form id="toggleStatusForm" action="{{ route('admin.users.toggle-status', $user) }}" method="POST" class="inline">
+            @csrf
+            @method('PATCH')
+            <button type="button" 
+                    onclick="handleToggleStatus({{ $user->id }}, '{{ $user->status }}')"
+                    class="inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs font-semibold transition-colors
+                    @if($user->status === 'active')
+                        bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-900/30 dark:hover:bg-gray-900/50 dark:text-gray-400
+                    @else
+                        bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-400
+                    @endif">
+                <i class='bx {{ $user->status === 'active' ? 'bx-toggle-right' : 'bx-toggle-left' }} mr-1.5'></i>
+                {{ $user->status === 'active' ? 'Set Inactive' : 'Set Active' }}
+            </button>
+        </form>
     </div>
 </div>
 

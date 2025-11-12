@@ -238,44 +238,98 @@
 
 @push('scripts')
 <script>
+@php
+    $settings = \Illuminate\Support\Facades\Cache::get('system_settings', [
+        'primary_color' => '#FE8000',
+    ]);
+    $primaryColor = $settings['primary_color'] ?? '#FE8000';
+@endphp
+
 function restoreUser(userId) {
-    if (confirm('Are you sure you want to restore this user? The user will be available in the active users list.')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `{{ route('admin.users.restore', ':id') }}`.replace(':id', userId);
-        
-        const csrf = document.createElement('input');
-        csrf.type = 'hidden';
-        csrf.name = '_token';
-        csrf.value = '{{ csrf_token() }}';
-        form.appendChild(csrf);
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
+    Swal.fire({
+        title: 'Restore User?',
+        html: `
+            <div class="text-center">
+                <p class="mb-2">Are you sure you want to restore this user?</p>
+                <p class="text-sm text-gray-600">The user will be restored and available in the active users list.</p>
+            </div>
+        `,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Restore',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '{{ $primaryColor }}',
+        cancelButtonColor: '#6b7280',
+        customClass: {
+            popup: 'rounded-lg',
+            htmlContainer: 'text-center',
+            confirmButton: 'rounded-lg',
+            cancelButton: 'rounded-lg'
+        },
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `{{ route('admin.users.restore', ':id') }}`.replace(':id', userId);
+            
+            const csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = '_token';
+            csrf.value = '{{ csrf_token() }}';
+            form.appendChild(csrf);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
 
 function forceDeleteUser(userId) {
-    if (confirm('WARNING: This will permanently delete this user and cannot be undone!\n\nAre you sure you want to permanently delete this user?')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `{{ route('admin.users.force-delete', ':id') }}`.replace(':id', userId);
-        
-        const csrf = document.createElement('input');
-        csrf.type = 'hidden';
-        csrf.name = '_token';
-        csrf.value = '{{ csrf_token() }}';
-        form.appendChild(csrf);
-        
-        const method = document.createElement('input');
-        method.type = 'hidden';
-        method.name = '_method';
-        method.value = 'DELETE';
-        form.appendChild(method);
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
+    Swal.fire({
+        title: 'Permanently Delete User?',
+        html: `
+            <div class="text-center">
+                <p class="mb-2"><strong>Warning: This action cannot be undone!</strong></p>
+                <p class="mb-2">Are you sure you want to permanently delete this user?</p>
+                <p class="text-sm text-red-600">This will permanently remove all user data from the system.</p>
+            </div>
+        `,
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Delete Permanently',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        customClass: {
+            popup: 'rounded-lg',
+            htmlContainer: 'text-center',
+            confirmButton: 'rounded-lg',
+            cancelButton: 'rounded-lg'
+        },
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `{{ route('admin.users.force-delete', ':id') }}`.replace(':id', userId);
+            
+            const csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = '_token';
+            csrf.value = '{{ csrf_token() }}';
+            form.appendChild(csrf);
+            
+            const method = document.createElement('input');
+            method.type = 'hidden';
+            method.name = '_method';
+            method.value = 'DELETE';
+            form.appendChild(method);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
 </script>
 @endpush

@@ -1074,21 +1074,21 @@ class SubmissionController extends Controller
     }
 
     /**
-     * OO takes up a submitted application (changes status from 'submitted' to 'pending_process')
+     * OO, ABM, or BM takes up a submitted application (changes status from 'submitted' to 'pending_process')
      */
     public function takeUp($formSlug, $id)
     {
         $user = auth()->user();
         
-        // Only OO can take up submissions
-        if (!$user->isOO()) {
-            abort(403, 'Only Operations Officers can take up submissions.');
+        // Only OO, ABM, and BM can take up submissions
+        if (!$user->isOO() && !$user->isABM() && !$user->isBM()) {
+            abort(403, 'Only Operations Officers, Assistant Branch Managers, and Branch Managers can take up submissions.');
         }
 
         $form = Form::where('slug', $formSlug)->firstOrFail();
         $submission = FormSubmission::where('form_id', $form->id)->findOrFail($id);
 
-        // Check if submission belongs to OO's branch
+        // Check if submission belongs to user's branch
         if ($user->branch_id && $submission->branch_id !== $user->branch_id) {
             abort(403, 'You can only take up submissions from your branch.');
         }
@@ -1106,9 +1106,10 @@ class SubmissionController extends Controller
         $submission->save();
 
         // Log audit trail
+        $roleDisplay = $user->role_display;
         $this->logAuditTrail(
             action: 'update',
-            description: "OO ({$user->full_name}) took up submission #{$submission->id} for form '{$form->name}'",
+            description: "{$roleDisplay} ({$user->full_name}) took up submission #{$submission->id} for form '{$form->name}'",
             modelType: get_class($submission),
             modelId: $submission->id,
             oldValues: ['status' => $oldStatus],
@@ -1119,21 +1120,21 @@ class SubmissionController extends Controller
     }
 
     /**
-     * OO marks a submission as complete (changes status from 'pending_process' to 'completed')
+     * OO, ABM, or BM marks a submission as complete (changes status from 'pending_process' to 'completed')
      */
-    public function complete($formSlug, $id)
+    public function complete(Request $request, $formSlug, $id)
     {
         $user = auth()->user();
         
-        // Only OO can complete submissions
-        if (!$user->isOO()) {
-            abort(403, 'Only Operations Officers can complete submissions.');
+        // Only OO, ABM, and BM can complete submissions
+        if (!$user->isOO() && !$user->isABM() && !$user->isBM()) {
+            abort(403, 'Only Operations Officers, Assistant Branch Managers, and Branch Managers can complete submissions.');
         }
 
         $form = Form::where('slug', $formSlug)->firstOrFail();
         $submission = FormSubmission::where('form_id', $form->id)->findOrFail($id);
 
-        // Check if submission belongs to OO's branch
+        // Check if submission belongs to user's branch
         if ($user->branch_id && $submission->branch_id !== $user->branch_id) {
             abort(403, 'You can only complete submissions from your branch.');
         }
@@ -1143,22 +1144,47 @@ class SubmissionController extends Controller
             return back()->with('error', 'Only pending process submissions can be completed.');
         }
 
+        // Validate request
+        $request->validate([
+            'completion_notes' => 'nullable|string|max:1000',
+        ]);
+
         $oldStatus = $submission->status;
         $submission->status = 'completed';
         $submission->completed_by = $user->id;
         $submission->completed_at = now();
+        $submission->completion_notes = $request->input('completion_notes');
         $submission->last_modified_at = now();
         $submission->save();
 
         // Log audit trail
+        $roleDisplay = $user->role_display;
+        $description = "{$roleDisplay} ({$user->full_name}) completed submission #{$submission->id} for form '{$form->name}'";
+        if ($request->input('completion_notes')) {
+            $description .= " with notes: " . substr($request->input('completion_notes'), 0, 100);
+        }
+        
         $this->logAuditTrail(
             action: 'update',
-            description: "OO ({$user->full_name}) completed submission #{$submission->id} for form '{$form->name}'",
+            description: $description,
             modelType: get_class($submission),
             modelId: $submission->id,
             oldValues: ['status' => $oldStatus],
-            newValues: ['status' => 'completed', 'completed_by' => $user->id, 'completed_at' => now()]
+            newValues: [
+                'status' => 'completed', 
+                'completed_by' => $user->id, 
+                'completed_at' => now(),
+                'completion_notes' => $request->input('completion_notes')
+            ]
         );
+
+        // If AJAX request, return JSON response
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Submission marked as completed successfully.'
+            ]);
+        }
 
         return back()->with('success', 'Submission marked as completed successfully.');
     }

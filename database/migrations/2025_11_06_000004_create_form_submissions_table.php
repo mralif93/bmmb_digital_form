@@ -47,6 +47,7 @@ return new class extends Migration
                     taken_up_at DATETIME,
                     completed_by INTEGER,
                     completed_at DATETIME,
+                    completion_notes TEXT,
                     created_at DATETIME,
                     updated_at DATETIME,
                     deleted_at DATETIME,
@@ -110,6 +111,7 @@ return new class extends Migration
                 $table->timestamp('taken_up_at')->nullable()->after('taken_up_by');
                 $table->foreignId('completed_by')->nullable()->after('taken_up_at')->constrained('users')->onDelete('set null');
                 $table->timestamp('completed_at')->nullable()->after('completed_by');
+                $table->text('completion_notes')->nullable()->after('completed_at');
                 
                 $table->timestamps();
                 $table->softDeletes();

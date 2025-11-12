@@ -228,7 +228,7 @@
                                     <i class='bx bx-show mr-1'></i>
                                     View
                                 </a>
-                                @if(auth()->user()->isOO())
+                                @if(auth()->user()->isOO() || auth()->user()->isABM() || auth()->user()->isBM())
                                     @if($submission->status === 'submitted')
                                         <button onclick="confirmTakeUp('{{ $form->slug }}', {{ $submission->id }})" class="inline-flex items-center justify-center px-3 py-1.5 bg-cyan-100 hover:bg-cyan-200 text-cyan-700 dark:bg-cyan-900/30 dark:hover:bg-cyan-900/50 dark:text-cyan-400 rounded-lg text-xs transition-colors">
                                             <i class='bx bx-check mr-1'></i>
@@ -325,9 +325,19 @@ function confirmComplete(formSlug, submissionId) {
     Swal.fire({
         title: 'Complete Submission?',
         html: `
-            <div class="text-center">
-                <p class="mb-2">Are you sure you want to mark this submission as completed?</p>
-                <p class="text-sm text-gray-600">The status will change from <strong>Pending Process</strong> to <strong>Completed</strong>.</p>
+            <div class="text-left">
+                <p class="mb-3 text-sm text-gray-700 dark:text-gray-300">The status will change from <strong>Pending Process</strong> to <strong>Completed</strong>.</p>
+                <div class="mb-3">
+                    <label for="completion_notes" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Completion Notes (Optional)</label>
+                    <textarea 
+                        id="completion_notes" 
+                        name="completion_notes" 
+                        rows="4" 
+                        class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
+                        placeholder="Enter any notes or remarks about the completion..."
+                        maxlength="1000"></textarea>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Maximum 1000 characters</p>
+                </div>
             </div>
         `,
         icon: 'question',
@@ -338,11 +348,17 @@ function confirmComplete(formSlug, submissionId) {
         cancelButtonColor: '#6b7280',
         customClass: {
             popup: 'rounded-lg',
-            htmlContainer: 'text-center',
+            htmlContainer: 'text-left',
             confirmButton: 'rounded-lg',
             cancelButton: 'rounded-lg'
         },
-        reverseButtons: true
+        reverseButtons: true,
+        preConfirm: () => {
+            const notes = document.getElementById('completion_notes').value;
+            return {
+                completion_notes: notes
+            };
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             const form = document.createElement('form');
@@ -354,6 +370,14 @@ function confirmComplete(formSlug, submissionId) {
             csrf.name = '_token';
             csrf.value = '{{ csrf_token() }}';
             form.appendChild(csrf);
+            
+            if (result.value && result.value.completion_notes) {
+                const notesInput = document.createElement('input');
+                notesInput.type = 'hidden';
+                notesInput.name = 'completion_notes';
+                notesInput.value = result.value.completion_notes;
+                form.appendChild(notesInput);
+            }
             
             document.body.appendChild(form);
             form.submit();

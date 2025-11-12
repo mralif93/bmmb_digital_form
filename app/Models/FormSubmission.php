@@ -38,6 +38,7 @@ class FormSubmission extends Model
         'taken_up_at',
         'completed_by',
         'completed_at',
+        'completion_notes',
     ];
 
     protected $casts = [

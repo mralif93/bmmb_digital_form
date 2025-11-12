@@ -37,7 +37,7 @@ class FormSubmissionSeeder extends Seeder
         }
 
         // Status options
-        $statuses = ['draft', 'submitted', 'under_review', 'approved', 'rejected', 'completed', 'in_progress'];
+        $statuses = ['draft', 'submitted', 'pending_process', 'under_review', 'approved', 'rejected', 'completed', 'in_progress'];
 
         foreach ($forms as $form) {
             // Load form with sections and fields
@@ -45,7 +45,30 @@ class FormSubmissionSeeder extends Seeder
                 $query->where('is_active', true)->ordered();
             }]);
 
-            // Create 10-15 submissions per form
+            // Get branch users (BM, ABM, OO) for testing takeup and complete functions
+            $branchUsers = $allUsers->whereNotNull('branch_id')->whereIn('role', ['branch_manager', 'assistant_branch_manager', 'operation_officer']);
+            
+            // Create test submissions for takeup and complete functions
+            if ($branchUsers->isNotEmpty()) {
+                $testBranchUser = $branchUsers->random();
+                $testBranch = $branches->where('id', $testBranchUser->branch_id)->first() ?? $branches->random();
+                
+                // Create 2-3 submissions with 'submitted' status for testing takeup
+                $takeupCount = rand(2, 3);
+                for ($i = 1; $i <= $takeupCount; $i++) {
+                    $this->createTestSubmission($form, $testBranchUser, $testBranch, 'submitted', $form->sections);
+                }
+                
+                // Create 2-3 submissions with 'pending_process' status for testing complete
+                $completeCount = rand(2, 3);
+                for ($i = 1; $i <= $completeCount; $i++) {
+                    $this->createTestSubmission($form, $testBranchUser, $testBranch, 'pending_process', $form->sections);
+                }
+                
+                $this->command->info("Created {$takeupCount} 'submitted' and {$completeCount} 'pending_process' test submissions for form: {$form->name}");
+            }
+
+            // Create 10-15 random submissions per form
             $submissionCount = rand(10, 15);
             
             for ($i = 1; $i <= $submissionCount; $i++) {
@@ -249,6 +272,124 @@ class FormSubmissionSeeder extends Seeder
             
             default:
                 return fake()->word();
+        }
+    }
+
+    /**
+     * Create a test submission for testing takeup and complete functions
+     */
+    private function createTestSubmission($form, $user, $branch, $status, $sections): void
+    {
+        $startedAt = now()->subDays(rand(1, 30))->subHours(rand(1, 23));
+        $submittedAt = $startedAt->copy()->addMinutes(rand(15, 120));
+        
+        // Generate submission data based on form fields
+        $submissionData = [];
+        $fieldResponses = [];
+        $fileUploads = [];
+
+        foreach ($sections as $section) {
+            foreach ($section->fields as $field) {
+                if (!$field->is_active) {
+                    continue;
+                }
+
+                $fieldValue = $this->generateFieldValue($field);
+                $fieldName = $field->field_name;
+                
+                $submissionData[$fieldName] = $fieldValue;
+                $fieldResponses[$fieldName] = $fieldValue;
+
+                // Handle file uploads
+                if (in_array($field->field_type, ['file', 'image'])) {
+                    $fileUploads[] = [
+                        'field_name' => $fieldName,
+                        'field_label' => $field->field_label,
+                        'name' => 'document_' . uniqid() . '.pdf',
+                        'path' => 'uploads/' . $form->slug . '/' . uniqid() . '.pdf',
+                        'size' => rand(100000, 5000000),
+                        'mime_type' => 'application/pdf',
+                    ];
+                }
+            }
+        }
+
+        // Set taken_up_by and taken_up_at if status is pending_process
+        $takenUpBy = null;
+        $takenUpAt = null;
+        if ($status === 'pending_process') {
+            $takenUpBy = $user->id;
+            $takenUpAt = $submittedAt->copy()->addHours(rand(1, 24));
+        }
+
+        // Create submission
+        $submission = FormSubmission::create([
+            'form_id' => $form->id,
+            'user_id' => $user->id,
+            'branch_id' => $branch->id,
+            'submission_token' => strtolower($form->slug) . '_test_' . uniqid() . '_' . time(),
+            'status' => $status,
+            'submission_data' => $submissionData,
+            'field_responses' => $fieldResponses,
+            'file_uploads' => !empty($fileUploads) ? $fileUploads : null,
+            'ip_address' => fake()->ipv4(),
+            'user_agent' => fake()->userAgent(),
+            'session_id' => \Illuminate\Support\Str::random(40),
+            'started_at' => $startedAt,
+            'submitted_at' => $submittedAt,
+            'last_modified_at' => $takenUpAt ?? $submittedAt,
+            'taken_up_by' => $takenUpBy,
+            'taken_up_at' => $takenUpAt,
+            'audit_trail' => [
+                [
+                    'action' => 'created',
+                    'timestamp' => $startedAt->toIso8601String(),
+                    'user_id' => $user->id,
+                ],
+                [
+                    'action' => 'submitted',
+                    'timestamp' => $submittedAt->toIso8601String(),
+                    'user_id' => $user->id,
+                ],
+                $takenUpAt ? [
+                    'action' => 'taken_up',
+                    'timestamp' => $takenUpAt->toIso8601String(),
+                    'user_id' => $takenUpBy,
+                ] : null,
+            ],
+            'internal_notes' => $status === 'pending_process' ? 'Test submission for completion testing' : 'Test submission for takeup testing',
+        ]);
+
+        // Create submission data entries for each field
+        foreach ($sections as $section) {
+            foreach ($section->fields as $field) {
+                if (!$field->is_active) {
+                    continue;
+                }
+
+                $fieldValue = $submissionData[$field->field_name] ?? null;
+                
+                if ($fieldValue !== null) {
+                    $isJsonField = in_array($field->field_type, ['checkbox', 'multiselect']);
+                    
+                    // Find file path if this is a file field
+                    $filePath = null;
+                    if (in_array($field->field_type, ['file', 'image']) && !empty($fileUploads)) {
+                        $fileIndex = array_search($field->field_name, array_column($fileUploads, 'field_name'));
+                        if ($fileIndex !== false && isset($fileUploads[$fileIndex]['path'])) {
+                            $filePath = $fileUploads[$fileIndex]['path'];
+                        }
+                    }
+                    
+                    FormSubmissionData::create([
+                        'submission_id' => $submission->id,
+                        'field_id' => $field->id,
+                        'field_value' => $isJsonField ? null : (string)$fieldValue,
+                        'field_value_json' => $isJsonField ? (is_array($fieldValue) ? $fieldValue : [$fieldValue]) : null,
+                        'file_path' => $filePath,
+                    ]);
+                }
+            }
         }
     }
 }

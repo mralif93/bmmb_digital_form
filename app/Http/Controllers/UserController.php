@@ -83,35 +83,77 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'phone' => 'nullable|string|max:20',
-            'role' => 'required|in:admin,branch_manager,assistant_branch_manager,operation_officer,headquarters,iam',
-            'status' => 'required|in:active,inactive,suspended',
-            'bio' => 'nullable|string|max:1000',
-            'branch_id' => 'nullable|exists:branches,id',
-        ]);
+        try {
+            $validated = $request->validate([
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+                'phone' => 'nullable|string|max:20',
+                'role' => 'required|in:admin,branch_manager,assistant_branch_manager,operation_officer,headquarters,iam',
+                'status' => 'required|in:active,inactive,suspended',
+                'bio' => 'nullable|string|max:1000',
+                'branch_id' => 'nullable|exists:branches,id',
+            ]);
 
-        $validated['password'] = Hash::make($validated['password']);
+            $validated['password'] = Hash::make($validated['password']);
 
-        $user = User::create($validated);
+            $user = User::create($validated);
 
-        // Log audit trail (exclude password from logging)
-        $userData = $user->toArray();
-        unset($userData['password']);
-        $this->logAuditTrail(
-            action: 'create',
-            description: "Created user: {$user->full_name} ({$user->email})",
-            modelType: User::class,
-            modelId: $user->id,
-            newValues: $userData
-        );
+            // Log audit trail (exclude password from logging)
+            $userData = $user->toArray();
+            unset($userData['password']);
+            $this->logAuditTrail(
+                action: 'create',
+                description: "Created user: {$user->full_name} ({$user->email})",
+                modelType: User::class,
+                modelId: $user->id,
+                newValues: $userData
+            );
 
-        return redirect()->route('admin.users.index')
-            ->with('success', 'User created successfully.');
+            // Check if request came from dashboard (IAM users)
+            $isFromDashboard = $request->header('Referer') && str_contains($request->header('Referer'), '/dashboard');
+            $redirectUrl = $isFromDashboard ? route('admin.dashboard') : route('admin.users.index');
+            
+            // If AJAX request, return JSON response with redirect URL
+            if ($request->ajax() || $request->wantsJson()) {
+                // Store success message in session for the redirect
+                session()->flash('success', 'User created successfully.');
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'User created successfully.',
+                    'redirect' => $redirectUrl
+                ]);
+            }
+
+            return redirect($redirectUrl)
+                ->with('success', 'User created successfully.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // If AJAX request, return JSON response with validation errors
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            throw $e;
+        } catch (\Exception $e) {
+            \Log::error('Error creating user: ' . $e->getMessage());
+            
+            // If AJAX request, return JSON response
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error creating user: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Error creating user. Please try again.');
+        }
     }
 
     /**
@@ -169,58 +211,100 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'phone' => 'nullable|string|max:20',
-            'role' => 'required|in:admin,branch_manager,assistant_branch_manager,operation_officer,headquarters,iam',
-            'status' => 'required|in:active,inactive,suspended',
-            'bio' => 'nullable|string|max:1000',
-            'branch_id' => 'nullable|exists:branches,id',
-        ]);
-
-        // Only update password if provided
-        if ($request->filled('password')) {
-            $request->validate([
-                'password' => 'string|min:8|confirmed',
+        try {
+            $validated = $request->validate([
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+                'phone' => 'nullable|string|max:20',
+                'role' => 'required|in:admin,branch_manager,assistant_branch_manager,operation_officer,headquarters,iam',
+                'status' => 'required|in:active,inactive,suspended',
+                'bio' => 'nullable|string|max:1000',
+                'branch_id' => 'nullable|exists:branches,id',
             ]);
-            $validated['password'] = Hash::make($request->password);
-        }
 
-        // Get old values before update, format dates consistently
-        $oldValues = $user->toArray();
-        unset($oldValues['password']);
-        foreach ($oldValues as $key => $value) {
-            if ($value instanceof \Carbon\Carbon) {
-                $oldValues[$key] = $value->format('Y-m-d H:i:s');
+            // Only update password if provided
+            if ($request->filled('password')) {
+                $request->validate([
+                    'password' => 'string|min:8|confirmed',
+                ]);
+                $validated['password'] = Hash::make($request->password);
             }
-        }
-        
-        $user->update($validated);
-        $user->refresh();
 
-        // Get new values, format dates consistently
-        $userData = $user->toArray();
-        unset($userData['password']);
-        foreach ($userData as $key => $value) {
-            if ($value instanceof \Carbon\Carbon) {
-                $userData[$key] = $value->format('Y-m-d H:i:s');
+            // Get old values before update, format dates consistently
+            $oldValues = $user->toArray();
+            unset($oldValues['password']);
+            foreach ($oldValues as $key => $value) {
+                if ($value instanceof \Carbon\Carbon) {
+                    $oldValues[$key] = $value->format('Y-m-d H:i:s');
+                }
             }
+            
+            $user->update($validated);
+            $user->refresh();
+
+            // Get new values, format dates consistently
+            $userData = $user->toArray();
+            unset($userData['password']);
+            foreach ($userData as $key => $value) {
+                if ($value instanceof \Carbon\Carbon) {
+                    $userData[$key] = $value->format('Y-m-d H:i:s');
+                }
+            }
+
+            // Log audit trail (exclude password from logging)
+            $this->logAuditTrail(
+                action: 'update',
+                description: "Updated user: {$user->full_name} ({$user->email})",
+                modelType: User::class,
+                modelId: $user->id,
+                oldValues: $oldValues,
+                newValues: $userData
+            );
+
+            // Check if request came from dashboard (IAM users)
+            $isFromDashboard = $request->header('Referer') && str_contains($request->header('Referer'), '/dashboard');
+            $redirectUrl = $isFromDashboard ? route('admin.dashboard') : route('admin.users.index');
+            
+            // If AJAX request, return JSON response with redirect URL
+            if ($request->ajax() || $request->wantsJson()) {
+                // Store success message in session for the redirect
+                session()->flash('success', 'User updated successfully.');
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'User updated successfully.',
+                    'redirect' => $redirectUrl
+                ]);
+            }
+
+            return redirect($redirectUrl)
+                ->with('success', 'User updated successfully.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // If AJAX request, return JSON response with validation errors
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            throw $e;
+        } catch (\Exception $e) {
+            \Log::error('Error updating user: ' . $e->getMessage());
+            
+            // If AJAX request, return JSON response
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error updating user: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Error updating user. Please try again.');
         }
-
-        // Log audit trail (exclude password from logging)
-        $this->logAuditTrail(
-            action: 'update',
-            description: "Updated user: {$user->full_name} ({$user->email})",
-            modelType: User::class,
-            modelId: $user->id,
-            oldValues: $oldValues,
-            newValues: $userData
-        );
-
-        return redirect()->route('admin.users.index')
-            ->with('success', 'User updated successfully.');
     }
 
     /**
@@ -250,12 +334,20 @@ class UserController extends Controller
     }
 
     /**
-     * Toggle user status.
+     * Toggle user status between active and inactive.
      */
     public function toggleStatus(User $user)
     {
         $oldStatus = $user->status;
-        $newStatus = $user->status === 'active' ? 'inactive' : 'active';
+        
+        // Only toggle between active and inactive
+        // If suspended, change to inactive
+        if ($oldStatus === 'active') {
+            $newStatus = 'inactive';
+        } else {
+            // For inactive or suspended, set to active
+            $newStatus = 'active';
+        }
         
         $user->update([
             'status' => $newStatus
@@ -271,8 +363,117 @@ class UserController extends Controller
             newValues: ['status' => $newStatus]
         );
 
+        // If AJAX request, return JSON response
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'User status updated successfully.',
+                'status' => $newStatus
+            ]);
+        }
+
         return redirect()->back()
             ->with('success', 'User status updated successfully.');
+    }
+
+    /**
+     * Verify user email address.
+     */
+    public function verifyEmail(User $user)
+    {
+        if ($user->email_verified_at) {
+            // If AJAX request, return JSON response
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email is already verified.'
+                ], 400);
+            }
+
+            return redirect()->back()
+                ->with('error', 'Email is already verified.');
+        }
+
+        $oldEmailVerifiedAt = $user->email_verified_at;
+        
+        $user->update([
+            'email_verified_at' => now()
+        ]);
+        
+        // Refresh the model to get the updated value
+        $user->refresh();
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'update',
+            description: "Manually verified email for user: {$user->full_name} ({$user->email})",
+            modelType: User::class,
+            modelId: $user->id,
+            oldValues: ['email_verified_at' => $oldEmailVerifiedAt],
+            newValues: ['email_verified_at' => $user->email_verified_at]
+        );
+
+        // If AJAX request, return JSON response
+        if (request()->ajax() || request()->wantsJson()) {
+            $verifiedAt = \App\Helpers\TimezoneHelper::toSystemTimezone($user->email_verified_at);
+            return response()->json([
+                'success' => true,
+                'message' => 'Email verified successfully.',
+                'verified_at' => $verifiedAt ? $verifiedAt->format('M d, Y h:i A') : null
+            ]);
+        }
+
+        return redirect()->back()
+            ->with('success', 'Email verified successfully.');
+    }
+
+    /**
+     * Unverify user email address.
+     */
+    public function unverifyEmail(User $user)
+    {
+        if (!$user->email_verified_at) {
+            // If AJAX request, return JSON response
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email is not verified.'
+                ], 400);
+            }
+
+            return redirect()->back()
+                ->with('error', 'Email is not verified.');
+        }
+
+        $oldEmailVerifiedAt = $user->email_verified_at;
+        
+        $user->update([
+            'email_verified_at' => null
+        ]);
+        
+        // Refresh the model to get the updated value
+        $user->refresh();
+
+        // Log audit trail
+        $this->logAuditTrail(
+            action: 'update',
+            description: "Manually unverified email for user: {$user->full_name} ({$user->email})",
+            modelType: User::class,
+            modelId: $user->id,
+            oldValues: ['email_verified_at' => $oldEmailVerifiedAt],
+            newValues: ['email_verified_at' => null]
+        );
+
+        // If AJAX request, return JSON response
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Email unverified successfully.'
+            ]);
+        }
+
+        return redirect()->back()
+            ->with('success', 'Email unverified successfully.');
     }
 
     /**
