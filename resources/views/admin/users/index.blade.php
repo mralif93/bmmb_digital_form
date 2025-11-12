@@ -21,10 +21,16 @@
             <p class="text-xs text-gray-600 dark:text-gray-400">Total: {{ $users->total() }} records</p>
         </div>
     </div>
-    <a href="{{ route('admin.users.create') }}" class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors">
-        <i class='bx bx-plus mr-1.5'></i>
-        Create New
-    </a>
+    <div class="flex items-center space-x-2">
+        <a href="{{ route('admin.users.trashed') }}" class="inline-flex items-center px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 text-xs font-semibold rounded-lg transition-colors">
+            <i class='bx bx-trash mr-1.5'></i>
+            Trashed Users
+        </a>
+        <a href="{{ route('admin.users.create') }}" class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors">
+            <i class='bx bx-plus mr-1.5'></i>
+            Create New
+        </a>
+    </div>
 </div>
 
 <!-- Search and Filter Section -->

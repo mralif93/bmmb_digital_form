@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin-only' => \App\Http\Middleware\EnsureUserIsAdminOnly::class,
             'admin-or-hq' => \App\Http\Middleware\EnsureUserIsAdminOrHQ::class,
             'admin-or-iam' => \App\Http\Middleware\EnsureUserIsAdminOrIAM::class,
+            'admin-or-hq-or-iam' => \App\Http\Middleware\EnsureUserIsAdminOrHQOrIAM::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -117,5 +117,21 @@ class UserSeeder extends Seeder
             'last_login_ip' => '127.0.0.1',
             'branch_id' => null, // HQ users typically don't belong to a specific branch
         ]);
+
+        // Create Identity & Access Management (IAM) User
+        User::create([
+            'first_name' => 'Nur',
+            'last_name' => 'Azmi',
+            'email' => 'iam@bmmb.com',
+            'password' => Hash::make('password'),
+            'phone' => '+1234567896',
+            'role' => 'iam',
+            'status' => 'active',
+            'bio' => 'Identity & Access Management officer responsible for user management and access control.',
+            'email_verified_at' => $this->nowInSystemTimezone(),
+            'last_login_at' => $this->nowInSystemTimezone()->subHours(1),
+            'last_login_ip' => '127.0.0.1',
+            'branch_id' => null, // IAM users typically don't belong to a specific branch
+        ]);
     }
 }

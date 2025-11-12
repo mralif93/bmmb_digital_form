@@ -5,6 +5,42 @@
 @section('page-description', 'Overview of your form management system')
 
 @section('content')
+<!-- User Information Card -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6">
+    <div class="flex items-center justify-between">
+        <!-- Left Side: Avatar & Name -->
+        <div class="flex items-center space-x-4">
+            <div class="relative flex-shrink-0">
+                <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-md">
+                    <i class='bx bx-user text-2xl text-white'></i>
+                </div>
+                <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800 shadow-sm"></div>
+            </div>
+            <div>
+                <h2 class="text-lg font-bold text-gray-900 dark:text-white">
+                    {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}
+                </h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ auth()->user()->role_display ?? ucfirst(str_replace('_', ' ', auth()->user()->role)) }}
+                </p>
+            </div>
+        </div>
+        
+        <!-- Right Side: Branch Info -->
+        @if(auth()->user()->branch)
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class='bx bx-building text-lg text-blue-600 dark:text-blue-400'></i>
+            </div>
+            <div class="text-right">
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Branch</p>
+                <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ auth()->user()->branch->name }}</p>
+            </div>
+        </div>
+        @endif
+    </div>
+</div>
+
 <!-- Dashboard Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <!-- Total Forms Card -->
@@ -73,17 +109,107 @@
 </div>
 
 <!-- Search and Filter Section -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+<div id="searchFilterSection" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
     <div class="p-6">
         <div class="flex items-center justify-between mb-4">
             <div>
                 <h3 class="text-lg font-bold text-gray-900 dark:text-white">Search & Filter</h3>
-                <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">Filter form submissions</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                    @if(auth()->user()->isIAM())
+                        Filter users
+                    @else
+                        Filter form submissions
+                    @endif
+                </p>
             </div>
         </div>
         
         <form method="GET" action="{{ route('admin.dashboard') }}" class="space-y-3">
-            <!-- Row 1: Search Box, Forms -->
+            @if(auth()->user()->isIAM())
+            <!-- IAM User Filters: Search Box, Role -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                <!-- Search Box -->
+                <div class="md:col-span-6">
+                    <label for="search" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Search</label>
+                    <div class="relative">
+                        <input type="text" 
+                               name="search" 
+                               id="search" 
+                               value="{{ request('search') }}"
+                               placeholder="Search by name, email, phone..."
+                               class="w-full pl-10 pr-4 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <i class='bx bx-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500'></i>
+                    </div>
+                </div>
+                
+                <!-- Role -->
+                <div class="md:col-span-6">
+                    <label for="role" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
+                    <select name="role" 
+                            id="role"
+                            class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <option value="">All Roles</option>
+                        <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Administrator</option>
+                        <option value="branch_manager" {{ request('role') === 'branch_manager' ? 'selected' : '' }}>Branch Manager</option>
+                        <option value="assistant_branch_manager" {{ request('role') === 'assistant_branch_manager' ? 'selected' : '' }}>Assistant Branch Manager</option>
+                        <option value="operation_officer" {{ request('role') === 'operation_officer' ? 'selected' : '' }}>Operations Officer</option>
+                        <option value="headquarters" {{ request('role') === 'headquarters' ? 'selected' : '' }}>Headquarters</option>
+                        <option value="iam" {{ request('role') === 'iam' ? 'selected' : '' }}>Identity & Access Management</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Row 2: Branch, Status -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                <!-- Branch -->
+                <div class="md:col-span-6">
+                    <label for="branch_id" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Branch</label>
+                    <select name="branch_id" 
+                            id="branch_id"
+                            class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <option value="">All Branches</option>
+                        @foreach($branches ?? [] as $branch)
+                            <option value="{{ $branch->id }}" {{ request('branch_id') == $branch->id ? 'selected' : '' }}>
+                                {{ $branch->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <!-- Status -->
+                <div class="md:col-span-6">
+                    <label for="status" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                    <select name="status" 
+                            id="status"
+                            class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <option value="">All Status</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        <option value="suspended" {{ request('status') === 'suspended' ? 'selected' : '' }}>Suspended</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Buttons Row -->
+            <div class="flex items-center justify-between">
+                <div class="text-xs text-gray-500 dark:text-gray-400">
+                    Showing {{ $users->firstItem() ?? 0 }} to {{ $users->lastItem() ?? 0 }} of {{ $users->total() }} results
+                </div>
+                <div class="flex items-center space-x-2">
+                    <a href="{{ route('admin.dashboard') }}" 
+                       class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs font-semibold rounded-lg transition-colors">
+                        <i class='bx bx-x mr-2'></i>
+                        Clear
+                    </a>
+                    <button type="submit" 
+                            class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold rounded-lg transition-colors">
+                        <i class='bx bx-search mr-2'></i>
+                        Search
+                    </button>
+                </div>
+            </div>
+            @else
+            <!-- Non-IAM User Filters: Search Box, Forms -->
             <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                 <!-- Search Box -->
                 <div class="md:col-span-6">
@@ -132,13 +258,10 @@
                         @endforeach
                     </select>
                 </div>
-                @else
-                <!-- Empty space for non-Admin/HQ users -->
-                <div class="md:col-span-6"></div>
                 @endif
                 
                 <!-- Status -->
-                <div class="md:col-span-6">
+                <div class="{{ (auth()->user()->isAdmin() || auth()->user()->isHQ()) ? 'md:col-span-6' : 'md:col-span-12' }}">
                     <label for="status" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
                     <select name="status" 
                             id="status"
@@ -176,10 +299,129 @@
                     </button>
                 </div>
             </div>
+            @endif
         </form>
     </div>
 </div>
 
+@if(auth()->user()->isIAM())
+<!-- Users Table -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Users</h3>
+                <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">All system users</p>
+            </div>
+            <button onclick="openUserCreateModal()" class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold rounded-lg transition-colors">
+                <i class='bx bx-plus mr-1.5'></i>
+                Create New
+            </button>
+        </div>
+    </div>
+    
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">User</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Role</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Branch</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Last Login</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                @forelse($users as $user)
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                {{ $user->first_name }} {{ $user->last_name }}
+                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                {{ $user->email }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                @if($user->role === 'admin') bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400
+                                @elseif($user->role === 'branch_manager') bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400
+                                @elseif($user->role === 'assistant_branch_manager') bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400
+                                @elseif($user->role === 'operation_officer') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400
+                                @elseif($user->role === 'headquarters') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
+                                @elseif($user->role === 'iam') bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400
+                                @else bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400
+                                @endif">
+                                {{ $user->role_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            @if($user->branch)
+                                <div>{{ $user->branch->name }}</div>
+                                @if($user->branch->ti_agent_code)
+                                    <div class="text-xs text-gray-400">{{ $user->branch->ti_agent_code }}</div>
+                                @endif
+                            @else
+                                <span class="text-gray-400">N/A</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                                @elseif($user->status === 'inactive') bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
+                                @elseif($user->status === 'suspended') bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
+                                @else bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
+                                @endif">
+                                {{ ucfirst($user->status) }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            @if($user->last_login_at)
+                                <div>{{ $user->last_login_at->format('M d, Y') }}</div>
+                                <div class="text-xs text-gray-400">{{ $user->last_login_at->format('h:i A') }}</div>
+                            @else
+                                <span class="text-gray-400">Never</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-xs font-medium">
+                            <button onclick="openUserViewModal({{ $user->id }})" 
+                               class="inline-flex items-center justify-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 rounded-lg transition-colors mr-2">
+                                <i class='bx bx-show mr-1'></i>
+                                View
+                            </button>
+                            <button onclick="openUserEditModal({{ $user->id }})" 
+                               class="inline-flex items-center justify-center px-3 py-1.5 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 dark:bg-yellow-900/30 dark:hover:bg-yellow-900/50 dark:text-yellow-400 rounded-lg transition-colors">
+                                <i class='bx bx-edit mr-1'></i>
+                                Edit
+                            </button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center">
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mb-3">
+                                    <i class='bx bx-user text-2xl text-gray-400 dark:text-gray-500'></i>
+                                </div>
+                                <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">No Users Found</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">No users match your search criteria</p>
+                            </div>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    @if($users->hasPages())
+    <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+        {{ $users->links() }}
+    </div>
+    @endif
+</div>
+@else
 <!-- Form Submissions Table -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
     <div class="p-6 border-b border-gray-200 dark:border-gray-700">
@@ -290,6 +532,7 @@
     </div>
     @endif
 </div>
+@endif
 
 <!-- Submission Details Modal -->
 <div id="submissionModal" class="fixed inset-0 hidden z-50 flex items-center justify-center p-2 sm:p-4">
@@ -312,8 +555,112 @@
     </div>
 </div>
 
+@if(auth()->user()->isIAM())
+<!-- User View Modal -->
+<div id="userViewModal" class="fixed inset-0 hidden z-50 flex items-center justify-center p-2 sm:p-4">
+    <div class="fixed inset-0 bg-black bg-opacity-0 transition-opacity duration-300" id="userViewModalBackdrop"></div>
+    <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300 opacity-0" id="userViewModalContentWrapper">
+        <div class="p-4 sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">User Details</h3>
+                <button onclick="closeUserViewModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <i class='bx bx-x text-2xl'></i>
+                </button>
+            </div>
+            <div id="userViewModalContent">
+                <!-- User details will be loaded here -->
+                <div class="flex items-center justify-center py-12">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Edit Modal -->
+<div id="userEditModal" class="fixed inset-0 hidden z-50 flex items-center justify-center p-2 sm:p-4">
+    <div class="fixed inset-0 bg-black bg-opacity-0 transition-opacity duration-300" id="userEditModalBackdrop"></div>
+    <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300 opacity-0" id="userEditModalContentWrapper">
+        <div class="p-4 sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Edit User</h3>
+                <button onclick="closeUserEditModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <i class='bx bx-x text-2xl'></i>
+                </button>
+            </div>
+            <div id="userEditModalContent">
+                <!-- User edit form will be loaded here -->
+                <div class="flex items-center justify-center py-12">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Create Modal -->
+<div id="userCreateModal" class="fixed inset-0 hidden z-50 flex items-center justify-center p-2 sm:p-4">
+    <div class="fixed inset-0 bg-black bg-opacity-0 transition-opacity duration-300" id="userCreateModalBackdrop"></div>
+    <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300 opacity-0" id="userCreateModalContentWrapper">
+        <div class="p-4 sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Create New User</h3>
+                <button onclick="closeUserCreateModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <i class='bx bx-x text-2xl'></i>
+                </button>
+            </div>
+            <div id="userCreateModalContent">
+                <!-- User create form will be loaded here -->
+                <div class="flex items-center justify-center py-12">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
+<!-- Success Notification Toast -->
+<div id="successToast" class="fixed top-4 right-4 z-[100] transform translate-x-full transition-transform duration-300">
+    <div class="bg-green-500 dark:bg-green-600 text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 min-w-[300px]">
+        <div class="flex-shrink-0">
+            <i class='bx bx-check-circle text-2xl'></i>
+        </div>
+        <div class="flex-1">
+            <p class="font-semibold" id="successToastTitle">Success!</p>
+            <p class="text-sm text-green-100" id="successToastMessage">Operation completed successfully.</p>
+        </div>
+        <button onclick="hideSuccessToast()" class="flex-shrink-0 text-white hover:text-green-100">
+            <i class='bx bx-x text-xl'></i>
+        </button>
+    </div>
+</div>
+
 @push('scripts')
 <script>
+    // Success Toast Functions
+    function showSuccessToast(title, message) {
+        const toast = document.getElementById('successToast');
+        const toastTitle = document.getElementById('successToastTitle');
+        const toastMessage = document.getElementById('successToastMessage');
+        
+        toastTitle.textContent = title;
+        toastMessage.textContent = message;
+        
+        toast.classList.remove('translate-x-full');
+        toast.classList.add('translate-x-0');
+        
+        // Auto hide after 3 seconds
+        setTimeout(() => {
+            hideSuccessToast();
+        }, 3000);
+    }
+    
+    function hideSuccessToast() {
+        const toast = document.getElementById('successToast');
+        toast.classList.remove('translate-x-0');
+        toast.classList.add('translate-x-full');
+    }
     function openSubmissionModal(formSlug, submissionId) {
         const modal = document.getElementById('submissionModal');
         const content = document.getElementById('submissionModalContent');
@@ -370,9 +717,341 @@
     // Close modal on Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            const modal = document.getElementById('submissionModal');
-            if (!modal.classList.contains('hidden')) {
+            const submissionModal = document.getElementById('submissionModal');
+            const userViewModal = document.getElementById('userViewModal');
+            const userEditModal = document.getElementById('userEditModal');
+            const userCreateModal = document.getElementById('userCreateModal');
+            
+            if (submissionModal && !submissionModal.classList.contains('hidden')) {
                 closeSubmissionModal();
+            } else if (userViewModal && !userViewModal.classList.contains('hidden')) {
+                closeUserViewModal();
+            } else if (userEditModal && !userEditModal.classList.contains('hidden')) {
+                closeUserEditModal();
+            } else if (userCreateModal && !userCreateModal.classList.contains('hidden')) {
+                closeUserCreateModal();
+            }
+        }
+    });
+    
+    @if(auth()->user()->isIAM())
+    // User View Modal Functions
+    function openUserViewModal(userId) {
+        const modal = document.getElementById('userViewModal');
+        const content = document.getElementById('userViewModalContent');
+        const backdrop = document.getElementById('userViewModalBackdrop');
+        const modalContent = document.getElementById('userViewModalContentWrapper');
+        
+        // Show modal with animation
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            backdrop.classList.remove('bg-opacity-0');
+            backdrop.classList.add('bg-opacity-50');
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
+        
+        // Show loading
+        content.innerHTML = '<div class="flex items-center justify-center py-12"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>';
+        
+        // Fetch user details
+        fetch(`/admin/users/${userId}/details`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    content.innerHTML = data.html;
+                } else {
+                    content.innerHTML = '<div class="text-center py-12 text-red-600 dark:text-red-400">Error loading user details</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                content.innerHTML = '<div class="text-center py-12 text-red-600 dark:text-red-400">Error loading user details</div>';
+            });
+    }
+    
+    function closeUserViewModal() {
+        const modal = document.getElementById('userViewModal');
+        const backdrop = document.getElementById('userViewModalBackdrop');
+        const modalContent = document.getElementById('userViewModalContentWrapper');
+        
+        backdrop.classList.remove('bg-opacity-50');
+        backdrop.classList.add('bg-opacity-0');
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+    
+    // User Edit Modal Functions
+    function openUserEditModal(userId) {
+        const modal = document.getElementById('userEditModal');
+        const content = document.getElementById('userEditModalContent');
+        const backdrop = document.getElementById('userEditModalBackdrop');
+        const modalContent = document.getElementById('userEditModalContentWrapper');
+        
+        // Show modal with animation
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            backdrop.classList.remove('bg-opacity-0');
+            backdrop.classList.add('bg-opacity-50');
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
+        
+        // Show loading
+        content.innerHTML = '<div class="flex items-center justify-center py-12"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>';
+        
+        // Fetch user edit form
+        fetch(`/admin/users/${userId}/edit-modal`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    content.innerHTML = data.html;
+                    // Attach form submit handler
+                    const form = document.getElementById('userEditForm');
+                    if (form) {
+                        form.addEventListener('submit', handleUserEditFormSubmit);
+                    }
+                } else {
+                    content.innerHTML = '<div class="text-center py-12 text-red-600 dark:text-red-400">Error loading edit form</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                content.innerHTML = '<div class="text-center py-12 text-red-600 dark:text-red-400">Error loading edit form</div>';
+            });
+    }
+    
+    function closeUserEditModal() {
+        const modal = document.getElementById('userEditModal');
+        const backdrop = document.getElementById('userEditModalBackdrop');
+        const modalContent = document.getElementById('userEditModalContentWrapper');
+        
+        backdrop.classList.remove('bg-opacity-50');
+        backdrop.classList.add('bg-opacity-0');
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+    
+    function handleUserEditFormSubmit(e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        
+        // Disable submit button and show loading
+        submitButton.disabled = true;
+        submitButton.textContent = 'Updating...';
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => {
+            if (response.redirected) {
+                // Success - close modal, show success toast, then reload
+                closeUserEditModal();
+                showSuccessToast('User Updated', 'User has been updated successfully!');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                return response.text().then(html => {
+                    // If there are validation errors, replace the form content
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newForm = doc.querySelector('form');
+                    if (newForm) {
+                        form.innerHTML = newForm.innerHTML;
+                        // Re-attach submit handler
+                        form.addEventListener('submit', handleUserEditFormSubmit);
+                    } else {
+                        // Show error message
+                        const content = document.getElementById('userEditModalContent');
+                        content.innerHTML = '<div class="text-center py-12 text-red-600 dark:text-red-400">Error updating user. Please try again.</div>';
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+            alert('An error occurred while updating the user. Please try again.');
+        });
+    }
+    
+    // User Create Modal Functions
+    function openUserCreateModal() {
+        const modal = document.getElementById('userCreateModal');
+        const content = document.getElementById('userCreateModalContent');
+        const backdrop = document.getElementById('userCreateModalBackdrop');
+        const modalContent = document.getElementById('userCreateModalContentWrapper');
+        
+        // Show modal with animation
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            backdrop.classList.remove('bg-opacity-0');
+            backdrop.classList.add('bg-opacity-50');
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
+        
+        // Show loading
+        content.innerHTML = '<div class="flex items-center justify-center py-12"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>';
+        
+        // Fetch user create form
+        fetch(`/admin/users/create-modal`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    content.innerHTML = data.html;
+                    // Attach form submit handler
+                    const form = document.getElementById('userCreateForm');
+                    if (form) {
+                        form.addEventListener('submit', handleUserCreateFormSubmit);
+                    }
+                } else {
+                    content.innerHTML = `<div class="text-center py-12 text-red-600 dark:text-red-400">Error loading create form: ${data.message || 'Unknown error'}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                content.innerHTML = `<div class="text-center py-12 text-red-600 dark:text-red-400">Error loading create form: ${error.message}</div>`;
+            });
+    }
+    
+    function closeUserCreateModal() {
+        const modal = document.getElementById('userCreateModal');
+        const backdrop = document.getElementById('userCreateModalBackdrop');
+        const modalContent = document.getElementById('userCreateModalContentWrapper');
+        
+        backdrop.classList.remove('bg-opacity-50');
+        backdrop.classList.add('bg-opacity-0');
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+    
+    function handleUserCreateFormSubmit(e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        
+        // Disable submit button and show loading
+        submitButton.disabled = true;
+        submitButton.textContent = 'Creating...';
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => {
+            if (response.redirected) {
+                // Success - close modal, show success toast, then reload
+                closeUserCreateModal();
+                showSuccessToast('User Created', 'User has been created successfully!');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                return response.text().then(html => {
+                    // If there are validation errors, replace the form content
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newForm = doc.querySelector('form');
+                    if (newForm) {
+                        form.innerHTML = newForm.innerHTML;
+                        // Re-attach submit handler
+                        form.addEventListener('submit', handleUserCreateFormSubmit);
+                    } else {
+                        // Show error message
+                        const content = document.getElementById('userCreateModalContent');
+                        content.innerHTML = '<div class="text-center py-12 text-red-600 dark:text-red-400">Error creating user. Please try again.</div>';
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+            alert('An error occurred while creating the user. Please try again.');
+        });
+    }
+    
+    // Close modals when clicking outside
+    document.getElementById('userViewModalBackdrop')?.addEventListener('click', function() {
+        closeUserViewModal();
+    });
+    
+    document.getElementById('userEditModalBackdrop')?.addEventListener('click', function() {
+        closeUserEditModal();
+    });
+    
+    document.getElementById('userCreateModalBackdrop')?.addEventListener('click', function() {
+        closeUserCreateModal();
+    });
+    @endif
+    
+    // Auto-scroll to filter section if filters are active and section is not visible
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterSection = document.getElementById('searchFilterSection');
+        const hasActiveFilters = {{ request()->hasAny(['search', 'status', 'branch_id', 'form_id']) ? 'true' : 'false' }};
+        
+        if (hasActiveFilters && filterSection) {
+            // Check if filter section is visible in viewport (with some tolerance)
+            const rect = filterSection.getBoundingClientRect();
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+            const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+            
+            // Consider element visible if it's at least partially in viewport
+            const isVisible = (
+                rect.top < viewportHeight &&
+                rect.bottom > 0 &&
+                rect.left < viewportWidth &&
+                rect.right > 0
+            );
+            
+            // If not visible or only partially visible at the bottom, scroll to it smoothly
+            if (!isVisible || rect.top < 100) {
+                setTimeout(() => {
+                    // Calculate offset for fixed header (if any)
+                    const offset = 20; // Small offset from top
+                    const elementPosition = filterSection.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }, 100);
             }
         }
     });

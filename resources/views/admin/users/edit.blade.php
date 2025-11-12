@@ -5,7 +5,7 @@
 @section('page-description', 'Update user information and permissions')
 
 @section('content')
-<div class="max-w-2xl mx-auto">
+<div class="w-full">
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
         <!-- Form Header -->
         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">

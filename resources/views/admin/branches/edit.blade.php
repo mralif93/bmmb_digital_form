@@ -12,7 +12,7 @@
     </a>
 </div>
 
-<div class="max-w-3xl mx-auto">
+<div class="w-full">
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Branch Information</h3>

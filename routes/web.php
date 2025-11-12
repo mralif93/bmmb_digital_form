@@ -330,100 +330,169 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
             $viewData['myCompletions'] = $myCompletions ?? collect();
         }
         
-        // Ensure common stats are always available
-        if (!isset($stats['total_forms'])) {
-            $stats['total_forms'] = \App\Models\Form::count();
-        }
-        if (!isset($stats['total_active_forms'])) {
-            $stats['total_active_forms'] = \App\Models\Form::where('status', 'active')->count();
-        }
-        if (!isset($stats['total_form_submissions'])) {
-            $stats['total_form_submissions'] = \App\Models\FormSubmission::count();
-        }
-        if (!isset($stats['total_completed_submissions'])) {
-            $stats['total_completed_submissions'] = \App\Models\FormSubmission::where('status', 'completed')->count();
-        }
-        
-        // Get paginated form submissions (latest to oldest) with search and filters
-        $submissionsQuery = \App\Models\FormSubmission::with(['form', 'user', 'branch']);
-        
-        // Apply role-based filtering
         $request = request();
-        if (!$user->isAdmin() && !$user->isHQ()) {
-            // BM, ABM, OO: Only submissions from their branch
-            if ($user->branch_id) {
-                $submissionsQuery->where('branch_id', $user->branch_id);
-            } else {
-                // If user has no branch assigned, show no submissions
-                $submissionsQuery->whereRaw('1 = 0');
+        
+        // For IAM users, show users list instead of form submissions
+        if ($user->isIAM()) {
+            // Get paginated users (latest to oldest) with search and filters
+            $usersQuery = \App\Models\User::with('branch');
+            
+            // Search functionality
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $usersQuery->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                      ->orWhere('last_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('phone', 'like', "%{$search}%");
+                });
             }
-        }
-        
-        // Search functionality
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $submissionsQuery->where(function ($q) use ($search) {
-                $q->where('id', 'like', "%{$search}%")
-                  ->orWhere('submission_token', 'like', "%{$search}%")
-                  ->orWhereHas('user', function ($userQuery) use ($search) {
-                      $userQuery->where('first_name', 'like', "%{$search}%")
-                                ->orWhere('last_name', 'like', "%{$search}%")
-                                ->orWhere('email', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('branch', function ($branchQuery) use ($search) {
-                      $branchQuery->where('branch_name', 'like', "%{$search}%")
-                                  ->orWhere('ti_agent_code', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('form', function ($formQuery) use ($search) {
-                      $formQuery->where('name', 'like', "%{$search}%")
-                                ->orWhere('slug', 'like', "%{$search}%");
-                  });
-            });
-        }
-        
-        // Filter by status
-        if ($request->filled('status')) {
-            $submissionsQuery->where('status', $request->status);
-        }
-        
-        // Filter by branch (Admin and HQ only)
-        if (($user->isAdmin() || $user->isHQ()) && $request->filled('branch_id')) {
-            $submissionsQuery->where('branch_id', $request->branch_id);
-        }
-        
-        // Filter by form
-        if ($request->filled('form_id')) {
-            $submissionsQuery->where('form_id', $request->form_id);
-        }
-        
-        // Order by latest first
-        $submissions = $submissionsQuery->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
-        
-        // Get branches for filter dropdown (Admin and HQ only)
-        $branches = collect();
-        if ($user->isAdmin() || $user->isHQ()) {
+            
+            // Filter by role
+            if ($request->filled('role')) {
+                $usersQuery->where('role', $request->role);
+            }
+            
+            // Filter by status
+            if ($request->filled('status')) {
+                $usersQuery->where('status', $request->status);
+            }
+            
+            // Filter by branch
+            if ($request->filled('branch_id')) {
+                $usersQuery->where('branch_id', $request->branch_id);
+            }
+            
+            // Order by latest first
+            $users = $usersQuery->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+            
+            // Get branches for filter dropdown
             $branches = \App\Models\Branch::orderBy('branch_name')->get();
+            
+            $viewData['users'] = $users;
+            $viewData['branches'] = $branches;
+            $viewData['submissions'] = collect(); // Empty for IAM
+            $viewData['forms'] = collect(); // Empty for IAM
+        } else {
+            // Get paginated form submissions (latest to oldest) with search and filters
+            $submissionsQuery = \App\Models\FormSubmission::with(['form', 'user', 'branch']);
+            
+            // Apply role-based branch filtering
+            $branchFilterApplied = false;
+            $branchIdForFilter = null;
+            
+            if (!$user->isAdmin() && !$user->isHQ()) {
+                // BM, ABM, OO: Only submissions from their branch
+                if ($user->branch_id) {
+                    $branchIdForFilter = $user->branch_id;
+                    $submissionsQuery->where('branch_id', $user->branch_id);
+                    $branchFilterApplied = true;
+                } else {
+                    // If user has no branch assigned, show no submissions
+                    $submissionsQuery->whereRaw('1 = 0');
+                    $branchFilterApplied = true;
+                }
+            } elseif (($user->isAdmin() || $user->isHQ()) && $request->filled('branch_id')) {
+                // Admin and HQ can filter by branch via dropdown
+                $branchIdForFilter = $request->branch_id;
+                $submissionsQuery->where('branch_id', $request->branch_id);
+                $branchFilterApplied = true;
+            }
+            
+            // Ensure common stats are always available (filtered by branch if applicable)
+            if (!isset($stats['total_forms'])) {
+                $stats['total_forms'] = \App\Models\Form::count();
+            }
+            if (!isset($stats['total_active_forms'])) {
+                $stats['total_active_forms'] = \App\Models\Form::where('status', 'active')->count();
+            }
+            if (!isset($stats['total_form_submissions'])) {
+                $submissionsCountQuery = \App\Models\FormSubmission::query();
+                if ($branchFilterApplied && $branchIdForFilter) {
+                    $submissionsCountQuery->where('branch_id', $branchIdForFilter);
+                }
+                $stats['total_form_submissions'] = $submissionsCountQuery->count();
+            }
+            if (!isset($stats['total_completed_submissions'])) {
+                $completedCountQuery = \App\Models\FormSubmission::where('status', 'completed');
+                if ($branchFilterApplied && $branchIdForFilter) {
+                    $completedCountQuery->where('branch_id', $branchIdForFilter);
+                }
+                $stats['total_completed_submissions'] = $completedCountQuery->count();
+            }
+            
+            // Search functionality
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $submissionsQuery->where(function ($q) use ($search) {
+                    $q->where('id', 'like', "%{$search}%")
+                      ->orWhere('submission_token', 'like', "%{$search}%")
+                      ->orWhereHas('user', function ($userQuery) use ($search) {
+                          $userQuery->where('first_name', 'like', "%{$search}%")
+                                    ->orWhere('last_name', 'like', "%{$search}%")
+                                    ->orWhere('email', 'like', "%{$search}%");
+                      })
+                      ->orWhereHas('branch', function ($branchQuery) use ($search) {
+                          $branchQuery->where('branch_name', 'like', "%{$search}%")
+                                      ->orWhere('ti_agent_code', 'like', "%{$search}%");
+                      })
+                      ->orWhereHas('form', function ($formQuery) use ($search) {
+                          $formQuery->where('name', 'like', "%{$search}%")
+                                    ->orWhere('slug', 'like', "%{$search}%");
+                      });
+                });
+            }
+            
+            // Filter by status
+            if ($request->filled('status')) {
+                $submissionsQuery->where('status', $request->status);
+            }
+            
+            // Note: Branch filtering is already applied above based on role
+            
+            // Filter by form
+            if ($request->filled('form_id')) {
+                $submissionsQuery->where('form_id', $request->form_id);
+            }
+            
+            // Order by latest first
+            $submissions = $submissionsQuery->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+            
+            // Get branches for filter dropdown (Admin and HQ only)
+            $branches = collect();
+            if ($user->isAdmin() || $user->isHQ()) {
+                $branches = \App\Models\Branch::orderBy('branch_name')->get();
+            }
+            
+            // Get forms for filter dropdown
+            $forms = \App\Models\Form::where('status', 'active')->orderBy('name')->get();
+            
+            $viewData['submissions'] = $submissions;
+            $viewData['branches'] = $branches;
+            $viewData['forms'] = $forms;
+            $viewData['users'] = collect(); // Empty for non-IAM
         }
-        
-        // Get forms for filter dropdown
-        $forms = \App\Models\Form::where('status', 'active')->orderBy('name')->get();
         
         $viewData['stats'] = $stats;
-        $viewData['submissions'] = $submissions;
-        $viewData['branches'] = $branches;
-        $viewData['forms'] = $forms;
         
         return view('admin.dashboard', $viewData);
     })->name('dashboard');
     
         // User Management (Admin and IAM)
         Route::middleware('admin-or-iam')->group(function () {
-            Route::resource('users', UserController::class);
+            // Custom routes must be defined before resource routes to avoid conflicts
+            Route::get('/users/create-modal', [UserController::class, 'createModal'])->name('users.create-modal');
+            Route::get('/users/{user}/details', [UserController::class, 'details'])->name('users.details');
+            Route::get('/users/{user}/edit-modal', [UserController::class, 'editModal'])->name('users.edit-modal');
             Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+            Route::get('/users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
+            Route::post('/users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
+            Route::delete('/users/{id}/force-delete', [UserController::class, 'forceDelete'])->name('users.force-delete');
+            Route::resource('users', UserController::class);
         });
         
-        // Branch Management (Admin and HQ)
-        Route::middleware('admin-or-hq')->group(function () {
+        // Branch Management (Admin, HQ, and IAM)
+        Route::middleware('admin-or-hq-or-iam')->group(function () {
             Route::resource('branches', BranchController::class);
         });
         
