@@ -473,6 +473,135 @@
         return isValid;
     };
     
+    // Helper function to find fields by name (handles both with and without brackets)
+    function findFieldsByName(fieldName) {
+        // Try exact match first
+        let fields = document.querySelectorAll(`[name="${fieldName}"]`);
+        
+        // If no exact match and field name doesn't end with [], try with brackets
+        if (fields.length === 0 && !fieldName.endsWith('[]')) {
+            fields = document.querySelectorAll(`[name="${fieldName}[]"]`);
+        }
+        
+        // If still no match and field name ends with [], try without brackets
+        if (fields.length === 0 && fieldName.endsWith('[]')) {
+            const nameWithoutBrackets = fieldName.replace('[]', '');
+            fields = document.querySelectorAll(`[name="${nameWithoutBrackets}"]`);
+        }
+        
+        return fields;
+    }
+    
+    // Helper function to get value from a field (handles checkboxes, radio, select, and regular inputs)
+    function getFieldValue(fieldName) {
+        // Find all fields with this name (could be checkboxes, radios, select, or input)
+        const fields = findFieldsByName(fieldName);
+        
+        if (fields.length === 0) {
+            return '';
+        }
+        
+        const firstField = fields[0];
+        
+        // Select dropdown - return selected value
+        if (firstField.tagName === 'SELECT') {
+            return firstField.value || '';
+        }
+        
+        // Single checkbox (not an array)
+        if (fields.length === 1 && firstField.type === 'checkbox') {
+            return firstField.checked ? (firstField.value || '1') : '';
+        }
+        
+        // Multiple checkboxes (array) - check if specific value is checked
+        if (fields.length > 1 && firstField.type === 'checkbox') {
+            // For checkbox arrays, we need to check if a specific value is checked
+            // Return array of checked values
+            const checkedValues = Array.from(fields)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+            return checkedValues;
+        }
+        
+        // Radio buttons - find the checked radio button
+        if (firstField.type === 'radio') {
+            const checked = Array.from(fields).find(rb => rb.checked);
+            return checked ? checked.value : '';
+        }
+        
+        // Regular input (text, email, number, textarea, etc.)
+        return firstField.value || '';
+    }
+    
+    // Helper function to check if condition is met
+    function checkConditionMet(fieldName, operator, expectedValue) {
+        // Check if target field is a single checkbox
+        const targetFields = findFieldsByName(fieldName);
+        const isSingleCheckbox = targetFields.length === 1 && targetFields[0].type === 'checkbox';
+        
+        // For single checkbox with 'checked' or 'not_checked' operator, check directly
+        if (isSingleCheckbox && (operator === 'checked' || operator === 'not_checked')) {
+            const isChecked = targetFields[0].checked;
+            return operator === 'checked' ? isChecked : !isChecked;
+        }
+        
+        const actualValue = getFieldValue(fieldName);
+        
+        // Handle checkbox arrays - check if expected value is in the array
+        if (Array.isArray(actualValue)) {
+            if (operator === 'equals') {
+                // Check if the expected value exists in the checked values array
+                return actualValue.includes(expectedValue);
+            } else if (operator === 'contains') {
+                return actualValue.some(val => val.toString().includes(expectedValue));
+            } else if (operator === 'not_equals') {
+                return !actualValue.includes(expectedValue);
+            }
+            return false;
+        }
+        
+        // Handle single values (string)
+        if (operator === 'equals') {
+            // Direct match
+            if (actualValue === expectedValue) {
+                return true;
+            }
+            // For single checkbox: "1" or "true" means checked, empty or "false" means unchecked
+            if (isSingleCheckbox) {
+                const isChecked = targetFields[0].checked;
+                // If expected value is "1", "true", or "checked", check if checkbox is checked
+                if ((expectedValue === '1' || expectedValue === 'true' || expectedValue === 'checked') && isChecked) {
+                    return true;
+                }
+                // If expected value is "", "false", or "unchecked", check if checkbox is not checked
+                if ((expectedValue === '' || expectedValue === 'false' || expectedValue === 'unchecked') && !isChecked) {
+                    return true;
+                }
+            }
+            return false;
+        } else if (operator === 'contains') {
+            return actualValue && actualValue.toString().includes(expectedValue);
+        } else if (operator === 'not_equals') {
+            return actualValue !== expectedValue;
+        } else if (operator === 'checked') {
+            // Special operator for checkboxes - just check if checked
+            // For multiple checkboxes, check if any is checked
+            if (targetFields.length > 1) {
+                return Array.from(targetFields).some(field => field.checked);
+            }
+            return targetFields.length > 0 && targetFields[0].checked;
+        } else if (operator === 'not_checked') {
+            // Special operator for checkboxes - check if not checked
+            // For multiple checkboxes, check if none are checked
+            if (targetFields.length > 1) {
+                return !Array.from(targetFields).some(field => field.checked);
+            }
+            return targetFields.length === 0 || !targetFields[0].checked;
+        }
+        
+        return false;
+    }
+    
     // Handle conditional field show/hide
     document.addEventListener('DOMContentLoaded', function() {
         const conditionalFields = document.querySelectorAll('[data-show-if-field]');
@@ -482,24 +611,16 @@
             const showIfOperator = field.getAttribute('data-show-if-operator') || 'equals';
             const showIfValue = field.getAttribute('data-show-if-value');
             
-            const targetField = document.querySelector(`[name="${showIfField}"]`);
+            // Find all target fields (could be multiple checkboxes with same name)
+            const targetFields = findFieldsByName(showIfField);
             
-            if (targetField) {
+            if (targetFields.length > 0) {
                 // Initially hide conditional field
                 field.style.display = 'none';
                 
                 // Function to check condition
                 function checkCondition() {
-                    const targetValue = targetField.value;
-                    let shouldShow = false;
-                    
-                    if (showIfOperator === 'equals') {
-                        shouldShow = targetValue === showIfValue;
-                    } else if (showIfOperator === 'contains') {
-                        shouldShow = targetValue.includes(showIfValue);
-                    } else if (showIfOperator === 'not_equals') {
-                        shouldShow = targetValue !== showIfValue;
-                    }
+                    const shouldShow = checkConditionMet(showIfField, showIfOperator, showIfValue);
                     
                     if (shouldShow) {
                         field.style.display = 'block';
@@ -508,9 +629,21 @@
                     }
                 }
                 
-                // Check on change
-                targetField.addEventListener('change', checkCondition);
-                targetField.addEventListener('input', checkCondition);
+                // Add event listeners to all target fields
+                targetFields.forEach(function(targetField) {
+                    // All fields get change event (works for select, radio, checkbox, and input)
+                    targetField.addEventListener('change', checkCondition);
+                    
+                    // For checkboxes and radio buttons, also listen to click events for immediate feedback
+                    if (targetField.type === 'checkbox' || targetField.type === 'radio') {
+                        targetField.addEventListener('click', checkCondition);
+                    } 
+                    // For select dropdowns, change event is sufficient (already added above)
+                    // For text inputs, also listen to input event for real-time updates
+                    else if (targetField.tagName === 'INPUT' && targetField.type !== 'checkbox' && targetField.type !== 'radio') {
+                        targetField.addEventListener('input', checkCondition);
+                    }
+                });
                 
                 // Initial check
                 checkCondition();
@@ -524,18 +657,12 @@
             const hideIfOperator = field.getAttribute('data-hide-if-operator') || 'equals';
             const hideIfValue = field.getAttribute('data-hide-if-value');
             
-            const targetField = document.querySelector(`[name="${hideIfField}"]`);
+            // Find all target fields (could be multiple checkboxes with same name)
+            const targetFields = findFieldsByName(hideIfField);
             
-            if (targetField) {
+            if (targetFields.length > 0) {
                 function checkHideCondition() {
-                    const targetValue = targetField.value;
-                    let shouldHide = false;
-                    
-                    if (hideIfOperator === 'equals') {
-                        shouldHide = targetValue === hideIfValue;
-                    } else if (hideIfOperator === 'contains') {
-                        shouldHide = targetValue.includes(hideIfValue);
-                    }
+                    const shouldHide = checkConditionMet(hideIfField, hideIfOperator, hideIfValue);
                     
                     if (shouldHide) {
                         field.style.display = 'none';
@@ -544,8 +671,23 @@
                     }
                 }
                 
-                targetField.addEventListener('change', checkHideCondition);
-                targetField.addEventListener('input', checkHideCondition);
+                // Add event listeners to all target fields
+                targetFields.forEach(function(targetField) {
+                    // All fields get change event (works for select, radio, checkbox, and input)
+                    targetField.addEventListener('change', checkHideCondition);
+                    
+                    // For checkboxes and radio buttons, also listen to click events for immediate feedback
+                    if (targetField.type === 'checkbox' || targetField.type === 'radio') {
+                        targetField.addEventListener('click', checkHideCondition);
+                    } 
+                    // For select dropdowns, change event is sufficient (already added above)
+                    // For text inputs, also listen to input event for real-time updates
+                    else if (targetField.tagName === 'INPUT' && targetField.type !== 'checkbox' && targetField.type !== 'radio') {
+                        targetField.addEventListener('input', checkHideCondition);
+                    }
+                });
+                
+                // Initial check
                 checkHideCondition();
             }
         });

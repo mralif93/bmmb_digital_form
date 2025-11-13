@@ -280,11 +280,12 @@
 
 @push('scripts')
 <script>
-    // Convert textarea options to JSON on create form submit
+    // Convert textarea options to JSON and format conditional logic on create form submit
     document.addEventListener('DOMContentLoaded', function() {
         const createForm = document.getElementById('createFieldForm');
         if (createForm) {
             createForm.addEventListener('submit', function(e) {
+                // Handle field options
                 const optionsText = document.getElementById('create_field_options_text');
                 const optionsContainer = document.getElementById('createFieldOptionsContainer');
                 
@@ -301,13 +302,43 @@
                         hiddenInput.value = JSON.stringify(options);
                     }
                 }
+                
+                // Handle conditional logic
+                const isConditional = document.getElementById('create_is_conditional')?.checked;
+                if (isConditional) {
+                    const action = document.getElementById('create_conditional_action')?.value;
+                    const field = document.getElementById('create_conditional_field')?.value;
+                    const operator = document.getElementById('create_conditional_operator')?.value;
+                    const value = document.getElementById('create_conditional_value')?.value;
+                    
+                    if (action && field && operator) {
+                        const conditionalLogic = {};
+                        conditionalLogic[action] = {
+                            field: field,
+                            operator: operator,
+                            value: value || ''
+                        };
+                        
+                        // Add hidden input for conditional_logic
+                        let hiddenInput = document.getElementById('create_conditional_logic');
+                        if (!hiddenInput) {
+                            hiddenInput = document.createElement('input');
+                            hiddenInput.type = 'hidden';
+                            hiddenInput.name = 'conditional_logic';
+                            hiddenInput.id = 'create_conditional_logic';
+                            createForm.appendChild(hiddenInput);
+                        }
+                        hiddenInput.value = JSON.stringify(conditionalLogic);
+                    }
+                }
             });
         }
         
-        // Convert textarea options to JSON on edit form submit
+        // Convert textarea options to JSON and format conditional logic on edit form submit
         const editForm = document.getElementById('editFieldForm');
         if (editForm) {
             editForm.addEventListener('submit', function(e) {
+                // Handle field options
                 const optionsText = document.getElementById('edit_field_options_text');
                 const optionsContainer = document.getElementById('editFieldOptionsContainer');
                 
@@ -324,9 +355,117 @@
                         hiddenInput.value = JSON.stringify(options);
                     }
                 }
+                
+                // Handle conditional logic
+                const isConditional = document.getElementById('edit_is_conditional')?.checked;
+                if (isConditional) {
+                    const action = document.getElementById('edit_conditional_action')?.value;
+                    const field = document.getElementById('edit_conditional_field')?.value;
+                    const operator = document.getElementById('edit_conditional_operator')?.value;
+                    const value = document.getElementById('edit_conditional_value')?.value;
+                    
+                    if (action && field && operator) {
+                        const conditionalLogic = {};
+                        conditionalLogic[action] = {
+                            field: field,
+                            operator: operator,
+                            value: value || ''
+                        };
+                        
+                        // Add hidden input for conditional_logic
+                        let hiddenInput = document.getElementById('edit_conditional_logic');
+                        if (!hiddenInput) {
+                            hiddenInput = document.createElement('input');
+                            hiddenInput.type = 'hidden';
+                            hiddenInput.name = 'conditional_logic';
+                            hiddenInput.id = 'edit_conditional_logic';
+                            editForm.appendChild(hiddenInput);
+                        }
+                        hiddenInput.value = JSON.stringify(conditionalLogic);
+                    }
+                } else {
+                    // Remove conditional_logic if disabled
+                    const hiddenInput = document.getElementById('edit_conditional_logic');
+                    if (hiddenInput) {
+                        hiddenInput.value = JSON.stringify({});
+                    }
+                }
             });
         }
     });
+    
+    // Toggle conditional logic section for create modal
+    function toggleCreateConditionalLogic() {
+        const checkbox = document.getElementById('create_is_conditional');
+        const container = document.getElementById('createConditionalLogicContainer');
+        const operator = document.getElementById('create_conditional_operator');
+        
+        if (checkbox && container) {
+            if (checkbox.checked) {
+                container.style.display = 'block';
+                toggleCreateConditionalValue();
+            } else {
+                container.style.display = 'none';
+            }
+        }
+    }
+    
+    // Toggle conditional logic section for edit modal
+    function toggleEditConditionalLogic() {
+        const checkbox = document.getElementById('edit_is_conditional');
+        const container = document.getElementById('editConditionalLogicContainer');
+        
+        if (checkbox && container) {
+            if (checkbox.checked) {
+                container.style.display = 'block';
+                toggleEditConditionalValue();
+            } else {
+                container.style.display = 'none';
+            }
+        }
+    }
+    
+    // Toggle value field based on operator for create modal
+    function toggleCreateConditionalValue() {
+        const operator = document.getElementById('create_conditional_operator');
+        const valueContainer = document.getElementById('create_conditional_value_container');
+        const valueInput = document.getElementById('create_conditional_value');
+        const valueRequired = document.getElementById('create_conditional_value_required');
+        
+        if (operator && valueContainer) {
+            const operatorValue = operator.value;
+            if (operatorValue === 'checked' || operatorValue === 'not_checked') {
+                valueContainer.style.display = 'none';
+                if (valueInput) valueInput.removeAttribute('required');
+                if (valueRequired) valueRequired.style.display = 'none';
+            } else {
+                valueContainer.style.display = 'block';
+                if (valueInput) valueInput.setAttribute('required', 'required');
+                if (valueRequired) valueRequired.style.display = 'inline';
+            }
+        }
+    }
+    
+    // Toggle value field based on operator for edit modal
+    function toggleEditConditionalValue() {
+        const operator = document.getElementById('edit_conditional_operator');
+        const valueContainer = document.getElementById('edit_conditional_value_container');
+        const valueInput = document.getElementById('edit_conditional_value');
+        const valueRequired = document.getElementById('edit_conditional_value_required');
+        
+        if (operator && valueContainer) {
+            const operatorValue = operator.value;
+            if (operatorValue === 'checked' || operatorValue === 'not_checked') {
+                valueContainer.style.display = 'none';
+                if (valueInput) valueInput.removeAttribute('required');
+                if (valueRequired) valueRequired.style.display = 'none';
+            } else {
+                valueContainer.style.display = 'block';
+                if (valueInput) valueInput.setAttribute('required', 'required');
+                if (valueRequired) valueRequired.style.display = 'inline';
+            }
+        }
+    }
 
     function openCreateModal() {
         const container = document.getElementById('createModalContent');
@@ -444,6 +583,71 @@
                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Active</span>
                 </label>
+                <label class="flex items-center">
+                    <input type="checkbox" name="is_conditional" id="create_is_conditional" value="1"
+                           onchange="toggleCreateConditionalLogic()"
+                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Enable Conditional Logic</span>
+                </label>
+            </div>
+
+            <!-- Conditional Logic Section -->
+            <div id="createConditionalLogicContainer" style="display: none;" class="mt-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                <h4 class="text-xs font-semibold text-gray-900 dark:text-white mb-3">Conditional Logic Settings</h4>
+                
+                <!-- Action Type (Show/Hide) -->
+                <div class="mb-3">
+                    <label for="create_conditional_action" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Action
+                    </label>
+                    <select name="conditional_action" id="create_conditional_action"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <option value="show_if">Show this field if...</option>
+                        <option value="hide_if">Hide this field if...</option>
+                    </select>
+                </div>
+
+                <!-- Field to Check -->
+                <div class="mb-3">
+                    <label for="create_conditional_field" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Check Field <span class="text-red-500">*</span>
+                    </label>
+                    <select name="conditional_field" id="create_conditional_field" required
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <option value="">Select a field...</option>
+                        @foreach($form->fields as $existingField)
+                            <option value="{{ $existingField->field_name }}">{{ $existingField->field_label }} ({{ $existingField->field_name }})</option>
+                        @endforeach
+                    </select>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Select the field that will trigger this condition</p>
+                </div>
+
+                <!-- Operator -->
+                <div class="mb-3">
+                    <label for="create_conditional_operator" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Operator <span class="text-red-500">*</span>
+                    </label>
+                    <select name="conditional_operator" id="create_conditional_operator" required
+                            onchange="toggleCreateConditionalValue()"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <option value="equals">Equals</option>
+                        <option value="contains">Contains</option>
+                        <option value="not_equals">Not Equals</option>
+                        <option value="checked">Checked (for checkboxes)</option>
+                        <option value="not_checked">Not Checked (for checkboxes)</option>
+                    </select>
+                </div>
+
+                <!-- Value -->
+                <div class="mb-3" id="create_conditional_value_container">
+                    <label for="create_conditional_value" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Value <span class="text-red-500" id="create_conditional_value_required">*</span>
+                    </label>
+                    <input type="text" name="conditional_value" id="create_conditional_value"
+                           placeholder="e.g., email, 1, true"
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Enter the value to match. For checkboxes, use "1", "true", or "checked" for checked state.</p>
+                </div>
             </div>
 
             <!-- Submit Button -->
@@ -624,6 +828,71 @@
                                        class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
                                 <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Active</span>
                             </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="is_conditional" id="edit_is_conditional" value="1"
+                                       onchange="toggleEditConditionalLogic()"
+                                       class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                                <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Enable Conditional Logic</span>
+                            </label>
+                        </div>
+
+                        <!-- Conditional Logic Section -->
+                        <div id="editConditionalLogicContainer" style="display: none;" class="mt-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                            <h4 class="text-xs font-semibold text-gray-900 dark:text-white mb-3">Conditional Logic Settings</h4>
+                            
+                            <!-- Action Type (Show/Hide) -->
+                            <div class="mb-3">
+                                <label for="edit_conditional_action" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Action
+                                </label>
+                                <select name="conditional_action" id="edit_conditional_action"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                    <option value="show_if">Show this field if...</option>
+                                    <option value="hide_if">Hide this field if...</option>
+                                </select>
+                            </div>
+
+                            <!-- Field to Check -->
+                            <div class="mb-3">
+                                <label for="edit_conditional_field" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Check Field <span class="text-red-500">*</span>
+                                </label>
+                                <select name="conditional_field" id="edit_conditional_field" required
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                    <option value="">Select a field...</option>
+                                    @foreach($form->fields as $existingField)
+                                        <option value="{{ $existingField->field_name }}">{{ $existingField->field_label }} ({{ $existingField->field_name }})</option>
+                                    @endforeach
+                                </select>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Select the field that will trigger this condition</p>
+                            </div>
+
+                            <!-- Operator -->
+                            <div class="mb-3">
+                                <label for="edit_conditional_operator" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Operator <span class="text-red-500">*</span>
+                                </label>
+                                <select name="conditional_operator" id="edit_conditional_operator" required
+                                        onchange="toggleEditConditionalValue()"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                    <option value="equals">Equals</option>
+                                    <option value="contains">Contains</option>
+                                    <option value="not_equals">Not Equals</option>
+                                    <option value="checked">Checked (for checkboxes)</option>
+                                    <option value="not_checked">Not Checked (for checkboxes)</option>
+                                </select>
+                            </div>
+
+                            <!-- Value -->
+                            <div class="mb-3" id="edit_conditional_value_container">
+                                <label for="edit_conditional_value" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Value <span class="text-red-500" id="edit_conditional_value_required">*</span>
+                                </label>
+                                <input type="text" name="conditional_value" id="edit_conditional_value"
+                                       placeholder="e.g., email, 1, true"
+                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Enter the value to match. For checkboxes, use "1", "true", or "checked" for checked state.</p>
+                            </div>
                         </div>
 
                         <!-- Submit Button -->
@@ -643,6 +912,31 @@
                     document.getElementById('edit_grid_column').value = field.grid_column || 'left';
                     document.getElementById('edit_is_required').checked = field.is_required === true || field.is_required === 1;
                     document.getElementById('edit_is_active').checked = field.is_active === true || field.is_active === 1 || field.is_active === undefined || field.is_active === null;
+                    
+                    // Handle conditional logic
+                    if (field.is_conditional && field.conditional_logic) {
+                        const conditionalLogic = typeof field.conditional_logic === 'string' 
+                            ? JSON.parse(field.conditional_logic) 
+                            : field.conditional_logic;
+                        
+                        document.getElementById('edit_is_conditional').checked = true;
+                        toggleEditConditionalLogic();
+                        
+                        // Extract show_if or hide_if
+                        if (conditionalLogic.show_if) {
+                            document.getElementById('edit_conditional_action').value = 'show_if';
+                            document.getElementById('edit_conditional_field').value = conditionalLogic.show_if.field || '';
+                            document.getElementById('edit_conditional_operator').value = conditionalLogic.show_if.operator || 'equals';
+                            document.getElementById('edit_conditional_value').value = conditionalLogic.show_if.value || '';
+                        } else if (conditionalLogic.hide_if) {
+                            document.getElementById('edit_conditional_action').value = 'hide_if';
+                            document.getElementById('edit_conditional_field').value = conditionalLogic.hide_if.field || '';
+                            document.getElementById('edit_conditional_operator').value = conditionalLogic.hide_if.operator || 'equals';
+                            document.getElementById('edit_conditional_value').value = conditionalLogic.hide_if.value || '';
+                        }
+                        
+                        toggleEditConditionalValue();
+                    }
                     
                     // Handle field options
                     if (data.field_options_text) {

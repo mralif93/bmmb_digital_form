@@ -18,6 +18,12 @@ class FormBuilderController extends Controller
      */
     public function index(Form $form)
     {
+        // Ensure form has sections - initialize defaults if needed
+        if ($form->sections()->count() === 0) {
+            $formType = $form->settings['type'] ?? $form->slug ?? 'raf';
+            FormSection::initializeDefaults($form->id, $formType);
+        }
+
         $form->load(['sections' => function($query) {
             $query->ordered();
         }, 'fields' => function($query) {

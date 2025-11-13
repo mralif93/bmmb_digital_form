@@ -58,6 +58,11 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // Skip admin routes - let them go through normally without service worker
+    if (url.pathname.startsWith('/admin/')) {
+        return;
+    }
+
     // Handle different types of requests
     if (isHTMLRequest(request)) {
         // For HTML requests, try network first, fallback to cache
