@@ -56,32 +56,28 @@
                     </button>
                     <div x-show="openSections" x-transition class="ml-4 mt-1 space-y-0.5">
                         @php
-                            $forms = \App\Models\Form::whereIn('slug', ['raf', 'dar', 'dcr', 'srf'])->get()->keyBy('slug');
+                            $allFormsForSections = \App\Models\Form::whereIn('status', ['active', 'draft'])->orderBy('sort_order')->orderBy('name')->get();
                         @endphp
-                        @if($forms->has('raf'))
-                            <a href="{{ route('admin.form-sections.index', $forms->get('raf')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-sections.*') && request()->route('form') && request()->route('form')->slug == 'raf' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
+                        @forelse($allFormsForSections as $formItem)
+                            @php
+                                $isActive = false;
+                                if (request()->routeIs('admin.form-sections.*')) {
+                                    $route = request()->route();
+                                    if ($route && $route->parameter('form')) {
+                                        $routeForm = $route->parameter('form');
+                                        if ($routeForm && $routeForm->id == $formItem->id) {
+                                            $isActive = true;
+                                        }
+                                    }
+                                }
+                            @endphp
+                            <a href="{{ route('admin.form-sections.index', $formItem) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ $isActive ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
                                 <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                RAF Sections
+                                {{ strtoupper($formItem->slug) }} Sections
                             </a>
-                        @endif
-                        @if($forms->has('dar'))
-                            <a href="{{ route('admin.form-sections.index', $forms->get('dar')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-sections.*') && request()->route('form') && request()->route('form')->slug == 'dar' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                DAR Sections
-                            </a>
-                        @endif
-                        @if($forms->has('dcr'))
-                            <a href="{{ route('admin.form-sections.index', $forms->get('dcr')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-sections.*') && request()->route('form') && request()->route('form')->slug == 'dcr' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                DCR Sections
-                            </a>
-                        @endif
-                        @if($forms->has('srf'))
-                            <a href="{{ route('admin.form-sections.index', $forms->get('srf')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-sections.*') && request()->route('form') && request()->route('form')->slug == 'srf' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                SRF Sections
-                            </a>
-                        @endif
+                        @empty
+                            <p class="px-3 py-1.5 text-xs text-gray-400 dark:text-gray-500 italic">No active forms</p>
+                        @endforelse
                     </div>
                 </div>
                 
@@ -96,36 +92,28 @@
                     </button>
                     <div x-show="openBuilders" x-transition class="ml-4 mt-1 space-y-0.5">
                         @php
-                            $forms = \App\Models\Form::whereIn('slug', ['raf', 'dar', 'dcr', 'srf'])->get()->keyBy('slug');
+                            $allFormsForBuilders = \App\Models\Form::whereIn('status', ['active', 'draft'])->orderBy('sort_order')->orderBy('name')->get();
                         @endphp
-                        
-                        @if($forms->has('raf'))
-                            <a href="{{ route('admin.form-builder.index', $forms->get('raf')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-builder.*') && request()->route('form') && request()->route('form')->slug == 'raf' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
+                        @forelse($allFormsForBuilders as $formItem)
+                            @php
+                                $isActive = false;
+                                if (request()->routeIs('admin.form-builder.*')) {
+                                    $route = request()->route();
+                                    if ($route && $route->parameter('form')) {
+                                        $routeForm = $route->parameter('form');
+                                        if ($routeForm && $routeForm->id == $formItem->id) {
+                                            $isActive = true;
+                                        }
+                                    }
+                                }
+                            @endphp
+                            <a href="{{ route('admin.form-builder.index', $formItem) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ $isActive ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
                                 <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                RAF Builder
+                                {{ strtoupper($formItem->slug) }} Builder
                             </a>
-                        @endif
-                        
-                        @if($forms->has('dar'))
-                            <a href="{{ route('admin.form-builder.index', $forms->get('dar')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-builder.*') && request()->route('form') && request()->route('form')->slug == 'dar' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                DAR Builder
-                            </a>
-                        @endif
-                        
-                        @if($forms->has('dcr'))
-                            <a href="{{ route('admin.form-builder.index', $forms->get('dcr')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-builder.*') && request()->route('form') && request()->route('form')->slug == 'dcr' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                DCR Builder
-                            </a>
-                        @endif
-                        
-                        @if($forms->has('srf'))
-                            <a href="{{ route('admin.form-builder.index', $forms->get('srf')) }}" class="flex items-center px-3 py-1.5 text-xs text-gray-500 dark:text-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {{ request()->routeIs('admin.form-builder.*') && request()->route('form') && request()->route('form')->slug == 'srf' ? 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' : '' }}">
-                                <i class='bx bx-right-arrow-alt mr-2 text-xs'></i>
-                                SRF Builder
-                            </a>
-                        @endif
+                        @empty
+                            <p class="px-3 py-1.5 text-xs text-gray-400 dark:text-gray-500 italic">No active forms</p>
+                        @endforelse
                     </div>
                 </div>
                 @endif
@@ -141,7 +129,7 @@
                     </button>
                     <div x-show="openSubmissions" x-transition class="ml-4 mt-1 space-y-0.5">
                         @php
-                            $allForms = \App\Models\Form::where('status', 'active')->orderBy('sort_order')->get();
+                            $allForms = \App\Models\Form::whereIn('status', ['active', 'draft'])->orderBy('sort_order')->get();
                         @endphp
                         @forelse($allForms as $formItem)
                             @php

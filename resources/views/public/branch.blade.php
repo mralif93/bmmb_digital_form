@@ -20,47 +20,12 @@
                 <span><i class='bx bx-envelope mr-1'></i> {{ $branch->email }}</span>
                 <span><i class='bx bx-map mr-1'></i> {{ $branch->state }}</span>
             </div>
-            @if(isset($qrCodeInfo))
+            @if(isset($qrCodeInfo) && $qrCodeInfo['expires_at'])
             <div class="mt-4 pt-4 border-t border-white/20">
                 <div class="flex flex-col items-center space-y-2 text-white/70 text-xs">
-                    <div class="flex items-center justify-center space-x-2">
-                        @if($qrCodeInfo['is_expired'])
-                            <span class="inline-flex items-center px-2 py-1 bg-red-500/30 rounded-full">
-                                <i class='bx bx-error-circle mr-1'></i>
-                                QR Code Expired (Auto-regenerated)
-                            </span>
-                        @else
-                            <span class="inline-flex items-center px-2 py-1 bg-green-500/30 rounded-full">
-                                <i class='bx bx-check-circle mr-1'></i>
-                                QR Code Valid
-                            </span>
-                        @endif
-                        @if($qrCodeInfo['has_token'])
-                            @if($qrCodeInfo['token_provided'])
-                                @if($qrCodeInfo['token_valid'])
-                                    <span class="inline-flex items-center px-2 py-1 bg-green-500/30 rounded-full">
-                                        <i class='bx bx-check-circle mr-1'></i>
-                                        Token Verified
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center px-2 py-1 bg-yellow-500/30 rounded-full">
-                                        <i class='bx bx-error-circle mr-1'></i>
-                                        Token Mismatch
-                                    </span>
-                                @endif
-                            @else
-                                <span class="inline-flex items-center px-2 py-1 bg-red-500/30 rounded-full">
-                                    <i class='bx bx-error-circle mr-1'></i>
-                                    Token Required
-                                </span>
-                            @endif
-                        @endif
-                    </div>
-                    @if($qrCodeInfo['expires_at'])
-                        <span class="text-white/60">
-                            Expires: {{ $qrCodeInfo['expires_at']->format('M d, Y h:i A') }}
-                        </span>
-                    @endif
+                    <span class="text-white/60">
+                        Expires: {{ $qrCodeInfo['expires_at']->format('M d, Y h:i A') }}
+                    </span>
                 </div>
             </div>
             @endif
