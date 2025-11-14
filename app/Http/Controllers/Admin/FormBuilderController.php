@@ -127,6 +127,19 @@ class FormBuilderController extends Controller
      */
     public function storeField(Request $request, Form $form)
     {
+        // Decode conditional_logic if it's a JSON string before validation
+        $requestData = $request->all();
+        if (isset($requestData['conditional_logic']) && is_string($requestData['conditional_logic'])) {
+            $decoded = json_decode($requestData['conditional_logic'], true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $requestData['conditional_logic'] = $decoded;
+                $request->merge(['conditional_logic' => $decoded]);
+            } else {
+                $requestData['conditional_logic'] = null;
+                $request->merge(['conditional_logic' => null]);
+            }
+        }
+        
         $validated = $request->validate([
             'section_id' => 'required|exists:form_sections,id',
             'field_name' => 'required|string|max:255|unique:form_fields,field_name,NULL,id,form_id,' . $form->id,
@@ -163,6 +176,11 @@ class FormBuilderController extends Controller
         $validated['is_conditional'] = $request->has('is_conditional');
         $validated['is_active'] = $request->has('is_active') ? true : false;
 
+        // If conditional logic is disabled, set it to null
+        if (!$validated['is_conditional']) {
+            $validated['conditional_logic'] = null;
+        }
+
         $field = FormField::create($validated);
 
         // Log audit trail
@@ -188,6 +206,19 @@ class FormBuilderController extends Controller
             abort(404);
         }
 
+        // Decode conditional_logic if it's a JSON string before validation
+        $requestData = $request->all();
+        if (isset($requestData['conditional_logic']) && is_string($requestData['conditional_logic'])) {
+            $decoded = json_decode($requestData['conditional_logic'], true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $requestData['conditional_logic'] = $decoded;
+                $request->merge(['conditional_logic' => $decoded]);
+            } else {
+                $requestData['conditional_logic'] = null;
+                $request->merge(['conditional_logic' => null]);
+            }
+        }
+        
         $validated = $request->validate([
             'section_id' => 'required|exists:form_sections,id',
             'field_name' => 'required|string|max:255|unique:form_fields,field_name,' . $field->id . ',id,form_id,' . $form->id,
@@ -217,6 +248,11 @@ class FormBuilderController extends Controller
         $validated['is_conditional'] = $request->has('is_conditional') && $request->input('is_conditional') == '1';
         $validated['is_active'] = $request->has('is_active') && $request->input('is_active') == '1';
         $validated['grid_column'] = $validated['grid_column'] ?? $field->grid_column ?? 'left';
+
+        // If conditional logic is disabled, set it to null
+        if (!$validated['is_conditional']) {
+            $validated['conditional_logic'] = null;
+        }
 
         $field->update($validated);
 

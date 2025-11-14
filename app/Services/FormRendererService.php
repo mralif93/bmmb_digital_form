@@ -178,12 +178,12 @@ class FormRendererService
         }
         
         $html = '<div class="form-step" data-section="' . htmlspecialchars($sectionName) . '" data-step="' . $stepIndex . '" x-show="currentStep === ' . $stepIndex . '" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-x-4" x-transition:enter-end="opacity-100 transform translate-x-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 transform translate-x-0" x-transition:leave-end="opacity-0 transform -translate-x-4">';
-        // Section content - 2 column grid layout with better spacing
+        // Section content - 2 column grid layout with compact spacing
         // Render fields in order, respecting grid_column setting
-        $html .= '<div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">';
+        $html .= '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
 
         foreach ($fields as $field) {
-            $html .= $this->renderField($field);
+            $html .= $this->renderField($field, null, $fields);
         }
 
         $html .= '</div>';
@@ -195,11 +195,21 @@ class FormRendererService
     /**
      * Render a single field based on its type
      */
-    public function renderField($field, $columnPosition = null): string
+    public function renderField($field, $columnPosition = null, $allFields = null): string
     {
         $conditionalData = '';
-        if ($field->is_conditional && $field->conditional_logic) {
+        $isConditional = false;
+        $isTriggeredByCheckbox = false;
+        
+        // Check if field is conditional - must have both is_conditional flag and conditional_logic data
+        if ($field->is_conditional && !empty($field->conditional_logic)) {
             $conditionalData = $this->buildConditionalAttributes($field->conditional_logic);
+            $isConditional = true;
+            
+            // Check if this conditional field is triggered by a checkbox
+            if ($allFields) {
+                $isTriggeredByCheckbox = $this->isTriggeredByCheckbox($field, $allFields);
+            }
         }
 
         // Determine column span based on grid_column
@@ -219,38 +229,46 @@ class FormRendererService
         // Apply column span
         $colSpanClass = $gridColumn === 'full' ? 'md:col-span-2' : '';
         
-        $html = '<div class="form-field ' . $colSpanClass . '" data-field-name="' . $field->field_name . '" data-grid-column="' . $gridColumn . '" ' . $conditionalData . '>';
+        // For conditional checkboxes, add pl-6 to form-field container
+        $isConditionalCheckbox = ($field->field_type === 'checkbox' && $isConditional);
+        $paddingClass = $isConditionalCheckbox ? ' pl-6' : '';
+        
+        // For conditional fields, add inline style to hide by default (will be shown/hidden by JavaScript)
+        $styleAttr = $isConditional ? ' style="display: none;"' : '';
+        
+        $html = '<div class="form-field ' . $colSpanClass . $paddingClass . '" data-field-name="' . $field->field_name . '" data-grid-column="' . $gridColumn . '" ' . $conditionalData . $styleAttr . '>';
         
         switch ($field->field_type) {
             case 'text':
             case 'email':
             case 'phone':
             case 'number':
-                $html .= $this->renderTextInput($field);
+                $html .= $this->renderTextInput($field, $isTriggeredByCheckbox);
                 break;
             case 'textarea':
-                $html .= $this->renderTextarea($field);
+                $html .= $this->renderTextarea($field, $isTriggeredByCheckbox);
                 break;
             case 'select':
-                $html .= $this->renderSelect($field);
+                $html .= $this->renderSelect($field, $isTriggeredByCheckbox);
                 break;
             case 'radio':
                 $html .= $this->renderRadio($field);
                 break;
             case 'checkbox':
-                $html .= $this->renderCheckbox($field);
+                // If checkbox is conditional, don't align with triggering checkbox label - align with regular fields
+                $html .= $this->renderCheckbox($field, $isConditional);
                 break;
             case 'date':
-                $html .= $this->renderDate($field);
+                $html .= $this->renderDate($field, $isTriggeredByCheckbox);
                 break;
             case 'file':
                 $html .= $this->renderFile($field);
                 break;
             case 'currency':
-                $html .= $this->renderCurrency($field);
+                $html .= $this->renderCurrency($field, $isTriggeredByCheckbox);
                 break;
             default:
-                $html .= $this->renderTextInput($field);
+                $html .= $this->renderTextInput($field, $isTriggeredByCheckbox);
         }
 
         $html .= '</div>';
@@ -260,15 +278,17 @@ class FormRendererService
     /**
      * Render text input field
      */
-    private function renderTextInput($field): string
+    private function renderTextInput($field, $isConditional = false): string
     {
         $inputType = in_array($field->field_type, ['email', 'phone', 'number']) 
             ? $field->field_type 
             : 'text';
 
-        $html = '<div class="form-group">';
+        // Add left padding to align with checkbox label if conditional (same as checkbox label padding)
+        $paddingClass = $isConditional ? 'pl-6' : '';
+        $html = '<div class="form-group ' . $paddingClass . '">';
         // Enhanced label with better visual hierarchy
-        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-2 leading-snug">';
+        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
         $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
         if ($field->is_required) {
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
@@ -305,10 +325,12 @@ class FormRendererService
     /**
      * Render textarea field
      */
-    private function renderTextarea($field): string
+    private function renderTextarea($field, $isConditional = false): string
     {
-        $html = '<div class="form-group">';
-        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-2 leading-snug">';
+        // Add left padding to align with checkbox label if conditional (same as checkbox label padding)
+        $paddingClass = $isConditional ? 'pl-6' : '';
+        $html = '<div class="form-group ' . $paddingClass . '">';
+        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
         $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
         if ($field->is_required) {
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
@@ -346,10 +368,12 @@ class FormRendererService
     /**
      * Render select dropdown field
      */
-    private function renderSelect($field): string
+    private function renderSelect($field, $isConditional = false): string
     {
-        $html = '<div class="form-group">';
-        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-2 leading-snug">';
+        // Add left padding to align with checkbox label if conditional (same as checkbox label padding)
+        $paddingClass = $isConditional ? 'pl-6' : '';
+        $html = '<div class="form-group ' . $paddingClass . '">';
+        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
         $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
         if ($field->is_required) {
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
@@ -403,7 +427,7 @@ class FormRendererService
     private function renderRadio($field): string
     {
         $html = '<div class="form-group">';
-        $html .= '<label class="block text-xs font-semibold text-gray-800 mb-2.5 leading-snug">';
+        $html .= '<label class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
         $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
         if ($field->is_required) {
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
@@ -448,30 +472,66 @@ class FormRendererService
     /**
      * Render checkbox field
      */
-    private function renderCheckbox($field): string
+    private function renderCheckbox($field, $isConditional = false): string
     {
         $html = '<div class="form-group">';
         if (!$field->hasOptions()) {
-            // Single checkbox - label comes after
-            $html .= '<div class="flex items-start space-x-3">';
+            // Check if this checkbox is conditional (has conditional logic) - check both passed flag and field directly
+            $isCheckboxConditional = ($field->is_conditional && !empty($field->conditional_logic)) || $isConditional;
+            
+            // Checkbox and label on same row, description on separate row below
+            $html .= '<div class="flex items-start">';
             $html .= '<input type="checkbox" ';
             $html .= 'id="' . $field->field_name . '" ';
             $html .= 'name="' . $field->field_name . '" ';
             $html .= 'value="1" ';
-            $html .= 'class="mt-1 h-5 w-5 text-primary-600 focus:ring-2 focus:ring-primary-500 border-gray-300 rounded cursor-pointer" ';
+            $html .= 'class="mt-0.5 h-5 w-5 text-primary-600 focus:ring-2 focus:ring-primary-500 border-gray-300 rounded cursor-pointer flex-shrink-0" ';
             if ($field->is_required) {
                 $html .= 'required aria-required="true" ';
             }
             $html .= '/>';
-            $html .= '<label for="' . $field->field_name . '" class="text-xs font-semibold text-gray-800 cursor-pointer leading-snug flex-1">';
+            $html .= '<div class="ml-2 mt-1 flex-1">';
+            
+            // Label on first row
+            $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 leading-snug cursor-pointer">';
             $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
             if ($field->is_required) {
                 $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
             }
             $html .= '</label>';
-            $html .= '</div>';
+
+            // Optional description on separate row below label, aligned with checkbox using padding-top
+            if ($field->field_description || $field->field_help_text) {
+                $description = $field->field_description ?: $field->field_help_text;
+                
+                // Check if description contains HTML (from WYSIWYG editor)
+                $isHtml = strip_tags($description) !== $description;
+                
+                // Description aligned with checkbox - wrapper already has mt-1, so less padding needed
+                if ($isHtml) {
+                    // Render HTML content from WYSIWYG editor
+                    $html .= '<div class="pt-3 text-xs text-gray-700 leading-relaxed prose prose-sm max-w-none">';
+                    $html .= $description; // Render HTML directly
+                    $html .= '</div>';
+                } else {
+                    // Plain text - check for line breaks
+                    $hasLineBreaks = strpos($description, "\n") !== false || strpos($description, '<br') !== false;
+                    if ($hasLineBreaks) {
+                        $html .= '<div class="pt-3 text-xs text-gray-700 leading-relaxed whitespace-pre-line">';
+                        $html .= nl2br(htmlspecialchars($description));
+                        $html .= '</div>';
+                    } else {
+                        $html .= '<p class="pt-3 text-xs text-gray-600 leading-relaxed">';
+                        $html .= htmlspecialchars($description);
+                        $html .= '</p>';
+                    }
+                }
+            }
+            
+            $html .= '</div>'; // close label/description wrapper div
+            $html .= '</div>'; // close flex container
         } else {
-            $html .= '<label class="block text-xs font-semibold text-gray-800 mb-2.5 leading-snug">';
+            $html .= '<label class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
             $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
             if ($field->is_required) {
                 $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
@@ -496,14 +556,14 @@ class FormRendererService
                 $html .= '</div>';
             }
             $html .= '</div>';
-        }
-
-        // Standard help text styling with icon
-        if ($field->field_description && $field->hasOptions()) {
-            $html .= '<p class="mt-1.5 text-[10px] text-gray-400 flex items-start">';
-            $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
-            $html .= '<span>' . htmlspecialchars($field->field_description) . '</span>';
-            $html .= '</p>';
+            
+            // Standard help text styling with icon for multiple checkboxes
+            if ($field->field_description && $field->hasOptions()) {
+                $html .= '<p class="mt-1.5 text-[10px] text-gray-400 flex items-start">';
+                $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
+                $html .= '<span>' . htmlspecialchars($field->field_description) . '</span>';
+                $html .= '</p>';
+            }
         }
 
         $html .= '</div>';
@@ -513,10 +573,12 @@ class FormRendererService
     /**
      * Render date picker field
      */
-    private function renderDate($field): string
+    private function renderDate($field, $isConditional = false): string
     {
-        $html = '<div class="form-group">';
-        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-2 leading-snug">';
+        // Add left padding to align with checkbox label if conditional (same as checkbox label padding)
+        $paddingClass = $isConditional ? 'pl-6' : '';
+        $html = '<div class="form-group ' . $paddingClass . '">';
+        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
         $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
         if ($field->is_required) {
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
@@ -555,7 +617,7 @@ class FormRendererService
         $maxSize = $field->field_settings['max_size'] ?? null;
 
         $html = '<div class="form-group">';
-        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-2 leading-snug">';
+        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
         $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
         if ($field->is_required) {
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
@@ -598,14 +660,16 @@ class FormRendererService
     /**
      * Render currency input field
      */
-    private function renderCurrency($field): string
+    private function renderCurrency($field, $isConditional = false): string
     {
         $currency = $field->field_settings['currency'] ?? 'MYR';
         $min = $field->field_settings['min'] ?? null;
         $max = $field->field_settings['max'] ?? null;
 
-        $html = '<div class="form-group">';
-        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-2 leading-snug">';
+        // Add left padding to align with checkbox label if conditional (same as checkbox label padding)
+        $paddingClass = $isConditional ? 'pl-6' : '';
+        $html = '<div class="form-group ' . $paddingClass . '">';
+        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
         $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
         if ($field->is_required) {
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
@@ -693,6 +757,7 @@ class FormRendererService
 
     /**
      * Build conditional logic attributes
+     * Supports both old format (single condition) and new format (multiple conditions)
      */
     private function buildConditionalAttributes($conditionalLogic): string
     {
@@ -702,14 +767,27 @@ class FormRendererService
 
         $attrs = [];
         
-        if (isset($conditionalLogic['show_if'])) {
+        // New format: supports multiple conditions with AND/OR logic
+        if (isset($conditionalLogic['action']) && isset($conditionalLogic['conditions']) && is_array($conditionalLogic['conditions'])) {
+            $action = $conditionalLogic['action']; // 'show_if' or 'hide_if'
+            $logic = $conditionalLogic['logic'] ?? 'and'; // 'and' or 'or'
+            $conditions = $conditionalLogic['conditions'];
+            
+            // Store as JSON in data attribute for JavaScript to parse
+            $dataAttr = $action === 'show_if' ? 'data-show-if-conditions' : 'data-hide-if-conditions';
+            $attrs[] = $dataAttr . '="' . htmlspecialchars(json_encode([
+                'logic' => $logic,
+                'conditions' => $conditions
+            ])) . '"';
+        }
+        // Old format: backward compatibility for single condition
+        else if (isset($conditionalLogic['show_if'])) {
             $showIf = $conditionalLogic['show_if'];
             $attrs[] = 'data-show-if-field="' . htmlspecialchars($showIf['field'] ?? '') . '"';
             $attrs[] = 'data-show-if-operator="' . htmlspecialchars($showIf['operator'] ?? 'equals') . '"';
             $attrs[] = 'data-show-if-value="' . htmlspecialchars($showIf['value'] ?? '') . '"';
         }
-        
-        if (isset($conditionalLogic['hide_if'])) {
+        else if (isset($conditionalLogic['hide_if'])) {
             $hideIf = $conditionalLogic['hide_if'];
             $attrs[] = 'data-hide-if-field="' . htmlspecialchars($hideIf['field'] ?? '') . '"';
             $attrs[] = 'data-hide-if-operator="' . htmlspecialchars($hideIf['operator'] ?? 'equals') . '"';
@@ -717,6 +795,45 @@ class FormRendererService
         }
 
         return !empty($attrs) ? implode(' ', $attrs) : '';
+    }
+
+    /**
+     * Check if a conditional field is triggered by a checkbox
+     */
+    private function isTriggeredByCheckbox($field, $allFields): bool
+    {
+        if (!$field->is_conditional || !$field->conditional_logic) {
+            return false;
+        }
+
+        $conditionalLogic = $field->conditional_logic;
+        $triggerFieldNames = [];
+
+        // New format: multiple conditions
+        if (isset($conditionalLogic['conditions']) && is_array($conditionalLogic['conditions'])) {
+            foreach ($conditionalLogic['conditions'] as $condition) {
+                if (isset($condition['field'])) {
+                    $triggerFieldNames[] = $condition['field'];
+                }
+            }
+        }
+        // Old format: single condition
+        else if (isset($conditionalLogic['show_if']['field'])) {
+            $triggerFieldNames[] = $conditionalLogic['show_if']['field'];
+        }
+        else if (isset($conditionalLogic['hide_if']['field'])) {
+            $triggerFieldNames[] = $conditionalLogic['hide_if']['field'];
+        }
+
+        // Check if any of the trigger fields is a checkbox
+        foreach ($triggerFieldNames as $triggerFieldName) {
+            $triggerField = $allFields->firstWhere('field_name', $triggerFieldName);
+            if ($triggerField && $triggerField->field_type === 'checkbox' && !$triggerField->hasOptions()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

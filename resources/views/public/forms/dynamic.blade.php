@@ -602,11 +602,133 @@
         return false;
     }
     
+    // Evaluate multiple conditions with AND/OR logic
+    function evaluateMultipleConditions(conditions, logic) {
+        if (!conditions || !Array.isArray(conditions) || conditions.length === 0) {
+            return false;
+        }
+        
+        const results = conditions.map(function(condition) {
+            return checkConditionMet(condition.field, condition.operator, condition.value || '');
+        });
+        
+        if (logic === 'or') {
+            return results.some(function(result) { return result === true; });
+        } else {
+            // Default to 'and'
+            return results.every(function(result) { return result === true; });
+        }
+    }
+    
+    // Get all unique field names from conditions array
+    function getFieldNamesFromConditions(conditions) {
+        if (!conditions || !Array.isArray(conditions)) {
+            return [];
+        }
+        const fieldNames = conditions.map(function(condition) {
+            return condition.field;
+        });
+        // Return unique field names
+        return [...new Set(fieldNames)];
+    }
+    
+    // Add event listeners to all fields involved in conditions
+    function addConditionalEventListeners(fieldNames, callback) {
+        fieldNames.forEach(function(fieldName) {
+            const targetFields = findFieldsByName(fieldName);
+            targetFields.forEach(function(targetField) {
+                targetField.addEventListener('change', callback);
+                
+                // For checkboxes and radio buttons, also listen to click events for immediate feedback
+                if (targetField.type === 'checkbox' || targetField.type === 'radio') {
+                    targetField.addEventListener('click', callback);
+                } 
+                // For text inputs, also listen to input event for real-time updates
+                else if (targetField.tagName === 'INPUT' && targetField.type !== 'checkbox' && targetField.type !== 'radio') {
+                    targetField.addEventListener('input', callback);
+                }
+            });
+        });
+    }
+    
     // Handle conditional field show/hide
     document.addEventListener('DOMContentLoaded', function() {
+        // Handle NEW format: multiple conditions (data-show-if-conditions)
+        const conditionalFieldsNew = document.querySelectorAll('[data-show-if-conditions]');
+        conditionalFieldsNew.forEach(function(field) {
+            const conditionsData = field.getAttribute('data-show-if-conditions');
+            if (!conditionsData) return;
+            
+            try {
+                const parsed = JSON.parse(conditionsData);
+                const logic = parsed.logic || 'and';
+                const conditions = parsed.conditions || [];
+                
+                if (conditions.length === 0) return;
+                
+                // Initially hide conditional field
+                field.style.display = 'none';
+                
+                // Function to check conditions
+                function checkConditions() {
+                    const shouldShow = evaluateMultipleConditions(conditions, logic);
+                    field.style.display = shouldShow ? 'block' : 'none';
+                }
+                
+                // Get all field names involved in conditions
+                const fieldNames = getFieldNamesFromConditions(conditions);
+                
+                // Add event listeners to all involved fields
+                addConditionalEventListeners(fieldNames, checkConditions);
+                
+                // Initial check
+                checkConditions();
+            } catch (e) {
+                console.error('Error parsing conditional logic:', e);
+            }
+        });
+        
+        // Handle NEW format: multiple conditions for hide (data-hide-if-conditions)
+        const hideFieldsNew = document.querySelectorAll('[data-hide-if-conditions]');
+        hideFieldsNew.forEach(function(field) {
+            const conditionsData = field.getAttribute('data-hide-if-conditions');
+            if (!conditionsData) return;
+            
+            try {
+                const parsed = JSON.parse(conditionsData);
+                const logic = parsed.logic || 'and';
+                const conditions = parsed.conditions || [];
+                
+                if (conditions.length === 0) return;
+                
+                // Function to check conditions
+                function checkConditions() {
+                    const shouldHide = evaluateMultipleConditions(conditions, logic);
+                    field.style.display = shouldHide ? 'none' : 'block';
+                }
+                
+                // Get all field names involved in conditions
+                const fieldNames = getFieldNamesFromConditions(conditions);
+                
+                // Add event listeners to all involved fields
+                addConditionalEventListeners(fieldNames, checkConditions);
+                
+                // Initial check
+                checkConditions();
+            } catch (e) {
+                console.error('Error parsing conditional logic:', e);
+            }
+        });
+        
+        // Handle OLD format: single condition (data-show-if-field) - backward compatibility
         const conditionalFields = document.querySelectorAll('[data-show-if-field]');
         
         conditionalFields.forEach(function(field) {
+            // Skip if this field already has new format conditions
+            if (field.hasAttribute('data-show-if-conditions')) {
+                return;
+            }
+            
             const showIfField = field.getAttribute('data-show-if-field');
             const showIfOperator = field.getAttribute('data-show-if-operator') || 'equals';
             const showIfValue = field.getAttribute('data-show-if-value');
@@ -650,9 +772,14 @@
             }
         });
         
-        // Handle hide conditions
+        // Handle OLD format: hide conditions (data-hide-if-field) - backward compatibility
         const hideFields = document.querySelectorAll('[data-hide-if-field]');
         hideFields.forEach(function(field) {
+            // Skip if this field already has new format conditions
+            if (field.hasAttribute('data-hide-if-conditions')) {
+                return;
+            }
+            
             const hideIfField = field.getAttribute('data-hide-if-field');
             const hideIfOperator = field.getAttribute('data-hide-if-operator') || 'equals';
             const hideIfValue = field.getAttribute('data-hide-if-value');
