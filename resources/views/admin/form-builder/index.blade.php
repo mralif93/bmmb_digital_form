@@ -754,6 +754,19 @@
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">This text will appear below the checkbox label (optional). Supports rich text formatting.</p>
             </div>
 
+            <!-- Description Position -->
+            <div>
+                <label for="create_field_description_position" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description Position
+                </label>
+                <select name="field_settings[description_position]" id="create_field_description_position"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                    <option value="bottom">Below Input (Default)</option>
+                    <option value="top">Above Input</option>
+                </select>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Choose where the description appears relative to the input field.</p>
+            </div>
+
             <!-- Help Text -->
             <div>
                 <label for="create_field_help_text" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -1000,6 +1013,19 @@
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">This text will appear below the checkbox label (optional). Supports rich text formatting.</p>
                         </div>
 
+                        <!-- Description Position -->
+                        <div>
+                            <label for="edit_field_description_position" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Description Position
+                            </label>
+                            <select name="field_settings[description_position]" id="edit_field_description_position"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                <option value="bottom">Below Input (Default)</option>
+                                <option value="top">Above Input</option>
+                            </select>
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Choose where the description appears relative to the input field.</p>
+                        </div>
+
                         <!-- Help Text -->
                         <div>
                             <label for="edit_field_help_text" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -1111,6 +1137,10 @@
                     document.getElementById('edit_field_placeholder').value = field.field_placeholder || '';
                     document.getElementById('edit_field_help_text').value = field.field_help_text || '';
                     document.getElementById('edit_grid_column').value = field.grid_column || 'left';
+                    
+                    // Set description position
+                    const descriptionPosition = field.field_settings?.description_position || 'bottom';
+                    document.getElementById('edit_field_description_position').value = descriptionPosition;
                     document.getElementById('edit_is_required').checked = field.is_required === true || field.is_required === 1;
                     document.getElementById('edit_is_active').checked = field.is_active === true || field.is_active === 1 || field.is_active === undefined || field.is_active === null;
                     

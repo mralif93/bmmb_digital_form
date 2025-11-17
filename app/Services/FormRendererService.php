@@ -295,6 +295,13 @@ class FormRendererService
         }
         $html .= '</label>';
 
+        // Render description above input if position is 'top'
+        $descriptionPosition = $this->getDescriptionPosition($field);
+        if ($descriptionPosition === 'top') {
+            $html .= $this->renderFieldDescription($field, 'top');
+            $html .= $this->renderFieldHelpText($field, 'top');
+        }
+
         // Professional input styling with enhanced focus states
         $html .= '<input type="' . $inputType . '" ';
         $html .= 'id="' . $field->field_name . '" ';
@@ -310,12 +317,10 @@ class FormRendererService
         $html .= $this->buildCustomAttributes($field);
         $html .= '/>';
 
-        // Standard help text styling with icon
-        if ($field->field_description || $field->field_help_text) {
-            $html .= '<p class="mt-1.5 text-[10px] text-gray-400 flex items-start">';
-            $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
-            $html .= '<span>' . htmlspecialchars($field->field_description ?: $field->field_help_text) . '</span>';
-            $html .= '</p>';
+        // Render help text (subtle) first, then description (prominent) below it (if position is 'bottom')
+        if ($descriptionPosition === 'bottom') {
+            $html .= $this->renderFieldHelpText($field, 'bottom');
+            $html .= $this->renderFieldDescription($field, 'bottom');
         }
 
         $html .= '</div>';
@@ -337,6 +342,13 @@ class FormRendererService
         }
         $html .= '</label>';
 
+        // Render description above input if position is 'top'
+        $descriptionPosition = $this->getDescriptionPosition($field);
+        if ($descriptionPosition === 'top') {
+            $html .= $this->renderFieldDescription($field, 'top');
+            $html .= $this->renderFieldHelpText($field, 'top');
+        }
+
         $html .= '<textarea ';
         $html .= 'id="' . $field->field_name . '" ';
         $html .= 'name="' . $field->field_name . '" ';
@@ -353,12 +365,10 @@ class FormRendererService
         $html .= '>';
         $html .= '</textarea>';
 
-        // Standard help text styling with icon
-        if ($field->field_description || $field->field_help_text) {
-            $html .= '<p class="mt-1.5 text-[10px] text-gray-400 flex items-start">';
-            $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
-            $html .= '<span>' . htmlspecialchars($field->field_description ?: $field->field_help_text) . '</span>';
-            $html .= '</p>';
+        // Render help text (subtle) first, then description (prominent) below it (if position is 'bottom')
+        if ($descriptionPosition === 'bottom') {
+            $html .= $this->renderFieldHelpText($field, 'bottom');
+            $html .= $this->renderFieldDescription($field, 'bottom');
         }
 
         $html .= '</div>';
@@ -379,6 +389,13 @@ class FormRendererService
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
         }
         $html .= '</label>';
+
+        // Render description above input if position is 'top'
+        $descriptionPosition = $this->getDescriptionPosition($field);
+        if ($descriptionPosition === 'top') {
+            $html .= $this->renderFieldDescription($field, 'top');
+            $html .= $this->renderFieldHelpText($field, 'top');
+        }
 
         $html .= '<div class="relative">';
         $html .= '<select ';
@@ -409,12 +426,10 @@ class FormRendererService
         $html .= '</div>';
         $html .= '</div>';
 
-        // Standard help text styling with icon
-        if ($field->field_description || $field->field_help_text) {
-            $html .= '<p class="mt-1.5 text-[10px] text-gray-400 flex items-start">';
-            $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
-            $html .= '<span>' . htmlspecialchars($field->field_description ?: $field->field_help_text) . '</span>';
-            $html .= '</p>';
+        // Render help text (subtle) first, then description (prominent) below it (if position is 'bottom')
+        if ($descriptionPosition === 'bottom') {
+            $html .= $this->renderFieldHelpText($field, 'bottom');
+            $html .= $this->renderFieldDescription($field, 'bottom');
         }
 
         $html .= '</div>';
@@ -433,6 +448,13 @@ class FormRendererService
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
         }
         $html .= '</label>';
+
+        // Render description above input if position is 'top'
+        $descriptionPosition = $this->getDescriptionPosition($field);
+        if ($descriptionPosition === 'top') {
+            $html .= $this->renderFieldDescription($field, 'top');
+            $html .= $this->renderFieldHelpText($field, 'top');
+        }
 
         $html .= '<div class="space-y-2.5">';
 
@@ -457,12 +479,10 @@ class FormRendererService
 
         $html .= '</div>';
 
-        // Standard help text styling with icon
-        if ($field->field_description || $field->field_help_text) {
-            $html .= '<p class="mt-1.5 text-[10px] text-gray-400 flex items-start">';
-            $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
-            $html .= '<span>' . htmlspecialchars($field->field_description ?: $field->field_help_text) . '</span>';
-            $html .= '</p>';
+        // Render help text (subtle) first, then description (prominent) below it (if position is 'bottom')
+        if ($descriptionPosition === 'bottom') {
+            $html .= $this->renderFieldHelpText($field, 'bottom');
+            $html .= $this->renderFieldDescription($field, 'bottom');
         }
 
         $html .= '</div>';
@@ -478,6 +498,15 @@ class FormRendererService
         if (!$field->hasOptions()) {
             // Check if this checkbox is conditional (has conditional logic) - check both passed flag and field directly
             $isCheckboxConditional = ($field->is_conditional && !empty($field->conditional_logic)) || $isConditional;
+            
+            // Get description position
+            $descriptionPosition = $this->getDescriptionPosition($field);
+            
+            // Render description above checkbox if position is 'top'
+            if ($descriptionPosition === 'top') {
+                $html .= $this->renderFieldDescription($field, 'top');
+                $html .= $this->renderFieldHelpText($field, 'top');
+            }
             
             // Checkbox and label on same row, description on separate row below
             $html .= '<div class="flex items-start">';
@@ -500,32 +529,60 @@ class FormRendererService
             }
             $html .= '</label>';
 
-            // Optional description on separate row below label, aligned with checkbox using padding-top
-            if ($field->field_description || $field->field_help_text) {
-                $description = $field->field_description ?: $field->field_help_text;
+            // Render help text (subtle) first, then description (prominent) below it (if position is 'bottom')
+            if ($descriptionPosition === 'bottom') {
+                if ($field->field_help_text) {
+                    $html .= '<p class="mt-1.5 text-[10px] text-gray-400 flex items-start">';
+                    $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
+                    $html .= '<span>' . htmlspecialchars($field->field_help_text) . '</span>';
+                    $html .= '</p>';
+                }
                 
-                // Check if description contains HTML (from WYSIWYG editor)
-                $isHtml = strip_tags($description) !== $description;
+                // Render description (prominent) below help text
+                if ($field->field_description) {
+                $description = $field->field_description;
                 
-                // Description aligned with checkbox - wrapper already has mt-1, so less padding needed
-                if ($isHtml) {
-                    // Render HTML content from WYSIWYG editor
-                    $html .= '<div class="pt-3 text-xs text-gray-700 leading-relaxed prose prose-sm max-w-none">';
-                    $html .= $description; // Render HTML directly
-                    $html .= '</div>';
-                } else {
-                    // Plain text - check for line breaks
-                    $hasLineBreaks = strpos($description, "\n") !== false || strpos($description, '<br') !== false;
-                    if ($hasLineBreaks) {
-                        $html .= '<div class="pt-3 text-xs text-gray-700 leading-relaxed whitespace-pre-line">';
-                        $html .= nl2br(htmlspecialchars($description));
+                // Check if description is actually empty (after stripping HTML tags and whitespace)
+                $textContent = trim(strip_tags($description));
+                if (!empty($textContent)) {
+                    // Check if description contains HTML (from WYSIWYG editor)
+                    $isHtml = strip_tags($description) !== $description;
+                    
+                    // Description below help text with consistent margin-top
+                    if ($isHtml) {
+                        // Check if description contains text-align: justify or justify alignment
+                        // Quill editor uses ql-align-justify class or inline style="text-align: justify"
+                        $hasJustify = stripos($description, 'text-align: justify') !== false || 
+                                      stripos($description, 'text-align:justify') !== false ||
+                                      stripos($description, 'ql-align-justify') !== false ||
+                                      preg_match('/class="[^"]*ql-align-justify[^"]*"/i', $description) ||
+                                      preg_match('/style="[^"]*text-align:\s*justify[^"]*"/i', $description);
+                        
+                        // If justify is detected, don't use prose class as it may override text alignment
+                        // The justify alignment should be in the content itself (from Quill editor)
+                        if ($hasJustify) {
+                            // Remove prose to allow inline styles to work, add text-justify as fallback
+                            $html .= '<div class="mt-3 text-xs text-gray-700 leading-relaxed text-justify">';
+                        } else {
+                            $html .= '<div class="mt-3 text-xs text-gray-700 leading-relaxed prose prose-sm max-w-none">';
+                        }
+                        $html .= $description; // Render HTML directly
                         $html .= '</div>';
                     } else {
-                        $html .= '<p class="pt-3 text-xs text-gray-600 leading-relaxed">';
-                        $html .= htmlspecialchars($description);
-                        $html .= '</p>';
+                        // Plain text - check for line breaks
+                        $hasLineBreaks = strpos($description, "\n") !== false || strpos($description, '<br') !== false;
+                        if ($hasLineBreaks) {
+                            $html .= '<div class="mt-3 text-xs text-gray-700 leading-relaxed whitespace-pre-line">';
+                            $html .= nl2br(htmlspecialchars($description));
+                            $html .= '</div>';
+                        } else {
+                            $html .= '<p class="mt-3 text-xs text-gray-600 leading-relaxed">';
+                            $html .= htmlspecialchars($description);
+                            $html .= '</p>';
+                        }
                     }
                 }
+            }
             }
             
             $html .= '</div>'; // close label/description wrapper div
@@ -557,13 +614,9 @@ class FormRendererService
             }
             $html .= '</div>';
             
-            // Standard help text styling with icon for multiple checkboxes
-            if ($field->field_description && $field->hasOptions()) {
-                $html .= '<p class="mt-1.5 text-[10px] text-gray-400 flex items-start">';
-                $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
-                $html .= '<span>' . htmlspecialchars($field->field_description) . '</span>';
-                $html .= '</p>';
-            }
+            // Render help text (subtle) first, then description (prominent) below it for multiple checkboxes
+            $html .= $this->renderFieldHelpText($field);
+            $html .= $this->renderFieldDescription($field);
         }
 
         $html .= '</div>';
@@ -585,6 +638,13 @@ class FormRendererService
         }
         $html .= '</label>';
 
+        // Render description above input if position is 'top'
+        $descriptionPosition = $this->getDescriptionPosition($field);
+        if ($descriptionPosition === 'top') {
+            $html .= $this->renderFieldDescription($field, 'top');
+            $html .= $this->renderFieldHelpText($field, 'top');
+        }
+
         $html .= '<input type="date" ';
         $html .= 'id="' . $field->field_name . '" ';
         $html .= 'name="' . $field->field_name . '" ';
@@ -596,12 +656,10 @@ class FormRendererService
         $html .= $this->buildCustomAttributes($field);
         $html .= '/>';
 
-        // Standard help text styling with icon
-        if ($field->field_description || $field->field_help_text) {
-            $html .= '<p class="mt-1.5 text-[10px] text-gray-400 flex items-start">';
-            $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
-            $html .= '<span>' . htmlspecialchars($field->field_description ?: $field->field_help_text) . '</span>';
-            $html .= '</p>';
+        // Render help text (subtle) first, then description (prominent) below it (if position is 'bottom')
+        if ($descriptionPosition === 'bottom') {
+            $html .= $this->renderFieldHelpText($field, 'bottom');
+            $html .= $this->renderFieldDescription($field, 'bottom');
         }
 
         $html .= '</div>';
@@ -624,6 +682,29 @@ class FormRendererService
         }
         $html .= '</label>';
 
+        // Render description above input if position is 'top'
+        $descriptionPosition = $this->getDescriptionPosition($field);
+        if ($descriptionPosition === 'top') {
+            $html .= $this->renderFieldDescription($field, 'top');
+            // Help text with file size info if present (for top position)
+            if ($field->field_help_text) {
+                $html .= '<p class="mb-2 text-[10px] text-gray-400 flex items-start">';
+                $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
+                $html .= '<span>';
+                $html .= htmlspecialchars($field->field_help_text);
+                if ($maxSize) {
+                    $html .= ' (Max size: ' . $this->formatFileSize($maxSize) . ')';
+                }
+                $html .= '</span>';
+                $html .= '</p>';
+            } elseif ($maxSize) {
+                $html .= '<p class="mb-2 text-[10px] text-gray-400 flex items-start">';
+                $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
+                $html .= '<span>Max size: ' . $this->formatFileSize($maxSize) . '</span>';
+                $html .= '</p>';
+            }
+        }
+
         $html .= '<div class="relative">';
         $html .= '<input type="file" ';
         $html .= 'id="' . $field->field_name . '" ';
@@ -640,17 +721,30 @@ class FormRendererService
         $html .= '/>';
         $html .= '</div>';
 
-        // Standard help text styling with icon
-        if ($field->field_description || $field->field_help_text) {
-            $html .= '<p class="mt-1.5 text-xs text-gray-500 flex items-start">';
-            $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-400 flex-shrink-0 text-xs"></i>';
-            $html .= '<span>';
-            $html .= htmlspecialchars($field->field_description ?: $field->field_help_text);
-            if ($maxSize) {
-                $html .= ' (Max size: ' . $this->formatFileSize($maxSize) . ')';
+        // Render help text (subtle) first, then description (prominent) below it
+        $descriptionPosition = $this->getDescriptionPosition($field);
+        if ($descriptionPosition === 'bottom') {
+            // Help text with file size info if present
+            if ($field->field_help_text) {
+                $html .= '<p class="mt-1.5 text-[10px] text-gray-400 flex items-start">';
+                $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
+                $html .= '<span>';
+                $html .= htmlspecialchars($field->field_help_text);
+                if ($maxSize) {
+                    $html .= ' (Max size: ' . $this->formatFileSize($maxSize) . ')';
+                }
+                $html .= '</span>';
+                $html .= '</p>';
+            } elseif ($maxSize) {
+                // Show file size info even if no help text
+                $html .= '<p class="mt-1.5 text-[10px] text-gray-400 flex items-start">';
+                $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
+                $html .= '<span>Max size: ' . $this->formatFileSize($maxSize) . '</span>';
+                $html .= '</p>';
             }
-            $html .= '</span>';
-            $html .= '</p>';
+            
+            // Render description (prominent) below help text
+            $html .= $this->renderFieldDescription($field, 'bottom');
         }
 
         $html .= '</div>';
@@ -675,6 +769,13 @@ class FormRendererService
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
         }
         $html .= '</label>';
+
+        // Render description above input if position is 'top'
+        $descriptionPosition = $this->getDescriptionPosition($field);
+        if ($descriptionPosition === 'top') {
+            $html .= $this->renderFieldDescription($field, 'top');
+            $html .= $this->renderFieldHelpText($field, 'top');
+        }
 
         $html .= '<div class="relative">';
         $html .= '<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">';
@@ -702,16 +803,95 @@ class FormRendererService
         $html .= '/>';
         $html .= '</div>';
 
-        // Standard help text styling with icon
-        if ($field->field_description || $field->field_help_text) {
-            $html .= '<p class="mt-1.5 text-[10px] text-gray-400 flex items-start">';
-            $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
-            $html .= '<span>' . htmlspecialchars($field->field_description ?: $field->field_help_text) . '</span>';
-            $html .= '</p>';
+        // Render help text (subtle) first, then description (prominent) below it (if position is 'bottom')
+        if ($descriptionPosition === 'bottom') {
+            $html .= $this->renderFieldHelpText($field, 'bottom');
+            $html .= $this->renderFieldDescription($field, 'bottom');
         }
 
         $html .= '</div>';
         return $html;
+    }
+
+    /**
+     * Get description position from field settings (default: 'bottom')
+     */
+    private function getDescriptionPosition($field): string
+    {
+        $settings = $field->field_settings ?? [];
+        $position = $settings['description_position'] ?? 'bottom';
+        return in_array($position, ['top', 'bottom']) ? $position : 'bottom';
+    }
+
+    /**
+     * Render field description (prominent, supports HTML)
+     */
+    private function renderFieldDescription($field, $position = 'bottom'): string
+    {
+        if (!$field->field_description) {
+            return '';
+        }
+
+        $description = $field->field_description;
+        
+        // Check if description is actually empty (after stripping HTML tags and whitespace)
+        $textContent = trim(strip_tags($description));
+        if (empty($textContent)) {
+            return '';
+        }
+        
+        // Check if description contains HTML (from WYSIWYG editor)
+        $isHtml = strip_tags($description) !== $description;
+        
+        // Check if description contains text-align: justify or justify alignment
+        // Quill editor uses ql-align-justify class or inline style="text-align: justify"
+        $hasJustify = stripos($description, 'text-align: justify') !== false || 
+                      stripos($description, 'text-align:justify') !== false ||
+                      stripos($description, 'ql-align-justify') !== false ||
+                      preg_match('/class="[^"]*ql-align-justify[^"]*"/i', $description) ||
+                      preg_match('/style="[^"]*text-align:\s*justify[^"]*"/i', $description);
+        
+        // Adjust margin based on position (top: margin-bottom, bottom: margin-top)
+        $marginClass = $position === 'top' ? 'mb-3' : 'mt-3';
+        
+        // Render prominent description
+        if ($isHtml) {
+            // If justify is detected, don't use prose class as it may override text alignment
+            // The justify alignment should be in the content itself (from Quill editor)
+            if ($hasJustify) {
+                // Remove prose to allow inline styles to work, add text-justify as fallback
+                return '<div class="' . $marginClass . ' text-xs text-gray-700 leading-relaxed text-justify">' . $description . '</div>';
+            } else {
+                // Use prose classes for non-justified content
+                return '<div class="' . $marginClass . ' text-xs text-gray-700 leading-relaxed prose prose-sm max-w-none">' . $description . '</div>';
+            }
+        } else {
+            // Plain text - check for line breaks
+            $hasLineBreaks = strpos($description, "\n") !== false || strpos($description, '<br') !== false;
+            if ($hasLineBreaks) {
+                return '<div class="' . $marginClass . ' text-xs text-gray-700 leading-relaxed whitespace-pre-line">' . nl2br(htmlspecialchars($description)) . '</div>';
+            } else {
+                return '<p class="' . $marginClass . ' text-xs text-gray-700 leading-relaxed">' . htmlspecialchars($description) . '</p>';
+            }
+        }
+    }
+
+    /**
+     * Render field help text (subtle, with icon)
+     */
+    private function renderFieldHelpText($field, $position = 'bottom'): string
+    {
+        if (!$field->field_help_text) {
+            return '';
+        }
+
+        // Adjust margin based on position (top: margin-bottom, bottom: margin-top)
+        $marginClass = $position === 'top' ? 'mb-2' : 'mt-1.5';
+
+        return '<p class="' . $marginClass . ' text-[10px] text-gray-400 flex items-start">' .
+               '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>' .
+               '<span>' . htmlspecialchars($field->field_help_text) . '</span>' .
+               '</p>';
     }
 
     /**

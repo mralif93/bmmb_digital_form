@@ -142,6 +142,17 @@
         
         /* Alpine.js x-cloak */
         [x-cloak] { display: none !important; }
+        
+        /* Ensure mobile sidebar overlay and sidebar are hidden by default */
+        /* This prevents the overlay from blocking clicks if Alpine.js hasn't loaded yet */
+        /* Alpine.js will override this with inline styles when x-show is true */
+        /* Only hide if x-cloak is present (before Alpine.js initializes) */
+        .mobile-sidebar-overlay[x-cloak] {
+            display: none !important;
+        }
+        .mobile-sidebar[x-cloak] {
+            display: none !important;
+        }
     </style>
     
     <!-- Dark Mode Script -->
@@ -192,6 +203,20 @@
         // Initialize theme on page load
         document.addEventListener('DOMContentLoaded', function() {
             applyTheme(getThemePreference());
+            
+            // Ensure mobile sidebar is closed on page load
+            // Dispatch close event after Alpine.js has had time to initialize
+            // This ensures sidebar starts closed but doesn't interfere with Alpine.js
+            setTimeout(function() {
+                window.dispatchEvent(new CustomEvent('close-sidebar'));
+            }, 100);
+            
+            // Also close on window resize (if switching from mobile to desktop)
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 1024) {
+                    window.dispatchEvent(new CustomEvent('close-sidebar'));
+                }
+            });
         });
     </script>
 </head>
@@ -275,8 +300,13 @@
 
     <!-- Main Content -->
     <div class="flex min-h-screen" x-data="{ sidebarOpen: false }" x-init="
-        window.addEventListener('toggle-sidebar', () => { sidebarOpen = !sidebarOpen; });
-        window.addEventListener('close-sidebar', () => { sidebarOpen = false; });
+        // Set up event listeners for sidebar toggle
+        window.addEventListener('toggle-sidebar', () => { 
+            sidebarOpen = !sidebarOpen; 
+        });
+        window.addEventListener('close-sidebar', () => { 
+            sidebarOpen = false; 
+        });
     ">
         <!-- Mobile Sidebar Overlay -->
         <div class="lg:hidden">
@@ -290,7 +320,7 @@
                  x-transition:leave="transition-opacity ease-linear duration-300"
                  x-transition:leave-start="opacity-100"
                  x-transition:leave-end="opacity-0"
-                 class="fixed inset-0 bg-gray-600 bg-opacity-75 z-40"></div>
+                 class="mobile-sidebar-overlay fixed inset-0 bg-gray-600 bg-opacity-75 z-40"></div>
             
             <!-- Mobile Sidebar -->
             <div x-show="sidebarOpen"
@@ -302,7 +332,7 @@
                  x-transition:leave="transition ease-in-out duration-300 transform"
                  x-transition:leave-start="translate-x-0"
                  x-transition:leave-end="-translate-x-full"
-                 class="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg z-50 overflow-y-auto">
+                 class="mobile-sidebar fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg z-50 overflow-y-auto">
                 <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                     <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Menu</h2>
                     <button @click="sidebarOpen = false" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Close menu">
