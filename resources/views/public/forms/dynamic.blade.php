@@ -30,10 +30,10 @@
         @endif
 
         <!-- White Card Container -->
-        <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+        <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 overflow-hidden form-card">
             <!-- Stepper Progress Indicator -->
             @if(count($sections ?? []) > 0)
-            <div class="w-full pt-6 pb-4 border-b border-gray-200 bg-white">
+            <div class="w-full pt-6 pb-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
                 <!-- Stepper (Desktop) -->
                 <div class="hidden md:flex items-center justify-between relative px-4 sm:px-6 lg:px-8">
                     @foreach($sections as $index => $section)
@@ -54,14 +54,14 @@
                                 </div>
                                 <!-- Step Label -->
                                 <div class="ml-2.5">
-                                    <span class="text-xs font-semibold block transition-colors"
+                                    <span class="text-xs font-semibold block transition-colors text-gray-600 dark:text-gray-300"
                                           :class="{
-                                              'text-primary-700': currentStep >= {{ $stepNumber }},
-                                              'text-gray-500': currentStep < {{ $stepNumber }}
+                                              'text-primary-700 dark:text-primary-400': currentStep >= {{ $stepNumber }},
+                                              'text-gray-500 dark:text-gray-500': currentStep < {{ $stepNumber }}
                                           }">
                                         {{ $section['label'] }}
                                     </span>
-                                    <span class="text-xs text-primary-600 font-medium mt-0.5" x-show="currentStep > {{ $stepNumber }}">Completed</span>
+                                    <span class="text-xs text-primary-600 dark:text-primary-400 font-medium mt-0.5" x-show="currentStep > {{ $stepNumber }}">Completed</span>
                                 </div>
                             </div>
                             <!-- Connector Line -->
@@ -88,14 +88,14 @@
                             </div>
                             <!-- Step Label -->
                             <div class="ml-2.5">
-                                <span class="text-xs font-semibold block transition-colors"
+                                <span class="text-xs font-semibold block transition-colors text-gray-600 dark:text-gray-300"
                                       :class="{
-                                          'text-primary-700': currentStep >= {{ count($sections) + 1 }},
-                                          'text-gray-500': currentStep < {{ count($sections) + 1 }}
+                                          'text-primary-700 dark:text-primary-400': currentStep >= {{ count($sections) + 1 }},
+                                          'text-gray-500 dark:text-gray-500': currentStep < {{ count($sections) + 1 }}
                                       }">
                                     Review & Submit
                                 </span>
-                                <span class="text-xs text-primary-600 font-medium mt-0.5" x-show="currentStep > {{ count($sections) + 1 }}">Completed</span>
+                                <span class="text-xs text-primary-600 dark:text-primary-400 font-medium mt-0.5" x-show="currentStep > {{ count($sections) + 1 }}">Completed</span>
                             </div>
                         </div>
                     </div>
@@ -144,13 +144,13 @@
                 
                 <!-- Current Step Label (Mobile) -->
                 <div class="md:hidden px-4 pt-3 text-center">
-                    <span class="text-xs font-semibold text-primary-700" x-text="getCurrentStepLabel()"></span>
+                    <span class="text-xs font-semibold text-primary-700 dark:text-primary-400" x-text="getCurrentStepLabel()"></span>
                 </div>
             </div>
             @endif
 
             <!-- Dynamic Form -->
-            <form id="{{ $type }}-form" class="p-4 sm:p-6 lg:p-8">
+            <form id="{{ $type }}-form" class="p-4 sm:p-6 lg:p-8 bg-white dark:bg-gray-900">
             @csrf
             
             {!! $formHtml !!}
@@ -163,7 +163,7 @@
                  x-init="$watch('currentStep', (value) => { if (value === totalSteps) { collectFormData(); } })"
                  :key="currentStep">
                 <!-- Preview Header -->
-                <div class="bg-primary-500 px-4 py-3 mb-4">
+                <div class="bg-primary-500 px-4 py-3 mb-4 rounded-lg">
                     <h3 class="text-lg font-bold text-white tracking-wide flex items-center">
                         <i class="bx bx-show mr-2 text-lg text-white"></i>
                         Review Your Information
@@ -174,10 +174,10 @@
                 <div class="space-y-6">
                     @foreach($sections as $section)
                     <div class="overflow-hidden">
-                        <div class="bg-gray-50 px-4 py-3">
-                            <h4 class="text-sm font-semibold text-gray-800">{{ $section['label'] }}</h4>
+                        <div class="bg-gray-50 dark:bg-gray-800/70 px-4 py-3">
+                            <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ $section['label'] }}</h4>
                         </div>
-                        <div class="p-4 space-y-4">
+                        <div class="p-4 space-y-4 bg-white dark:bg-gray-900">
                             @php
                                 // Use unified FormField model with form_id (new system)
                                 $fields = \App\Models\FormField::where('form_id', $form->id)
@@ -189,12 +189,12 @@
                                     ->get();
                             @endphp
                             @foreach($fields as $field)
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 py-2 border-b border-gray-100 last:border-b-0">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 py-2 border-b border-gray-100 dark:border-gray-800 last:border-b-0">
                                 <div class="md:col-span-1">
-                                    <span class="text-sm font-semibold text-gray-700">{{ $field->field_label }}@if($field->is_required) <span class="text-red-500">*</span>@endif:</span>
+                                    <span class="text-sm font-semibold text-gray-700 dark:text-gray-200">{{ $field->field_label }}@if($field->is_required) <span class="text-red-500">*</span>@endif:</span>
                                 </div>
                                 <div class="md:col-span-2">
-                                    <span class="text-sm text-gray-900" 
+                                    <span class="text-sm text-gray-900 dark:text-gray-100" 
                                           x-text="currentStep === totalSteps ? getFieldValue('{{ $field->field_name }}') : 'Not provided'"
                                           x-init="$watch('currentStep', () => { if (currentStep === totalSteps) { $el.textContent = getFieldValue('{{ $field->field_name }}'); } })"></span>
                                 </div>
@@ -206,24 +206,24 @@
                 </div>
                 
                 <!-- Terms Agreement (At bottom of preview) -->
-                <div class="flex items-start space-x-3 mt-10 pt-8 border-t-2 border-gray-200">
+                <div class="flex items-start space-x-3 mt-10 pt-8 border-t-2 border-gray-200 dark:border-gray-800">
                     <input type="checkbox" id="terms_agreement" name="terms_agreement" required
                            class="mt-1 h-5 w-5 text-primary-600 focus:ring-2 focus:ring-primary-500 border-gray-300 rounded cursor-pointer transition-all flex-shrink-0">
-                    <label for="terms_agreement" class="text-sm text-gray-700 leading-relaxed cursor-pointer flex-1">
-                        I acknowledge that I have read and agree to the <a href="#" class="text-primary-600 hover:text-primary-700 font-semibold underline transition-colors">Terms and Conditions</a> 
-                        and <a href="#" class="text-primary-600 hover:text-primary-700 font-semibold underline transition-colors">Privacy Policy</a> 
+                    <label for="terms_agreement" class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed cursor-pointer flex-1">
+                        I acknowledge that I have read and agree to the <a href="#" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold underline transition-colors">Terms and Conditions</a> 
+                        and <a href="#" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold underline transition-colors">Privacy Policy</a> 
                         <span class="text-red-500 font-bold ml-1">*</span>
                     </label>
                 </div>
             </div>
             
             <!-- Navigation Buttons -->
-            <div class="flex justify-between items-center mt-10 pt-8 border-t-2 border-gray-200">
+            <div class="flex justify-between items-center mt-10 pt-8 border-t-2 border-gray-200 dark:border-gray-800">
                 <!-- Previous Button -->
                 <button type="button" 
                         @click="if (currentStep > 1) currentStep--"
                         x-show="currentStep > 1 && totalSteps > 1"
-                        class="px-5 py-2 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-all duration-300 flex items-center shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-300">
+                        class="px-5 py-2 text-xs font-semibold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-all duration-300 flex items-center shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-700">
                     <i class='bx bx-chevron-left mr-1.5 text-sm'></i>
                     Previous
                 </button>

@@ -288,8 +288,8 @@ class FormRendererService
         $paddingClass = $isConditional ? 'pl-6' : '';
         $html = '<div class="form-group ' . $paddingClass . '">';
         // Enhanced label with better visual hierarchy
-        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
-        $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
+        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 dark:text-gray-100 mb-1.5 leading-snug">';
+        $html .= '<span class="text-gray-900 dark:text-gray-100">' . htmlspecialchars($field->field_label) . '</span>';
         if ($field->is_required) {
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
         }
@@ -335,8 +335,8 @@ class FormRendererService
         // Add left padding to align with checkbox label if conditional (same as checkbox label padding)
         $paddingClass = $isConditional ? 'pl-6' : '';
         $html = '<div class="form-group ' . $paddingClass . '">';
-        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
-        $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
+        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 dark:text-gray-100 mb-1.5 leading-snug">';
+        $html .= '<span class="text-gray-900 dark:text-gray-100">' . htmlspecialchars($field->field_label) . '</span>';
         if ($field->is_required) {
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
         }
@@ -383,8 +383,8 @@ class FormRendererService
         // Add left padding to align with checkbox label if conditional (same as checkbox label padding)
         $paddingClass = $isConditional ? 'pl-6' : '';
         $html = '<div class="form-group ' . $paddingClass . '">';
-        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
-        $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
+        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 dark:text-gray-100 mb-1.5 leading-snug">';
+        $html .= '<span class="text-gray-900 dark:text-gray-100">' . htmlspecialchars($field->field_label) . '</span>';
         if ($field->is_required) {
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
         }
@@ -422,7 +422,7 @@ class FormRendererService
         $html .= '</select>';
         // Dropdown arrow icon - improved
         $html .= '<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 z-10">';
-        $html .= '<i class="bx bx-chevron-down text-gray-400 text-xl"></i>';
+        $html .= '<i class="bx bx-chevron-down text-gray-400 dark:text-gray-500 text-xl"></i>';
         $html .= '</div>';
         $html .= '</div>';
 
@@ -442,8 +442,8 @@ class FormRendererService
     private function renderRadio($field): string
     {
         $html = '<div class="form-group">';
-        $html .= '<label class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
-        $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
+        $html .= '<label class="block text-xs font-semibold text-gray-800 dark:text-gray-100 mb-1.5 leading-snug">';
+        $html .= '<span class="text-gray-900 dark:text-gray-100">' . htmlspecialchars($field->field_label) . '</span>';
         if ($field->is_required) {
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
         }
@@ -502,13 +502,12 @@ class FormRendererService
             // Get description position
             $descriptionPosition = $this->getDescriptionPosition($field);
             
-            // Render description above checkbox if position is 'top'
+            // Render description above checkbox if position is 'top' (only description, not help text)
             if ($descriptionPosition === 'top') {
                 $html .= $this->renderFieldDescription($field, 'top');
-                $html .= $this->renderFieldHelpText($field, 'top');
             }
             
-            // Checkbox and label on same row, description on separate row below
+            // Checkbox and label on same row, help text and description on separate row below
             $html .= '<div class="flex items-start">';
             $html .= '<input type="checkbox" ';
             $html .= 'id="' . $field->field_name . '" ';
@@ -522,74 +521,26 @@ class FormRendererService
             $html .= '<div class="ml-2 mt-1 flex-1">';
             
             // Label on first row
-            $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 leading-snug cursor-pointer">';
-            $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
+            $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 dark:text-gray-100 leading-snug cursor-pointer">';
+            $html .= '<span class="text-gray-900 dark:text-gray-100">' . htmlspecialchars($field->field_label) . '</span>';
             if ($field->is_required) {
                 $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
             }
             $html .= '</label>';
 
-            // Render help text (subtle) first, then description (prominent) below it (if position is 'bottom')
+            // Always render help text below checkbox (regardless of description position)
+            $html .= $this->renderFieldHelpText($field, 'bottom');
+            
+            // Render description below checkbox if position is 'bottom'
             if ($descriptionPosition === 'bottom') {
-                if ($field->field_help_text) {
-                    $html .= '<p class="mt-1.5 text-[10px] text-gray-400 flex items-start">';
-                    $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
-                    $html .= '<span>' . htmlspecialchars($field->field_help_text) . '</span>';
-                    $html .= '</p>';
-                }
-                
-                // Render description (prominent) below help text
-                if ($field->field_description) {
-                $description = $field->field_description;
-                
-                // Check if description is actually empty (after stripping HTML tags and whitespace)
-                $textContent = trim(strip_tags($description));
-                if (!empty($textContent)) {
-                    // Check if description contains HTML (from WYSIWYG editor)
-                    $isHtml = strip_tags($description) !== $description;
-                    
-                    // Description below help text with consistent margin-top
-                    if ($isHtml) {
-                        // Check if description contains text-align: justify or justify alignment
-                        // Quill editor uses ql-align-justify class or inline style="text-align: justify"
-                        $hasJustify = stripos($description, 'text-align: justify') !== false || 
-                                      stripos($description, 'text-align:justify') !== false ||
-                                      stripos($description, 'ql-align-justify') !== false ||
-                                      preg_match('/class="[^"]*ql-align-justify[^"]*"/i', $description) ||
-                                      preg_match('/style="[^"]*text-align:\s*justify[^"]*"/i', $description);
-                        
-                        // If justify is detected, don't use prose class as it may override text alignment
-                        // The justify alignment should be in the content itself (from Quill editor)
-                        if ($hasJustify) {
-                            // Remove prose to allow inline styles to work, add text-justify as fallback
-                            $html .= '<div class="mt-3 text-xs text-gray-700 leading-relaxed text-justify">';
-                        } else {
-                            $html .= '<div class="mt-3 text-xs text-gray-700 leading-relaxed prose prose-sm max-w-none">';
-                        }
-                        $html .= $description; // Render HTML directly
-                        $html .= '</div>';
-                    } else {
-                        // Plain text - check for line breaks
-                        $hasLineBreaks = strpos($description, "\n") !== false || strpos($description, '<br') !== false;
-                        if ($hasLineBreaks) {
-                            $html .= '<div class="mt-3 text-xs text-gray-700 leading-relaxed whitespace-pre-line">';
-                            $html .= nl2br(htmlspecialchars($description));
-                            $html .= '</div>';
-                        } else {
-                            $html .= '<p class="mt-3 text-xs text-gray-600 leading-relaxed">';
-                            $html .= htmlspecialchars($description);
-                            $html .= '</p>';
-                        }
-                    }
-                }
-            }
+                $html .= $this->renderFieldDescription($field, 'bottom');
             }
             
             $html .= '</div>'; // close label/description wrapper div
             $html .= '</div>'; // close flex container
         } else {
-            $html .= '<label class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
-            $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
+        $html .= '<label class="block text-xs font-semibold text-gray-800 dark:text-gray-100 mb-1.5 leading-snug">';
+        $html .= '<span class="text-gray-900 dark:text-gray-100">' . htmlspecialchars($field->field_label) . '</span>';
             if ($field->is_required) {
                 $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
             }
@@ -631,8 +582,8 @@ class FormRendererService
         // Add left padding to align with checkbox label if conditional (same as checkbox label padding)
         $paddingClass = $isConditional ? 'pl-6' : '';
         $html = '<div class="form-group ' . $paddingClass . '">';
-        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
-        $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
+        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 dark:text-gray-100 mb-1.5 leading-snug">';
+        $html .= '<span class="text-gray-900 dark:text-gray-100">' . htmlspecialchars($field->field_label) . '</span>';
         if ($field->is_required) {
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
         }
@@ -675,8 +626,8 @@ class FormRendererService
         $maxSize = $field->field_settings['max_size'] ?? null;
 
         $html = '<div class="form-group">';
-        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
-        $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
+        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 dark:text-gray-100 mb-1.5 leading-snug">';
+        $html .= '<span class="text-gray-900 dark:text-gray-100">' . htmlspecialchars($field->field_label) . '</span>';
         if ($field->is_required) {
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
         }
@@ -688,8 +639,8 @@ class FormRendererService
             $html .= $this->renderFieldDescription($field, 'top');
             // Help text with file size info if present (for top position)
             if ($field->field_help_text) {
-                $html .= '<p class="mb-2 text-[10px] text-gray-400 flex items-start">';
-                $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
+                    $html .= '<p class="mb-2 text-[10px] text-gray-400 dark:text-gray-300 flex items-start">';
+                    $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 dark:text-gray-400 flex-shrink-0 text-[10px]"></i>';
                 $html .= '<span>';
                 $html .= htmlspecialchars($field->field_help_text);
                 if ($maxSize) {
@@ -698,8 +649,8 @@ class FormRendererService
                 $html .= '</span>';
                 $html .= '</p>';
             } elseif ($maxSize) {
-                $html .= '<p class="mb-2 text-[10px] text-gray-400 flex items-start">';
-                $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
+                $html .= '<p class="mb-2 text-[10px] text-gray-400 dark:text-gray-300 flex items-start">';
+                $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 dark:text-gray-400 flex-shrink-0 text-[10px]"></i>';
                 $html .= '<span>Max size: ' . $this->formatFileSize($maxSize) . '</span>';
                 $html .= '</p>';
             }
@@ -726,8 +677,8 @@ class FormRendererService
         if ($descriptionPosition === 'bottom') {
             // Help text with file size info if present
             if ($field->field_help_text) {
-                $html .= '<p class="mt-1.5 text-[10px] text-gray-400 flex items-start">';
-                $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
+                $html .= '<p class="mt-1.5 text-[10px] text-gray-400 dark:text-gray-300 flex items-start">';
+                $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 dark:text-gray-400 flex-shrink-0 text-[10px]"></i>';
                 $html .= '<span>';
                 $html .= htmlspecialchars($field->field_help_text);
                 if ($maxSize) {
@@ -737,8 +688,8 @@ class FormRendererService
                 $html .= '</p>';
             } elseif ($maxSize) {
                 // Show file size info even if no help text
-                $html .= '<p class="mt-1.5 text-[10px] text-gray-400 flex items-start">';
-                $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>';
+                $html .= '<p class="mt-1.5 text-[10px] text-gray-400 dark:text-gray-300 flex items-start">';
+                $html .= '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 dark:text-gray-400 flex-shrink-0 text-[10px]"></i>';
                 $html .= '<span>Max size: ' . $this->formatFileSize($maxSize) . '</span>';
                 $html .= '</p>';
             }
@@ -763,8 +714,8 @@ class FormRendererService
         // Add left padding to align with checkbox label if conditional (same as checkbox label padding)
         $paddingClass = $isConditional ? 'pl-6' : '';
         $html = '<div class="form-group ' . $paddingClass . '">';
-        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 mb-1.5 leading-snug">';
-        $html .= '<span class="text-gray-900">' . htmlspecialchars($field->field_label) . '</span>';
+        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 dark:text-gray-100 mb-1.5 leading-snug">';
+        $html .= '<span class="text-gray-900 dark:text-gray-100">' . htmlspecialchars($field->field_label) . '</span>';
         if ($field->is_required) {
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
         }
@@ -860,18 +811,18 @@ class FormRendererService
             // The justify alignment should be in the content itself (from Quill editor)
             if ($hasJustify) {
                 // Remove prose to allow inline styles to work, add text-justify as fallback
-                return '<div class="' . $marginClass . ' text-xs text-gray-700 leading-relaxed text-justify">' . $description . '</div>';
+                return '<div class="' . $marginClass . ' text-xs text-gray-700 dark:text-gray-200 leading-relaxed text-justify">' . $description . '</div>';
             } else {
                 // Use prose classes for non-justified content
-                return '<div class="' . $marginClass . ' text-xs text-gray-700 leading-relaxed prose prose-sm max-w-none">' . $description . '</div>';
+                return '<div class="' . $marginClass . ' text-xs text-gray-700 dark:text-gray-200 leading-relaxed prose prose-sm dark:prose-invert max-w-none">' . $description . '</div>';
             }
         } else {
             // Plain text - check for line breaks
             $hasLineBreaks = strpos($description, "\n") !== false || strpos($description, '<br') !== false;
             if ($hasLineBreaks) {
-                return '<div class="' . $marginClass . ' text-xs text-gray-700 leading-relaxed whitespace-pre-line">' . nl2br(htmlspecialchars($description)) . '</div>';
+                return '<div class="' . $marginClass . ' text-xs text-gray-700 dark:text-gray-200 leading-relaxed whitespace-pre-line">' . nl2br(htmlspecialchars($description)) . '</div>';
             } else {
-                return '<p class="' . $marginClass . ' text-xs text-gray-700 leading-relaxed">' . htmlspecialchars($description) . '</p>';
+                return '<p class="' . $marginClass . ' text-xs text-gray-700 dark:text-gray-200 leading-relaxed">' . htmlspecialchars($description) . '</p>';
             }
         }
     }
@@ -888,8 +839,8 @@ class FormRendererService
         // Adjust margin based on position (top: margin-bottom, bottom: margin-top)
         $marginClass = $position === 'top' ? 'mb-2' : 'mt-1.5';
 
-        return '<p class="' . $marginClass . ' text-[10px] text-gray-400 flex items-start">' .
-               '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 flex-shrink-0 text-[10px]"></i>' .
+        return '<p class="' . $marginClass . ' text-[10px] text-gray-400 dark:text-gray-300 flex items-start">' .
+               '<i class="bx bx-info-circle mr-1.5 mt-0.5 text-gray-300 dark:text-gray-400 flex-shrink-0 text-[10px]"></i>' .
                '<span>' . htmlspecialchars($field->field_help_text) . '</span>' .
                '</p>';
     }
