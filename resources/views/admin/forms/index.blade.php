@@ -268,9 +268,68 @@
     </div>
 </div>
 
+@push('styles')
+<!-- Quill WYSIWYG Editor CDN -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+@endpush
+
 @push('scripts')
+<!-- Quill WYSIWYG Editor CDN -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script>
     const statusOptions = @json(\App\Models\Form::getStatusOptions());
+    
+    // Initialize Quill WYSIWYG editor - Global scope
+    let quillInstances = {};
+    
+    function initQuillEditor(editorId, textareaId, initialContent = '') {
+        // Remove existing instance if any
+        if (quillInstances[editorId]) {
+            quillInstances[editorId] = null;
+        }
+        
+        const editorElement = document.getElementById(editorId);
+        if (!editorElement) {
+            return;
+        }
+        
+        // Initialize Quill
+        const quill = new Quill('#' + editorId, {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    [{ 'size': ['small', false, 'large', 'huge'] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    ['link'],
+                    ['clean']
+                ]
+            },
+            placeholder: 'Enter important note content...',
+            bounds: editorElement
+        });
+        
+        // Set initial content if provided
+        if (initialContent) {
+            quill.root.innerHTML = initialContent;
+        }
+        
+        // Sync Quill content to hidden textarea on change
+        quill.on('text-change', function() {
+            const textarea = document.getElementById(textareaId);
+            if (textarea) {
+                textarea.value = quill.root.innerHTML;
+            }
+        });
+        
+        // Store instance
+        quillInstances[editorId] = quill;
+        
+        return quill;
+    }
 
     function openCreateFormModal() {
         const container = document.getElementById('createFormModalContent');
@@ -345,7 +404,6 @@
                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Allow Multiple Submissions</span>
                 </label>
-            </div>
 
             <!-- Submit Button -->
             <button type="submit" 
@@ -354,6 +412,7 @@
             </button>
         `;
         
+
         // Show modal with animation
         const modal = document.getElementById('createFormModal');
         const modalContent = modal.querySelector('div');
@@ -473,7 +532,6 @@
                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Allow Multiple Submissions</span>
                 </label>
-            </div>
 
             <!-- Submit Button -->
             <button type="submit" 
@@ -482,6 +540,7 @@
             </button>
         `;
         
+
         // Set form action
         const editForm = document.getElementById('editFormForm');
         editForm.action = `{{ url('admin/forms') }}/${formId}`;

@@ -165,6 +165,7 @@ class FormController extends Controller
         $validated['is_public'] = $request->has('is_public');
         $validated['allow_multiple_submissions'] = $request->has('allow_multiple_submissions');
 
+
         $form->update($validated);
 
         // Log audit trail
@@ -238,4 +239,5 @@ class FormController extends Controller
         return redirect()->route('admin.forms.index')
             ->with('success', 'Forms reordered successfully!');
     }
+
 }

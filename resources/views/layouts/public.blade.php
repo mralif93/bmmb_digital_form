@@ -83,6 +83,9 @@
     <!-- Alpine.js CDN -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
+    <!-- Signature Pad Library -->
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    
     <!-- Custom CSS -->
     <style>
         /* Ensure Tailwind base styles are applied */
@@ -282,6 +285,67 @@
             background: #6b7280;
         }
         
+        /* Notes Content Styling */
+        .notes-content {
+            line-height: 1.6;
+        }
+        
+        /* Tabs and indentation are preserved via non-breaking spaces in HTML */
+        
+        .notes-content ol {
+            list-style-type: decimal;
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+        }
+        
+        .notes-content ul {
+            list-style-type: disc;
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+        }
+        
+        .notes-content li {
+            margin-top: 0.25rem;
+            margin-bottom: 0.25rem;
+            line-height: 1.6;
+        }
+        
+        .notes-content p {
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        
+        .notes-content p:first-child {
+            margin-top: 0;
+        }
+        
+        .notes-content p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .notes-content strong {
+            font-weight: 600;
+        }
+        
+        .notes-content em {
+            font-style: italic;
+        }
+        
+        .notes-content strong em,
+        .notes-content em strong {
+            font-weight: 600;
+            font-style: italic;
+        }
+        
+        .notes-content br {
+            line-height: 1.6;
+        }
+        
         /* Dropdown animation */
         [x-cloak] { display: none !important; }
         
@@ -299,6 +363,30 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+        
+        /* Signature Pad Styles */
+        .signature-pad-container {
+            max-width: 100%;
+        }
+        
+        .signature-canvas {
+            width: 100%;
+            max-width: 600px;
+            height: 200px;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 640px) {
+            .signature-canvas {
+                height: 150px;
+            }
+        }
+        
+        .signature-canvas:focus {
+            outline: 2px solid {{ $primaryColor }};
+            outline-offset: 2px;
         }
     </style>
     
@@ -324,6 +412,33 @@
                     </a>
                     
                     <!-- Forms Dropdown -->
+                    @php
+                        $publicForms = \App\Models\Form::where('status', 'active')
+                            ->where('is_public', true)
+                            ->orderBy('sort_order')
+                            ->orderBy('name')
+                            ->get();
+                        
+                        // Helper function to get form styling
+                        $getFormStyle = function($slug) {
+                            $styles = [
+                                'raf' => ['icon' => 'bx-money', 'bg' => 'green-500', 'hover' => 'green', 'name' => 'Remittance Application'],
+                                'dar' => ['icon' => 'bx-data', 'bg' => 'blue-500', 'hover' => 'blue', 'name' => 'Data Access Request'],
+                                'dcr' => ['icon' => 'bx-edit', 'bg' => 'primary-500', 'hover' => 'primary', 'name' => 'Data Correction'],
+                                'srf' => ['icon' => 'bx-cog', 'bg' => 'purple-500', 'hover' => 'purple', 'name' => 'Service Request'],
+                            ];
+                            return $styles[$slug] ?? ['icon' => 'bx-file-blank', 'bg' => 'gray-500', 'hover' => 'gray', 'name' => null];
+                        };
+                        
+                        // Helper function to get form route
+                        $getFormRoute = function($form) {
+                            $legacySlugs = ['raf', 'dar', 'dcr', 'srf'];
+                            if (in_array($form->slug, $legacySlugs)) {
+                                return route('public.forms.' . $form->slug);
+                            }
+                            return route('public.forms.slug', ['slug' => $form->slug]);
+                        };
+                    @endphp
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" @click.away="open = false" class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-300 group">
                             <i class='bx bx-file-blank mr-2 text-base'></i>
@@ -337,42 +452,55 @@
                                 <h3 class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Available Forms</h3>
                             </div>
                             <div class="py-1">
-                                <a href="{{ route('public.forms.raf') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-green-900/30 hover:text-green-700 dark:hover:text-green-400 transition-all duration-200 group">
-                                    <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
-                                        <i class='bx bx-money text-white text-lg'></i>
+                                @forelse($publicForms as $form)
+                                    @php
+                                        $style = $getFormStyle($form->slug);
+                                        $formRoute = $getFormRoute($form);
+                                        $isActive = request()->routeIs('public.forms.' . $form->slug) || 
+                                                   (request()->routeIs('public.forms.slug') && request()->route('slug') == $form->slug);
+                                        
+                                        // Build classes based on hover color
+                                        $hoverClasses = [
+                                            'green' => 'hover:bg-green-50 dark:hover:bg-green-900/30 hover:text-green-700 dark:hover:text-green-400',
+                                            'blue' => 'hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-400',
+                                            'primary' => 'hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:text-primary-700 dark:hover:text-primary-400',
+                                            'purple' => 'hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:text-purple-700 dark:hover:text-purple-400',
+                                            'gray' => 'hover:bg-gray-50 dark:hover:bg-gray-900/30 hover:text-gray-700 dark:hover:text-gray-400',
+                                        ];
+                                        
+                                        $activeClasses = [
+                                            'green' => 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400',
+                                            'blue' => 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
+                                            'primary' => 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400',
+                                            'purple' => 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400',
+                                            'gray' => 'bg-gray-50 dark:bg-gray-900/30 text-gray-700 dark:text-gray-400',
+                                        ];
+                                        
+                                        $bgClasses = [
+                                            'green-500' => 'bg-green-500',
+                                            'blue-500' => 'bg-blue-500',
+                                            'primary-500' => 'bg-primary-500',
+                                            'purple-500' => 'bg-purple-500',
+                                            'gray-500' => 'bg-gray-500',
+                                        ];
+                                        
+                                        $hoverColor = $style['hover'];
+                                        $bgColor = $style['bg'];
+                                    @endphp
+                                    <a href="{{ $formRoute }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 {{ $hoverClasses[$hoverColor] ?? $hoverClasses['gray'] }} transition-all duration-200 group {{ $isActive ? ($activeClasses[$hoverColor] ?? $activeClasses['gray']) : '' }}">
+                                        <div class="w-10 h-10 {{ $bgClasses[$bgColor] ?? $bgClasses['gray-500'] }} rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
+                                            <i class='bx {{ $style['icon'] }} text-white text-lg'></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold text-sm">{{ $form->name }}</div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ Str::limit($form->description ?? '', 40) }}</div>
+                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-center">
+                                        No forms available
                                     </div>
-                                    <div>
-                                        <div class="font-semibold text-sm">Remittance Application</div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">Financial transactions & transfers</div>
-                                    </div>
-                                </a>
-                                <a href="{{ route('public.forms.dar') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-400 transition-all duration-200 group">
-                                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
-                                        <i class='bx bx-data text-white text-lg'></i>
-                                    </div>
-                                    <div>
-                                        <div class="font-semibold text-sm">Data Access Request</div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">Personal data access & privacy</div>
-                                    </div>
-                                </a>
-                                <a href="{{ route('public.forms.dcr') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:text-primary-700 dark:hover:text-primary-400 transition-all duration-200 group">
-                                    <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
-                                        <i class='bx bx-edit text-white text-lg'></i>
-                                    </div>
-                                    <div>
-                                        <div class="font-semibold text-sm">Data Correction</div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">Update & correct personal data</div>
-                                    </div>
-                                </a>
-                                <a href="{{ route('public.forms.srf') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:text-purple-700 dark:hover:text-purple-400 transition-all duration-200 group">
-                                    <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
-                                        <i class='bx bx-cog text-white text-lg'></i>
-                                    </div>
-                                    <div>
-                                        <div class="font-semibold text-sm">Service Request</div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">General services & support</div>
-                                    </div>
-                                </a>
+                                @endforelse
                             </div>
                         </div>
                     </div>
@@ -418,42 +546,55 @@
                 <div class="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
                     <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 px-4">Available Forms</div>
                     <div class="space-y-1">
-                        <a href="{{ route('public.forms.raf') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-green-900/30 hover:text-green-700 dark:hover:text-green-400 rounded-lg transition-all duration-300 group {{ request()->routeIs('public.forms.raf') ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400' : '' }}">
-                            <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
-                                <i class='bx bx-money text-white text-lg'></i>
+                        @forelse($publicForms as $form)
+                            @php
+                                $style = $getFormStyle($form->slug);
+                                $formRoute = $getFormRoute($form);
+                                $isActive = request()->routeIs('public.forms.' . $form->slug) || 
+                                           (request()->routeIs('public.forms.slug') && request()->route('slug') == $form->slug);
+                                
+                                // Build classes based on hover color
+                                $hoverClasses = [
+                                    'green' => 'hover:bg-green-50 dark:hover:bg-green-900/30 hover:text-green-700 dark:hover:text-green-400',
+                                    'blue' => 'hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-400',
+                                    'primary' => 'hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:text-primary-700 dark:hover:text-primary-400',
+                                    'purple' => 'hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:text-purple-700 dark:hover:text-purple-400',
+                                    'gray' => 'hover:bg-gray-50 dark:hover:bg-gray-900/30 hover:text-gray-700 dark:hover:text-gray-400',
+                                ];
+                                
+                                $activeClasses = [
+                                    'green' => 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400',
+                                    'blue' => 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
+                                    'primary' => 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400',
+                                    'purple' => 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400',
+                                    'gray' => 'bg-gray-50 dark:bg-gray-900/30 text-gray-700 dark:text-gray-400',
+                                ];
+                                
+                                $bgClasses = [
+                                    'green-500' => 'bg-green-500',
+                                    'blue-500' => 'bg-blue-500',
+                                    'primary-500' => 'bg-primary-500',
+                                    'purple-500' => 'bg-purple-500',
+                                    'gray-500' => 'bg-gray-500',
+                                ];
+                                
+                                $hoverColor = $style['hover'];
+                                $bgColor = $style['bg'];
+                            @endphp
+                            <a href="{{ $formRoute }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 {{ $hoverClasses[$hoverColor] ?? $hoverClasses['gray'] }} rounded-lg transition-all duration-300 group {{ $isActive ? ($activeClasses[$hoverColor] ?? $activeClasses['gray']) : '' }}">
+                                <div class="w-10 h-10 {{ $bgClasses[$bgColor] ?? $bgClasses['gray-500'] }} rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
+                                    <i class='bx {{ $style['icon'] }} text-white text-lg'></i>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-sm">{{ $form->name }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ Str::limit($form->description ?? '', 40) }}</div>
+                                </div>
+                            </a>
+                        @empty
+                            <div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-center">
+                                No forms available
                             </div>
-                            <div>
-                                <div class="font-semibold text-sm">Remittance Application</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">Financial transactions & transfers</div>
-                            </div>
-                        </a>
-                        <a href="{{ route('public.forms.dar') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-400 rounded-lg transition-all duration-300 group {{ request()->routeIs('public.forms.dar') ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' : '' }}">
-                            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
-                                <i class='bx bx-data text-white text-lg'></i>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-sm">Data Access Request</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">Personal data access & privacy</div>
-                            </div>
-                        </a>
-                        <a href="{{ route('public.forms.dcr') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:text-primary-700 dark:hover:text-primary-400 rounded-lg transition-all duration-300 group {{ request()->routeIs('public.forms.dcr') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : '' }}">
-                            <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
-                                <i class='bx bx-edit text-white text-lg'></i>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-sm">Data Correction</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">Update & correct personal data</div>
-                            </div>
-                        </a>
-                        <a href="{{ route('public.forms.srf') }}" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:text-purple-700 dark:hover:text-purple-400 rounded-lg transition-all duration-300 group {{ request()->routeIs('public.forms.srf') ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' : '' }}">
-                            <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200 shadow-md">
-                                <i class='bx bx-cog text-white text-lg'></i>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-sm">Service Request</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">General services & support</div>
-                            </div>
-                        </a>
+                        @endforelse
                     </div>
                 </div>
                 

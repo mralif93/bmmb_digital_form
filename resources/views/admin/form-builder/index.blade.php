@@ -11,6 +11,31 @@
 </div>
 @endif
 
+@if(session('error'))
+<div class="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg text-sm text-red-800 dark:text-red-400">
+    <div class="flex items-center">
+        <i class='bx bx-error-circle mr-2 text-lg'></i>
+        <span>{{ session('error') }}</span>
+    </div>
+</div>
+@endif
+
+@if($errors->any())
+<div class="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg text-sm">
+    <div class="flex items-start mb-2">
+        <i class='bx bx-error-circle mr-2 text-lg text-red-800 dark:text-red-400 mt-0.5'></i>
+        <div>
+            <p class="font-semibold text-red-800 dark:text-red-400 mb-2">Please fix the following errors:</p>
+            <ul class="list-disc list-inside space-y-1 text-red-700 dark:text-red-300">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+</div>
+@endif
+
 <div class="mb-4 flex items-center justify-between">
     <div class="flex items-center space-x-3">
         <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
@@ -33,6 +58,10 @@
         <a href="{{ route('admin.form-sections.index', $form) }}" class="inline-flex items-center px-3 py-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 dark:text-indigo-400 rounded-lg text-xs transition-colors">
             <i class='bx bx-list-ul mr-1.5'></i>
             Manage Sections
+        </a>
+        <a href="{{ route('admin.form-builder.trashed', $form) }}" class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-900/30 dark:hover:bg-gray-900/50 dark:text-gray-400 rounded-lg text-xs transition-colors">
+            <i class='bx bx-trash mr-1.5'></i>
+            Deleted Fields
         </a>
         <button onclick="openCreateModal()" class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors">
             <i class='bx bx-plus mr-1.5'></i>
@@ -303,6 +332,7 @@
             modules: {
                 toolbar: [
                     [{ 'header': [1, 2, 3, false] }],
+                    [{ 'size': ['small', false, 'large', 'huge'] }],
                     ['bold', 'italic', 'underline', 'strike'],
                     [{ 'list': 'ordered'}, { 'list': 'bullet' }],
                     [{ 'color': [] }, { 'background': [] }],
@@ -744,14 +774,14 @@
                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
             </div>
 
-            <!-- Description -->
-            <div>
+            <!-- Description / Notes Content -->
+            <div id="create_field_description_container">
                 <label for="create_field_description" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Description (Optional)
+                    <span id="create_field_description_label">Description (Optional)</span>
                 </label>
                 <div id="create_field_description_editor" style="height: 150px;" class="mb-2"></div>
                 <textarea name="field_description" id="create_field_description" style="display: none;"></textarea>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">This text will appear below the checkbox label (optional). Supports rich text formatting.</p>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="create_field_description_help">This text will appear below the checkbox label (optional). Supports rich text formatting.</p>
             </div>
 
             <!-- Description Position -->
@@ -918,6 +948,31 @@
             container.style.display = 'block';
         } else {
             container.style.display = 'none';
+        }
+        
+        // Handle notes field type
+        const placeholderDiv = document.getElementById('create_field_placeholder')?.closest('div');
+        const helpTextDiv = document.getElementById('create_field_help_text')?.closest('div');
+        const descriptionPositionDiv = document.getElementById('create_field_description_position')?.closest('div');
+        const descriptionLabel = document.getElementById('create_field_description_label');
+        const descriptionHelp = document.getElementById('create_field_description_help');
+        
+        if (fieldType === 'notes') {
+            // Hide unnecessary fields for notes
+            if (placeholderDiv) placeholderDiv.style.display = 'none';
+            if (helpTextDiv) helpTextDiv.style.display = 'none';
+            if (descriptionPositionDiv) descriptionPositionDiv.style.display = 'none';
+            // Update label and help text
+            if (descriptionLabel) descriptionLabel.textContent = 'Notes Content (Required)';
+            if (descriptionHelp) descriptionHelp.textContent = 'Enter the important note content using the editor above. This will be displayed in a styled box on the public form.';
+        } else {
+            // Show all fields for other types
+            if (placeholderDiv) placeholderDiv.style.display = 'block';
+            if (helpTextDiv) helpTextDiv.style.display = 'block';
+            if (descriptionPositionDiv) descriptionPositionDiv.style.display = 'block';
+            // Reset label and help text
+            if (descriptionLabel) descriptionLabel.textContent = 'Description (Optional)';
+            if (descriptionHelp) descriptionHelp.textContent = 'This text will appear below the checkbox label (optional). Supports rich text formatting.';
         }
     }
 
@@ -1287,6 +1342,31 @@
             container.style.display = 'block';
         } else {
             container.style.display = 'none';
+        }
+        
+        // Handle notes field type
+        const placeholderDiv = document.getElementById('edit_field_placeholder')?.closest('div');
+        const helpTextDiv = document.getElementById('edit_field_help_text')?.closest('div');
+        const descriptionPositionDiv = document.getElementById('edit_field_description_position')?.closest('div');
+        const descriptionLabel = document.querySelector('label[for="edit_field_description"]');
+        const descriptionHelp = document.querySelector('#edit_field_description').nextElementSibling;
+        
+        if (fieldType === 'notes') {
+            // Hide unnecessary fields for notes
+            if (placeholderDiv) placeholderDiv.style.display = 'none';
+            if (helpTextDiv) helpTextDiv.style.display = 'none';
+            if (descriptionPositionDiv) descriptionPositionDiv.style.display = 'none';
+            // Update label and help text
+            if (descriptionLabel) descriptionLabel.innerHTML = '<span>Notes Content (Required)</span>';
+            if (descriptionHelp) descriptionHelp.textContent = 'Enter the important note content using the editor above. This will be displayed in a styled box on the public form.';
+        } else {
+            // Show all fields for other types
+            if (placeholderDiv) placeholderDiv.style.display = 'block';
+            if (helpTextDiv) helpTextDiv.style.display = 'block';
+            if (descriptionPositionDiv) descriptionPositionDiv.style.display = 'block';
+            // Reset label and help text
+            if (descriptionLabel) descriptionLabel.innerHTML = '<span>Description (Optional)</span>';
+            if (descriptionHelp) descriptionHelp.textContent = 'This text will appear below the checkbox label (optional). Supports rich text formatting.';
         }
     }
 

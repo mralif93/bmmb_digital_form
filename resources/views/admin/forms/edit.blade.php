@@ -5,6 +5,9 @@
 @section('page-description', 'Update form details')
 
 @section('content')
+@php
+    $formSettings = $form->settings ?? [];
+@endphp
 <div class="mb-4 flex items-center justify-end">
     <a href="{{ route('admin.forms.index') }}" class="inline-flex items-center px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
         <i class='bx bx-arrow-back mr-1.5'></i>
@@ -103,6 +106,47 @@
                            class="rounded border-gray-300 dark:border-gray-600 text-orange-600 focus:ring-orange-500">
                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Allow Multiple Submissions</span>
                 </label>
+                <label class="flex items-start">
+                    <input type="checkbox" name="show_important_note" value="1" {{ old('show_important_note', $formSettings['show_important_note'] ?? false) ? 'checked' : '' }}
+                           class="mt-0.5 rounded border-gray-300 dark:border-gray-600 text-orange-600 focus:ring-orange-500">
+                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                        Show Important Note banner before the first section on the public form
+                    </span>
+                </label>
+            </div>
+
+            <div class="mt-6 space-y-3 border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900/30">
+                <p class="text-xs font-semibold text-gray-800 dark:text-gray-200 uppercase">Important Note Content</p>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Note Title</label>
+                    <input type="text" name="important_note_title" value="{{ old('important_note_title', $formSettings['important_note_title'] ?? '') }}"
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                           placeholder="Important Note">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Intro Text</label>
+                    <input type="text" name="important_note_intro" value="{{ old('important_note_intro', $formSettings['important_note_intro'] ?? '') }}"
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                           placeholder="e.g., This form is made to Bank Muamalat Malaysia Berhad">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Bullet Items (one per line)</label>
+                    @php
+                        $noteItemsValue = $formSettings['important_note_items'] ?? [];
+                        if (is_array($noteItemsValue)) {
+                            $noteItemsValue = implode("\n", $noteItemsValue);
+                        }
+                    @endphp
+                    <textarea name="important_note_items" rows="4"
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                              placeholder="Enter each bullet item on a new line">{{ old('important_note_items', $noteItemsValue) }}</textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Contact Details</label>
+                    <textarea name="important_note_contact" rows="3"
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                              placeholder="Contact information displayed below the note">{{ old('important_note_contact', $formSettings['important_note_contact'] ?? '') }}</textarea>
+                </div>
             </div>
         </div>
 

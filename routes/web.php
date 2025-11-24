@@ -555,6 +555,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         // Form Builder Routes
         Route::prefix('forms/{form}/builder')->name('form-builder.')->group(function () {
             Route::get('/', [FormBuilderController::class, 'index'])->name('index');
+            Route::get('/trashed', [FormBuilderController::class, 'trashed'])->name('trashed');
             Route::get('/fields/{field}', [FormBuilderController::class, 'getField'])->name('fields.show');
             Route::get('/fields/{field}/view', [FormBuilderController::class, 'show'])->name('fields.view');
             Route::post('/fields', [FormBuilderController::class, 'storeField'])->name('fields.store');
@@ -562,6 +563,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
             Route::delete('/fields/{field}', [FormBuilderController::class, 'destroyField'])->name('fields.destroy');
             Route::post('/fields/reorder', [FormBuilderController::class, 'reorderFields'])->name('fields.reorder');
             Route::put('/fields/{field}/column', [FormBuilderController::class, 'updateFieldColumn'])->name('fields.column');
+            Route::post('/fields/{field}/restore', [FormBuilderController::class, 'restore'])->name('fields.restore');
+            Route::delete('/fields/{field}/force', [FormBuilderController::class, 'forceDelete'])->name('fields.force-delete');
         });
     });
     

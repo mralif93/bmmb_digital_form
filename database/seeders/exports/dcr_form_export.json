@@ -1,0 +1,266 @@
+{
+    "form": {
+        "id": 2,
+        "name": "Personal Data Correction Request Form",
+        "slug": "dcr",
+        "description": "Request correction of your personal data in compliance with data protection regulations.",
+        "status": "active",
+        "is_public": true,
+        "allow_multiple_submissions": true,
+        "submission_limit": null,
+        "sort_order": 3,
+        "settings": {
+            "type": "dcr",
+            "version": "1.0"
+        }
+    },
+    "sections": [
+        {
+            "id": 8,
+            "key": "section_notes",
+            "title": null,
+            "description": "Important Notes",
+            "sort_order": 1,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_1_1",
+                    "label": "Important Notes",
+                    "type": "notes",
+                    "placeholder": null,
+                    "description": "<p><strong><u>Important Notes:</u></strong></p><ol><li>Please complete the Data Correction Request Form and ensure that your personal data provided herein is genuine and accurate.</li><li>Your request may not be processed if the information/document provided is incomplete.</li><li>Third Party Requestor is to be present at the branch / office to submit this form and for verification of information and documents required.</li><li>The supporting document(s) required in this form must be provided. We will respond within 21 days of receipt of the completed form with accompanying documents.</li><li>If you have any queries / need any guidance in filling-up this form, you may contact our</li></ol><p>\t\t\t<strong><em>Customer Service Department at the contact details below:</em></strong></p><p><strong><em>\t\t\tHead, Customer Service Department, Bank Muamalat  Malaysia Berhad</em></strong></p><p><strong><em>\t\t\tAddress\t\t: 19th Floor, Menara Bumiputra, Jalan Melaka, 51000 Kuala Lumpur</em></strong></p><p><strong><em>\t\t\tTelephone\t: 1-300-88-8787 (Local), +603-26005500 (International)</em></strong></p><p><strong><em>\t\t\tEmail\t\t\t: feedback@muamalat.com.my</em></strong></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 9,
+            "key": "section_a",
+            "title": null,
+            "description": "About Yourself",
+            "sort_order": 2,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_2_1",
+                    "label": "I am a customer / former customer and I would like to correct my personal data",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "top"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_2_2",
+                    "label": "I am a Third Party Requestor",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": "i.e I am making this personal data correction request for another person.",
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 10,
+            "key": "section_b",
+            "title": null,
+            "description": "Particulars of the Data Subject (Account Holder)",
+            "sort_order": 3,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_3_1",
+                    "label": "Full Name (as per NRIC)",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_2",
+                    "label": "NRIC / Passport No.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_3",
+                    "label": "Address",
+                    "type": "textarea",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 3,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_4",
+                    "label": "Postcode",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 4,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_5",
+                    "label": "Email Address",
+                    "type": "email",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 5,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_6",
+                    "label": "Telephone No. (Office/Home)",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 6,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_7",
+                    "label": "Mobile No.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 7,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 11,
+            "key": "section_c",
+            "title": null,
+            "description": "Particulars of Third Party Requestor",
+            "sort_order": 4,
+            "is_active": true,
+            "fields": []
+        },
+        {
+            "id": 12,
+            "key": "section_d",
+            "title": null,
+            "description": "Personal Data Correction",
+            "sort_order": 5,
+            "is_active": true,
+            "fields": []
+        },
+        {
+            "id": 13,
+            "key": "section_e",
+            "title": null,
+            "description": "Declaration",
+            "sort_order": 6,
+            "is_active": true,
+            "fields": []
+        }
+    ]
+}

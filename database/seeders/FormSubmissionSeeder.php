@@ -19,8 +19,9 @@ class FormSubmissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get all forms
-        $forms = Form::whereIn('slug', ['raf', 'dar', 'dcr', 'srf'])->get();
+        // Get all forms (only SRF enabled for testing)
+        $forms = Form::whereIn('slug', ['srf'])->get();
+        // $forms = Form::whereIn('slug', ['raf', 'dar', 'dcr', 'srf'])->get(); // DISABLED: other forms
         
         if ($forms->isEmpty()) {
             $this->command->warn('No forms found. Please run FormManagementSeeder first.');
@@ -65,7 +66,6 @@ class FormSubmissionSeeder extends Seeder
                     $this->createTestSubmission($form, $testBranchUser, $testBranch, 'pending_process', $form->sections);
                 }
                 
-                $this->command->info("Created {$takeupCount} 'submitted' and {$completeCount} 'pending_process' test submissions for form: {$form->name}");
             }
 
             // Create 10-15 random submissions per form
@@ -214,7 +214,6 @@ class FormSubmissionSeeder extends Seeder
                 }
             }
 
-            $this->command->info("Created {$submissionCount} submissions for form: {$form->name}");
         }
     }
 

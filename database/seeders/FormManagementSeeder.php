@@ -11,26 +11,24 @@ class FormManagementSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     * Creates forms, sections, and fields based on the 4 default forms
+     * Creates forms, sections, and fields (currently only SRF enabled for testing)
      * Following the flow: Forms → Sections → Fields
+     * Note: RAF, DAR, and DCR forms are disabled - uncomment to enable them
      */
     public function run(): void
     {
-        $this->command->info('Starting Form Management Seeder...');
+        // Seed RAF Form - DISABLED (only SRF enabled for testing)
+        // $this->seedRafForm();
 
-        // Seed RAF Form
-        $this->seedRafForm();
-        
-        // Seed DAR Form
+        // Seed DAR Form (form only, no sections/fields)
         $this->seedDarForm();
         
-        // Seed DCR Form
+        // Seed DCR Form (form only, no sections/fields)
         $this->seedDcrForm();
         
         // Seed SRF Form
         $this->seedSrfForm();
 
-        $this->command->info('Form Management Seeder completed successfully!');
     }
 
     /**
@@ -38,8 +36,6 @@ class FormManagementSeeder extends Seeder
      */
     private function seedRafForm(): void
     {
-        $this->command->info('Seeding RAF Form...');
-
         // Create or get RAF form
         $form = Form::updateOrCreate(
             ['slug' => 'raf'],
@@ -71,20 +67,18 @@ class FormManagementSeeder extends Seeder
         // Create fields
         $this->createRafFields($form->id, $sections);
 
-        $this->command->info("RAF Form seeded: {$form->name} (ID: {$form->id})");
     }
+
 
     /**
      * Seed DAR (Data Access Request Form)
      */
     private function seedDarForm(): void
     {
-        $this->command->info('Seeding DAR Form...');
-
         $form = Form::updateOrCreate(
             ['slug' => 'dar'],
             [
-                'name' => 'Data Access Request Form',
+                'name' => 'Personal Data Access Request Form',
                 'description' => 'Request access to your personal data and information in compliance with data protection regulations.',
                 'status' => 'active',
                 'is_public' => true,
@@ -98,19 +92,29 @@ class FormManagementSeeder extends Seeder
             ]
         );
 
-        $sections = $this->createSections($form->id, 'dar', [
-            'requester_info' => 'Requester Information',
-            'data_subject_info' => 'Data Subject Information',
-            'request_details' => 'Request Details',
-            'legal_basis' => 'Legal Basis',
-            'data_processing' => 'Data Processing Information',
-            'documents' => 'Supporting Documents',
-            'compliance' => 'Compliance & Verification',
-        ]);
+        // Read sections from JSON export
+        $jsonData = json_decode(file_get_contents(__DIR__ . '/exports/dar_form_export.json'), true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return;
+        }
 
-        $this->createDarFields($form->id, $sections);
-
-        $this->command->info("DAR Form seeded: {$form->name} (ID: {$form->id})");
+        // Create sections from JSON
+        if (isset($jsonData['sections']) && is_array($jsonData['sections'])) {
+            foreach ($jsonData['sections'] as $sectionData) {
+                FormSection::updateOrCreate(
+                    [
+                        'form_id' => $form->id,
+                        'section_key' => $sectionData['key'],
+                    ],
+                    [
+                        'section_label' => $sectionData['description'] ?? $sectionData['title'] ?? '',
+                        'sort_order' => $sectionData['sort_order'] ?? 1,
+                        'is_active' => $sectionData['is_active'] ?? true,
+                    ]
+                );
+            }
+        }
     }
 
     /**
@@ -118,12 +122,10 @@ class FormManagementSeeder extends Seeder
      */
     private function seedDcrForm(): void
     {
-        $this->command->info('Seeding DCR Form...');
-
         $form = Form::updateOrCreate(
             ['slug' => 'dcr'],
             [
-                'name' => 'Data Correction Request Form',
+                'name' => 'Personal Data Correction Request Form',
                 'description' => 'Request correction of your personal data in compliance with data protection regulations.',
                 'status' => 'active',
                 'is_public' => true,
@@ -137,20 +139,29 @@ class FormManagementSeeder extends Seeder
             ]
         );
 
-        $sections = $this->createSections($form->id, 'dcr', [
-            'requester_info' => 'Requester Information',
-            'data_subject_info' => 'Data Subject Information',
-            'correction_details' => 'Correction Details',
-            'legal_basis' => 'Legal Basis',
-            'verification' => 'Verification Process',
-            'implementation' => 'Implementation Plan',
-            'documents' => 'Supporting Documents',
-            'compliance' => 'Compliance & Verification',
-        ]);
+        // Read sections from JSON export
+        $jsonData = json_decode(file_get_contents(__DIR__ . '/exports/dcr_form_export.json'), true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return;
+        }
 
-        $this->createDcrFields($form->id, $sections);
-
-        $this->command->info("DCR Form seeded: {$form->name} (ID: {$form->id})");
+        // Create sections from JSON
+        if (isset($jsonData['sections']) && is_array($jsonData['sections'])) {
+            foreach ($jsonData['sections'] as $sectionData) {
+                FormSection::updateOrCreate(
+                    [
+                        'form_id' => $form->id,
+                        'section_key' => $sectionData['key'],
+                    ],
+                    [
+                        'section_label' => $sectionData['description'] ?? $sectionData['title'] ?? '',
+                        'sort_order' => $sectionData['sort_order'] ?? 1,
+                        'is_active' => $sectionData['is_active'] ?? true,
+                    ]
+                );
+            }
+        }
     }
 
     /**
@@ -158,13 +169,12 @@ class FormManagementSeeder extends Seeder
      */
     private function seedSrfForm(): void
     {
-        $this->command->info('Seeding SRF Form...');
 
         $form = Form::updateOrCreate(
             ['slug' => 'srf'],
             [
                 'name' => 'Service Request Form',
-                'description' => 'Submit your service request for banking and financial services.',
+                'description' => 'Service Request Form (SRF_Deposit/V16.0.2024)',
                 'status' => 'active',
                 'is_public' => true,
                 'allow_multiple_submissions' => true,
@@ -178,18 +188,15 @@ class FormManagementSeeder extends Seeder
         );
 
         $sections = $this->createSections($form->id, 'srf', [
-            'customer_info' => 'Customer Information',
-            'account_info' => 'Account Information',
-            'service_details' => 'Service Details',
-            'financial_info' => 'Financial Information',
-            'compliance' => 'Compliance & Risk',
-            'documents' => 'Supporting Documents',
-            'delivery' => 'Service Delivery',
+            'customer_info' => 'Customer',
+            'account_type' => 'Account',
+            'consent' => 'Consent',
+            'section_c' => 'Third Party',
+            'confirmation' => 'Confirmation',
         ]);
 
         $this->createSrfFields($form->id, $sections);
 
-        $this->command->info("SRF Form seeded: {$form->name} (ID: {$form->id})");
     }
 
     /**
@@ -809,746 +816,89 @@ class FormManagementSeeder extends Seeder
             );
         }
 
-        $this->command->info('RAF fields created: ' . count($fields) . ' fields');
     }
 
-    /**
-     * Create DAR fields
-     */
-    private function createDarFields($formId, array $sections): void
-    {
-        $fields = [
-            // ========== REQUESTER INFORMATION SECTION ==========
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_name',
-                'field_label' => 'Requester Name',
-                'field_type' => 'text',
-                'field_placeholder' => 'Enter full name',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 1,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_phone',
-                'field_label' => 'Phone Number',
-                'field_type' => 'phone',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 2,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_email',
-                'field_label' => 'Email Address',
-                'field_type' => 'email',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 3,
-                'validation_rules' => ['required' => true, 'email' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_address',
-                'field_label' => 'Address',
-                'field_type' => 'textarea',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 4,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_city',
-                'field_label' => 'City',
-                'field_type' => 'text',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 5,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_state',
-                'field_label' => 'State/Province',
-                'field_type' => 'text',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 6,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_postal_code',
-                'field_label' => 'Postal Code',
-                'field_type' => 'text',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 7,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_country',
-                'field_label' => 'Country',
-                'field_type' => 'text',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 8,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_id_type',
-                'field_label' => 'ID Type',
-                'field_type' => 'select',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 9,
-                'field_options' => [
-                    'passport' => 'Passport',
-                    'national_id' => 'National ID',
-                    'drivers_license' => "Driver's License",
-                    'other' => 'Other',
-                ],
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_id_number',
-                'field_label' => 'ID Number',
-                'field_type' => 'text',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 10,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_id_expiry_date',
-                'field_label' => 'ID Expiry Date',
-                'field_type' => 'date',
-                'is_required' => false,
-                'is_active' => true,
-                'sort_order' => 11,
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_organization',
-                'field_label' => 'Organization',
-                'field_type' => 'text',
-                'is_required' => false,
-                'is_active' => true,
-                'sort_order' => 12,
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_position',
-                'field_label' => 'Position',
-                'field_type' => 'text',
-                'is_required' => false,
-                'is_active' => true,
-                'sort_order' => 13,
-            ],
-
-            // ========== DATA SUBJECT INFORMATION SECTION ==========
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['data_subject_info'],
-                'field_name' => 'data_subject_name',
-                'field_label' => 'Data Subject Name',
-                'field_type' => 'text',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 1,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['data_subject_info'],
-                'field_name' => 'relationship_to_data_subject',
-                'field_label' => 'Relationship to Data Subject',
-                'field_type' => 'select',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 2,
-                'field_options' => [
-                    'self' => 'Self',
-                    'legal_guardian' => 'Legal Guardian',
-                    'authorized_representative' => 'Authorized Representative',
-                    'other' => 'Other',
-                ],
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['data_subject_info'],
-                'field_name' => 'data_subject_phone',
-                'field_label' => 'Phone Number',
-                'field_type' => 'phone',
-                'is_required' => false,
-                'is_active' => true,
-                'sort_order' => 3,
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['data_subject_info'],
-                'field_name' => 'data_subject_email',
-                'field_label' => 'Email Address',
-                'field_type' => 'email',
-                'is_required' => false,
-                'is_active' => true,
-                'sort_order' => 4,
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['data_subject_info'],
-                'field_name' => 'data_subject_address',
-                'field_label' => 'Address',
-                'field_type' => 'textarea',
-                'is_required' => false,
-                'is_active' => true,
-                'sort_order' => 5,
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['data_subject_info'],
-                'field_name' => 'data_subject_id_type',
-                'field_label' => 'ID Type',
-                'field_type' => 'select',
-                'is_required' => false,
-                'is_active' => true,
-                'sort_order' => 6,
-                'field_options' => [
-                    'passport' => 'Passport',
-                    'national_id' => 'National ID',
-                    'drivers_license' => "Driver's License",
-                    'other' => 'Other',
-                ],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['data_subject_info'],
-                'field_name' => 'data_subject_id_number',
-                'field_label' => 'ID Number',
-                'field_type' => 'text',
-                'is_required' => false,
-                'is_active' => true,
-                'sort_order' => 7,
-            ],
-
-            // ========== REQUEST DETAILS SECTION ==========
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['request_details'],
-                'field_name' => 'request_type',
-                'field_label' => 'Request Type',
-                'field_type' => 'select',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 1,
-                'field_options' => [
-                    'access' => 'Access',
-                    'rectification' => 'Rectification',
-                    'erasure' => 'Erasure',
-                    'portability' => 'Portability',
-                    'restriction' => 'Restriction',
-                    'objection' => 'Objection',
-                    'complaint' => 'Complaint',
-                    'other' => 'Other',
-                ],
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['request_details'],
-                'field_name' => 'request_description',
-                'field_label' => 'Request Description',
-                'field_type' => 'textarea',
-                'field_placeholder' => 'Describe what data you are requesting access to',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 2,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['request_details'],
-                'field_name' => 'data_categories',
-                'field_label' => 'Data Categories',
-                'field_type' => 'checkbox',
-                'is_required' => false,
-                'is_active' => true,
-                'sort_order' => 3,
-                'field_options' => [
-                    'personal_info' => 'Personal Information',
-                    'contact_info' => 'Contact Information',
-                    'financial_info' => 'Financial Information',
-                    'transaction_history' => 'Transaction History',
-                    'account_info' => 'Account Information',
-                    'other' => 'Other',
-                ],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['request_details'],
-                'field_name' => 'data_categories_other',
-                'field_label' => 'Other Data Categories',
-                'field_type' => 'textarea',
-                'field_placeholder' => 'Please specify other data categories',
-                'is_required' => false,
-                'is_active' => true,
-                'sort_order' => 4,
-                'is_conditional' => true,
-                'conditional_logic' => [
-                    'show_if' => [
-                        'field' => 'data_categories',
-                        'operator' => 'equals',
-                        'value' => 'other',
-                    ],
-                ],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['request_details'],
-                'field_name' => 'request_type_other',
-                'field_label' => 'Other Request Type Details',
-                'field_type' => 'textarea',
-                'field_placeholder' => 'Please provide details about your request type',
-                'is_required' => false,
-                'is_active' => true,
-                'sort_order' => 5,
-                'is_conditional' => true,
-                'conditional_logic' => [
-                    'show_if' => [
-                        'field' => 'request_type',
-                        'operator' => 'equals',
-                        'value' => 'other',
-                    ],
-                ],
-            ],
-        ];
-
-        foreach ($fields as $field) {
-            $field = $this->processField($field);
-            FormField::updateOrCreate(
-                [
-                    'form_id' => $field['form_id'],
-                    'field_name' => $field['field_name'],
-                ],
-                $field
-            );
-        }
-
-        $this->command->info('DAR fields created: ' . count($fields) . ' fields');
-    }
-
-    /**
-     * Create DCR fields
-     */
-    private function createDcrFields($formId, array $sections): void
-    {
-        $fields = [
-            // ========== REQUESTER INFORMATION SECTION ==========
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_name',
-                'field_label' => 'Requester Name',
-                'field_type' => 'text',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 1,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_phone',
-                'field_label' => 'Phone Number',
-                'field_type' => 'phone',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 2,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_email',
-                'field_label' => 'Email Address',
-                'field_type' => 'email',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 3,
-                'validation_rules' => ['required' => true, 'email' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_address',
-                'field_label' => 'Address',
-                'field_type' => 'textarea',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 4,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_id_type',
-                'field_label' => 'ID Type',
-                'field_type' => 'select',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 5,
-                'field_options' => [
-                    'passport' => 'Passport',
-                    'national_id' => 'National ID',
-                    'drivers_license' => "Driver's License",
-                    'other' => 'Other',
-                ],
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['requester_info'],
-                'field_name' => 'requester_id_number',
-                'field_label' => 'ID Number',
-                'field_type' => 'text',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 6,
-                'validation_rules' => ['required' => true],
-            ],
-
-            // ========== DATA SUBJECT INFORMATION SECTION ==========
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['data_subject_info'],
-                'field_name' => 'data_subject_name',
-                'field_label' => 'Data Subject Name',
-                'field_type' => 'text',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 1,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['data_subject_info'],
-                'field_name' => 'relationship_to_data_subject',
-                'field_label' => 'Relationship to Data Subject',
-                'field_type' => 'select',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 2,
-                'field_options' => [
-                    'self' => 'Self',
-                    'legal_guardian' => 'Legal Guardian',
-                    'authorized_representative' => 'Authorized Representative',
-                    'other' => 'Other',
-                ],
-                'validation_rules' => ['required' => true],
-            ],
-
-            // ========== CORRECTION DETAILS SECTION ==========
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['correction_details'],
-                'field_name' => 'incorrect_data_field',
-                'field_label' => 'Incorrect Data Field',
-                'field_type' => 'text',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 1,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['correction_details'],
-                'field_name' => 'incorrect_data_value',
-                'field_label' => 'Incorrect Data Value',
-                'field_type' => 'text',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 2,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['correction_details'],
-                'field_name' => 'correct_data_value',
-                'field_label' => 'Correct Data Value',
-                'field_type' => 'text',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 3,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['correction_details'],
-                'field_name' => 'correction_reason',
-                'field_label' => 'Reason for Correction',
-                'field_type' => 'textarea',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 4,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['correction_details'],
-                'field_name' => 'supporting_evidence',
-                'field_label' => 'Supporting Evidence',
-                'field_type' => 'file',
-                'is_required' => false,
-                'is_active' => true,
-                'sort_order' => 5,
-            ],
-        ];
-
-        foreach ($fields as $field) {
-            $field = $this->processField($field);
-            FormField::updateOrCreate(
-                [
-                    'form_id' => $field['form_id'],
-                    'field_name' => $field['field_name'],
-                ],
-                $field
-            );
-        }
-
-        $this->command->info('DCR fields created: ' . count($fields) . ' fields');
-    }
 
     /**
      * Create SRF fields
+     * 
+     * This method reads the complete SRF form structure from exports/srf_form_export.json
+     * The JSON file is automatically generated from the current database structure.
+     * 
+     * Supported field types: text, email, phone, number, textarea, select, radio, 
+     * checkbox, date, file, signature, currency, multiselect, time, datetime, repeater
+     * 
+     * To update the seeder:
+     * 1. Make changes to the form in the admin panel
+     * 2. Run: php artisan tinker (then use export script)
+     * 3. Or manually update exports/srf_form_export.json
+     * 4. Run: php artisan db:seed --class=FormManagementSeeder
      */
     private function createSrfFields($formId, array $sections): void
     {
-        $fields = [
-            // ========== CUSTOMER INFORMATION SECTION ==========
-            [
+        // Read form structure from JSON export file
+        $fields = json_decode(file_get_contents(__DIR__ . '/exports/srf_form_export.json'), true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->command->error('Error reading srf_form_export.json: ' . json_last_error_msg());
+            return;
+        }
+        
+        // Convert JSON structure to seeder format
+        $seederFields = [];
+        foreach ($fields['sections'] as $section) {
+            foreach ($section['fields'] as $field) {
+                $fieldData = [
                 'form_id' => $formId,
-                'section_id' => $sections['customer_info'],
-                'field_name' => 'customer_name',
-                'field_label' => 'Customer Name',
-                'field_type' => 'text',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 1,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['customer_info'],
-                'field_name' => 'customer_phone',
-                'field_label' => 'Phone Number',
-                'field_type' => 'phone',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 2,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['customer_info'],
-                'field_name' => 'customer_email',
-                'field_label' => 'Email Address',
-                'field_type' => 'email',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 3,
-                'validation_rules' => ['required' => true, 'email' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['customer_info'],
-                'field_name' => 'customer_address',
-                'field_label' => 'Address',
-                'field_type' => 'textarea',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 4,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['customer_info'],
-                'field_name' => 'customer_id_type',
-                'field_label' => 'ID Type',
-                'field_type' => 'select',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 5,
-                'field_options' => [
-                    'passport' => 'Passport',
-                    'national_id' => 'National ID',
-                    'drivers_license' => "Driver's License",
-                    'other' => 'Other',
-                ],
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['customer_info'],
-                'field_name' => 'customer_id_number',
-                'field_label' => 'ID Number',
-                'field_type' => 'text',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 6,
-                'validation_rules' => ['required' => true],
-            ],
+                    'section_id' => $sections[$section['key']],
+                    'field_name' => $field['name'],
+                    'field_label' => $field['label'],
+                    'field_type' => $field['type'],
+                    'is_required' => $field['required'],
+                    'is_active' => $field['active'],
+                    'sort_order' => $field['sort_order'],
+                    'grid_column' => $field['grid_column'],
+                ];
+                
+                if (!empty($field['placeholder'])) {
+                    $fieldData['field_placeholder'] = $field['placeholder'];
+                }
+                
+                if (!empty($field['description']) && $field['description'] !== '<p><br></p>') {
+                    $fieldData['field_description'] = $field['description'];
+                }
+                
+                if (!empty($field['help_text'])) {
+                    $fieldData['field_help_text'] = $field['help_text'];
+                }
+                
+                if (!empty($field['options'])) {
+                    $fieldData['field_options'] = $field['options'];
+                }
+                
+                // Handle field settings (includes description_position, repeater columns, etc.)
+                if (!empty($field['settings'])) {
+                    $fieldData['field_settings'] = $field['settings'];
+                }
+                
+                // Handle conditional logic
+                if ($field['conditional']) {
+                    $fieldData['is_conditional'] = true;
+                    if (!empty($field['conditional_logic'])) {
+                        $fieldData['conditional_logic'] = $field['conditional_logic'];
+                    }
+                }
+                
+                // Handle validation rules
+                if (!empty($field['validation'])) {
+                    $fieldData['validation_rules'] = $field['validation'];
+                }
+                
+                $seederFields[] = $fieldData;
+            }
+        }
 
-            // ========== ACCOUNT INFORMATION SECTION ==========
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['account_info'],
-                'field_name' => 'account_number',
-                'field_label' => 'Account Number',
-                'field_type' => 'text',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 1,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['account_info'],
-                'field_name' => 'account_type',
-                'field_label' => 'Account Type',
-                'field_type' => 'select',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 2,
-                'field_options' => [
-                    'savings' => 'Savings Account',
-                    'current' => 'Current Account',
-                    'fixed_deposit' => 'Fixed Deposit',
-                    'other' => 'Other',
-                ],
-                'validation_rules' => ['required' => true],
-            ],
-
-            // ========== SERVICE DETAILS SECTION ==========
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['service_details'],
-                'field_name' => 'service_type',
-                'field_label' => 'Service Type',
-                'field_type' => 'select',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 1,
-                'field_options' => [
-                    'deposit' => 'Deposit',
-                    'withdrawal' => 'Withdrawal',
-                    'transfer' => 'Transfer',
-                    'statement' => 'Statement Request',
-                    'other' => 'Other',
-                ],
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['service_details'],
-                'field_name' => 'service_description',
-                'field_label' => 'Service Description',
-                'field_type' => 'textarea',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 2,
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['service_details'],
-                'field_name' => 'service_amount',
-                'field_label' => 'Service Amount',
-                'field_type' => 'currency',
-                'is_required' => false,
-                'is_active' => true,
-                'sort_order' => 3,
-                'field_settings' => ['currency' => 'MYR'],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['service_details'],
-                'field_name' => 'service_priority',
-                'field_label' => 'Priority',
-                'field_type' => 'select',
-                'is_required' => true,
-                'is_active' => true,
-                'sort_order' => 4,
-                'field_options' => [
-                    'low' => 'Low',
-                    'normal' => 'Normal',
-                    'high' => 'High',
-                    'urgent' => 'Urgent',
-                ],
-                'validation_rules' => ['required' => true],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['service_details'],
-                'field_name' => 'service_type_other',
-                'field_label' => 'Other Service Type Details',
-                'field_type' => 'textarea',
-                'field_placeholder' => 'Please provide details about the service type',
-                'is_required' => false,
-                'is_active' => true,
-                'sort_order' => 5,
-                'is_conditional' => true,
-                'conditional_logic' => [
-                    'show_if' => [
-                        'field' => 'service_type',
-                        'operator' => 'equals',
-                        'value' => 'other',
-                    ],
-                ],
-            ],
-            [
-                'form_id' => $formId,
-                'section_id' => $sections['service_details'],
-                'field_name' => 'urgent_reason',
-                'field_label' => 'Reason for Urgent Priority',
-                'field_type' => 'textarea',
-                'field_placeholder' => 'Please explain why this request is urgent',
-                'is_required' => false,
-                'is_active' => true,
-                'sort_order' => 6,
-                'is_conditional' => true,
-                'conditional_logic' => [
-                    'show_if' => [
-                        'field' => 'service_priority',
-                        'operator' => 'equals',
-                        'value' => 'urgent',
-                    ],
-                ],
-            ],
-        ];
-
-        foreach ($fields as $field) {
+        foreach ($seederFields as $field) {
             $field = $this->processField($field);
             FormField::updateOrCreate(
                 [
@@ -1559,7 +909,6 @@ class FormManagementSeeder extends Seeder
             );
         }
 
-        $this->command->info('SRF fields created: ' . count($fields) . ' fields');
     }
 }
 

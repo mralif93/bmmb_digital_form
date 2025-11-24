@@ -11,27 +11,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('form_fields'); // Drop if exists to recreate with new structure
         Schema::create('form_fields', function (Blueprint $table) {
             $table->id();
             $table->foreignId('form_id')->constrained('forms')->onDelete('cascade');
             $table->foreignId('section_id')->constrained('form_sections')->onDelete('cascade');
-            $table->string('field_name'); // Unique identifier within the form
+            $table->string('field_name');
             $table->string('field_label');
             $table->text('field_description')->nullable();
             $table->enum('field_type', [
                 'text', 'email', 'phone', 'number', 'textarea', 'select', 
                 'radio', 'checkbox', 'date', 'file', 'signature', 'currency',
-                'multiselect', 'time', 'datetime'
+                'multiselect', 'time', 'datetime', 'repeater', 'notes'
             ]);
             $table->string('field_placeholder')->nullable();
             $table->text('field_help_text')->nullable();
             $table->boolean('is_required')->default(false);
             $table->boolean('is_conditional')->default(false);
-            $table->json('conditional_logic')->nullable(); // Show/hide based on other fields
-            $table->json('validation_rules')->nullable(); // Custom validation rules
-            $table->json('field_options')->nullable(); // For select, radio, checkbox options
-            $table->json('field_settings')->nullable(); // Additional field-specific settings
+            $table->json('conditional_logic')->nullable();
+            $table->json('validation_rules')->nullable();
+            $table->json('field_options')->nullable();
+            $table->json('field_settings')->nullable();
             $table->integer('sort_order')->default(0);
             $table->enum('grid_column', ['left', 'right', 'full'])->default('left');
             $table->boolean('is_active')->default(true);
@@ -46,7 +45,6 @@ return new class extends Migration
             $table->index('sort_order');
             $table->index('is_active');
             
-            // Ensure field_name is unique within a form
             $table->unique(['form_id', 'field_name']);
         });
     }

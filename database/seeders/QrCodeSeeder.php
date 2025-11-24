@@ -59,7 +59,6 @@ class QrCodeSeeder extends Seeder
             ]);
         }
         
-        $this->command->info('Created ' . $branches->count() . ' QR codes for branches.');
     }
 
     /**

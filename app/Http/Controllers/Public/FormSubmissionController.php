@@ -97,6 +97,10 @@ class FormSubmissionController extends Controller
                 case 'file':
                     $fieldRules[] = 'file';
                     break;
+                case 'repeater':
+                    // Repeater fields are stored as JSON, validate as JSON string
+                    $fieldRules[] = 'json';
+                    break;
             }
 
             // Add custom validation rules if defined
@@ -120,11 +124,95 @@ class FormSubmissionController extends Controller
         // Get form data
         $formData = $validated;
         
-        // Extract field responses
+        // Process signatures and file uploads
+        $fileUploads = [];
         $fieldResponses = [];
-        foreach ($formData as $key => $value) {
-            if ($value !== null && $value !== '') {
-                $fieldResponses[$key] = $value;
+        
+        foreach ($fields as $field) {
+            $fieldName = $field->field_name;
+            $value = $formData[$fieldName] ?? null;
+            
+            // Handle signature fields - convert base64 to image file
+            if ($field->field_type === 'signature' && !empty($value)) {
+                try {
+                    // Decode base64 signature
+                    if (preg_match('/^data:image\/(\w+);base64,/', $value, $matches)) {
+                        $imageType = $matches[1]; // png, jpeg, etc.
+                        $base64Data = substr($value, strpos($value, ',') + 1);
+                        $imageData = base64_decode($base64Data);
+                        
+                        if ($imageData !== false) {
+                            // Generate unique filename
+                            $fileName = 'signature_' . $fieldName . '_' . time() . '_' . Str::random(8) . '.png';
+                            $filePath = 'submissions/' . $form->slug . '/signatures/' . $fileName;
+                            
+                            // Ensure directory exists
+                            $fullPath = storage_path('app/public/' . $filePath);
+                            $directory = dirname($fullPath);
+                            if (!file_exists($directory)) {
+                                mkdir($directory, 0755, true);
+                            }
+                            
+                            // Save image file
+                            file_put_contents($fullPath, $imageData);
+                            
+                            // Add to file uploads array
+                            $fileUploads[] = [
+                                'field_name' => $fieldName,
+                                'field_label' => $field->field_label,
+                                'name' => $fileName,
+                                'path' => $filePath,
+                                'size' => strlen($imageData),
+                                'mime' => 'image/png',
+                                'type' => 'signature',
+                            ];
+                            
+                            // Store file path instead of base64 data
+                            $fieldResponses[$fieldName] = $filePath;
+                            $formData[$fieldName] = $filePath;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Error processing signature field ' . $fieldName . ': ' . $e->getMessage());
+                    // Fallback: keep base64 if file save fails
+                    $fieldResponses[$fieldName] = $value;
+                }
+            }
+            // Handle regular file uploads
+            elseif ($field->field_type === 'file' && $request->hasFile($fieldName)) {
+                $file = $request->file($fieldName);
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('submissions/' . $form->slug, $fileName, 'public');
+                
+                $fileUploads[] = [
+                    'field_name' => $fieldName,
+                    'field_label' => $field->field_label,
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $filePath,
+                    'size' => $file->getSize(),
+                    'mime' => $file->getMimeType(),
+                    'type' => 'file',
+                ];
+                
+                $value = $filePath;
+                $fieldResponses[$fieldName] = $value;
+                $formData[$fieldName] = $value;
+            }
+            // Handle repeater fields - convert JSON string to array
+            elseif ($field->field_type === 'repeater' && !empty($value)) {
+                $repeaterData = json_decode($value, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($repeaterData)) {
+                    $fieldResponses[$fieldName] = $repeaterData;
+                    $formData[$fieldName] = $repeaterData;
+                } else {
+                    // Invalid JSON, store as string
+                    $fieldResponses[$fieldName] = $value;
+                    $formData[$fieldName] = $value;
+                }
+            }
+            // Handle other field types
+            elseif ($value !== null && $value !== '') {
+                $fieldResponses[$fieldName] = $value;
             }
         }
 
@@ -143,7 +231,7 @@ class FormSubmissionController extends Controller
             'status' => 'submitted',
             'submission_data' => $formData,
             'field_responses' => $fieldResponses,
-            'file_uploads' => [], // Handle file uploads separately if needed
+            'file_uploads' => $fileUploads,
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
             'session_id' => session()->getId(),

@@ -236,6 +236,13 @@ class FormRendererService
         // For conditional fields, add inline style to hide by default (will be shown/hidden by JavaScript)
         $styleAttr = $isConditional ? ' style="display: none;"' : '';
         
+        // Notes field - always full width, wrap with grid column class
+        if ($field->field_type === 'notes') {
+            // Force full width for notes fields
+            $notesColSpanClass = 'md:col-span-2';
+            return '<div class="form-field ' . $notesColSpanClass . '" data-field-name="' . $field->field_name . '" data-grid-column="full">' . $this->renderNotes($field) . '</div>';
+        }
+        
         $html = '<div class="form-field ' . $colSpanClass . $paddingClass . '" data-field-name="' . $field->field_name . '" data-grid-column="' . $gridColumn . '" ' . $conditionalData . $styleAttr . '>';
         
         switch ($field->field_type) {
@@ -266,6 +273,12 @@ class FormRendererService
                 break;
             case 'currency':
                 $html .= $this->renderCurrency($field, $isTriggeredByCheckbox);
+                break;
+            case 'signature':
+                $html .= $this->renderSignature($field, $isTriggeredByCheckbox);
+                break;
+            case 'repeater':
+                $html .= $this->renderRepeater($field, $isTriggeredByCheckbox);
                 break;
             default:
                 $html .= $this->renderTextInput($field, $isTriggeredByCheckbox);
@@ -765,6 +778,356 @@ class FormRendererService
     }
 
     /**
+     * Render signature pad field
+     */
+    private function renderSignature($field, $isConditional = false): string
+    {
+        $paddingClass = $isConditional ? 'pl-6' : '';
+        $html = '<div class="form-group ' . $paddingClass . '">';
+        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 dark:text-gray-100 mb-1.5 leading-snug">';
+        $html .= '<span class="text-gray-900 dark:text-gray-100">' . htmlspecialchars($field->field_label) . '</span>';
+        if ($field->is_required) {
+            $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
+        }
+        $html .= '</label>';
+
+        // Get description position
+        $descriptionPosition = $this->getDescriptionPosition($field);
+        
+        // Render description above signature pad if position is 'top'
+        if ($descriptionPosition === 'top') {
+            $html .= $this->renderFieldDescription($field, 'top');
+            $html .= $this->renderFieldHelpText($field, 'top');
+        }
+
+        // Get signature pad settings
+        $settings = $field->field_settings ?? [];
+        $width = $settings['width'] ?? 600;
+        $height = $settings['height'] ?? 200;
+        $backgroundColor = $settings['background_color'] ?? '#ffffff';
+        $penColor = $settings['pen_color'] ?? '#000000';
+
+        // Signature pad container
+        $html .= '<div class="signature-pad-container border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 p-4 shadow-sm">';
+        $html .= '<canvas id="signature_' . $field->field_name . '" 
+                         class="signature-canvas border border-gray-300 dark:border-gray-600 rounded cursor-crosshair" 
+                         style="background-color: ' . $backgroundColor . '; touch-action: none; width: 100%; max-width: ' . $width . 'px; height: ' . $height . 'px;"></canvas>';
+        
+        // Hidden input to store signature data (base64)
+        $html .= '<input type="hidden" 
+                         id="' . $field->field_name . '" 
+                         name="' . $field->field_name . '" 
+                         value=""';
+        if ($field->is_required) {
+            $html .= ' required aria-required="true"';
+        }
+        $html .= ' />';
+        
+        // Action buttons
+        $html .= '<div class="flex justify-between items-center mt-3 gap-2">';
+        $html .= '<button type="button" 
+                          class="clear-signature-btn px-4 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200"
+                          data-field="' . $field->field_name . '">
+                    <i class="bx bx-refresh mr-1.5"></i>Clear
+                  </button>';
+        $html .= '<span class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                    <i class="bx bx-info-circle mr-1"></i>
+                    Please sign in the box above
+                  </span>';
+        $html .= '</div>';
+        $html .= '</div>'; // Close signature-pad-container
+
+        // Render help text (subtle) first, then description (prominent) below it (if position is 'bottom')
+        if ($descriptionPosition === 'bottom') {
+            $html .= $this->renderFieldHelpText($field, 'bottom');
+            $html .= $this->renderFieldDescription($field, 'bottom');
+        }
+
+        // Initialize signature pad script
+        $html .= '<script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const canvas = document.getElementById("signature_' . $field->field_name . '");
+                const hiddenInput = document.getElementById("' . $field->field_name . '");
+                const clearBtn = document.querySelector(\'[data-field="' . $field->field_name . '"]\');
+                
+                if (canvas && typeof SignaturePad !== "undefined") {
+                    const signaturePad = new SignaturePad(canvas, {
+                        backgroundColor: "' . $backgroundColor . '",
+                        penColor: "' . $penColor . '",
+                        minWidth: 1,
+                        maxWidth: 3,
+                        throttle: 16,
+                        minDistance: 5
+                    });
+                    
+                    // Resize canvas to maintain aspect ratio
+                    function resizeCanvas() {
+                        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                        canvas.width = canvas.offsetWidth * ratio;
+                        canvas.height = canvas.offsetHeight * ratio;
+                        canvas.getContext("2d").scale(ratio, ratio);
+                        signaturePad.clear();
+                    }
+                    
+                    // Initial resize
+                    resizeCanvas();
+                    window.addEventListener("resize", resizeCanvas);
+                    
+                    // Save signature to hidden input
+                    signaturePad.addEventListener("endStroke", function() {
+                        if (!signaturePad.isEmpty()) {
+                            hiddenInput.value = signaturePad.toDataURL("image/png");
+                        }
+                    });
+                    
+                    // Clear button
+                    if (clearBtn) {
+                        clearBtn.addEventListener("click", function() {
+                            signaturePad.clear();
+                            hiddenInput.value = "";
+                        });
+                    }
+                } else if (canvas) {
+                    console.warn("SignaturePad library not loaded. Please include signature_pad.js");
+                }
+            });
+        </script>';
+
+        $html .= '</div>';
+        return $html;
+    }
+
+    /**
+     * Render repeater/table field
+     */
+    private function renderRepeater($field, $isConditional = false): string
+    {
+        $paddingClass = $isConditional ? 'pl-6' : '';
+        $html = '<div class="form-group ' . $paddingClass . '">';
+        $html .= '<label for="' . $field->field_name . '" class="block text-xs font-semibold text-gray-800 dark:text-gray-100 mb-1.5 leading-snug">';
+        $html .= '<span class="text-gray-900 dark:text-gray-100">' . htmlspecialchars($field->field_label) . '</span>';
+        if ($field->is_required) {
+            $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
+        }
+        $html .= '</label>';
+
+        // Get description position
+        $descriptionPosition = $this->getDescriptionPosition($field);
+
+        // Render description above table if position is 'top'
+        if ($descriptionPosition === 'top') {
+            $html .= $this->renderFieldDescription($field, 'top');
+            $html .= $this->renderFieldHelpText($field, 'top');
+        }
+
+        // Get repeater settings
+        $settings = $field->field_settings ?? [];
+        $columns = $settings['columns'] ?? [
+            ['name' => 'account_type', 'label' => 'Account Type', 'type' => 'text'],
+            ['name' => 'account_no', 'label' => 'Account No.', 'type' => 'text']
+        ];
+        $minRows = $settings['min_rows'] ?? 1;
+        $maxRows = $settings['max_rows'] ?? null;
+        $addButtonText = $settings['add_button_text'] ?? 'Add Row';
+        $removeButtonText = $settings['remove_button_text'] ?? 'Remove';
+
+        // Repeater table container
+        $html .= '<div class="repeater-container border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 overflow-hidden">';
+        $html .= '<table class="w-full border-collapse" id="repeater_' . $field->field_name . '">';
+        
+        // Table header
+        $html .= '<thead class="bg-gray-50 dark:bg-gray-700">';
+        $html .= '<tr>';
+        foreach ($columns as $column) {
+            $html .= '<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">';
+            $html .= htmlspecialchars($column['label']);
+            $html .= '</th>';
+        }
+        $html .= '<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600 w-24">Action</th>';
+        $html .= '</tr>';
+        $html .= '</thead>';
+        
+        // Table body
+        $html .= '<tbody id="repeater_' . $field->field_name . '_body" class="bg-white dark:bg-gray-800">';
+        // Initial row will be added by JavaScript
+        $html .= '</tbody>';
+        $html .= '</table>';
+
+        // Add row button
+        $html .= '<div class="p-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">';
+        $html .= '<button type="button" 
+                          class="add-repeater-row px-4 py-2 text-xs font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors duration-200"
+                          data-field="' . $field->field_name . '"
+                          data-min-rows="' . $minRows . '"
+                          ' . ($maxRows ? 'data-max-rows="' . $maxRows . '"' : '') . '>
+                    <i class="bx bx-plus mr-1.5"></i>' . htmlspecialchars($addButtonText) . '
+                  </button>';
+        $html .= '</div>';
+
+        // Hidden input to store JSON data
+        $html .= '<input type="hidden" 
+                         id="' . $field->field_name . '" 
+                         name="' . $field->field_name . '" 
+                         value="[]"';
+        if ($field->is_required) {
+            $html .= ' required aria-required="true"';
+        }
+        $html .= ' />';
+
+        $html .= '</div>'; // Close repeater-container
+
+        // Render help text and description below if position is 'bottom'
+        if ($descriptionPosition === 'bottom') {
+            $html .= $this->renderFieldHelpText($field, 'bottom');
+            $html .= $this->renderFieldDescription($field, 'bottom');
+        }
+
+        // JavaScript for repeater functionality
+        $columnsJson = json_encode($columns);
+        $html .= '<script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const fieldName = "' . $field->field_name . '";
+                const columns = ' . $columnsJson . ';
+                const minRows = ' . $minRows . ';
+                const maxRows = ' . ($maxRows ?? 'null') . ';
+                const tbody = document.getElementById("repeater_" + fieldName + "_body");
+                const hiddenInput = document.getElementById(fieldName);
+                const addButton = document.querySelector(\'[data-field="\' + fieldName + \'"]\');
+                
+                let rowCount = 0;
+                
+                // Function to create a new row
+                function createRow() {
+                    if (maxRows && rowCount >= maxRows) {
+                        alert("Maximum " + maxRows + " rows allowed");
+                        return;
+                    }
+                    
+                    const row = document.createElement("tr");
+                    row.className = "border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700";
+                    row.dataset.rowIndex = rowCount;
+                    
+                    // Create cells for each column
+                    columns.forEach(function(column, colIndex) {
+                        const cell = document.createElement("td");
+                        cell.className = "px-4 py-2";
+                        
+                        let input;
+                        if (column.type === "select" && column.options) {
+                            input = document.createElement("select");
+                            input.className = "w-full px-3 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500";
+                            input.name = fieldName + "[" + rowCount + "][" + column.name + "]";
+                            
+                            // Add options
+                            if (column.placeholder) {
+                                const option = document.createElement("option");
+                                option.value = "";
+                                option.textContent = column.placeholder;
+                                input.appendChild(option);
+                            }
+                            
+                            Object.keys(column.options).forEach(function(key) {
+                                const option = document.createElement("option");
+                                option.value = key;
+                                option.textContent = column.options[key];
+                                input.appendChild(option);
+                            });
+                        } else {
+                            input = document.createElement("input");
+                            input.type = column.type || "text";
+                            input.className = "w-full px-3 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500";
+                            input.name = fieldName + "[" + rowCount + "][" + column.name + "]";
+                            if (column.placeholder) {
+                                input.placeholder = column.placeholder;
+                            }
+                        }
+                        
+                        input.addEventListener("change", updateHiddenInput);
+                        input.addEventListener("input", updateHiddenInput);
+                        
+                        cell.appendChild(input);
+                        row.appendChild(cell);
+                    });
+                    
+                    // Add remove button cell
+                    const actionCell = document.createElement("td");
+                    actionCell.className = "px-4 py-2";
+                    const removeBtn = document.createElement("button");
+                    removeBtn.type = "button";
+                    removeBtn.className = "remove-repeater-row text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-xs font-medium";
+                    removeBtn.innerHTML = \'<i class="bx bx-trash mr-1"></i>' . htmlspecialchars($removeButtonText) . '\';
+                    removeBtn.onclick = function() {
+                        if (rowCount <= minRows) {
+                            alert("Minimum " + minRows + " row(s) required");
+                            return;
+                        }
+                        row.remove();
+                        rowCount--;
+                        reindexRows();
+                        updateHiddenInput();
+                    };
+                    actionCell.appendChild(removeBtn);
+                    row.appendChild(actionCell);
+                    
+                    tbody.appendChild(row);
+                    rowCount++;
+                    updateHiddenInput();
+                }
+                
+                // Function to reindex rows after removal
+                function reindexRows() {
+                    const rows = tbody.querySelectorAll("tr");
+                    rows.forEach(function(row, index) {
+                        row.dataset.rowIndex = index;
+                        const inputs = row.querySelectorAll("input, select");
+                        inputs.forEach(function(input) {
+                            const nameMatch = input.name.match(/^(.+)\[(\d+)\]\[(.+)\]$/);
+                            if (nameMatch) {
+                                input.name = nameMatch[1] + "[" + index + "][" + nameMatch[3] + "]";
+                            }
+                        });
+                    });
+                }
+                
+                // Function to update hidden input with JSON data
+                function updateHiddenInput() {
+                    const rows = tbody.querySelectorAll("tr");
+                    const data = [];
+                    
+                    rows.forEach(function(row) {
+                        const rowData = {};
+                        columns.forEach(function(column) {
+                            const input = row.querySelector(\'input[name*="[\' + column.name + \']"], select[name*="[\' + column.name + \']"]\');
+                            if (input) {
+                                rowData[column.name] = input.value || "";
+                            }
+                        });
+                        // Only add row if at least one field has value
+                        if (Object.values(rowData).some(v => v !== "")) {
+                            data.push(rowData);
+                        }
+                    });
+                    
+                    hiddenInput.value = JSON.stringify(data);
+                }
+                
+                // Add button click handler
+                if (addButton) {
+                    addButton.addEventListener("click", createRow);
+                }
+                
+                // Create initial rows
+                for (let i = 0; i < minRows; i++) {
+                    createRow();
+                }
+            });
+        </script>';
+
+        $html .= '</div>';
+        return $html;
+    }
+
+    /**
      * Get description position from field settings (default: 'bottom')
      */
     private function getDescriptionPosition($field): string
@@ -825,6 +1188,48 @@ class FormRendererService
                 return '<p class="' . $marginClass . ' text-xs text-gray-700 dark:text-gray-200 leading-relaxed">' . htmlspecialchars($description) . '</p>';
             }
         }
+    }
+
+    /**
+     * Render notes field (HTML content display)
+     */
+    private function renderNotes($field): string
+    {
+        // Get HTML content from field_description or field_settings
+        $settings = $field->getFieldSettings();
+        $htmlContent = $field->field_description ?? $settings['html_content'] ?? '';
+        
+        if (empty($htmlContent)) {
+            return '';
+        }
+        
+        // Clean up HTML - preserve tabs and indentation
+        // Convert tabs (\t) to non-breaking spaces for proper indentation (4 spaces per tab)
+        $htmlContent = str_replace(["\t", "&nbsp;&nbsp;&nbsp;&nbsp;"], "&nbsp;&nbsp;&nbsp;&nbsp;", $htmlContent);
+        // Remove whitespace between HTML tags (but preserve content whitespace)
+        $htmlContent = preg_replace('/>\s+</', '><', $htmlContent);
+        // Preserve intentional spacing - convert 2+ consecutive spaces to non-breaking spaces
+        // This preserves indentation while cleaning up excessive whitespace between tags
+        $htmlContent = preg_replace_callback('/(?<=>)([^<]+)(?=<)/', function($matches) {
+            // Within text content, preserve multiple spaces as non-breaking spaces
+            $text = $matches[0];
+            // Convert 2+ spaces to non-breaking spaces (preserve indentation)
+            $text = preg_replace_callback('/ {2,}/', function($spaces) {
+                return str_repeat('&nbsp;', strlen($spaces[0]));
+            }, $text);
+            return $text;
+        }, $htmlContent);
+        $htmlContent = trim($htmlContent);
+        
+        // Render as a styled informational box (no label, no input, just content)
+        // Using custom CSS classes for better formatting control
+        $html = '<div class="border border-yellow-300 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-600 rounded-xl shadow-sm p-5">';
+        $html .= '<div class="text-sm text-gray-800 dark:text-gray-100 notes-content">';
+        $html .= $htmlContent;
+        $html .= '</div>';
+        $html .= '</div>';
+        
+        return $html;
     }
 
     /**
@@ -1060,6 +1465,11 @@ class FormRendererService
         $rules = [];
 
         foreach ($fields as $field) {
+            // Skip notes field type - it's informational only, not submitted
+            if ($field->field_type === 'notes') {
+                continue;
+            }
+            
             $fieldRules = [];
 
             if ($field->is_required) {

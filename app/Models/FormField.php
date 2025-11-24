@@ -132,6 +132,8 @@ class FormField extends Model
             'multiselect' => 'Multi-Select',
             'time' => 'Time Picker',
             'datetime' => 'Date & Time Picker',
+            'repeater' => 'Repeater Table',
+            'notes' => 'Important Notes (HTML Content)',
         ];
     }
 }
