@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  web:
+    container_name: eform_web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/var/www/html
+      - ./storage:/var/www/html/storage
+      - ./bootstrap/cache:/var/www/html/bootstrap/cache
+    working_dir: /var/www/html
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - APP_KEY=${APP_KEY}
+      - DB_CONNECTION=${DB_CONNECTION:-sqlite}
+    ports:
+      - "9000:9000"
+    networks:
+      map_bom_rev_network: {}
+
+  nginx:
+    container_name: eform_nginx
+    image: nginx:latest
+    restart: on-failure
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d
+      - ./nginx/logs:/logs
+      - .:/var/www/html  # Mount Laravel application files
+    ports:
+      - "9001:9001"
+    depends_on:
+      - web
+    networks:
+      map_bom_rev_network: {}
+
+networks:
+  map_bom_rev_network:
+    external: true

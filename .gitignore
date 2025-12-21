@@ -1,0 +1,52 @@
+# Laravel Framework
+/vendor/
+/node_modules/
+/public/build/
+/public/hot
+/public/storage
+/bootstrap/cache/*
+!bootstrap/cache/.gitkeep
+
+# Storage directories
+/storage/*.key
+/storage/pail
+/storage/app/*
+!storage/app/.gitkeep
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+/storage/logs/*
+!storage/logs/.gitkeep
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE and editors
+/.fleet
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+*.swp
+*.swo
+
+# PHP
+.phpactor.json
+.phpunit.result.cache
+/auth.json
+
+# OS files
+.DS_Store
+Thumbs.db
+*.log
+
+# Homestead
+Homestead.json
+Homestead.yaml
+
+# Database backups
+database/backups/*.sqlite.backup_*

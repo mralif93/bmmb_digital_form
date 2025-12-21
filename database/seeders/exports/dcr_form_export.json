@@ -1,0 +1,1319 @@
+{
+    "form": {
+        "id": 2,
+        "name": "Personal Data Correction Request Form",
+        "slug": "dcr",
+        "description": "Request correction of your personal data in compliance with data protection regulations.",
+        "status": "active",
+        "is_public": true,
+        "allow_multiple_submissions": true,
+        "submission_limit": null,
+        "sort_order": 3,
+        "settings": {
+            "type": "dcr",
+            "version": "1.0"
+        }
+    },
+    "sections": [
+        {
+            "id": 8,
+            "key": "section_notes",
+            "title": "Important Notes",
+            "description": "Important Notes",
+            "sort_order": 1,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_1_1",
+                    "label": "Important Notes",
+                    "type": "notes",
+                    "placeholder": null,
+                    "description": "<p><strong><u>Important Notes:</u></strong></p><ol><li>Please complete the Data Correction Request Form and ensure that your personal data provided herein is genuine and accurate.</li><li>Your request may not be processed if the information/document provided is incomplete.</li><li>Third Party Requestor is to be present at the branch / office to submit this form and for verification of information and documents required.</li><li>The supporting document(s) required in this form must be provided. We will respond within 21 days of receipt of the completed form with accompanying documents.</li><li>If you have any queries / need any guidance in filling-up this form, you may contact our</li></ol><p>\t\t\t<strong><em>Customer Service Department at the contact details below:</em></strong></p><p><strong><em>\t\t\tHead, Customer Service Department, Bank Muamalat  Malaysia Berhad</em></strong></p><p><strong><em>\t\t\tAddress\t\t: 19th Floor, Menara Bumiputra, Jalan Melaka, 51000 Kuala Lumpur</em></strong></p><p><strong><em>\t\t\tTelephone\t: 1-300-88-8787 (Local), +603-26005500 (International)</em></strong></p><p><strong><em>\t\t\tEmail\t\t\t: feedback@muamalat.com.my</em></strong></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 9,
+            "key": "section_a",
+            "title": "About Yourself",
+            "description": "About Yourself",
+            "sort_order": 2,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_2_1",
+                    "label": "I am a customer / former customer and I would like to correct my personal data",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "top"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_2_2",
+                    "label": "I am a Third Party Requestor",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": "i.e I am making this personal data correction request for another person.",
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 10,
+            "key": "section_b",
+            "title": "Particulars of the Data Subject (Account Holder)",
+            "description": "Particulars of the Data Subject (Account Holder)",
+            "sort_order": 3,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_3_1",
+                    "label": "Full Name (as per NRIC)",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_2",
+                    "label": "NRIC / Passport No.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_3",
+                    "label": "Address",
+                    "type": "textarea",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 3,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_4",
+                    "label": "Postcode",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 4,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_5",
+                    "label": "Email Address",
+                    "type": "email",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 5,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_6",
+                    "label": "Telephone No. (Office/Home)",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 6,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_7",
+                    "label": "Mobile No.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 7,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 11,
+            "key": "section_c",
+            "title": "Particulars of the Third Party Requestor",
+            "description": "Particulars of the Third Party Requestor",
+            "sort_order": 4,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_3_8",
+                    "label": "is a minor and I am the parent/legal guardian/parental responsibility over the Data Subject (account holder)",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p>I am making this request for the correction of personal data of Data Subject (account holder) because Data Subject (account holder)</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "top"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_9",
+                    "label": "is incapable of managing his/her affairs and I have been appointed by Court to manage his/her affairs",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_10",
+                    "label": "had passed away and I have been appointed as administrator of Data Subject's (account holder) estate",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 3,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_11",
+                    "label": "authorised me in writing to make this data correction request",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 4,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_12",
+                    "label": "others",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 5,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_12_1",
+                    "label": "Reason",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 6,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_3_12",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_13",
+                    "label": "copy of my NRIC/MyKid/Birth certificate for minor account, Passport (original to be produced for inspection); and",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p>In proof of my capacity, I enclose the following:</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 7,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "top"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_14",
+                    "label": "original of Court Order/Power of Attorney",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 8,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_15",
+                    "label": "original of authorisation letter from Data Subject (account holder)",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 9,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_16",
+                    "label": "others",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 10,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_16_1",
+                    "label": "Reason (please specify)",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 11,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_3_16",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 12,
+            "key": "section_d",
+            "title": "Correction",
+            "description": "Correction",
+            "sort_order": 5,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_4_1",
+                    "label": "Update Scope",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "<p>Please tick [✓] the appropriate box:</p>",
+                    "help_text": null,
+                    "required": true,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "all": "Please update ALL of the Data Subject's (account holder) account(s) maintained with your branch",
+                        "specific": "Please update ONLY the Data Subject's (account holder) account(s) maintained with your branch as stated below:"
+                    },
+                    "settings": {
+                        "description_position": "top"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_2",
+                    "label": "Account Type 1",
+                    "type": "text",
+                    "placeholder": "Enter account type",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "left",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_4_1",
+                                "operator": "equals",
+                                "value": "specific"
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_3",
+                    "label": "Account No. 1",
+                    "type": "text",
+                    "placeholder": "Enter account number",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 3,
+                    "grid_column": "right",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_4_1",
+                                "operator": "equals",
+                                "value": "specific"
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_4",
+                    "label": "Account Type 2",
+                    "type": "text",
+                    "placeholder": "Enter account type (optional)",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 4,
+                    "grid_column": "left",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_4_1",
+                                "operator": "equals",
+                                "value": "specific"
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_5",
+                    "label": "Account No. 2",
+                    "type": "text",
+                    "placeholder": "Enter account number (optional)",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 5,
+                    "grid_column": "right",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_4_1",
+                                "operator": "equals",
+                                "value": "specific"
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_6",
+                    "label": "Effective Date",
+                    "type": "date",
+                    "placeholder": null,
+                    "description": "<p>Please update the following information with effect from:</p>",
+                    "help_text": "Format: DD/MM/YYYY",
+                    "required": true,
+                    "active": true,
+                    "sort_order": 6,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "top"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_6a",
+                    "label": "Personal Data to be Corrected",
+                    "type": "notes",
+                    "placeholder": null,
+                    "description": "<p><strong>Personal Data to be Corrected:</strong></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 6.5,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_7",
+                    "label": "Name of Data Subject",
+                    "type": "text",
+                    "placeholder": "Enter corrected name",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 7,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_8",
+                    "label": "Action for Name",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 8,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "A": "Add",
+                        "D": "Delete",
+                        "R": "Revise"
+                    },
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_9",
+                    "label": "Old IC No.",
+                    "type": "text",
+                    "placeholder": "Enter corrected IC number",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 9,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_10",
+                    "label": "Action for Old IC",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 10,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "A": "Add",
+                        "D": "Delete",
+                        "R": "Revise"
+                    },
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_11",
+                    "label": "New IC No.",
+                    "type": "text",
+                    "placeholder": "Enter corrected IC number",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 11,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_12",
+                    "label": "Action for New IC",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 12,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "A": "Add",
+                        "D": "Delete",
+                        "R": "Revise"
+                    },
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_13",
+                    "label": "Passport No.",
+                    "type": "text",
+                    "placeholder": "Enter corrected passport number",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 13,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_14",
+                    "label": "Action for Passport",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 14,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "A": "Add",
+                        "D": "Delete",
+                        "R": "Revise"
+                    },
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_15",
+                    "label": "Residential/Mailing Address",
+                    "type": "textarea",
+                    "placeholder": "Enter corrected address",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 15,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_16",
+                    "label": "Action for Address",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 16,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "A": "Add",
+                        "D": "Delete",
+                        "R": "Revise"
+                    },
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_17",
+                    "label": "Postcode",
+                    "type": "text",
+                    "placeholder": "Enter corrected postcode",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 17,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_18",
+                    "label": "Action for Postcode",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 18,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "A": "Add",
+                        "D": "Delete",
+                        "R": "Revise"
+                    },
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_19",
+                    "label": "Account Number",
+                    "type": "text",
+                    "placeholder": "Enter corrected account number",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 19,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_20",
+                    "label": "Action for Account Number",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 20,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "A": "Add",
+                        "D": "Delete",
+                        "R": "Revise"
+                    },
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_21",
+                    "label": "Telephone No. (House)",
+                    "type": "text",
+                    "placeholder": "Enter corrected telephone number",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 21,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_22",
+                    "label": "Action for Tel (House)",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 22,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "A": "Add",
+                        "D": "Delete",
+                        "R": "Revise"
+                    },
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_23",
+                    "label": "Telephone No. (Office)",
+                    "type": "text",
+                    "placeholder": "Enter corrected telephone number",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 23,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_24",
+                    "label": "Action for Tel (Office)",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 24,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "A": "Add",
+                        "D": "Delete",
+                        "R": "Revise"
+                    },
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_25",
+                    "label": "Mobile Phone Number",
+                    "type": "text",
+                    "placeholder": "Enter corrected mobile number",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 25,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_26",
+                    "label": "Action for Mobile",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 26,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "A": "Add",
+                        "D": "Delete",
+                        "R": "Revise"
+                    },
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_27",
+                    "label": "Nationality",
+                    "type": "text",
+                    "placeholder": "Enter corrected nationality",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 27,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_28",
+                    "label": "Action for Nationality",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 28,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "A": "Add",
+                        "D": "Delete",
+                        "R": "Revise"
+                    },
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_29",
+                    "label": "Occupation",
+                    "type": "text",
+                    "placeholder": "Enter corrected occupation",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 29,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_30",
+                    "label": "Action for Occupation",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 30,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "A": "Add",
+                        "D": "Delete",
+                        "R": "Revise"
+                    },
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_31",
+                    "label": "Name of Employer",
+                    "type": "text",
+                    "placeholder": "Enter corrected employer name",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 31,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_32",
+                    "label": "Action for Employer",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 32,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "A": "Add",
+                        "D": "Delete",
+                        "R": "Revise"
+                    },
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_33",
+                    "label": "Others (Please specify)",
+                    "type": "textarea",
+                    "placeholder": "Specify other personal data to be corrected",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 33,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_34",
+                    "label": "Action for Others",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 34,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "A": "Add",
+                        "D": "Delete",
+                        "R": "Revise"
+                    },
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 13,
+            "key": "section_e",
+            "title": "Declaration",
+            "description": "Declaration",
+            "sort_order": 6,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_5_1",
+                    "label": "Full Name (as per NRIC)",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_5_2",
+                    "label": "NRIC/Passport No.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p>hereby certify that the information given in this form and all documents enclosed are true and accurate. I understand that it will be necessary for the Bank to verify my identity, and the Bank may contact me for more detailed information in order to locate the personal data requested.</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_5_3",
+                    "label": "Signature",
+                    "type": "signature",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 4,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        }
+    ]
+}

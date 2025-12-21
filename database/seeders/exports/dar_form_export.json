@@ -1,0 +1,1175 @@
+{
+    "form": {
+        "id": 1,
+        "name": "Personal Data Access Request Form",
+        "slug": "dar",
+        "description": "Request access to your personal data and information in compliance with data protection regulations.",
+        "status": "active",
+        "is_public": true,
+        "allow_multiple_submissions": true,
+        "submission_limit": null,
+        "sort_order": 2,
+        "settings": {
+            "type": "dar",
+            "version": "1.0"
+        }
+    },
+    "sections": [
+        {
+            "id": 1,
+            "key": "section_notes",
+            "title": "Important Notes",
+            "description": "Important Notes",
+            "sort_order": 1,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_1_1",
+                    "label": "Important Notes",
+                    "type": "notes",
+                    "placeholder": null,
+                    "description": "<p><strong><u>Important Notes:</u></strong></p><ol><li>Please complete the Data Correction Request Form and ensure that your personal data provided herein is genuine and accurate.</li><li>Your request may not be processed if the information/document provided is incomplete.</li><li>Third Party Requestor is to be present at the branch / office to submit this form and for verification of information and documents required.</li><li>The supporting document(s) required in this form must be provided. We will respond within 21 days of receipt of the completed form with accompanying documents.</li><li>If you have any queries / need any guidance in filling-up this form, you may contact our</li></ol><p>\t\t\t<strong><em>Customer Service Department at the contact details below:</em></strong></p><p><strong><em>\t\t\tHead, Customer Service Department, Bank Muamalat  Malaysia Berhad</em></strong></p><p><strong><em>\t\t\tAddress\t\t: 19th Floor, Menara Bumiputra, Jalan Melaka, 51000 Kuala Lumpur</em></strong></p><p><strong><em>\t\t\tTelephone\t: 1-300-88-8787 (Local), +603-26005500 (International)</em></strong></p><p><strong><em>\t\t\tEmail\t\t\t: feedback@muamalat.com.my</em></strong></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "key": "section_a",
+            "title": "About Yourself",
+            "description": "About Yourself",
+            "sort_order": 2,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_2_1",
+                    "label": "I am a customer / former customer and I would like to correct my personal data",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_2_2",
+                    "label": "I am a Third Party Requestor",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": "i.e. I am making this personal data correction request for another person.",
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "key": "section_b",
+            "title": "Particulars of the Data Subject (Account Holder)",
+            "description": "Particulars of the Data Subject (Account Holder)",
+            "sort_order": 3,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_3_1",
+                    "label": "Full Name (as per NRIC)",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_2",
+                    "label": "NRIC / Passport No.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_3",
+                    "label": "Address",
+                    "type": "textarea",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 3,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_4",
+                    "label": "Postcode",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 4,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_5",
+                    "label": "Email Address",
+                    "type": "email",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 5,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_6",
+                    "label": "Telephone No. (Office/Home)",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 6,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_7",
+                    "label": "Mobile No.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 7,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "key": "section_c",
+            "title": "Particulars of the Third Party Requestor",
+            "description": "Particulars of the Third Party Requestor",
+            "sort_order": 4,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_3_8",
+                    "label": "is a minor and I am the parent/legal guardian/parental responsibility over the Data Subject (account holder)",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p>I am making this request for the Access of personal data of Data Subject (account holder) because of Data Subject (account holder)</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "top"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_9",
+                    "label": "is incapable of managing his/her affairs and I have been appointed by Court to manage his/her affairs",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_10",
+                    "label": "had passed away and I have been appointed as administrator of Data Subject's (account holder) estate",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 3,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_11",
+                    "label": "authorised me in writing to make this data correction request",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 4,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_12",
+                    "label": "others",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 5,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_12_1",
+                    "label": "Reason",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 6,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_3_12",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_13",
+                    "label": "copy of my NRIC/MyKid/Birth certificate for minor account, Passport (original to be produced for inspection); and",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p>In proof of my capacity, I enclose the following:</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 7,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "top"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_14",
+                    "label": "original of Court Order/Power of Attorney",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 8,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_15",
+                    "label": "original of authorisation letter from Data Subject (account holder)",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 9,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_16",
+                    "label": "others",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 10,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_16_1",
+                    "label": "Reason (please specify)",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 11,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_3_16",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "key": "section_d",
+            "title": "Personal Data Requested",
+            "description": "Personal Data Requested",
+            "sort_order": 5,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_4_1",
+                    "label": "Savings Account",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p>1. I would like to request for the personal data of the following account by indicating the relevant account number:</p><p><strong>Account Type </strong>(Please tick [✓] one Account only)</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "top"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_2",
+                    "label": "Current Account",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 3,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_3",
+                    "label": "FCy Current Account",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 4,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_4",
+                    "label": "Fixed Term Account",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 5,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_5",
+                    "label": "Credit Card Account",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 6,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_6",
+                    "label": "Financing Account",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 7,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_7",
+                    "label": "Ar Rahnu Account",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 8,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_8",
+                    "label": "Others",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 9,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_8_1",
+                    "label": "Products/Services (please specify)",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 10,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_4_8",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_9",
+                    "label": "Account No.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p>Note:\tFor the Requestor requesting access to multiple accounts with the branch, complete a separate form for each account.</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 11,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_10",
+                    "label": "Mandatee, if applicable",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p>2. Personal Data includes one or more of the following:</p><p>\tPlease tick [✓] the appropriate box.</p><p>\tSpecified Account Information</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 12,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "top"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_11",
+                    "label": "Image of the Signature(s) of the account-holder(s)",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 13,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_11_1",
+                    "label": "i.e. (specify the name)",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 14,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_4_11",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_12",
+                    "label": "Name",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 15,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_13",
+                    "label": "IC/Passport/Other Identification Documentation",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 16,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_14",
+                    "label": "Residence/Mailing Address",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 17,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_15",
+                    "label": "Contact Detatils",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 18,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_16",
+                    "label": "Gender",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 19,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_17",
+                    "label": "Race",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 20,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_18",
+                    "label": "Nationality",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 21,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_19",
+                    "label": "Country of Tax Residence",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 22,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_20",
+                    "label": "Name of Employer",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 23,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_21",
+                    "label": "Customer's Consent",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 24,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_22",
+                    "label": "Others",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 25,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_22_1",
+                    "label": "please specify",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 26,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_4_22",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_23",
+                    "label": "Confirm whether the personal data as specified under items 1 and/or 2 of part D is held by the Bank; and I do not require a copy of the Personal Data.",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p>3. Please:</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 27,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "top"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_24",
+                    "label": "Supply me with a copy of the personal data for the account(s) maintained with the Bank as specified under items 1 and/or 2 of Part D",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 28,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "key": "section_e",
+            "title": "Method of Delivery",
+            "description": "Method of Delivery",
+            "sort_order": 6,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_5_1",
+                    "label": "is to be mailed to my address stated above.",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p>The personal data requested:</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "top"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_5_2",
+                    "label": "will be collected by me personally from your office/branch at:",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_5_2_1",
+                    "label": "Office/Branch",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 3,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_5_2",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "key": "section_f",
+            "title": "Declaration",
+            "description": "Declaration",
+            "sort_order": 7,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_6_1",
+                    "label": "Full Name (as per NRIC)",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_6_2",
+                    "label": "NRIC/Passport No.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p>hereby certify that the information given in this form and all documents enclosed are true and accurate. I understand that it will be necessary for the Bank to verify my identity, and the Bank may contact me for more detailed information in order to locate the personal data requested.</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_6_3",
+                    "label": "Signature",
+                    "type": "signature",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 3,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        }
+    ]
+}

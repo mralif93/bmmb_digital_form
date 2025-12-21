@@ -1,0 +1,1297 @@
+{
+    "form": {
+        "id": 3,
+        "name": "Service Request Form",
+        "slug": "srf",
+        "description": "Service Request Form (SRF_Deposit/V16.0.2024)",
+        "status": "active",
+        "is_public": true,
+        "allow_multiple_submissions": true,
+        "submission_limit": null,
+        "sort_order": 4,
+        "settings": {
+            "type": "srf",
+            "version": "16.0"
+        }
+    },
+    "sections": [
+        {
+            "id": 14,
+            "key": "customer_info",
+            "title": "Customer Information",
+            "description": "Customer Information",
+            "sort_order": 1,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "header_1",
+                    "label": "Customer / Company Name",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "header_2",
+                    "label": "Account Holder",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "header_3",
+                    "label": "ID No. / Business Registration No.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 3,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "header_4",
+                    "label": "Account No.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 4,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 15,
+            "key": "account_type",
+            "title": "Account Type",
+            "description": "Account Type",
+            "sort_order": 2,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "field_1",
+                    "label": "1. Transfer Fund",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_1_1",
+                    "label": "To account no.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": true,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "left",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_1",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_1_2",
+                    "label": "Under the name or company of",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": true,
+                    "active": true,
+                    "sort_order": 3,
+                    "grid_column": "right",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_1",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_1_3",
+                    "label": "Amount",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": true,
+                    "active": true,
+                    "sort_order": 4,
+                    "grid_column": "left",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_1",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_2",
+                    "label": "2. Cancellation or Repurchase of Cashier's Order",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 5,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_2_1",
+                    "label": "Cheque No.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": true,
+                    "active": true,
+                    "sort_order": 6,
+                    "grid_column": "left",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_2",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_2_2",
+                    "label": "Amount",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": true,
+                    "active": true,
+                    "sort_order": 7,
+                    "grid_column": "left",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_2",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_2_3",
+                    "label": "Reason",
+                    "type": "textarea",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": true,
+                    "active": true,
+                    "sort_order": 8,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_2",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3",
+                    "label": "3. Stop payment on cheque",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 9,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_1",
+                    "label": "Cheque No.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": true,
+                    "active": true,
+                    "sort_order": 10,
+                    "grid_column": "left",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_3",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_2",
+                    "label": "Under the name or company of",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": true,
+                    "active": true,
+                    "sort_order": 11,
+                    "grid_column": "right",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_3",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_3_3",
+                    "label": "Reason",
+                    "type": "textarea",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": true,
+                    "active": true,
+                    "sort_order": 12,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_3",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4",
+                    "label": "4. Bank account statement for the month",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 13,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_1",
+                    "label": "Month",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": true,
+                    "active": true,
+                    "sort_order": 14,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_4",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_5",
+                    "label": "5. Closing of Savings or Current or Investment Account-i",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 15,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_6",
+                    "label": "6. Conversion of Qard account to Tawarruq account",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p class=\"ql-align-justify\"><strong>Customer / Pelanggan</strong> :&nbsp;</p><p class=\"ql-align-justify\">I/We hereby authorize Bank Muamalat Malaysia Berhad (BMMB) to utilize all my funds in my Qard account and hereby appoint BMMB as my/our agent under a Wakalah arrangement to do and execute all acts to purchase Shariah compliant commodities at the Purchase Price from time to time. I/We also hereby to appoint the Bank to be my/our agent restricted only to conclude the sale of the commodity and to enter into, on my/our behalf, the Sale Transaction with the Bank at the Murabahah Sale Price, pursuant to which my/our funds shall be converted into a Tawarruq account and be governed by the terms and conditions of the Tawarruq account. / Saya/Kami dengan ini membenarkan Bank Muamalat Malaysia Berhad (BMMB) untuk menggunakan kesemua dana dalam akaun Qard dan melantik BMMB sebagai ejen saya/kami melalui perlaksanaan Wakalah bagi melakukan dan melaksanakan segala tindakan untuk membeli Komoditi patuh Syariah pada Harga Belian dari masa ke semasa. Saya/Kami juga dengan ini bersetuju untuk melantik pihak Bank sebagai ejen terhad untuk memuktamadkan jualan komoditi dengan memasuki, bagi pihak saya/kami, Transaksi Jualan dengan pihak Bank pada Harga Jualan Murabahah, dengan itu dana saya/kami akan ditukar ke akaun Tawarruq dan ditadbir mengikut terma dan syarat akaun Tawarruq.</p><p class=\"ql-align-justify\"><br></p><p class=\"ql-align-justify\"><strong>Bank / Bank </strong>:&nbsp;</p><p class=\"ql-align-justify\">We, hereby agree to accept the appointment as the agent as stipulated in the offer above. We will, in performing our obligations in relation to the transactions, protect the interest of the Customer and act in good faith. Your funds in a Qard account shall now be transferred into a Tawarruq account and shall hereinafter be governed by the terms and conditions of the Tawarruq account. / Kami, bersetuju untuk menerima perlantikan sebagai ejen seperti yang dinyatakan di dalam tawaran di atas. Pihak kami juga, akan melaksanakan kewajipan berkenaan transaksi, menjaga kepentingan Pelanggan dan bertindak dengan niat baik. Dana anda di dalam akaun Qard akan dipindahkan ke akaun Tawarruq dan kemudiannya akan ditadbir mengikut terma dan syarat akaun Tawarruq.</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 16,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_7",
+                    "label": "7. Conversion of Savings Account-i / Current Account-i (Tawarruq / Qard) to Mudarabah Unrestricted Investment Account (SURIA)",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p class=\"ql-align-justify\"><strong>Investment Account Holder / Pemegang Akaun Pelaburan</strong> :</p><p class=\"ql-align-justify\">I/We hereby give a sum of money as the investment capital, once the money being placed into my/our account for the purpose of this investment under the contract of Mudarabah. I/We hereby authorise the Bank to invest the said money in any permitted investment which do not contravene with the Shariah principle. I/We hereby agree with the profit sharing ratio as per the Bank's Terms &amp; Conditions based on Mudarabah concept and any loss incurred from the said permitted investment shall be my/our liability./ Saya/Kami dengan ini bersetuju untukmenyerahkan sejumlah wang sebagai modal pelaburan, apabila wang tersebut dimasukkan di dalam akaun saya/kami bagi tujuan pelaburan berlandaskan kontrak Mudarabah. Saya/Kami membenarkan pihak Bank untuk melaburkan modal tersebut bagi sebarang urusan pelaburan yang tidak bercanggah dengan prinsip Syariah. Saya/Kami juga bersetuju menerima nisbah perkongsian untung yang telah dipersetujui bersama dengan pihak Bank sepertimana Syarat &amp; Peraturan pihak Bank berdasarkan konsep Mudarabah dan sebarang kerugian sekiranya berlaku adalah di bawah tanggungan saya/kami selaku pemodal.</p><p class=\"ql-align-justify\"><br></p><p class=\"ql-align-justify\"><strong>Bank / Bank</strong> :</p><p class=\"ql-align-justify\">We, hereby agree to invest the money invested in the account under the contract of Mudarabah and hereby convenant to invest the same in the permitted investment only which does not contravene with the Shariah principle. We hereby agree with the profit sharing ratio as per the Bank's Terms &amp; Conditions based on Mudarabah concept. We shall not be held liable for any loss incurred from the said investment save and except for any loss arising from our wilful misconduct, gross negligence or fraud./Kami bersetuju menguruskan wang tersebut di bawah kontrak Mudarabah. Pihak kami berjanji menguruskan wang tersebut sebaik mungkin untuk pelaburan yang tidak bercanggah dengan prinsip Syariah. Pihak kami juga bersetuju dengan nisbah perkongsian untung yang telah dipersetujui bersama sepertimana Syarat &amp; Peraturan pihak Bank berdasarkan konsep Mudarabah. Pihak kami tidak akan bertanggungjawab terhadap sebarang kerugian, kecuali sekiranya kerugian tersebut disebabkan oleh salah laku yang disengajakan, kecuaian melampau atau penipuan daripada pihak Bank.</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 17,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_8",
+                    "label": "8. Zakat on Savings Auto Deduction",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p class=\"ql-align-justify\"><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 18,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_8_1",
+                    "label": "My/our savings account : and/or",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p class=\"ql-align-justify\"><strong>Customer</strong>: </p><p class=\"ql-align-justify\">I/We hereby agree to authorize Bank Muamalat Malaysia Berhad (BMMB) to perform zakat on savings auto calculation and deduction on the following accounts:</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 19,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_8",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "top"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_8_2",
+                    "label": "My/our current account",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 20,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_8",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_8_3",
+                    "label": "on behalf of me/us and hereby appoint BMMB as my/our agent under a Wakalah arrangement by transferring the zakat payable to",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p><strong>Bank</strong> :</p><p class=\"ql-align-justify\">We, hereby agree to accept the appointment as the agent as stipulated in the offer above. We will, in performing our obligations in relation to the transactions, protect the interest of the Customer and act in good faith. Your zakat on savings payable amount shall be transferred to state zakat authority as per above subject to fulfilment of zakat on savings obligation requirements.</p>",
+                    "help_text": "name of zakat  for each state",
+                    "required": false,
+                    "active": true,
+                    "sort_order": 21,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_8",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_9",
+                    "label": "9. Cancellation or Stop Zakat on savings Auto Deduction with immediate effect",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 22,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_10",
+                    "label": "10. Zakat on Gold Account Auto Calculation and Deduction",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p class=\"ql-align-justify\"><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 23,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_10_1",
+                    "label": "Conversion to Malaysian Ringgit (MYR)",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p class=\"ql-align-justify\"><strong>Customer / Pelanggan</strong> :</p><p class=\"ql-align-justify\">I/We hereby agree to authorize Bank Muamalat Malaysia Berhad (BMMB) to perform zakat on gold account auto calculation and deduction on the following method:</p>",
+                    "help_text": "The amount of zakat payable from the gold account will be converted into MYR and will be credited to the preferred zakat state account.",
+                    "required": false,
+                    "active": true,
+                    "sort_order": 24,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_10",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "top"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_10_2",
+                    "label": "Transfer in gold form (in gram)",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": "The amount of zakat payable is transferred from customer's gold account to the preferred zakat state's gold account.",
+                    "required": false,
+                    "active": true,
+                    "sort_order": 25,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_10",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_10_3",
+                    "label": "on behalf of me/us and hereby appoint BMMB as my/our agent under a Wakalah arrangement by transferring the zakat payable to",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p class=\"ql-align-justify\"><strong>Bank</strong> : </p><p class=\"ql-align-justify\">We, hereby agree to accept the appointment as the agent as stipulated in the offer above. We will, in performing our obligations in relation to the transactions, protect the interest of the Customer and act in good faith. Your zakat on gold account payable amount shall be transferred to state zakat authority as per above subject to fulfilment of zakat on gold account obligation requirements.</p>",
+                    "help_text": "name of zakat for each state",
+                    "required": false,
+                    "active": true,
+                    "sort_order": 26,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_10",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_11",
+                    "label": "11. Cancellation or Stop Zakat on gold account Auto Deduction with immediate effect.",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p class=\"ql-align-justify\"><strong>Disclaimer</strong> : </p><p class=\"ql-align-justify\">I/we hereby acknowledge that the Bank shall not be liable for any loss or damage that may arise due to my/our failure or delay to keep the Bank updated as to any changes to my/our information, instruction or details pertaining to my/our Accounts unless such loss or damage are attributable by the Bank's wilful misconduct, gross negligence or fraud.</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 27,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_12",
+                    "label": "12. Physical Delivery of Purchased Commodity",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 28,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_12_1",
+                    "label": "I hereby place the sum of RM",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": "<p class=\"ql-align-justify\">for the purpose of purchasing the commodity from the commodity supplier and opt to take physical delivery of the commodity. All costs associated with the delivery and subsequent transfer of ownership of said commodity shall be borne by me.</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 29,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_12",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_13",
+                    "label": "13. Others",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 30,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_13_1",
+                    "label": "Others",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": true,
+                    "active": true,
+                    "sort_order": 31,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "field_13",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 16,
+            "key": "consent",
+            "title": "Consent",
+            "description": "Consent",
+            "sort_order": 3,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "content_1",
+                    "label": "Yes, I agree to receive marketing promotions.",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": "<p class=\"ql-align-justify\">Updating of prior consent given by you in relation to purpose of cross selling, marketing and promotions.</p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "top"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "content_2",
+                    "label": "No, I do not agree to receive marketing promotions.",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 17,
+            "key": "section_c",
+            "title": "Third Party Requestor",
+            "description": "Third Party Requestor",
+            "sort_order": 4,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "section_c_1",
+                    "label": "Beneficiary Name",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "section_c_2",
+                    "label": "NRIC / Passport No.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "section_c_3",
+                    "label": "Relationship with Account Holder",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 3,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "section_c_4",
+                    "label": "Address",
+                    "type": "textarea",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 4,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "section_c_5",
+                    "label": "Mobile No.",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 5,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "section_c_6",
+                    "label": "Email Address",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 6,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "section_c_7",
+                    "label": "Purpose of request",
+                    "type": "text",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 7,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "section_c_8",
+                    "label": "Supporting Documents",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 8,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "section_c_8_1",
+                    "label": "Death certificate",
+                    "type": "file",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 9,
+                    "grid_column": "right",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "section_c_8",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "section_c_8_2",
+                    "label": "Birth Certificate",
+                    "type": "file",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 10,
+                    "grid_column": "left",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "section_c_8",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "section_c_8_3",
+                    "label": "Marriage certificate",
+                    "type": "file",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 11,
+                    "grid_column": "left",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "section_c_8",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "section_c_8_4",
+                    "label": "Others",
+                    "type": "file",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 12,
+                    "grid_column": "right",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "section_c_8",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        },
+        {
+            "id": 18,
+            "key": "confirmation",
+            "title": "Confirmation",
+            "description": "Confirmation",
+            "sort_order": 5,
+            "is_active": true,
+            "fields": [
+                {
+                    "name": "section_d_1",
+                    "label": "I/We declare(s) that the above information is correct",
+                    "type": "checkbox",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 1,
+                    "grid_column": "full",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "section_d_2",
+                    "label": "Signature",
+                    "type": "signature",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 2,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "section_d_1",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "section_d_3",
+                    "label": "Date",
+                    "type": "date",
+                    "placeholder": null,
+                    "description": null,
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 3,
+                    "grid_column": "full",
+                    "conditional": true,
+                    "conditional_logic": {
+                        "action": "show_if",
+                        "logic": "and",
+                        "conditions": [
+                            {
+                                "field": "section_d_1",
+                                "operator": "checked",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                }
+            ]
+        }
+    ]
+}
