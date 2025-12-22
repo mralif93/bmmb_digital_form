@@ -16,7 +16,7 @@ MAP (Django) → eForm (Laravel)
 ## Prerequisites
 
 1. Docker and Docker Compose installed
-2. Docker network `eform_network`
+2. Shared Docker network `map_bom_rev_network` (same as BOM)
 3. Environment variables configured
 
 ## Files Created
@@ -27,14 +27,14 @@ MAP (Django) → eForm (Laravel)
 
 ## Network Setup
 
-eForm uses the Docker network `eform_network`. This allows:
+eForm uses the same Docker network as BOM (`map_bom_rev_network`). This allows:
 - Shared network communication between MAP, BOM, and eForm
 - Centralized routing through main nginx
 - Isolated service containers
 
 ### Create Network (if not exists)
 ```bash
-docker network create eform_network
+docker network create map_bom_rev_network
 ```
 
 ## Environment Configuration
@@ -269,7 +269,7 @@ eform_url = 'https://eform.muamalat.com.my/map/login'  # Production
 ## Similar to BOM
 
 eForm follows the same pattern as BOM:
-- Uses `eform_network` for inter-service communication
+- Uses `map_bom_rev_network` for inter-service communication
 - Nginx reverse proxy on specific port
 - Integrated with MAP's SSO system
 - Containerized for easy deployment
