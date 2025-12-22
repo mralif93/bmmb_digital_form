@@ -273,6 +273,12 @@ eform_url = 'https://eform.muamalat.com.my/map/login'  # Production
 # eform_url = 'http://localhost:9000/map/login'  # Local development
 ```
 
+### Verification
+Check if the redirect URL is reachable:
+```bash
+curl -I https://map.stg.muamalat.com.my/pengurusan/login/?next=/redirect/eform/
+```
+
 ## Security Considerations
 
 1. **APP_KEY**: Generate with `php artisan key:generate`
