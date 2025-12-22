@@ -208,6 +208,7 @@ class SyncMapBranchesFromDatabase extends Command
                     ->first();
 
                 $data = [
+                    'id' => $mapBranch['id'], // Preserve MAP ID
                     'branch_name' => $mapBranch['branch_name'],
                     'ti_agent_code' => $mapBranch['ti_agent_code'],
                     'address' => $mapBranch['address'],
