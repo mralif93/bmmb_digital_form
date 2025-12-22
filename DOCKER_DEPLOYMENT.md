@@ -46,7 +46,10 @@ APP_NAME=eForm
 APP_ENV=production
 APP_KEY=base64:YOUR_APP_KEY_HERE
 APP_DEBUG=false
-APP_URL=https://eform.muamalat.com.my
+
+# IMPORTANT: APP_URL must include /eform subdirectory when deployed behind proxy
+# This ensures Laravel generates correct URLs for redirects and asset links
+APP_URL=https://map.stg.muamalat.com.my/eform
 
 DB_CONNECTION=sqlite
 DB_DATABASE=/var/www/html/database/database.sqlite
@@ -73,6 +76,17 @@ QUEUE_CONNECTION=sync
 # Docker Volume Mount (Production: /opt/eform/eform_db, Local: ./database)
 MAP_DB_PATH=/opt/eform/eform_db
 ```
+
+### Critical Environment Variables
+
+- **APP_URL**: Must include the full path with `/eform` subdirectory (e.g., `https://map.stg.muamalat.com.my/eform`)
+  - This is required for Laravel to generate correct URLs when proxied through nginx
+  - Without this, redirects will miss the `/eform` prefix and result in 404 errors
+  
+- **DB_DATABASE**: Must point to `/db/database.sqlite` (mounted volume)
+  
+- **MAP_DATABASE_PATH**: Must point to `/map_db/db.sqlite3` for sync operations
+
 
 ## Build and Run
 
@@ -230,6 +244,44 @@ docker-compose exec web chmod 664 /db/database.sqlite
 docker-compose exec web touch database/database.sqlite
 docker-compose exec web php artisan migrate --force
 ```
+
+### Nginx default.conf interference
+
+If you get 404 errors when accessing `/eform/`, the nginx `default.conf` might be interfering:
+
+```bash
+# Remove default.conf from main nginx container
+docker exec financingapp-nginx-1 rm /etc/nginx/conf.d/default.conf
+
+# Reload nginx
+docker exec financingapp-nginx-1 nginx -s reload
+```
+
+**Note**: This file keeps coming back after container restarts. To fix permanently, add this to the main nginx Dockerfile or deployment script.
+
+### Laravel redirects missing /eform prefix
+
+If Laravel redirects go to `https://map.stg.muamalat.com.my/admin/dashboard` instead of `https://map.stg.muamalat.com.my/eform/admin/dashboard`:
+
+```bash
+# 1. Check APP_URL in .env
+docker exec eform_web grep APP_URL /var/www/html/.env
+
+# 2. It must include /eform
+# APP_URL=https://map.stg.muamalat.com.my/eform
+
+# 3. If wrong, fix it:
+cd /opt/map/bm-gc-repo-map-stg/eForm
+sed -i 's#APP_URL=.*#APP_URL=https://map.stg.muamalat.com.my/eform#' .env
+docker cp .env eform_web:/var/www/html/.env
+
+# 4. Clear Laravel config cache
+docker exec eform_web php artisan config:clear
+
+# 5. Restart container
+docker restart eform_web
+```
+
 
 
 
