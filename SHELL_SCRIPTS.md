@@ -2,7 +2,11 @@
 
 This document lists all shell scripts in the eForm application and their purpose.
 
+> **📖 For server deployment instructions (outside Docker), see [SERVER_DEPLOYMENT.md](SERVER_DEPLOYMENT.md)**
+
 ## Automatic Permission Setup
+
+### Inside Docker (Automatic) ✅
 
 All `.sh` files are automatically given executable permissions during Docker build via the Dockerfile:
 
@@ -10,6 +14,27 @@ All `.sh` files are automatically given executable permissions during Docker bui
 # Make all shell scripts executable
 RUN find /var/www/html -type f -name "*.sh" -exec chmod +x {} \;
 ```
+
+### On Server Filesystem (Manual/Semi-Automatic) ⚠️
+
+For the **server filesystem** (outside Docker), use one of these methods:
+
+**Option 1: Automatic with Git Hook (Recommended)**
+```bash
+# One-time setup
+cp git-hooks/post-merge .git/hooks/post-merge
+chmod +x .git/hooks/post-merge
+
+# Now permissions are set automatically after every git pull!
+```
+
+**Option 2: Manual**
+```bash
+# Run after git pull
+./set-permissions.sh
+```
+
+See [SERVER_DEPLOYMENT.md](SERVER_DEPLOYMENT.md) for detailed instructions.
 
 ## Available Shell Scripts
 

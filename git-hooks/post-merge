@@ -1,0 +1,14 @@
+#!/bin/bash
+
+################################################################################
+# Git Post-Merge Hook Template
+# 
+# This hook automatically runs after 'git pull' to set shell script permissions
+#
+# INSTALLATION:
+# 1. Copy this file to: .git/hooks/post-merge
+# 2. Make it executable: chmod +x .git/hooks/post-merge
+################################################################################
+
+# Run the set-permissions script
+./set-permissions.sh
