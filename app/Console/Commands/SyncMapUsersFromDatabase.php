@@ -374,6 +374,11 @@ class SyncMapUsersFromDatabase extends Command
      */
     private function getMapDatabasePath(): string
     {
+        $envPath = env('MAP_DATABASE_PATH');
+        if ($envPath) {
+            return $envPath;
+        }
+
         return config(
             'map.database_path',
             base_path('../FinancingApp/FinancingApp_Backend/FinancingApp/db.sqlite3')
