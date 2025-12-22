@@ -46,6 +46,9 @@ RUN chown -R www-data:www-data /var/www/html/storage \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
+# Copy custom PHP-FPM configuration to listen on all interfaces
+COPY docker/php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
+
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
 
