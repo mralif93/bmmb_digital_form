@@ -7,11 +7,13 @@ use Illuminate\Foundation\Configuration\Middleware;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__ . '/../routes/web.php',
-        webPrefix: env('ROUTE_PREFIX', ''),
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Strip /eform prefix from requests
+        $middleware->prependToGroup('web', \App\Http\Middleware\StripEformPrefix::class);
+
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
             'admin-only' => \App\Http\Middleware\EnsureUserIsAdminOnly::class,
