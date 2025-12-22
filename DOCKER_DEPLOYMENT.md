@@ -59,6 +59,10 @@ MAP_REQUEST_TIMEOUT=10
 SESSION_DRIVER=file
 SESSION_LIFETIME=120
 
+# Database Configuration (IMPORTANT)
+# Point to the mounted path inside the container
+DB_DATABASE=/db/database.sqlite
+
 CACHE_DRIVER=file
 QUEUE_CONNECTION=sync
 
@@ -168,14 +172,16 @@ docker-compose up -d
 ### Database Mounts
 The mount point for the database directory is controlled by the `MAP_DB_PATH` in your `.env` file.
 
-**For Production:**
+**For Production (SIT/Staging/Prod):**
 ```env
 MAP_DB_PATH=/opt/eform/eform_db
+DB_DATABASE=/db/database.sqlite
 ```
 
 **For Local Development:**
 ```env
 MAP_DB_PATH=./database
+# DB_DATABASE can be left default or set to /db/database.sqlite if running in Docker
 ```
 
 If not specified, it defaults to `./database`.
