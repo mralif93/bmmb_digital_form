@@ -16,7 +16,11 @@ class RegionSeeder extends Seeder
     {
         $this->command->info('Seeding regions from MAP...');
 
-        $mapDbPath = base_path('../FinancingApp/FinancingApp_Backend/FinancingApp/db.sqlite3');
+        // Check environment variable first
+        $mapDbPath = env('MAP_DATABASE_PATH');
+        if (!$mapDbPath) {
+            $mapDbPath = base_path('../FinancingApp/FinancingApp_Backend/FinancingApp/db.sqlite3');
+        }
 
         if (!file_exists($mapDbPath)) {
             $this->command->error("MAP database not found at: {$mapDbPath}");
