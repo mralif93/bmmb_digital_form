@@ -839,7 +839,7 @@
             else if (formId.includes('srf')) formType = 'srf';
 
             // Submit to backend
-            fetch(`/forms/${formType}/submit`, {
+            fetch(`{{ url('/forms') }}/${formType}/submit`, {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -852,7 +852,7 @@
                     if (data.success) {
                         // Redirect to success page with submission token
                         if (data.submission_token) {
-                            window.location.href = '/forms/success/' + data.submission_token;
+                            window.location.href = `{{ url('/forms/success') }}/${data.submission_token}`;
                         } else {
                             // Fallback: Show success modal if no token provided
                             Swal.fire({

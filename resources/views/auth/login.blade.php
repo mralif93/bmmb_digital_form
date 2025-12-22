@@ -65,7 +65,16 @@
 
                     <!-- Manual Redirect Button -->
                     <div class="space-y-3">
-                        <a href="{{ config('map.redirect_url', 'http://127.0.0.1:8000/redirect/eform/') }}"
+                        @php
+                            // Get MAP redirect URL from config
+                            $mapRedirectUrl = config('map.redirect_url');
+
+                            // If the config URL is HTTP but we're on HTTPS, force HTTPS
+                            if (request()->secure() && str_starts_with($mapRedirectUrl, 'http://')) {
+                                $mapRedirectUrl = str_replace('http://', 'https://', $mapRedirectUrl);
+                            }
+                        @endphp
+                        <a href="{{ $mapRedirectUrl }}"
                             class="w-full flex justify-center items-center py-3 px-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-[1.02] text-sm shadow-md hover:shadow-lg">
                             <i class='bx bx-log-in mr-2'></i>
                             Go to MAP Login
@@ -102,7 +111,7 @@
             // Auto redirect countdown
             let seconds = 3;
             const countdownEl = document.getElementById('countdown');
-            const mapLoginUrl = "{{ config('map.redirect_url', 'http://127.0.0.1:8000/redirect/eform/') }}";
+            const mapLoginUrl = "{{ $mapRedirectUrl }}";
 
             const countdown = setInterval(() => {
                 seconds--;
