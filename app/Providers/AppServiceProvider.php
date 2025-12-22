@@ -2,10 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\View;
-use App\Helpers\TimezoneHelper;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,11 +20,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Share TimezoneHelper with all views
-        View::share('timezoneHelper', new class {
-            public function convert($date) {
-                return TimezoneHelper::toSystemTimezone($date);
-            }
-        });
+        // Force URL generation to use APP_URL
+        // This is critical when app is served from a subdirectory like /eform
+        if (config('app.url')) {
+            URL::forceRootUrl(config('app.url'));
+        }
+
+        // Force HTTPS in production
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
     }
 }
