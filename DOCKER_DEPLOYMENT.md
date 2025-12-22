@@ -128,6 +128,17 @@ docker-compose exec web php artisan view:cache
 docker-compose up -d
 ```
 
+5. **Remove nginx default.conf interference (CRITICAL):**
+```bash
+# The default.conf in main nginx container can interfere with /eform/ routing
+# Remove it to prevent 404 errors
+docker exec financingapp-nginx-1 rm /etc/nginx/conf.d/default.conf
+docker exec financingapp-nginx-1 nginx -s reload
+```
+
+**Note**: This file may reappear after nginx container restarts. To fix permanently, add this removal to the main nginx Dockerfile or startup script.
+
+
 ## Main Nginx Configuration
 
 On the main server (where MAP nginx runs), add eForm location:
@@ -226,7 +237,6 @@ MAP_DATABASE_PATH=/map_db/db.sqlite3
 ### Permission issues
 ```bash
 # Fix storage permissions
-# Fix storage permissions
 docker-compose exec web chown -R www-data:www-data /var/www/html
 docker-compose exec web find /var/www/html -type d -exec chmod 755 {} \;
 docker-compose exec web find /var/www/html -type f -exec chmod 644 {} \;
@@ -237,6 +247,67 @@ docker-compose exec web chown -R www-data:www-data /db
 docker-compose exec web chmod 775 /db
 docker-compose exec web chmod 664 /db/database.sqlite
 ```
+
+**IMPORTANT**: When copying files with `docker cp`, always fix permissions afterward:
+```bash
+# Example: After copying AppServiceProvider.php
+docker exec eform_web chown www-data:www-data /var/www/html/app/Providers/AppServiceProvider.php
+docker exec eform_web chmod 644 /var/www/html/app/Providers/AppServiceProvider.php
+```
+
+Files copied as root will cause "Permission denied" errors and 500 responses.
+
+### AppServiceProvider.php URL Configuration
+
+For subdirectory deployments (e.g., `/eform`), ensure `app/Providers/AppServiceProvider.php` includes:
+
+```php
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        //
+    }
+
+    public function boot(): void
+    {
+        // Force URL generation to use APP_URL
+        // This is critical when app is served from a subdirectory like /eform
+        if (config('app.url')) {
+            URL::forceRootUrl(config('app.url'));
+        }
+        
+        // Force HTTPS in production
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
+    }
+}
+```
+
+This ensures Laravel generates URLs like `https://map.stg.muamalat.com.my/eform/admin/dashboard` instead of `https://map.stg.muamalat.com.my/admin/dashboard`.
+
+After adding or modifying this file:
+```bash
+# Fix permissions
+docker exec eform_web chown www-data:www-data /var/www/html/app/Providers/AppServiceProvider.php
+docker exec eform_web chmod 644 /var/www/html/app/Providers/AppServiceProvider.php
+
+# Clear config cache
+docker exec eform_web php artisan config:clear
+
+# Verify it's working
+docker exec eform_web php artisan tinker --execute="echo url('/');"
+# Should output: https://map.stg.muamalat.com.my/eform
+```
+
 
 ### Database not found
 ```bash
