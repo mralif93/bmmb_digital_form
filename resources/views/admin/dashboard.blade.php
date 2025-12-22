@@ -318,7 +318,8 @@
                                     <td class="px-4 py-3">
                                         @if($submission->user)
                                             <div class="font-medium text-gray-900 dark:text-white">{{ $submission->user->first_name }}
-                                                {{ $submission->user->last_name }}</div>
+                                                {{ $submission->user->last_name }}
+                                            </div>
                                             <div class="text-xs text-gray-500">{{ $submission->user->email }}</div>
                                         @else
                                             @php
@@ -388,7 +389,8 @@
                                     <td class="px-4 py-3">
                                         @if($submission->user)
                                             <div class="font-medium text-gray-900 dark:text-white">{{ $submission->user->first_name }}
-                                                {{ $submission->user->last_name }}</div>
+                                                {{ $submission->user->last_name }}
+                                            </div>
                                             <div class="text-xs text-gray-500">{{ $submission->user->email }}</div>
                                         @else
                                             @php
@@ -695,14 +697,14 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                                    @if($user->role === 'admin') bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400
-                                                                    @elseif($user->role === 'branch_manager') bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400
-                                                                    @elseif($user->role === 'assistant_branch_manager') bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400
-                                                                    @elseif($user->role === 'operation_officer') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400
-                                                                    @elseif($user->role === 'headquarters') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
-                                                                    @elseif($user->role === 'iam') bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400
-                                                                    @else bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400
-                                                                    @endif">
+                                                                                @if($user->role === 'admin') bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400
+                                                                                @elseif($user->role === 'branch_manager') bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400
+                                                                                @elseif($user->role === 'assistant_branch_manager') bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400
+                                                                                @elseif($user->role === 'operation_officer') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400
+                                                                                @elseif($user->role === 'headquarters') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
+                                                                                @elseif($user->role === 'iam') bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400
+                                                                                @else bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400
+                                                                                @endif">
                                         {{ $user->role_display }}
                                     </span>
                                 </td>
@@ -718,11 +720,11 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="px-2 py-1 text-xs font-semibold rounded-full 
-                                                                    @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
-                                                                    @elseif($user->status === 'inactive') bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
-                                                                    @elseif($user->status === 'suspended') bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
-                                                                    @else bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
-                                                                    @endif">
+                                                                                @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                                                                                @elseif($user->status === 'inactive') bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
+                                                                                @elseif($user->status === 'suspended') bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
+                                                                                @else bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
+                                                                                @endif">
                                         {{ ucfirst($user->status) }}
                                     </span>
                                 </td>
@@ -859,14 +861,14 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="px-2 py-1 text-xs font-semibold rounded-full 
-                                                                    @if($submission->status === 'approved') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
-                                                                    @elseif($submission->status === 'rejected') bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
-                                                                    @elseif(in_array($submission->status, ['submitted', 'under_review'])) bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400
-                                                                    @elseif($submission->status === 'in_progress') bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400
-                                                                    @elseif($submission->status === 'completed') bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400
-                                                                    @elseif($submission->status === 'pending_process') bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400
-                                                                    @else bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
-                                                                    @endif">
+                                                                                @if($submission->status === 'approved') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                                                                                @elseif($submission->status === 'rejected') bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
+                                                                                @elseif(in_array($submission->status, ['submitted', 'under_review'])) bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400
+                                                                                @elseif($submission->status === 'in_progress') bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400
+                                                                                @elseif($submission->status === 'completed') bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400
+                                                                                @elseif($submission->status === 'pending_process') bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400
+                                                                                @else bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
+                                                                                @endif">
                                         {{ ucfirst(str_replace('_', ' ', $submission->status)) }}
                                     </span>
                                 </td>
@@ -1073,7 +1075,7 @@
                 content.innerHTML = '<div class="flex items-center justify-center py-12"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>';
 
                 // Fetch submission details
-                fetch(`/admin/submissions/${formSlug}/${submissionId}/details`)
+                fetch(`{{ url('/admin/submissions') }}/${formSlug}/${submissionId}/details`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -1148,7 +1150,7 @@
                     content.innerHTML = '<div class="flex items-center justify-center py-12"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>';
 
                     // Fetch user details
-                    fetch(`/admin/users/${userId}/details`)
+                    fetch(`{{ route('admin.users.details', ':id') }}`.replace(':id', userId))
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -1197,7 +1199,7 @@
                     content.innerHTML = '<div class="flex items-center justify-center py-12"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>';
 
                     // Fetch user edit form
-                    fetch(`/admin/users/${userId}/edit-modal`)
+                    fetch(`{{ route('admin.users.edit-modal', ':id') }}`.replace(':id', userId))
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -1348,7 +1350,7 @@
                     content.innerHTML = '<div class="flex items-center justify-center py-12"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>';
 
                     // Fetch user create form
-                    fetch(`/admin/users/create-modal`, {
+                    fetch(`{{ route('admin.users.create-modal') }}`, {
                         headers: {
                             'X-Requested-With': 'XMLHttpRequest',
                             'Accept': 'application/json',
@@ -1497,10 +1499,10 @@
                     Swal.fire({
                         title: `Set User to ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}?`,
                         html: `
-                                                    <div class="text-center">
-                                                        <p class="mb-2">Are you sure you want to set this user to <strong>${actionText}</strong>?</p>
-                                                    </div>
-                                                `,
+                                                                <div class="text-center">
+                                                                    <p class="mb-2">Are you sure you want to set this user to <strong>${actionText}</strong>?</p>
+                                                                </div>
+                                                            `,
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonText: `Yes, Set ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}`,
@@ -1595,11 +1597,11 @@
                     Swal.fire({
                         title: 'Verify Email?',
                         html: `
-                                                    <div class="text-center">
-                                                        <p class="mb-2">Are you sure you want to verify this user's email address?</p>
-                                                        <p class="text-sm text-gray-600">This will mark the email as verified.</p>
-                                                    </div>
-                                                `,
+                                                                <div class="text-center">
+                                                                    <p class="mb-2">Are you sure you want to verify this user's email address?</p>
+                                                                    <p class="text-sm text-gray-600">This will mark the email as verified.</p>
+                                                                </div>
+                                                            `,
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonText: 'Yes, Verify Email',
@@ -1620,7 +1622,7 @@
                             formData.append('_token', '{{ csrf_token() }}');
                             formData.append('_method', 'POST');
 
-                            fetch(`/admin/users/${userId}/verify-email`, {
+                            fetch(`{{ route('admin.users.verify-email', ':id') }}`.replace(':id', userId), {
                                 method: 'POST',
                                 body: formData,
                                 headers: {
@@ -1670,11 +1672,11 @@
                     Swal.fire({
                         title: 'Unverify Email?',
                         html: `
-                                                    <div class="text-center">
-                                                        <p class="mb-2">Are you sure you want to unverify this user's email address?</p>
-                                                        <p class="text-sm text-gray-600">This will mark the email as not verified.</p>
-                                                    </div>
-                                                `,
+                                                                <div class="text-center">
+                                                                    <p class="mb-2">Are you sure you want to unverify this user's email address?</p>
+                                                                    <p class="text-sm text-gray-600">This will mark the email as not verified.</p>
+                                                                </div>
+                                                            `,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'Yes, Unverify Email',
@@ -1695,7 +1697,7 @@
                             formData.append('_token', '{{ csrf_token() }}');
                             formData.append('_method', 'POST');
 
-                            fetch(`/admin/users/${userId}/unverify-email`, {
+                            fetch(`{{ route('admin.users.unverify-email', ':id') }}`.replace(':id', userId), {
                                 method: 'POST',
                                 body: formData,
                                 headers: {

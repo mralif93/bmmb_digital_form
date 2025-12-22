@@ -292,7 +292,7 @@
         <script>
             // Update grid layout via AJAX
             function updateGridLayout(sectionId, gridLayout) {
-                fetch(`/admin/forms/{{ $form->id }}/sections/${sectionId}/grid-layout`, {
+                fetch(`{{ route('admin.form-sections.grid-layout.update', [$form, ':section']) }}`.replace(':section', sectionId), {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -321,63 +321,63 @@
 
                 // Build create form HTML
                 container.innerHTML = `
-                                            <!-- Section Key -->
-                                            <div>
-                                                <label for="create_section_key" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                    Section Key <span class="text-red-500">*</span>
-                                                </label>
-                                                <input type="text" name="section_key" id="create_section_key" required
-                                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                                       placeholder="e.g., custom_section">
-                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Unique identifier (lowercase, underscores only)</p>
-                                            </div>
+                                                    <!-- Section Key -->
+                                                    <div>
+                                                        <label for="create_section_key" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                            Section Key <span class="text-red-500">*</span>
+                                                        </label>
+                                                        <input type="text" name="section_key" id="create_section_key" required
+                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                                               placeholder="e.g., custom_section">
+                                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Unique identifier (lowercase, underscores only)</p>
+                                                    </div>
 
-                                            <!-- Section Label -->
-                                            <div>
-                                                <label for="create_section_label" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                    Section Label <span class="text-red-500">*</span>
-                                                </label>
-                                                <input type="text" name="section_label" id="create_section_label" required
-                                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                                       placeholder="e.g., Custom Section Name">
-                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Display name shown in the form</p>
-                                            </div>
+                                                    <!-- Section Label -->
+                                                    <div>
+                                                        <label for="create_section_label" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                            Section Label <span class="text-red-500">*</span>
+                                                        </label>
+                                                        <input type="text" name="section_label" id="create_section_label" required
+                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                                               placeholder="e.g., Custom Section Name">
+                                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Display name shown in the form</p>
+                                                    </div>
 
-                                            <!-- Section Description -->
-                                            <div>
-                                                <label for="create_section_description" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                    Section Description
-                                                </label>
-                                                <textarea name="section_description" id="create_section_description" rows="3"
-                                                          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                                          placeholder="Optional description for this section"></textarea>
-                                            </div>
+                                                    <!-- Section Description -->
+                                                    <div>
+                                                        <label for="create_section_description" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                            Section Description
+                                                        </label>
+                                                        <textarea name="section_description" id="create_section_description" rows="3"
+                                                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                                                  placeholder="Optional description for this section"></textarea>
+                                                    </div>
 
-                                            <!-- Sort Order -->
-                                            <div>
-                                                <label for="create_sort_order" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                    Sort Order
-                                                </label>
-                                                <input type="number" name="sort_order" id="create_sort_order" value="${maxOrder + 1}" min="0"
-                                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Lower numbers appear first</p>
-                                            </div>
+                                                    <!-- Sort Order -->
+                                                    <div>
+                                                        <label for="create_sort_order" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                            Sort Order
+                                                        </label>
+                                                        <input type="number" name="sort_order" id="create_sort_order" value="${maxOrder + 1}" min="0"
+                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Lower numbers appear first</p>
+                                                    </div>
 
-                                            <!-- Is Active -->
-                                            <div>
-                                                <label class="flex items-center">
-                                                    <input type="checkbox" name="is_active" id="create_is_active" value="1" checked
-                                                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
-                                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Active (Section will be visible in forms)</span>
-                                                </label>
-                                            </div>
+                                                    <!-- Is Active -->
+                                                    <div>
+                                                        <label class="flex items-center">
+                                                            <input type="checkbox" name="is_active" id="create_is_active" value="1" checked
+                                                                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                                                            <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Active (Section will be visible in forms)</span>
+                                                        </label>
+                                                    </div>
 
-                                            <!-- Submit Button -->
-                                            <button type="submit" 
-                                                    class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition-colors">
-                                                Create Section
-                                            </button>
-                                        `;
+                                                    <!-- Submit Button -->
+                                                    <button type="submit" 
+                                                            class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition-colors">
+                                                        Create Section
+                                                    </button>
+                                                `;
 
                 // Show modal with animation
                 const modal = document.getElementById('createSectionModal');
@@ -428,63 +428,63 @@
 
                 // Build edit form HTML
                 container.innerHTML = `
-                                            <!-- Section Key -->
-                                            <div>
-                                                <label for="edit_section_key" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                    Section Key <span class="text-red-500">*</span>
-                                                </label>
-                                                <input type="text" name="section_key" id="edit_section_key" value="${sectionKey.replace(/"/g, '&quot;')}" required
-                                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                                       placeholder="e.g., custom_section">
-                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Unique identifier (lowercase, underscores only)</p>
-                                            </div>
+                                                    <!-- Section Key -->
+                                                    <div>
+                                                        <label for="edit_section_key" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                            Section Key <span class="text-red-500">*</span>
+                                                        </label>
+                                                        <input type="text" name="section_key" id="edit_section_key" value="${sectionKey.replace(/"/g, '&quot;')}" required
+                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                                               placeholder="e.g., custom_section">
+                                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Unique identifier (lowercase, underscores only)</p>
+                                                    </div>
 
-                                            <!-- Section Label -->
-                                            <div>
-                                                <label for="edit_section_label" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                    Section Label <span class="text-red-500">*</span>
-                                                </label>
-                                                <input type="text" name="section_label" id="edit_section_label" value="${sectionLabel.replace(/"/g, '&quot;')}" required
-                                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                                       placeholder="e.g., Custom Section Name">
-                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Display name shown in the form</p>
-                                            </div>
+                                                    <!-- Section Label -->
+                                                    <div>
+                                                        <label for="edit_section_label" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                            Section Label <span class="text-red-500">*</span>
+                                                        </label>
+                                                        <input type="text" name="section_label" id="edit_section_label" value="${sectionLabel.replace(/"/g, '&quot;')}" required
+                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                                               placeholder="e.g., Custom Section Name">
+                                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Display name shown in the form</p>
+                                                    </div>
 
-                                            <!-- Section Description -->
-                                            <div>
-                                                <label for="edit_section_description" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                    Section Description
-                                                </label>
-                                                <textarea name="section_description" id="edit_section_description" rows="3"
-                                                          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                                          placeholder="Optional description for this section">${sectionDescription.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                                            </div>
+                                                    <!-- Section Description -->
+                                                    <div>
+                                                        <label for="edit_section_description" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                            Section Description
+                                                        </label>
+                                                        <textarea name="section_description" id="edit_section_description" rows="3"
+                                                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                                                  placeholder="Optional description for this section">${sectionDescription.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                                                    </div>
 
-                                            <!-- Sort Order -->
-                                            <div>
-                                                <label for="edit_sort_order" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                    Sort Order
-                                                </label>
-                                                <input type="number" name="sort_order" id="edit_sort_order" value="${sortOrder}" min="0"
-                                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Lower numbers appear first</p>
-                                            </div>
+                                                    <!-- Sort Order -->
+                                                    <div>
+                                                        <label for="edit_sort_order" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                            Sort Order
+                                                        </label>
+                                                        <input type="number" name="sort_order" id="edit_sort_order" value="${sortOrder}" min="0"
+                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Lower numbers appear first</p>
+                                                    </div>
 
-                                            <!-- Is Active -->
-                                            <div>
-                                                <label class="flex items-center">
-                                                    <input type="checkbox" name="is_active" id="edit_is_active" value="1" ${isActive ? 'checked' : ''}
-                                                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
-                                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Active (Section will be visible in forms)</span>
-                                                </label>
-                                            </div>
+                                                    <!-- Is Active -->
+                                                    <div>
+                                                        <label class="flex items-center">
+                                                            <input type="checkbox" name="is_active" id="edit_is_active" value="1" ${isActive ? 'checked' : ''}
+                                                                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                                                            <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Active (Section will be visible in forms)</span>
+                                                        </label>
+                                                    </div>
 
-                                            <!-- Submit Button -->
-                                            <button type="submit" 
-                                                    class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition-colors">
-                                                Update Section
-                                            </button>
-                                        `;
+                                                    <!-- Submit Button -->
+                                                    <button type="submit" 
+                                                            class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition-colors">
+                                                        Update Section
+                                                    </button>
+                                                `;
 
                 // Set form action
                 document.getElementById('editSectionForm').action = `{{ route('admin.form-sections.update', [$form, ':section']) }}`.replace(':section', sectionId);
@@ -615,10 +615,10 @@
                 // Show modal with loading state
                 modal.classList.remove('hidden');
                 contentContainer.innerHTML = `
-                                            <div class="flex items-center justify-center py-8">
-                                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-                                            </div>
-                                        `;
+                                                    <div class="flex items-center justify-center py-8">
+                                                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                                                    </div>
+                                                `;
 
                 // Trigger animation
                 setTimeout(() => {
@@ -645,101 +645,101 @@
                             };
 
                             contentContainer.innerHTML = `
-                                                    <!-- Section Details Card -->
-                                                    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
-                                                        <!-- Title Section -->
-                                                        <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
-                                                            <div class="flex items-center justify-between">
-                                                                <div>
-                                                                    <h2 class="text-sm font-semibold text-gray-900 dark:text-white">${section.section_label || ''}</h2>
-                                                                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">${section.section_description || 'No description provided'}</p>
-                                                                </div>
-                                                                <div class="flex items-center space-x-2">
-                                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${section.is_active ? statusColors['active'] : statusColors['inactive']}">
-                                                                        ${section.is_active ? 'Active' : 'Inactive'}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Section Details List -->
-                                                        <div class="px-4 py-2">
-                                                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                                                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Section Key</span>
-                                                                <span class="text-xs font-mono text-gray-900 dark:text-white">${section.section_key || ''}</span>
-                                                            </div>
-                                                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                                                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Sort Order</span>
-                                                                <span class="text-xs text-gray-900 dark:text-white">${section.sort_order || ''}</span>
-                                                            </div>
-                                                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                                                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Fields Count</span>
-                                                                <span class="text-xs text-gray-900 dark:text-white">${section.fields_count || 0}</span>
-                                                            </div>
-                                                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                                                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Created At</span>
-                                                                <span class="text-xs text-gray-600 dark:text-gray-400">${section.created_at || ''}</span>
-                                                            </div>
-                                                            <div class="flex items-center justify-between py-2 last:border-b-0">
-                                                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Updated At</span>
-                                                                <span class="text-xs text-gray-600 dark:text-gray-400">${section.updated_at || ''}</span>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Action Buttons -->
-                                                        <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
-                                                            <div class="flex items-center justify-end space-x-2">
-                                                                <button onclick="closeViewSectionModal(); setTimeout(() => openEditSectionModal(${sectionId}), 300);" class="inline-flex items-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 dark:text-orange-400 rounded-lg text-xs transition-colors">
-                                                                    <i class='bx bx-edit mr-1'></i>
-                                                                    Edit
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Fields Overview -->
-                                                    ${section.fields && section.fields.length > 0 ? `
-                                                        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-                                                            <!-- Title Section -->
-                                                            <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
-                                                                <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Fields in this Section (${section.fields.length})</h3>
-                                                            </div>
-
-                                                            <!-- Fields List -->
-                                                            <div class="px-4 py-2">
-                                                                ${section.fields.map(field => `
-                                                                    <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
-                                                                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">${field.field_label || field.field_name}</span>
-                                                                        <span class="text-xs text-gray-600 dark:text-gray-400">${field.field_type || ''}</span>
+                                                            <!-- Section Details Card -->
+                                                            <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+                                                                <!-- Title Section -->
+                                                                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
+                                                                    <div class="flex items-center justify-between">
+                                                                        <div>
+                                                                            <h2 class="text-sm font-semibold text-gray-900 dark:text-white">${section.section_label || ''}</h2>
+                                                                            <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">${section.section_description || 'No description provided'}</p>
+                                                                        </div>
+                                                                        <div class="flex items-center space-x-2">
+                                                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${section.is_active ? statusColors['active'] : statusColors['inactive']}">
+                                                                                ${section.is_active ? 'Active' : 'Inactive'}
+                                                                            </span>
+                                                                        </div>
                                                                     </div>
-                                                                `).join('')}
+                                                                </div>
+
+                                                                <!-- Section Details List -->
+                                                                <div class="px-4 py-2">
+                                                                    <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                                                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Section Key</span>
+                                                                        <span class="text-xs font-mono text-gray-900 dark:text-white">${section.section_key || ''}</span>
+                                                                    </div>
+                                                                    <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                                                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Sort Order</span>
+                                                                        <span class="text-xs text-gray-900 dark:text-white">${section.sort_order || ''}</span>
+                                                                    </div>
+                                                                    <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                                                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Fields Count</span>
+                                                                        <span class="text-xs text-gray-900 dark:text-white">${section.fields_count || 0}</span>
+                                                                    </div>
+                                                                    <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                                                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Created At</span>
+                                                                        <span class="text-xs text-gray-600 dark:text-gray-400">${section.created_at || ''}</span>
+                                                                    </div>
+                                                                    <div class="flex items-center justify-between py-2 last:border-b-0">
+                                                                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Updated At</span>
+                                                                        <span class="text-xs text-gray-600 dark:text-gray-400">${section.updated_at || ''}</span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Action Buttons -->
+                                                                <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+                                                                    <div class="flex items-center justify-end space-x-2">
+                                                                        <button onclick="closeViewSectionModal(); setTimeout(() => openEditSectionModal(${sectionId}), 300);" class="inline-flex items-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 dark:text-orange-400 rounded-lg text-xs transition-colors">
+                                                                            <i class='bx bx-edit mr-1'></i>
+                                                                            Edit
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    ` : `
-                                                        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 text-center">
-                                                            <div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
-                                                                <i class='bx bx-file-blank text-xl text-gray-400 dark:text-gray-500'></i>
-                                                            </div>
-                                                            <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">No fields in this section</h4>
-                                                            <p class="text-xs text-gray-600 dark:text-gray-400">Fields will appear here once added to this section</p>
-                                                        </div>
-                                                    `}
-                                                `;
+
+                                                            <!-- Fields Overview -->
+                                                            ${section.fields && section.fields.length > 0 ? `
+                                                                <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                                                                    <!-- Title Section -->
+                                                                    <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
+                                                                        <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Fields in this Section (${section.fields.length})</h3>
+                                                                    </div>
+
+                                                                    <!-- Fields List -->
+                                                                    <div class="px-4 py-2">
+                                                                        ${section.fields.map(field => `
+                                                                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+                                                                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">${field.field_label || field.field_name}</span>
+                                                                                <span class="text-xs text-gray-600 dark:text-gray-400">${field.field_type || ''}</span>
+                                                                            </div>
+                                                                        `).join('')}
+                                                                    </div>
+                                                                </div>
+                                                            ` : `
+                                                                <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 text-center">
+                                                                    <div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
+                                                                        <i class='bx bx-file-blank text-xl text-gray-400 dark:text-gray-500'></i>
+                                                                    </div>
+                                                                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">No fields in this section</h4>
+                                                                    <p class="text-xs text-gray-600 dark:text-gray-400">Fields will appear here once added to this section</p>
+                                                                </div>
+                                                            `}
+                                                        `;
                         } else {
                             contentContainer.innerHTML = `
-                                                    <div class="text-center py-8">
-                                                        <div class="text-red-600 dark:text-red-400 text-sm">Failed to load section details</div>
-                                                    </div>
-                                                `;
+                                                            <div class="text-center py-8">
+                                                                <div class="text-red-600 dark:text-red-400 text-sm">Failed to load section details</div>
+                                                            </div>
+                                                        `;
                         }
                     })
                     .catch(error => {
                         console.error('Error fetching section:', error);
                         contentContainer.innerHTML = `
-                                                <div class="text-center py-8">
-                                                    <div class="text-red-600 dark:text-red-400 text-sm">Error loading section details</div>
-                                                </div>
-                                            `;
+                                                        <div class="text-center py-8">
+                                                            <div class="text-red-600 dark:text-red-400 text-sm">Error loading section details</div>
+                                                        </div>
+                                                    `;
                     });
             }
 

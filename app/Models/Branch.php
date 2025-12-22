@@ -11,6 +11,7 @@ class Branch extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'id', // Allow setting MAP ID
         'branch_name',
         'weekend_start_day',
         'ti_agent_code',

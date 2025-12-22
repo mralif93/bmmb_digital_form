@@ -353,7 +353,7 @@ function openUserViewModal(userId) {
     content.innerHTML = '<div class="flex items-center justify-center py-12"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>';
     
     // Fetch user details
-    fetch(`/admin/users/${userId}/details`, {
+    fetch(`{{ route('admin.users.details', ':id') }}`.replace(':id', userId), {
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'application/json',
@@ -509,7 +509,7 @@ function handleVerifyEmail(userId) {
             formData.append('_token', '{{ csrf_token() }}');
             formData.append('_method', 'POST');
             
-            fetch(`/admin/users/${userId}/verify-email`, {
+            fetch(`{{ route('admin.users.verify-email', ':id') }}`.replace(':id', userId), {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -584,7 +584,7 @@ function handleUnverifyEmail(userId) {
             formData.append('_token', '{{ csrf_token() }}');
             formData.append('_method', 'POST');
             
-            fetch(`/admin/users/${userId}/unverify-email`, {
+            fetch(`{{ route('admin.users.unverify-email', ':id') }}`.replace(':id', userId), {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -663,7 +663,7 @@ function openUserEditModal(userId) {
     content.innerHTML = '<div class="flex items-center justify-center py-12"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>';
     
     // Fetch user edit form
-    fetch(`/admin/users/${userId}/edit-modal`, {
+    fetch(`{{ route('admin.users.edit-modal', ':id') }}`.replace(':id', userId), {
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'application/json',
@@ -810,7 +810,7 @@ function openUserCreateModal() {
     content.innerHTML = '<div class="flex items-center justify-center py-12"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>';
     
     // Fetch user create form
-    fetch(`/admin/users/create-modal`, {
+    fetch(`{{ route('admin.users.create-modal') }}`, {
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'application/json',
