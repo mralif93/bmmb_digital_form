@@ -212,8 +212,16 @@ MAP_DATABASE_PATH=/map_db/db.sqlite3
 ### Permission issues
 ```bash
 # Fix storage permissions
-docker-compose exec web chown -R www-data:www-data storage bootstrap/cache
+# Fix storage permissions
+docker-compose exec web chown -R www-data:www-data /var/www/html
+docker-compose exec web find /var/www/html -type d -exec chmod 755 {} \;
+docker-compose exec web find /var/www/html -type f -exec chmod 644 {} \;
 docker-compose exec web chmod -R 775 storage bootstrap/cache
+
+# Fix database permissions
+docker-compose exec web chown -R www-data:www-data /db
+docker-compose exec web chmod 775 /db
+docker-compose exec web chmod 664 /db/database.sqlite
 ```
 
 ### Database not found
