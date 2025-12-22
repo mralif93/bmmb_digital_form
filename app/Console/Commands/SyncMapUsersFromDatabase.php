@@ -71,9 +71,11 @@ class SyncMapUsersFromDatabase extends Command
                 u.first_name,
                 u.last_name,
                 u.is_active,
+                u.is_superuser,
                 s.position,
                 s.branch_id,
-                b.ti_agent_code as branch_code
+                b.ti_agent_code as branch_code,
+                b.title as branch_name
             FROM user_user u
             LEFT JOIN user_staffprofile s ON u.id = s.user_id
             LEFT JOIN Application_branch b ON s.branch_id = b.id
@@ -116,10 +118,10 @@ class SyncMapUsersFromDatabase extends Command
 
                 if ($result === 'created') {
                     $created++;
-                    $this->line("  <fg=green>+</> Created: {$mapUser['username']} ({$mapUser['email']})");
+                    $this->line("  <fg=green>+</> Created: {$mapUser['username']} (" . ($mapUser['email'] ?: 'no email') . ")");
                 } elseif ($result === 'updated') {
                     $updated++;
-                    $this->line("  <fg=yellow>~</> Updated: {$mapUser['username']} ({$mapUser['email']})");
+                    $this->line("  <fg=yellow>~</> Updated: {$mapUser['username']} (" . ($mapUser['email'] ?: 'no email') . ")");
                 } else {
                     $skipped++;
                 }
@@ -158,15 +160,24 @@ class SyncMapUsersFromDatabase extends Command
      */
     private function syncUser(array $mapUser, bool $dryRun): string
     {
+        // Trim data to ensure clean matching
+        $username = trim($mapUser['username']);
+        $email = trim($mapUser['email']);
+        $firstName = trim($mapUser['first_name']);
+        $lastName = trim($mapUser['last_name']);
+
         // Skip inactive users that don't exist in eForm yet (don't create new inactive users)
         $isActiveInMap = (bool) $mapUser['is_active'];
 
-        // Check if user exists
-        $existingUser = User::withTrashed()
-            ->where('map_user_id', $mapUser['map_user_id'])
-            ->orWhere('username', $mapUser['username'])
-            ->orWhere('email', $mapUser['email'])
-            ->first();
+        // 1. Find user by map_user_id (Primary Match)
+        $existingUser = User::withTrashed()->where('map_user_id', $mapUser['map_user_id'])->first();
+
+        // 2. If not found, find by username (Secondary Match)
+        if (!$existingUser) {
+            $existingUser = User::withTrashed()->where('username', $username)->first();
+        }
+
+        // NOTE: Do not match by email as it is not unique in MAP
 
         // Determine if we need to create or update
         $isNew = !$existingUser;
@@ -179,14 +190,71 @@ class SyncMapUsersFromDatabase extends Command
         // Determine expected status based on MAP is_active
         $expectedStatus = $isActiveInMap ? 'active' : 'inactive';
 
+        // Prepare email - Handle collisions
+        // If email is empty string, set to null
+        $emailToUse = !empty($email) ? $email : null;
+
+        if ($emailToUse) {
+            // Check if email is taken by a DIFFERENT user
+            $emailTaken = User::withTrashed()
+                ->where('email', $emailToUse)
+                ->when($existingUser, function ($q) use ($existingUser) {
+                    $q->where('id', '!=', $existingUser->id);
+                })
+                ->exists();
+
+            if ($emailTaken) {
+                // If collision happens, we set email to null since it's not unique
+                $emailToUse = null;
+                $this->warn("  ⚠ Email collision for {$username}: '{$email}' is taken. Setting email to NULL.");
+            }
+        }
+
+        // Determine is_access_eform
+        // Default logic: active users have access, unless restricted
+        $isAccessEform = true;
+
+        // Restriction: Superusers default to NO access, unless whitelisted
+        $isSuperuser = !empty($mapUser['is_superuser']) && $mapUser['is_superuser'] == 1;
+        if ($isSuperuser) {
+            $whitelist = ['mralif93', 'naziha', 'zaki', 'zaid', 'digital'];
+            if (!in_array($username, $whitelist)) {
+                $isAccessEform = false;
+            }
+        }
+
+        // Map position to role
+        $role = $this->mapPositionToRole($mapUser['position'] ?? '1');
+
+        // OVERRIDE: If is_superuser in MAP, force admin role
+        if ($isSuperuser) {
+            $role = 'admin';
+        }
+
+        // Resolve branch ID
+        $branchId = $this->resolveBranchId($mapUser['branch_id'], $mapUser['branch_code'], $mapUser['branch_name'] ?? null);
+
         // Check if anything changed
         if ($existingUser && !$existingUser->trashed()) {
+
+            // Check role logic:
+            // If MAP says superuser, we expect 'admin'.
+            // If MAP says normal user, but eForm has 'admin', we preserve 'admin' (manual override scenario)
+
+            $checkRole = $role;
+            if ($existingUser->role === 'admin') {
+                $checkRole = 'admin'; // Expect 'admin' if already admin
+            }
+
             $hasChanges =
-                $existingUser->email !== $mapUser['email'] ||
-                $existingUser->first_name !== $mapUser['first_name'] ||
-                $existingUser->last_name !== $mapUser['last_name'] ||
-                $existingUser->map_position !== ($mapUser['position'] ?? null) ||
-                $existingUser->role !== $this->mapPositionToRole($mapUser['position'] ?? '1') ||
+                $existingUser->map_user_id != $mapUser['map_user_id'] ||
+                $existingUser->email !== $emailToUse ||
+                $existingUser->first_name !== $firstName ||
+                $existingUser->last_name !== $lastName ||
+                $existingUser->map_position !== ($mapUser['position'] ?? '') ||
+                $existingUser->role !== $checkRole ||
+                $existingUser->branch_id !== $branchId ||
+                $existingUser->is_access_eform !== $isAccessEform ||
                 $existingUser->status !== $expectedStatus;
 
             if (!$hasChanges) {
@@ -194,39 +262,57 @@ class SyncMapUsersFromDatabase extends Command
             }
         }
 
+
         if ($dryRun) {
             return $isNew ? 'created' : 'updated';
         }
 
-        // Restore if trashed
-        if ($existingUser && $existingUser->trashed()) {
-            $existingUser->restore();
-        }
+        if ($existingUser) {
+            // Update existing user
+            $existingUser->map_user_id = $mapUser['map_user_id'];
+            $existingUser->username = $username;
+            $existingUser->email = $emailToUse;
+            $existingUser->first_name = $firstName;
+            $existingUser->last_name = $lastName;
+            $existingUser->map_position = $mapUser['position'] ?? '1';
 
-        // Map position to role
-        $role = $this->mapPositionToRole($mapUser['position'] ?? '1');
+            // Preserve 'admin' role if already assigned, OR if new role (from is_superuser) is admin
+            if ($role === 'admin') {
+                $existingUser->role = 'admin';
+            } elseif ($existingUser->role !== 'admin') {
+                $existingUser->role = $role;
+            }
 
-        // Resolve branch ID
-        $branchId = $this->resolveBranchId($mapUser['branch_id'], $mapUser['branch_code']);
+            $existingUser->branch_id = $branchId;
+            $existingUser->status = $expectedStatus;
+            $existingUser->map_last_sync = now();
+            $existingUser->is_map_synced = true;
+            $existingUser->is_access_eform = $isAccessEform;
 
-        // Update or create
-        $user = User::withTrashed()->updateOrCreate(
-            ['map_user_id' => $mapUser['map_user_id']],
-            [
-                'username' => $mapUser['username'],
-                'email' => $mapUser['email'],
-                'first_name' => $mapUser['first_name'],
-                'last_name' => $mapUser['last_name'],
+            // Restore if trashed
+            if ($existingUser->trashed()) {
+                $existingUser->restore();
+            }
+
+            $existingUser->save();
+        } else {
+            // Create new user
+            User::create([
+                'map_user_id' => $mapUser['map_user_id'],
+                'username' => $username,
+                'email' => $emailToUse,
+                'first_name' => $firstName,
+                'last_name' => $lastName,
                 'map_position' => $mapUser['position'] ?? '1',
                 'role' => $role,
                 'branch_id' => $branchId,
-                'status' => $isActiveInMap ? 'active' : 'inactive',
+                'status' => $expectedStatus,
                 'map_last_sync' => now(),
                 'is_map_synced' => true,
-                'deleted_at' => null,
-                'password' => $existingUser?->password ?? bcrypt(Str::random(32)),
-            ]
-        );
+                'is_access_eform' => $isAccessEform,
+                'password' => bcrypt(Str::random(32)),
+            ]);
+        }
 
         return $isNew ? 'created' : 'updated';
     }
@@ -250,13 +336,13 @@ class SyncMapUsersFromDatabase extends Command
     /**
      * Resolve branch ID from MAP branch_id or branch_code
      */
-    private function resolveBranchId(?int $mapBranchId, ?string $branchCode): ?int
+    private function resolveBranchId(?int $mapBranchId, ?string $branchCode, ?string $branchName): ?int
     {
-        if (!$mapBranchId && !$branchCode) {
+        if (!$mapBranchId && !$branchCode && !$branchName) {
             return null;
         }
 
-        // Try to find by branch code (ti_agent_code)
+        // 1. Try to find by branch code (most reliable unique identifier)
         if ($branchCode) {
             $branch = Branch::where('ti_agent_code', $branchCode)->first();
             if ($branch) {
@@ -264,8 +350,23 @@ class SyncMapUsersFromDatabase extends Command
             }
         }
 
-        // Fallback to direct ID if branches match between systems
-        return $mapBranchId;
+        // 2. Try to find by branch name (fallback if code is missing/empty)
+        if ($branchName) {
+            $branch = Branch::where('branch_name', $branchName)->first();
+            if ($branch) {
+                return $branch->id;
+            }
+        }
+
+        // 3. Last fallback: direct ID check (if branches synced 1:1)
+        if ($mapBranchId) {
+            // Verify it actually exists to avoid FK error
+            if (Branch::where('id', $mapBranchId)->exists()) {
+                return $mapBranchId;
+            }
+        }
+
+        return null;
     }
 
     /**

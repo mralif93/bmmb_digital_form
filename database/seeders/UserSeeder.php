@@ -42,9 +42,11 @@ class UserSeeder extends Seeder
                     u.first_name,
                     u.last_name,
                     u.is_active,
+                    u.is_superuser,
                     s.position,
                     s.branch_id,
-                    b.ti_agent_code as branch_code
+                    b.ti_agent_code as branch_code,
+                    b.title as branch_name
                 FROM user_user u
                 LEFT JOIN user_staffprofile s ON u.id = s.user_id
                 LEFT JOIN Application_branch b ON s.branch_id = b.id
@@ -59,53 +61,104 @@ class UserSeeder extends Seeder
 
             foreach ($users as $mapUser) {
                 try {
-                    // Find branch by ti_agent_code
+                    // Trim data
+                    $username = trim($mapUser['username']);
+                    $email = trim($mapUser['email']);
+                    $firstName = trim($mapUser['first_name']);
+                    $lastName = trim($mapUser['last_name']);
+
+                    // Find user by map_user_id (Primary Match)
+                    $existingUser = User::withTrashed()->where('map_user_id', $mapUser['map_user_id'])->first();
+
+                    // If not found, find by username (Secondary Match)
+                    if (!$existingUser) {
+                        $existingUser = User::withTrashed()->where('username', $username)->first();
+                    }
+
+                    // Prepare email - Handle collisions
+                    // If email is empty string or null, set to null
+                    $emailToUse = !empty($email) ? $email : null;
+
+                    // Only check collision if we actually have an email
+                    if ($emailToUse) {
+                        // Check if email is taken by a DIFFERENT user
+                        $emailTaken = User::withTrashed()
+                            ->where('email', $emailToUse)
+                            ->when($existingUser, function ($q) use ($existingUser) {
+                                $q->where('id', '!=', $existingUser->id);
+                            })
+                            ->exists();
+
+                        if ($emailTaken) {
+                            // If collision happens, we set email to null since it's not unique
+                            $emailToUse = null;
+                        }
+                    }
+
+                    // Robust Branch Resolution
                     $branchId = null;
-                    if ($mapUser['branch_code']) {
+                    // 1. Code
+                    if (!empty($mapUser['branch_code'])) {
                         $branch = Branch::where('ti_agent_code', $mapUser['branch_code'])->first();
                         $branchId = $branch?->id;
+                    }
+                    // 2. Name
+                    if (!$branchId && !empty($mapUser['branch_name'])) {
+                        $branch = Branch::where('branch_name', $mapUser['branch_name'])->first();
+                        $branchId = $branch?->id;
+                    }
+                    // 3. ID
+                    if (!$branchId && !empty($mapUser['branch_id'])) {
+                        if (Branch::where('id', $mapUser['branch_id'])->exists()) {
+                            $branchId = $mapUser['branch_id'];
+                        }
                     }
 
                     // Map position to role
                     $role = $this->mapPositionToRole($mapUser['position'] ?? '1');
 
-                    // Check if user exists
-                    $existingUser = User::withTrashed()
-                        ->where('map_user_id', $mapUser['map_user_id'])
-                        ->orWhere('email', $mapUser['email'])
-                        ->first();
+                    // OVERRIDE: If is_superuser in MAP, force admin role
+                    if (!empty($mapUser['is_superuser']) && $mapUser['is_superuser'] == 1) {
+                        $role = 'admin';
+                    }
+
+                    // Determine is_access_eform
+                    $isAccessEform = true;
+                    // Restriction: Superusers default to NO access, unless whitelisted
+                    if (!empty($mapUser['is_superuser']) && $mapUser['is_superuser'] == 1) {
+                        $whitelist = ['mralif93', 'naziha', 'zaki', 'zaid', 'digital'];
+                        if (!in_array($username, $whitelist)) {
+                            $isAccessEform = false;
+                        }
+                    }
+
+                    $userData = [
+                        'map_user_id' => $mapUser['map_user_id'],
+                        'username' => $username,
+                        'email' => $emailToUse,
+                        'first_name' => $firstName,
+                        'last_name' => $lastName,
+                        'map_position' => $mapUser['position'] ?? '1',
+                        'role' => $role,
+                        'branch_id' => $branchId,
+                        'status' => 'active',
+                        'is_map_synced' => true,
+                        'is_access_eform' => $isAccessEform,
+                        'map_last_sync' => now(),
+                        'deleted_at' => null,
+                    ];
 
                     if ($existingUser) {
-                        $existingUser->update([
-                            'map_user_id' => $mapUser['map_user_id'],
-                            'username' => $mapUser['username'],
-                            'email' => $mapUser['email'],
-                            'first_name' => $mapUser['first_name'],
-                            'last_name' => $mapUser['last_name'],
-                            'map_position' => $mapUser['position'] ?? '1',
-                            'role' => $role,
-                            'branch_id' => $branchId,
-                            'status' => 'active',
-                            'is_map_synced' => true,
-                            'map_last_sync' => now(),
-                            'deleted_at' => null,
-                        ]);
+                        // Preserve existing admin role if this update wouldn't otherwise make them admin
+                        if ($existingUser->role === 'admin' && $role !== 'admin') {
+                            $userData['role'] = 'admin';
+                        }
+
+                        $existingUser->update($userData);
                         $updated++;
                     } else {
-                        User::create([
-                            'map_user_id' => $mapUser['map_user_id'],
-                            'username' => $mapUser['username'],
-                            'email' => $mapUser['email'],
-                            'first_name' => $mapUser['first_name'],
-                            'last_name' => $mapUser['last_name'],
-                            'password' => Hash::make(Str::random(32)),
-                            'map_position' => $mapUser['position'] ?? '1',
-                            'role' => $role,
-                            'branch_id' => $branchId,
-                            'status' => 'active',
-                            'is_map_synced' => true,
-                            'map_last_sync' => now(),
-                        ]);
+                        $userData['password'] = Hash::make(Str::random(32));
+                        User::create($userData);
                         $created++;
                     }
                 } catch (\Exception $e) {

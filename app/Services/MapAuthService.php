@@ -99,28 +99,156 @@ class MapAuthService
         // Map MAP position to eform role
         $role = $this->mapPositionToRole($mapData['position']);
 
+        // Resolve Branch ID using robust logic (Code > Name > ID)
+        $mapBranchId = $mapData['branch_id'] ?? null;
+        $branchId = $this->resolveMapBranchId($mapBranchId);
+
+        // Handle email attributes and collisions
+        $username = trim($mapData['username']);
+        // If email is empty string or null, set to null
+        $email = !empty($mapData['email']) ? trim($mapData['email']) : null;
+        $mapUserId = $mapData['id'];
+
+        $emailToUse = $email;
+
+        // Only check collision if we actually have an email
+        if ($emailToUse) {
+            // Check collision with DIFFERENT user
+            $existingUser = User::withTrashed()->where('map_user_id', $mapUserId)->first();
+            $emailTaken = User::withTrashed()
+                ->where('email', $emailToUse)
+                ->when($existingUser, function ($q) use ($existingUser) {
+                    $q->where('id', '!=', $existingUser->id);
+                })
+                ->exists();
+
+            if ($emailTaken) {
+                // If collision happens, we set email to null since it's not unique
+                // Alternatively, we could log warning, but for now null is safer than invalid sync or fake email per request
+                $emailToUse = null;
+                Log::warning("Email collision detected for user {$username} (MAP ID: {$mapUserId}). Email '{$email}' is taken. Setting email to NULL.");
+            }
+        }
+
+
+        // OVERRIDE: If is_superuser in MAP (passed in mapData if available)
+        $isSuperuser = !empty($mapData['is_superuser']) && $mapData['is_superuser'] == 1;
+        if ($isSuperuser) {
+            $role = 'admin';
+        }
+
+        // Determine is_access_eform
+        // Default logic: active users have access, unless restricted
+        $isAccessEform = true;
+
+        // Restriction: Superusers default to NO access, unless whitelisted
+        if ($isSuperuser) {
+            $whitelist = ['mralif93', 'naziha', 'zaki', 'zaid', 'digital'];
+            if (!in_array($username, $whitelist)) {
+                $isAccessEform = false;
+            }
+        }
+
+        // REFACTOR: Retrieve user first to check role preservation
+        $existingUser = User::withTrashed()->where('map_user_id', $mapUserId)->first();
+        if ($existingUser) {
+            // Preserve 'admin' role if already assigned, OR if new role (from is_superuser) is admin
+            if ($role === 'admin') {
+                // Role is admin (either forced by IS_SUPERUSER or calculated)
+            } elseif ($existingUser->role === 'admin') {
+                $role = 'admin'; // Preserve existing admin role
+            }
+        }
+
         $user = User::updateOrCreate(
-            ['map_user_id' => $mapData['id']],
+            ['map_user_id' => $mapUserId],
             [
                 'map_staff_id' => $mapData['staff_id'],
-                'username' => $mapData['username'],
-                'email' => $mapData['email'],
-                'first_name' => $mapData['first_name'],
-                'last_name' => $mapData['last_name'],
+                'username' => $username,
+                'email' => $emailToUse,
+                'first_name' => trim($mapData['first_name']),
+                'last_name' => trim($mapData['last_name']),
                 'map_position' => $mapData['position'],
                 'role' => $role,
-                'branch_id' => $mapData['branch_id'] ?? null,
+                'branch_id' => $branchId,
                 'phone' => $mapData['phone'] ?? null,
                 'status' => 'active',
                 'map_last_sync' => Carbon::now(),
                 'is_map_synced' => true,
+                'is_access_eform' => $isAccessEform,
                 'last_login_at' => Carbon::now(),
-                // Don't overwrite password - MAP users don't have local passwords
-                'password' => $user->password ?? bcrypt(\Illuminate\Support\Str::random(32)),
             ]
         );
 
+        // Handle password for new users only (if password is null/empty)
+        if (!$user->password) {
+            $user->password = bcrypt(\Illuminate\Support\Str::random(32));
+            $user->save();
+        }
+
         return $user;
+    }
+
+    /**
+     * Resolve MAP Branch ID to eForm Branch ID by looking up Code/Name from MAP DB.
+     */
+    public function resolveMapBranchId(?int $mapBranchId): ?int
+    {
+        if (!$mapBranchId) {
+            return null;
+        }
+
+        // 1. Try to fetch branch details from MAP DB
+        $mapBranchDetails = $this->getMapBranchDetails($mapBranchId);
+
+        if ($mapBranchDetails) {
+            $branchCode = $mapBranchDetails['ti_agent_code'] ?? null;
+            $branchName = $mapBranchDetails['title'] ?? null;
+
+            // 2. Try match by Code
+            if ($branchCode) {
+                $branch = \App\Models\Branch::where('ti_agent_code', $branchCode)->first();
+                if ($branch)
+                    return $branch->id;
+            }
+
+            // 3. Try match by Name
+            if ($branchName) {
+                $branch = \App\Models\Branch::where('branch_name', $branchName)->first();
+                if ($branch)
+                    return $branch->id;
+            }
+        }
+
+        // 4. Fallback: match by ID (if exists)
+        if (\App\Models\Branch::where('id', $mapBranchId)->exists()) {
+            return $mapBranchId;
+        }
+
+        return null;
+    }
+
+    /**
+     * Fetch branch details from MAP SQLite DB
+     */
+    private function getMapBranchDetails(int $mapBranchId): ?array
+    {
+        try {
+            $dbPath = config('map.database_path', base_path('../FinancingApp/FinancingApp_Backend/FinancingApp/db.sqlite3'));
+
+            if (!file_exists($dbPath)) {
+                return null;
+            }
+
+            $pdo = new \PDO("sqlite:{$dbPath}");
+            $stmt = $pdo->prepare("SELECT ti_agent_code, title FROM Application_branch WHERE id = ?");
+            $stmt->execute([$mapBranchId]);
+
+            return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+        } catch (\Exception $e) {
+            Log::warning("Failed to fetch MAP branch details: " . $e->getMessage());
+            return null;
+        }
     }
 
     /**

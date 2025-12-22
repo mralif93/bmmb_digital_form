@@ -27,25 +27,47 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
+        // Allow login via email, username, or staff_id
+        // We use 'login' field if present, otherwise fallback to 'email' check (for backward compat)
+        // But request probably sends 'email' field currently if using old form. 
+        // We should check what the field name is. Assuming user might change form to send 'username' or 'login'.
+        // Let's support 'login' or 'username' or 'email'.
+
+        $loginField = $request->has('login') ? 'login' : ($request->has('username') ? 'username' : 'email');
+
         $request->validate([
-            'email' => 'required|email',
+            $loginField => 'required',
             'password' => 'required',
         ]);
 
-        $credentials = $request->only('email', 'password');
-        
-        // Check if user exists and is active
-        $user = User::where('email', $request->email)->first();
-        
+        $loginValue = $request->input($loginField);
+        $password = $request->input('password');
+
+        // Find user by Email OR Username OR Staff ID
+        $user = User::where('email', $loginValue)
+            ->orWhere('username', $loginValue)
+            ->orWhere('map_staff_id', $loginValue)
+            ->first();
+
+        // Check active status
         if ($user && $user->status !== 'active') {
             return back()->withErrors([
-                'email' => 'Your account is not active. Please contact administrator.',
+                $loginField => 'Your account is not active. Please contact administrator.',
             ])->withInput();
         }
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        // Check eForm access
+        if ($user && $user->is_access_eform === false) {
+            return back()->withErrors([
+                $loginField => 'You do not have permission to access E-form. Please contact administrator.',
+            ])->withInput();
+        }
+
+        // Attempt login
+        if ($user && Hash::check($password, $user->password)) {
+            Auth::login($user, $request->boolean('remember'));
+
             // Update last login info
-            $user = Auth::user();
             $user->update([
                 'last_login_at' => now(),
                 'last_login_ip' => $request->ip(),
@@ -60,7 +82,6 @@ class AuthController extends Controller
             );
 
             // Redirect based on user role
-            // Admin, staff roles (HQ, BM, ABM, OO), and IAM go to admin dashboard
             if ($user->isAdmin() || $user->isHQ() || $user->isBM() || $user->isABM() || $user->isOO() || $user->isIAM()) {
                 return redirect()->route('admin.dashboard');
             }
@@ -69,7 +90,7 @@ class AuthController extends Controller
         }
 
         throw ValidationException::withMessages([
-            'email' => ['The provided credentials do not match our records.'],
+            $loginField => ['The provided credentials do not match our records.'],
         ]);
     }
 
@@ -128,7 +149,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $user = Auth::user();
-        
+
         // Log audit trail for logout (before logout)
         if ($user) {
             $this->logAuditTrail(

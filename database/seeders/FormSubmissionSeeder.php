@@ -19,10 +19,9 @@ class FormSubmissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get all forms (only SRF enabled for testing)
-        $forms = Form::whereIn('slug', ['srf'])->get();
-        // $forms = Form::whereIn('slug', ['raf', 'dar', 'dcr', 'srf'])->get(); // DISABLED: other forms
-        
+        // Get all forms
+        $forms = Form::whereIn('slug', ['dar', 'dcr', 'srf'])->get();
+
         if ($forms->isEmpty()) {
             $this->command->warn('No forms found. Please run FormManagementSeeder first.');
             return;
@@ -37,77 +36,79 @@ class FormSubmissionSeeder extends Seeder
             return;
         }
 
-        // Status options
-        $statuses = ['draft', 'submitted', 'pending_process', 'under_review', 'approved', 'rejected', 'completed', 'in_progress'];
+        // Status options - FORCE SUBMITTED
+        // $statuses = ['draft', 'submitted', 'pending_process', 'under_review', 'approved', 'rejected', 'completed', 'in_progress'];
 
         foreach ($forms as $form) {
             // Load form with sections and fields
-            $form->load(['sections.fields' => function($query) {
-                $query->where('is_active', true)->ordered();
-            }]);
+            $form->load([
+                'sections.fields' => function ($query) {
+                    $query->where('is_active', true)->ordered();
+                }
+            ]);
 
             // Get branch users (BM, ABM, OO) for testing takeup and complete functions
             $branchUsers = $allUsers->whereNotNull('branch_id')->whereIn('role', ['branch_manager', 'assistant_branch_manager', 'operation_officer']);
-            
+
             // Create test submissions for takeup and complete functions
             if ($branchUsers->isNotEmpty()) {
                 $testBranchUser = $branchUsers->random();
                 $testBranch = $branches->where('id', $testBranchUser->branch_id)->first() ?? $branches->random();
-                
+
                 // Create 2-3 submissions with 'submitted' status for testing takeup
                 $takeupCount = rand(2, 3);
                 for ($i = 1; $i <= $takeupCount; $i++) {
                     $this->createTestSubmission($form, $testBranchUser, $testBranch, 'submitted', $form->sections);
                 }
-                
-                // Create 2-3 submissions with 'pending_process' status for testing complete
+
+                // Create 2-3 submissions with 'submitted' status (formerly pending_process)
                 $completeCount = rand(2, 3);
                 for ($i = 1; $i <= $completeCount; $i++) {
-                    $this->createTestSubmission($form, $testBranchUser, $testBranch, 'pending_process', $form->sections);
+                    $this->createTestSubmission($form, $testBranchUser, $testBranch, 'submitted', $form->sections);
                 }
-                
+
             }
 
             // Create 10-15 random submissions per form
             $submissionCount = rand(10, 15);
-            
+
             for ($i = 1; $i <= $submissionCount; $i++) {
                 $startedAt = now()->subDays(rand(1, 90))->subHours(rand(1, 23));
-                $status = $statuses[array_rand($statuses)];
-                $submittedAt = in_array($status, ['draft']) 
-                    ? null 
+                $status = 'submitted';
+                $submittedAt = in_array($status, ['draft'])
+                    ? null
                     : $startedAt->copy()->addMinutes(rand(15, 120));
-                
+
                 // Strategy: Create submissions that match the branch filtering logic
                 // BM/ABM/OO users should see submissions from their branch
                 // Admin/HQ users can see all submissions
-                
+
                 // Get branch users (BM, ABM, OO) and non-branch users (Admin, HQ)
                 $branchUsers = $allUsers->whereNotNull('branch_id'); // BM, ABM, OO
                 $nonBranchUsers = $allUsers->whereNull('branch_id'); // Admin, HQ
-                
+
                 // 70% chance: Create submission for a branch user (from their branch)
                 // 30% chance: Create submission for admin/HQ (any branch)
                 if ($branchUsers->isNotEmpty() && rand(0, 9) < 7) {
                     // Select a branch user and use their branch for the submission
                     $user = $branchUsers->random();
                     $branch = $branches->where('id', $user->branch_id)->first();
-                    
+
                     // Fallback: if user's branch doesn't exist, use random branch
                     if (!$branch) {
                         $branch = $branches->random();
                     }
                 } else {
                     // Use admin/HQ user, submission can be from any branch
-                    $user = $nonBranchUsers->isNotEmpty() 
-                        ? $nonBranchUsers->random() 
+                    $user = $nonBranchUsers->isNotEmpty()
+                        ? $nonBranchUsers->random()
                         : $allUsers->random();
                     $branch = $branches->random();
                 }
-                
+
                 // Reviewer can be any user (admin/HQ typically review)
-                $reviewedBy = in_array($status, ['under_review', 'approved', 'rejected', 'completed']) 
-                    ? $allUsers->random() 
+                $reviewedBy = in_array($status, ['under_review', 'approved', 'rejected', 'completed'])
+                    ? $allUsers->random()
                     : null;
 
                 // Generate submission data based on form fields
@@ -123,7 +124,7 @@ class FormSubmissionSeeder extends Seeder
 
                         $fieldValue = $this->generateFieldValue($field);
                         $fieldName = $field->field_name;
-                        
+
                         $submissionData[$fieldName] = $fieldValue;
                         $fieldResponses[$fieldName] = $fieldValue;
 
@@ -147,6 +148,7 @@ class FormSubmissionSeeder extends Seeder
                     'user_id' => $user->id,
                     'branch_id' => $branch->id,
                     'submission_token' => strtolower($form->slug) . '_' . uniqid() . '_' . time(),
+                    'reference_number' => FormSubmission::generateReferenceNumber(),
                     'status' => $status,
                     'submission_data' => $submissionData,
                     'field_responses' => $fieldResponses,
@@ -189,10 +191,10 @@ class FormSubmissionSeeder extends Seeder
                         }
 
                         $fieldValue = $submissionData[$field->field_name] ?? null;
-                        
+
                         if ($fieldValue !== null) {
                             $isJsonField = in_array($field->field_type, ['checkbox', 'multiselect']);
-                            
+
                             // Find file path if this is a file field
                             $filePath = null;
                             if (in_array($field->field_type, ['file', 'image']) && !empty($fileUploads)) {
@@ -201,11 +203,11 @@ class FormSubmissionSeeder extends Seeder
                                     $filePath = $fileUploads[$fileIndex]['path'];
                                 }
                             }
-                            
+
                             FormSubmissionData::create([
                                 'submission_id' => $submission->id,
                                 'field_id' => $field->id,
-                                'field_value' => $isJsonField ? null : (string)$fieldValue,
+                                'field_value' => $isJsonField ? null : (string) $fieldValue,
                                 'field_value_json' => $isJsonField ? (is_array($fieldValue) ? $fieldValue : [$fieldValue]) : null,
                                 'file_path' => $filePath,
                             ]);
@@ -226,20 +228,20 @@ class FormSubmissionSeeder extends Seeder
             case 'text':
             case 'textarea':
                 return fake()->sentence();
-            
+
             case 'email':
                 return fake()->email();
-            
+
             case 'phone':
             case 'tel':
                 return fake()->phoneNumber();
-            
+
             case 'number':
-                return (string)rand(1, 10000);
-            
+                return (string) rand(1, 10000);
+
             case 'date':
                 return fake()->date('Y-m-d');
-            
+
             case 'select':
             case 'radio':
                 if ($field->field_options && is_array($field->field_options)) {
@@ -247,7 +249,7 @@ class FormSubmissionSeeder extends Seeder
                     return $options[array_rand($options)] ?? null;
                 }
                 return null;
-            
+
             case 'checkbox':
             case 'multiselect':
                 if ($field->field_options && is_array($field->field_options)) {
@@ -260,15 +262,15 @@ class FormSubmissionSeeder extends Seeder
                     return array_slice($options, 0, $count);
                 }
                 return [];
-            
+
             case 'boolean':
             case 'yes_no':
                 return rand(0, 1) ? 'yes' : 'no';
-            
+
             case 'file':
             case 'image':
                 return 'document_' . uniqid() . '.pdf';
-            
+
             default:
                 return fake()->word();
         }
@@ -281,7 +283,7 @@ class FormSubmissionSeeder extends Seeder
     {
         $startedAt = now()->subDays(rand(1, 30))->subHours(rand(1, 23));
         $submittedAt = $startedAt->copy()->addMinutes(rand(15, 120));
-        
+
         // Generate submission data based on form fields
         $submissionData = [];
         $fieldResponses = [];
@@ -295,7 +297,7 @@ class FormSubmissionSeeder extends Seeder
 
                 $fieldValue = $this->generateFieldValue($field);
                 $fieldName = $field->field_name;
-                
+
                 $submissionData[$fieldName] = $fieldValue;
                 $fieldResponses[$fieldName] = $fieldValue;
 
@@ -327,6 +329,7 @@ class FormSubmissionSeeder extends Seeder
             'user_id' => $user->id,
             'branch_id' => $branch->id,
             'submission_token' => strtolower($form->slug) . '_test_' . uniqid() . '_' . time(),
+            'reference_number' => FormSubmission::generateReferenceNumber(),
             'status' => $status,
             'submission_data' => $submissionData,
             'field_responses' => $fieldResponses,
@@ -367,10 +370,10 @@ class FormSubmissionSeeder extends Seeder
                 }
 
                 $fieldValue = $submissionData[$field->field_name] ?? null;
-                
+
                 if ($fieldValue !== null) {
                     $isJsonField = in_array($field->field_type, ['checkbox', 'multiselect']);
-                    
+
                     // Find file path if this is a file field
                     $filePath = null;
                     if (in_array($field->field_type, ['file', 'image']) && !empty($fileUploads)) {
@@ -379,11 +382,11 @@ class FormSubmissionSeeder extends Seeder
                             $filePath = $fileUploads[$fileIndex]['path'];
                         }
                     }
-                    
+
                     FormSubmissionData::create([
                         'submission_id' => $submission->id,
                         'field_id' => $field->id,
-                        'field_value' => $isJsonField ? null : (string)$fieldValue,
+                        'field_value' => $isJsonField ? null : (string) $fieldValue,
                         'field_value_json' => $isJsonField ? (is_array($fieldValue) ? $fieldValue : [$fieldValue]) : null,
                         'file_path' => $filePath,
                     ]);

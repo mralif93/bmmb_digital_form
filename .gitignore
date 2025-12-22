@@ -50,3 +50,4 @@ Homestead.yaml
 
 # Database backups
 database/backups/*.sqlite.backup_*
+/database/database.sqlite

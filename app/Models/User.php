@@ -39,6 +39,7 @@ class User extends Authenticatable
         'map_position',
         'map_last_sync',
         'is_map_synced',
+        'is_access_eform',
     ];
 
     /**
@@ -62,6 +63,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'last_login_at' => 'datetime',
+            'is_access_eform' => 'boolean',
         ];
     }
 

@@ -123,6 +123,19 @@ class MapSsoController extends Controller
                 ->with('error', 'Failed to create user account. Please contact administrator.');
         }
 
+        // Check if user has required permissions (HQ/BM/CFE only or is_access_eform)
+        if (!$this->userHasAccess($user)) {
+            Log::warning('User does not have eform access (SSO Token)', [
+                'user_id' => $user->id,
+                'role' => $user->role,
+                'map_position' => $user->map_position,
+                'is_access_eform' => $user->is_access_eform
+            ]);
+
+            return redirect()->route('map.login.page')
+                ->with('error', 'You do not have permission to access E-form. Please contact administrator.');
+        }
+
         // Log user in
         Auth::login($user);
 
@@ -206,23 +219,80 @@ class MapSsoController extends Controller
             // Map MAP position to eform role
             $role = $this->mapPositionToRole($tokenData['position'] ?? '1');
 
+            // 1. Resolve Branch ID (Robust Logic)
+            // We need to resolve from MAP DB if possible.
+            // Since we are in the controller, we can use the MapAuthService.
+
+            $branchId = $this->mapAuthService->resolveMapBranchId($tokenData['branch_id'] ?? null);
+
+            // 2. Handle email collision
+            $email = !empty($tokenData['email']) ? $tokenData['email'] : null;
+            $mapUserId = $tokenData['user_id'];
+            $username = $tokenData['username'] ?? 'user';
+
+            if ($email) {
+                // Check if email is taken by a DIFFERENT user
+                $existingUser = \App\Models\User::withTrashed()->where('map_user_id', $mapUserId)->first();
+
+                $emailTaken = \App\Models\User::withTrashed()
+                    ->where('email', $email)
+                    ->when($existingUser, function ($q) use ($existingUser) {
+                        $q->where('id', '!=', $existingUser->id);
+                    })
+                    ->exists();
+
+                if ($emailTaken) {
+                    $email = null; // Set to NULL on collision
+                }
+            }
+
+            // Refactor: Preserve 'admin' role if already assigned
+            $existingUser = \App\Models\User::withTrashed()->where('map_user_id', $mapUserId)->first();
+            if ($existingUser && $existingUser->role === 'admin') {
+                $role = 'admin';
+            }
+
+            // OVERRIDE: If is_superuser is true (passed in token)
+            $isSuperuser = !empty($tokenData['is_superuser']) && $tokenData['is_superuser'] == 1;
+
+            if ($isSuperuser) {
+                // Force role admin if superuser
+                $role = 'admin';
+            }
+
+            // Determine is_access_eform
+            $isAccessEform = true;
+
+            if ($isSuperuser) {
+                $whitelist = ['mralif93', 'naziha', 'zaki', 'zaid', 'digital'];
+                if (!in_array($username, $whitelist)) {
+                    $isAccessEform = false;
+                }
+            }
+
             $user = \App\Models\User::updateOrCreate(
-                ['map_user_id' => $tokenData['user_id']],
+                ['map_user_id' => $mapUserId],
                 [
-                    'username' => $tokenData['username'] ?? null,
-                    'email' => $tokenData['email'],
+                    'username' => $username,
+                    'email' => $email,
                     'first_name' => $tokenData['first_name'],
                     'last_name' => $tokenData['last_name'],
                     'map_position' => $tokenData['position'],
                     'role' => $role,
-                    'branch_id' => $tokenData['branch_id'] ?? null,
+                    'branch_id' => $branchId,
                     'status' => 'active',
                     'map_last_sync' => now(),
                     'is_map_synced' => true,
+                    'is_access_eform' => $isAccessEform,
                     'last_login_at' => now(),
-                    'password' => bcrypt(\Illuminate\Support\Str::random(32)),
+                    // Password handling
                 ]
             );
+
+            if (!$user->password) {
+                $user->password = bcrypt(\Illuminate\Support\Str::random(32));
+                $user->save();
+            }
 
             return $user;
         } catch (\Exception $e) {
@@ -261,6 +331,11 @@ class MapSsoController extends Controller
      */
     private function userHasAccess($user): bool
     {
+        // 1. Check strict access flag (is_access_eform)
+        if ($user->is_access_eform === false) {
+            return false;
+        }
+
         // Allow these MAP positions: 1=HQ, 2=BM, 3=CFE
         $allowedPositions = ['1', '2', '3'];
 
@@ -339,23 +414,24 @@ class MapSsoController extends Controller
         }
 
         // Get credentials from query parameters
-        $username = $request->query('username');
+        // We accept 'username' query param but it can be username, email or staff_id
+        $loginValue = $request->query('username');
         $password = $request->query('password');
 
-        if (!$username || !$password) {
+        if (!$loginValue || !$password) {
             Log::warning('Dev login: Missing username or password');
             return redirect()->route('map.login.page')
                 ->with('error', 'Username and password are required for dev login.');
         }
 
-        // Attempt to authenticate using Laravel's Auth
-        $credentials = [
-            'username' => $username,
-            'password' => $password,
-        ];
+        // Find user by Email OR Username OR Staff ID
+        $user = \App\Models\User::where('email', $loginValue)
+            ->orWhere('username', $loginValue)
+            ->orWhere('map_staff_id', $loginValue)
+            ->first();
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
+        if ($user && \Illuminate\Support\Facades\Hash::check($password, $user->password)) {
+            Auth::login($user);
 
             // Log audit trail
             $this->logAuditTrail(
@@ -375,7 +451,7 @@ class MapSsoController extends Controller
         }
 
         // Auth failed - log and show error
-        Log::warning('Dev login: Authentication failed', ['username' => $username]);
+        Log::warning('Dev login: Authentication failed', ['username' => $loginValue]);
         return redirect()->route('map.login.page')
             ->with('error', 'Invalid username or password.');
     }

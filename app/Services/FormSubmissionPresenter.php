@@ -181,10 +181,44 @@ class FormSubmissionPresenter
     public static function formatSubmissionData(FormSubmission $submission): array
     {
         $formSlug = $submission->form->slug ?? 'unknown';
-        $fieldResponses = $submission->field_responses ?? [];
-
-        // Group fields by their prefix/section
         $grouped = [];
+
+        // Check if we have submissionData relationship loaded with fields
+        if ($submission->submissionData && $submission->submissionData->count() > 0) {
+            foreach ($submission->submissionData as $data) {
+                // Skip inactive fields or internal fields if necessary
+                if ($data->field && $data->field->is_active === 0)
+                    continue;
+
+                $fieldName = $data->field->field_name ?? $data->field_id;
+                $value = $data->field_value_json ?? $data->file_path ?? $data->field_value;
+
+                // Use label from database if available
+                $label = $data->field->field_label ?? self::getFieldLabel($formSlug, $fieldName);
+
+                // Use section from database if available (though currently we infer section from name)
+                $section = self::determineSectionForField($fieldName, $formSlug);
+
+                if (!isset($grouped[$section])) {
+                    $grouped[$section] = [];
+                }
+
+                $grouped[$section][] = [
+                    'field_name' => $fieldName,
+                    'label' => $label,
+                    'value' => self::formatFieldValue($formSlug, $fieldName, $value),
+                    'type' => self::detectFieldType($fieldName, $value),
+                ];
+            }
+
+            // If we successfully grouped data from relation, return it
+            if (!empty($grouped)) {
+                return $grouped;
+            }
+        }
+
+        // Fallback to JSON columns (Legacy behavior)
+        $fieldResponses = $submission->field_responses ?? [];
 
         foreach ($fieldResponses as $fieldName => $value) {
             $label = self::getFieldLabel($formSlug, $fieldName);
