@@ -11,6 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Trust proxies for HTTPS detection (critical for cloud/container deployments)
+        $middleware->trustProxies(at: '*');
+
         // Strip /eform prefix from requests
         $middleware->prependToGroup('web', \App\Http\Middleware\StripEformPrefix::class);
 

@@ -26,9 +26,36 @@ class AppServiceProvider extends ServiceProvider
             URL::forceRootUrl(config('app.url'));
         }
 
-        // Force HTTPS in production
-        if (config('app.env') === 'production') {
+        // Force HTTPS in production, staging, and SIT environments
+        // OR when the request is coming through an HTTPS proxy
+        $shouldForceHttps = in_array(config('app.env'), ['production', 'staging', 'sit'])
+            || $this->isBehindHttpsProxy();
+
+        if ($shouldForceHttps) {
             URL::forceScheme('https');
         }
+    }
+
+    /**
+     * Check if the application is behind an HTTPS proxy
+     * 
+     * @return bool
+     */
+    private function isBehindHttpsProxy(): bool
+    {
+        // Check common proxy headers that indicate HTTPS
+        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+            return true;
+        }
+
+        if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            return true;
+        }
+
+        if (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] === 'on') {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -393,8 +393,16 @@ class MapSsoController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        // Get MAP logout URL from config
+        $mapLogoutUrl = config('map.logout_url', 'http://127.0.0.1:8000/pengurusan/logout/');
+
+        // If the config URL is HTTP but we're on HTTPS, force HTTPS for security
+        if ($request->secure() && str_starts_with($mapLogoutUrl, 'http://')) {
+            $mapLogoutUrl = str_replace('http://', 'https://', $mapLogoutUrl);
+        }
+
         // Redirect to MAP logout (federated logout - also logs out from MAP)
-        return redirect(config('map.logout_url', 'http://127.0.0.1:8000/pengurusan/logout/'));
+        return redirect($mapLogoutUrl);
     }
 
     /**
