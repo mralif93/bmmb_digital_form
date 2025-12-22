@@ -1,11 +1,8 @@
 services:
   web:
     container_name: eform_web
-    user: root
     working_dir: /var/www/html
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     volumes:
       - ${MAP_DB_PATH:-./database}:/db
       - /opt/map/map_db/db.sqlite3:/map_db/db.sqlite3
@@ -16,21 +13,21 @@ services:
       - APP_ENV=${APP_ENV:-production}
       - APP_KEY=${APP_KEY}
       - DB_CONNECTION=${DB_CONNECTION:-sqlite}
-    ports:
-      - "9000:9000"
+    expose:
+      - "9000"
     networks:
       map_bom_rev_network: {}
 
   nginx:
     container_name: eform_nginx
-    image: nginx:alpine
     restart: on-failure
+    image: nginx:latest
     volumes:
       - ./nginx/:/etc/nginx/conf.d
       - ./nginx/logs:/logs
       - .:/var/www/html
-    ports:
-      - "9001:9001"
+    expose:
+      - "9001"
     depends_on:
       - web
     networks:
