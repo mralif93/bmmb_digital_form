@@ -63,6 +63,10 @@ SESSION_LIFETIME=120
 # Point to the mounted path inside the container
 DB_DATABASE=/db/database.sqlite
 
+# MAP Database Path (for Sync)
+# Point to the mounted MAP database
+MAP_DATABASE_PATH=/map_db/db.sqlite3
+
 CACHE_DRIVER=file
 QUEUE_CONNECTION=sync
 
@@ -176,15 +180,34 @@ The mount point for the database directory is controlled by the `MAP_DB_PATH` in
 ```env
 MAP_DB_PATH=/opt/eform/eform_db
 DB_DATABASE=/db/database.sqlite
+# MAP Database Path (for Sync command)
+MAP_DATABASE_PATH=/map_db/db.sqlite3
 ```
 
 **For Local Development:**
 ```env
 MAP_DB_PATH=./database
 # DB_DATABASE can be left default or set to /db/database.sqlite if running in Docker
+# MAP_DATABASE_PATH default is relative path for local dev
 ```
 
 If not specified, it defaults to `./database`.
+
+### MAP Database (for Sync)
+For the `map:sync-from-db` command to work, you must mount the MAP database into the container and set `MAP_DATABASE_PATH`.
+
+Update `docker-compose.yml`:
+```yaml
+volumes:
+  - ${MAP_DB_PATH:-./database}:/db
+  # Add this line to mount MAP database from host to /map_db/db.sqlite3
+  - /opt/map/map_db/db.sqlite3:/map_db/db.sqlite3
+```
+
+Then in `.env`:
+```env
+MAP_DATABASE_PATH=/map_db/db.sqlite3
+```
 
 ### Permission issues
 ```bash
