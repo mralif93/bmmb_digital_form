@@ -46,6 +46,9 @@ RUN chown -R www-data:www-data /var/www/html/storage \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
+# Make all shell scripts executable
+RUN find /var/www/html -type f -name "*.sh" -exec chmod +x {} \;
+
 # Copy custom PHP-FPM configuration to listen on all interfaces
 COPY docker/php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
 
