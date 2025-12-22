@@ -106,6 +106,7 @@ class SyncMapBranchesFromDatabase extends Command
                     Region::create([
                         'id' => $mapRegion['id'],
                         'name' => $mapRegion['name'],
+                        'links' => '', // Empty for now, MAP doesn't have this field
                     ]);
                 }
                 $created++;

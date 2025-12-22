@@ -183,10 +183,10 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 # Get counts before deletion
 echo "Checking current data..."
 $EXEC_PREFIX php artisan tinker --execute="
-    echo 'Users (MAP-synced): ' . App\\Models\\User::where('is_map_synced', true)->count() . PHP_EOL;
-    echo 'Branches: ' . App\\Models\\Branch::count() . PHP_EOL;
-    echo 'States: ' . App\\Models\\State::count() . PHP_EOL;
     echo 'Regions: ' . App\\Models\\Region::count() . PHP_EOL;
+    echo 'States: ' . App\\Models\\State::count() . PHP_EOL;
+    echo 'Branches: ' . App\\Models\\Branch::count() . PHP_EOL;
+    echo 'Users (MAP-synced): ' . App\\Models\\User::where('is_map_synced', true)->count() . PHP_EOL;
 " 2>/dev/null
 
 echo ""
@@ -233,10 +233,10 @@ echo -e "${CYAN}Step 6: Verifying database cleanup...${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
 $EXEC_PREFIX php artisan tinker --execute="
-    echo 'Users (MAP-synced): ' . App\\Models\\User::where('is_map_synced', true)->count() . PHP_EOL;
-    echo 'Branches: ' . App\\Models\\Branch::count() . PHP_EOL;
-    echo 'States: ' . App\\Models\\State::count() . PHP_EOL;
     echo 'Regions: ' . App\\Models\\Region::count() . PHP_EOL;
+    echo 'States: ' . App\\Models\\State::count() . PHP_EOL;
+    echo 'Branches: ' . App\\Models\\Branch::count() . PHP_EOL;
+    echo 'Users (MAP-synced): ' . App\\Models\\User::where('is_map_synced', true)->count() . PHP_EOL;
 " 2>/dev/null
 
 echo -e "${GREEN}✓ Database cleaned${NC}"
