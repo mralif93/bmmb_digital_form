@@ -174,83 +174,59 @@ fi
 echo ""
 
 ################################################################################
-# Step 2: Delete MAP-synced Users
+# Step 2: Delete All MAP Data (with Foreign Key Handling)
 ################################################################################
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${CYAN}Step 2: Deleting MAP-synced users...${NC}"
+echo -e "${CYAN}Step 2: Deleting all MAP data (users, branches, states, regions)...${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
-USER_COUNT=$($EXEC_PREFIX php artisan tinker --execute="echo App\\Models\\User::where('is_map_synced', true)->count();" 2>/dev/null || echo "0")
-
-echo "Found $USER_COUNT MAP-synced users"
-
+# Get counts before deletion
+echo "Checking current data..."
 $EXEC_PREFIX php artisan tinker --execute="
-    \$deleted = App\\Models\\User::where('is_map_synced', true)->delete();
-    echo 'Deleted: ' . \$deleted . ' users';
+    echo 'Users (MAP-synced): ' . App\\Models\\User::where('is_map_synced', true)->count() . PHP_EOL;
+    echo 'Branches: ' . App\\Models\\Branch::count() . PHP_EOL;
+    echo 'States: ' . App\\Models\\State::count() . PHP_EOL;
+    echo 'Regions: ' . App\\Models\\Region::count() . PHP_EOL;
 " 2>/dev/null
 
-echo -e "${GREEN}✓ MAP-synced users deleted${NC}"
+echo ""
+echo "Deleting data (foreign key constraints disabled)..."
+
+# Delete all data with foreign key constraints disabled
+$EXEC_PREFIX php artisan tinker --execute="
+    // Disable foreign key constraints for SQLite
+    DB::statement('PRAGMA foreign_keys = OFF');
+    
+    try {
+        // Delete in reverse dependency order
+        \$usersDeleted = App\\Models\\User::where('is_map_synced', true)->delete();
+        echo 'Deleted users: ' . \$usersDeleted . PHP_EOL;
+        
+        \$branchesDeleted = DB::table('branches')->delete();
+        echo 'Deleted branches: ' . \$branchesDeleted . PHP_EOL;
+        
+        \$statesDeleted = DB::table('states')->delete();
+        echo 'Deleted states: ' . \$statesDeleted . PHP_EOL;
+        
+        \$regionsDeleted = DB::table('regions')->delete();
+        echo 'Deleted regions: ' . \$regionsDeleted . PHP_EOL;
+        
+        // Re-enable foreign key constraints
+        DB::statement('PRAGMA foreign_keys = ON');
+        
+        echo 'Total deleted: ' . (\$usersDeleted + \$branchesDeleted + \$statesDeleted + \$regionsDeleted) . PHP_EOL;
+    } catch (Exception \$e) {
+        // Re-enable foreign keys even if error
+        DB::statement('PRAGMA foreign_keys = ON');
+        throw \$e;
+    }
+" 2>/dev/null
+
+echo -e "${GREEN}✓ All MAP data deleted successfully${NC}"
 echo ""
 
 ################################################################################
-# Step 3: Delete All Branches
-################################################################################
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${CYAN}Step 3: Deleting all branches...${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-
-BRANCH_COUNT=$($EXEC_PREFIX php artisan tinker --execute="echo App\\Models\\Branch::count();" 2>/dev/null || echo "0")
-
-echo "Found $BRANCH_COUNT branches"
-
-$EXEC_PREFIX php artisan tinker --execute="
-    \$deleted = App\\Models\\Branch::query()->delete();
-    echo 'Deleted: ' . \$deleted . ' branches';
-" 2>/dev/null
-
-echo -e "${GREEN}✓ Branches deleted${NC}"
-echo ""
-
-################################################################################
-# Step 4: Delete All States
-################################################################################
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${CYAN}Step 4: Deleting all states...${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-
-STATE_COUNT=$($EXEC_PREFIX php artisan tinker --execute="echo App\\Models\\State::count();" 2>/dev/null || echo "0")
-
-echo "Found $STATE_COUNT states"
-
-$EXEC_PREFIX php artisan tinker --execute="
-    \$deleted = App\\Models\\State::query()->delete();
-    echo 'Deleted: ' . \$deleted . ' states';
-" 2>/dev/null
-
-echo -e "${GREEN}✓ States deleted${NC}"
-echo ""
-
-################################################################################
-# Step 5: Delete All Regions
-################################################################################
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${CYAN}Step 5: Deleting all regions...${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-
-REGION_COUNT=$($EXEC_PREFIX php artisan tinker --execute="echo App\\Models\\Region::count();" 2>/dev/null || echo "0")
-
-echo "Found $REGION_COUNT regions"
-
-$EXEC_PREFIX php artisan tinker --execute="
-    \$deleted = App\\Models\\Region::query()->delete();
-    echo 'Deleted: ' . \$deleted . ' regions';
-" 2>/dev/null
-
-echo -e "${GREEN}✓ Regions deleted${NC}"
-echo ""
-
-################################################################################
-# Step 6: Verify Database is Clean
+# Step 3: Verify Database is Clean
 ################################################################################
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${CYAN}Step 6: Verifying database cleanup...${NC}"
@@ -267,7 +243,7 @@ echo -e "${GREEN}✓ Database cleaned${NC}"
 echo ""
 
 ################################################################################
-# Step 7: Re-Sync Branches, States & Regions (All-in-One)
+# Step 4: Re-Sync Branches, States & Regions (All-in-One)
 ################################################################################
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${CYAN}Step 7: Re-syncing regions, states, and branches...${NC}"
@@ -284,7 +260,7 @@ fi
 echo ""
 
 ################################################################################
-# Step 8: Re-Sync Users from MAP Database
+# Step 5: Re-Sync Users from MAP Database
 ################################################################################
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${CYAN}Step 8: Re-syncing users from MAP database...${NC}"
@@ -301,10 +277,10 @@ fi
 echo ""
 
 ################################################################################
-# Step 9: Verify Migration Results
+# Step 6: Verify Migration Results
 ################################################################################
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${CYAN}Step 11: Verifying migration results...${NC}"
+echo -e "${CYAN}Step 6: Verifying migration results...${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
 $EXEC_PREFIX php artisan tinker --execute="
