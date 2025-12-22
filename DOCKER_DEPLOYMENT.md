@@ -16,7 +16,7 @@ MAP (Django) → eForm (Laravel)
 ## Prerequisites
 
 1. Docker and Docker Compose installed
-2. Shared Docker network `map_bom_rev_network` (same as BOM)
+2. Docker network `eform_network`
 3. Environment variables configured
 
 ## Files Created
@@ -27,14 +27,14 @@ MAP (Django) → eForm (Laravel)
 
 ## Network Setup
 
-eForm uses the same Docker network as BOM (`map_bom_rev_network`). This allows:
+eForm uses the Docker network `eform_network`. This allows:
 - Shared network communication between MAP, BOM, and eForm
 - Centralized routing through main nginx
 - Isolated service containers
 
 ### Create Network (if not exists)
 ```bash
-docker network create map_bom_rev_network
+docker network create eform_network
 ```
 
 ## Environment Configuration
@@ -61,6 +61,9 @@ SESSION_LIFETIME=120
 
 CACHE_DRIVER=file
 QUEUE_CONNECTION=sync
+
+# Docker Volume Mount (Production: /opt/eform/eform_db, Local: ./database)
+MAP_DB_PATH=/opt/eform/eform_db
 ```
 
 ## Build and Run
@@ -162,6 +165,21 @@ docker-compose build --no-cache
 docker-compose up -d
 ```
 
+### Database Mounts
+The mount point for the database directory is controlled by the `MAP_DB_PATH` in your `.env` file.
+
+**For Production:**
+```env
+MAP_DB_PATH=/opt/eform/eform_db
+```
+
+**For Local Development:**
+```env
+MAP_DB_PATH=./database
+```
+
+If not specified, it defaults to `./database`.
+
 ### Permission issues
 ```bash
 # Fix storage permissions
@@ -175,6 +193,8 @@ docker-compose exec web chmod -R 775 storage bootstrap/cache
 docker-compose exec web touch database/database.sqlite
 docker-compose exec web php artisan migrate --force
 ```
+
+
 
 ## Updating eForm
 
@@ -249,7 +269,7 @@ eform_url = 'https://eform.muamalat.com.my/map/login'  # Production
 ## Similar to BOM
 
 eForm follows the same pattern as BOM:
-- Uses `map_bom_rev_network` for inter-service communication
+- Uses `eform_network` for inter-service communication
 - Nginx reverse proxy on specific port
 - Integrated with MAP's SSO system
 - Containerized for easy deployment
