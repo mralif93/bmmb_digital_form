@@ -158,11 +158,16 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user has admin panel access (HQ, BM, CFE roles).
+     * Check if user has admin panel access (HQ, BM, ABM, CFE, OO roles).
      */
     public function hasAdminAccess(): bool
     {
-        return $this->isAdmin() || $this->isHQ() || $this->isBM() || $this->isCFE();
+        return $this->isAdmin()
+            || $this->isHQ()
+            || $this->isBM()
+            || $this->isABM()
+            || $this->isCFE()
+            || $this->isOO();
     }
 
     /**
