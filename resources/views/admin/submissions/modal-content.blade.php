@@ -137,74 +137,48 @@
     </div>
 
     <!-- Form Field Responses -->
-    @if($submission->submissionData && $submission->submissionData->count() > 0)
+    @php
+        use App\Services\FormSubmissionPresenter;
+        $groupedData = FormSubmissionPresenter::formatSubmissionData($submission);
+    @endphp
+
+    @if(count($groupedData) > 0)
         <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
             <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
                 <i class='bx bx-file-blank mr-2 text-primary-600 dark:text-primary-400'></i>
                 Form Responses
             </h3>
-            <div class="space-y-2 max-h-64 overflow-y-auto">
-                @foreach($submission->submissionData as $data)
-                    @if($data->field && $data->field->is_active)
-                        <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-2 last:border-0 gap-4">
-                            <dt
-                                class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
-                                {{ $data->field->field_label ?? ucwords(str_replace('_', ' ', $data->field->field_name ?? 'Unknown Field')) }}
-                            </dt>
-                            <dd class="text-xs text-gray-900 dark:text-white flex-1 text-left">
-                                @if($data->field_value_json)
-                                    <pre
-                                        class="bg-white dark:bg-gray-800 p-2 rounded text-xs overflow-x-auto">{{ json_encode($data->field_value_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
-                                @elseif($data->file_path)
-                                    <a href="{{ asset('storage/' . $data->file_path) }}" target="_blank"
-                                        class="text-primary-600 dark:text-primary-400 hover:underline text-xs">
-                                        <i class='bx bx-download mr-1'></i>Download File
-                                    </a>
-                                @else
-                                    {{ $data->field_value ?? 'N/A' }}
+            <div class="space-y-4 max-h-96 overflow-y-auto">
+                @foreach($groupedData as $sectionTitle => $fields)
+                    <!-- Section Group -->
+                    <div class="last:mb-0">
+                        <h4
+                            class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2 pb-1 border-b border-primary-500 dark:border-primary-400">
+                            {{ $sectionTitle }}
+                        </h4>
+
+                        <div class="space-y-2">
+                            @foreach($fields as $field)
+                                @if(FormSubmissionPresenter::shouldDisplayField($field['field_name'], $field['value']))
+                                    <div
+                                        class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-2 last:border-0 gap-4">
+                                        <dt
+                                            class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                                            {{ $field['label'] }}
+                                        </dt>
+                                        <dd class="text-xs text-gray-900 dark:text-white flex-1 text-left break-words">
+                                            {!! FormSubmissionPresenter::renderFieldValue($field['type'], $field['value']) !!}
+                                        </dd>
+                                    </div>
                                 @endif
-                            </dd>
+                            @endforeach
                         </div>
-                    @endif
+                    </div>
                 @endforeach
             </div>
         </div>
     @else
-        {{-- Fallback for legacy submissions stored only in JSON columns --}}
-        @php
-            $fieldResponses = $submission->field_responses ?? [];
-            $submissionData = $submission->submission_data ?? [];
-            $allData = array_merge($fieldResponses, $submissionData);
-        @endphp
-
-        @if(count($allData) > 0)
-            <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
-                    <i class='bx bx-file-blank mr-2 text-primary-600 dark:text-primary-400'></i>
-                    Form Responses
-                </h3>
-                <div class="space-y-2 max-h-64 overflow-y-auto">
-                    @foreach($allData as $key => $value)
-                        <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-2 last:border-0 gap-4">
-                            <dt
-                                class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
-                                {{ ucwords(str_replace('_', ' ', $key)) }}
-                            </dt>
-                            <dd class="text-xs text-gray-900 dark:text-white flex-1 text-left">
-                                @if(is_array($value))
-                                    <pre
-                                        class="bg-white dark:bg-gray-800 p-2 rounded text-xs overflow-x-auto">{{ json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
-                                @elseif(is_bool($value))
-                                    {{ $value ? 'Yes' : 'No' }}
-                                @else
-                                    {{ $value ?? 'N/A' }}
-                                @endif
-                            </dd>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        @endif
+        <p class="text-sm text-gray-500 dark:text-gray-400 italic">No form data available</p>
     @endif
 
     <!-- File Uploads -->
