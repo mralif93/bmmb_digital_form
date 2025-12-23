@@ -214,19 +214,30 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
                     ->get();
 
             } elseif ($user->isBM()) {
-                // BM: Branch submissions overview
+                // BM: Branch submissions overview WITH take-up/complete workflow
                 $branchId = $user->branch_id;
                 $branchQuery = $branchId ? \App\Models\FormSubmission::where('branch_id', $branchId) : \App\Models\FormSubmission::whereNull('branch_id');
 
                 $stats = [
+                    'available_to_take_up' => (clone $branchQuery)->where('status', 'submitted')->count(),
+                    'pending_process' => (clone $branchQuery)->where('status', 'pending_process')->count(),
+                    'taken_up_by_me' => (clone $branchQuery)->where('taken_up_by', $user->id)->where('status', 'pending_process')->count(),
+                    'completed_by_me' => \App\Models\FormSubmission::where('completed_by', $user->id)
+                        ->where('status', 'completed')
+                        ->whereMonth('completed_at', now()->month)
+                        ->count(),
+                    'total_completed' => \App\Models\FormSubmission::where('completed_by', $user->id)->where('status', 'completed')->count(),
                     'branch_submissions' => $branchQuery->count(),
                     'branch_approved' => (clone $branchQuery)->where('status', 'approved')->count(),
                     'branch_pending' => (clone $branchQuery)->whereIn('status', ['submitted', 'under_review'])->count(),
                     'branch_rejected' => (clone $branchQuery)->where('status', 'rejected')->count(),
                     'branch_in_progress' => (clone $branchQuery)->where('status', 'in_progress')->count(),
                     'branch_completed' => (clone $branchQuery)->where('status', 'completed')->count(),
-                    'my_submissions' => \App\Models\FormSubmission::where('user_id', $user->id)->count(),
                 ];
+
+                $stats['completion_rate'] = $stats['taken_up_by_me'] > 0
+                    ? round(($stats['total_completed'] / ($stats['taken_up_by_me'] + $stats['total_completed'])) * 100)
+                    : 0;
 
                 $stats['branch_conversion_rate'] = $stats['branch_submissions'] > 0
                     ? round(($stats['branch_approved'] / $stats['branch_submissions']) * 100)
@@ -247,6 +258,30 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
                         $q->where('slug', 'srf');
                     })->count(),
                 ];
+
+                // Available submissions to take up
+                $availableSubmissions = (clone $branchQuery)
+                    ->where('status', 'submitted')
+                    ->with(['form', 'user', 'branch'])
+                    ->orderBy('created_at', 'desc')
+                    ->limit(5)
+                    ->get();
+
+                // Pending process submissions (ready to complete)
+                $pendingProcessSubmissions = (clone $branchQuery)
+                    ->where('status', 'pending_process')
+                    ->with(['form', 'user', 'branch', 'takenUpBy'])
+                    ->orderBy('taken_up_at', 'desc')
+                    ->limit(5)
+                    ->get();
+
+                // My recent completions
+                $myCompletions = \App\Models\FormSubmission::with(['form', 'branch'])
+                    ->where('completed_by', $user->id)
+                    ->where('status', 'completed')
+                    ->orderBy('completed_at', 'desc')
+                    ->limit(5)
+                    ->get();
 
                 // Recent branch submissions
                 $recentSubmissions = (clone $branchQuery)
@@ -255,20 +290,32 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
                     ->limit(5)
                     ->get();
 
+
             } elseif ($user->isABM()) {
-                // ABM: Branch submissions overview (similar to BM)
+                // ABM: Branch submissions overview WITH take-up/complete workflow (same as BM)
                 $branchId = $user->branch_id;
                 $branchQuery = $branchId ? \App\Models\FormSubmission::where('branch_id', $branchId) : \App\Models\FormSubmission::whereNull('branch_id');
 
                 $stats = [
+                    'available_to_take_up' => (clone $branchQuery)->where('status', 'submitted')->count(),
+                    'pending_process' => (clone $branchQuery)->where('status', 'pending_process')->count(),
+                    'taken_up_by_me' => (clone $branchQuery)->where('taken_up_by', $user->id)->where('status', 'pending_process')->count(),
+                    'completed_by_me' => \App\Models\FormSubmission::where('completed_by', $user->id)
+                        ->where('status', 'completed')
+                        ->whereMonth('completed_at', now()->month)
+                        ->count(),
+                    'total_completed' => \App\Models\FormSubmission::where('completed_by', $user->id)->where('status', 'completed')->count(),
                     'branch_submissions' => $branchQuery->count(),
                     'branch_approved' => (clone $branchQuery)->where('status', 'approved')->count(),
                     'branch_pending' => (clone $branchQuery)->whereIn('status', ['submitted', 'under_review'])->count(),
                     'branch_rejected' => (clone $branchQuery)->where('status', 'rejected')->count(),
                     'branch_in_progress' => (clone $branchQuery)->where('status', 'in_progress')->count(),
                     'branch_completed' => (clone $branchQuery)->where('status', 'completed')->count(),
-                    'my_submissions' => \App\Models\FormSubmission::where('user_id', $user->id)->count(),
                 ];
+
+                $stats['completion_rate'] = $stats['taken_up_by_me'] > 0
+                    ? round(($stats['total_completed'] / ($stats['taken_up_by_me'] + $stats['total_completed'])) * 100)
+                    : 0;
 
                 $stats['branch_conversion_rate'] = $stats['branch_submissions'] > 0
                     ? round(($stats['branch_approved'] / $stats['branch_submissions']) * 100)
@@ -289,6 +336,30 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
                         $q->where('slug', 'srf');
                     })->count(),
                 ];
+
+                // Available submissions to take up
+                $availableSubmissions = (clone $branchQuery)
+                    ->where('status', 'submitted')
+                    ->with(['form', 'user', 'branch'])
+                    ->orderBy('created_at', 'desc')
+                    ->limit(5)
+                    ->get();
+
+                // Pending process submissions (ready to complete)
+                $pendingProcessSubmissions = (clone $branchQuery)
+                    ->where('status', 'pending_process')
+                    ->with(['form', 'user', 'branch', 'takenUpBy'])
+                    ->orderBy('taken_up_at', 'desc')
+                    ->limit(5)
+                    ->get();
+
+                // My recent completions
+                $myCompletions = \App\Models\FormSubmission::with(['form', 'branch'])
+                    ->where('completed_by', $user->id)
+                    ->where('status', 'completed')
+                    ->orderBy('completed_at', 'desc')
+                    ->limit(5)
+                    ->get();
 
                 // Recent branch submissions
                 $recentSubmissions = (clone $branchQuery)
@@ -460,8 +531,8 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
             // Prepare variables for view based on role
             $viewData = compact('stats', 'topForms', 'submissionCounts', 'recentSubmissions', 'mySubmissions', 'user');
 
-            // Add CFE and OO-specific data (take-up/complete workflow)
-            if ($user->isCFE() || $user->isOO()) {
+            // Add workflow data for BM, ABM, CFE, and OO (take-up/complete workflow)
+            if ($user->isBM() || $user->isABM() || $user->isCFE() || $user->isOO()) {
                 $viewData['availableSubmissions'] = $availableSubmissions ?? collect();
                 $viewData['pendingProcessSubmissions'] = $pendingProcessSubmissions ?? collect();
                 $viewData['myCompletions'] = $myCompletions ?? collect();
