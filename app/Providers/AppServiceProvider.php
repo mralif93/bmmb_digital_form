@@ -40,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
         // Laravel's paginator to include /eform in the current path
         if (str_contains(config('app.url'), '/eform')) {
             \Illuminate\Pagination\Paginator::currentPathResolver(function () {
-                return '/eform' . request()->path();
+                return '/eform/' . ltrim(request()->path(), '/');
             });
         }
     }
