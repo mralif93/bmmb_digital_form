@@ -19,7 +19,8 @@ class ProfileController extends Controller
     public function index()
     {
         $user = Auth::user();
-        return view('admin.profile', compact('user'));
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
+        return view('admin.profile', compact('user', 'timezoneHelper'));
     }
 
     /**

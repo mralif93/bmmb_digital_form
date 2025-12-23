@@ -88,7 +88,8 @@ class BranchController extends Controller
      */
     public function show(Branch $branch)
     {
-        return view('admin.branches.show', compact('branch'));
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
+        return view('admin.branches.show', compact('branch', 'timezoneHelper'));
     }
 
     /**

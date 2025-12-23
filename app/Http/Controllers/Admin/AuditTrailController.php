@@ -49,14 +49,17 @@ class AuditTrailController extends Controller
 
         // Get unique actions for filter
         $actions = AuditTrail::distinct()->pluck('action')->sort()->values();
-        
+
         // Get unique model types for filter
         $modelTypes = AuditTrail::distinct()->whereNotNull('model_type')->pluck('model_type')->sort()->values();
-        
+
         // Get users for filter
         $users = User::whereHas('auditTrails')->orderBy('first_name')->get();
 
-        return view('admin.audit-trails.index', compact('auditTrails', 'actions', 'modelTypes', 'users'));
+        // Get timezone helper
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
+
+        return view('admin.audit-trails.index', compact('auditTrails', 'actions', 'modelTypes', 'users', 'timezoneHelper'));
     }
 
     /**
@@ -65,6 +68,7 @@ class AuditTrailController extends Controller
     public function show(AuditTrail $auditTrail)
     {
         $auditTrail->load('user');
-        return view('admin.audit-trails.show', compact('auditTrail'));
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
+        return view('admin.audit-trails.show', compact('auditTrail', 'timezoneHelper'));
     }
 }

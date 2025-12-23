@@ -147,7 +147,8 @@ class QrCodeManagementController extends Controller
     public function show(QrCode $qr_code)
     {
         $qr_code->load(['branch', 'creator']);
-        return view('admin.qr-codes.show', ['qrCode' => $qr_code]);
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
+        return view('admin.qr-codes.show', ['qrCode' => $qr_code, 'timezoneHelper' => $timezoneHelper]);
     }
 
     /**
