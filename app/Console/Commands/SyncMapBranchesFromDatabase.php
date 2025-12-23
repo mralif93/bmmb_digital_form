@@ -414,34 +414,19 @@ class SyncMapBranchesFromDatabase extends Command
             ];
             $qrContent = route('public.branch', $params);
 
-            // Default settings (use SVG - no PHP extension required)
-            $size = 300;
-            $format = 'svg';
-
-            // Generate QR code image using SVG (no extension required)
-            $qrCodeImage = QrCodeGenerator::format($format)
-                ->size($size)
-                ->margin(2)
-                ->generate($qrContent);
-
-            // Save QR code image
-            $fileName = 'qr_' . time() . '_' . uniqid() . '.' . $format;
-            $filePath = 'qr-codes/' . $fileName;
-            Storage::disk('public')->put($filePath, $qrCodeImage);
-
             // Get expiration minutes from settings
             $expirationMinutes = $this->getQrCodeExpirationMinutes();
 
-            // Create QR code record
+            // Create QR code record (no image file - rendered dynamically in browser)
             QrCode::create([
                 'name' => 'Branch QR - ' . $branchName,
                 'type' => 'branch',
                 'content' => $qrContent,
                 'branch_id' => $branchId,
-                'qr_code_image' => $fileName,
+                'qr_code_image' => null, // No image file - rendered dynamically
                 'status' => 'active',
-                'size' => $size,
-                'format' => $format,
+                'size' => 300,
+                'format' => 'svg',
                 'created_by' => null, // System-generated
                 'last_regenerated_at' => now(),
                 'expires_at' => now()->addMinutes($expirationMinutes),
