@@ -206,12 +206,17 @@ class UserSeeder extends Seeder
     private function mapPositionToRole(?string $position): string
     {
         return match ($position) {
-            '1' => 'headquarters',
-            '2' => 'branch_manager',
-            '3' => 'cfe',
-            '4' => 'headquarters',
-            '9', '10' => 'operation_officer',
-            default => 'headquarters',
+            '1' => 'hq', // HQ
+            '2' => 'bm', // BM → Branch Manager
+            '3' => 'cfe', // CFE → Customer Finance Executive
+            '4' => 'cod', // COD → Credit Operations Department
+            '5' => 'crr', // CRR → Credit Risk Review
+            '6' => 'cso', // CSO → Credit Support Officer
+            '7' => 'cfe_hq', // CFE-HQ → Customer Finance Executive (HQ)
+            '8' => 'ccq', // CCQ → Credit Control Quality
+            '9' => 'abm', // ABM → Assistant Branch Manager
+            '10' => 'oo', // OO → Operation Officer
+            default => 'hq',
         };
     }
 }

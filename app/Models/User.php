@@ -249,7 +249,7 @@ class User extends Authenticatable
             '6' => 'CSO',
             '7' => 'CFE-HQ',
             '8' => 'CCQ',
-            '9' => 'Operation Officer/ABM',
+            '9' => 'ABM',
             '10' => 'OO',
             default => 'Unknown',
         };
