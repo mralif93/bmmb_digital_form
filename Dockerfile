@@ -62,8 +62,15 @@ RUN chmod +x verify-db-path.sh
 # Copy custom PHP-FPM configuration to listen on all interfaces
 COPY docker/php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
 
+# Copy and set up entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
+
+# Set entrypoint
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 # Start PHP-FPM
 CMD ["php-fpm"]
