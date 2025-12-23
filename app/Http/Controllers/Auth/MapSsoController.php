@@ -396,21 +396,18 @@ class MapSsoController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Explicitly clear session cookie
-        $cookieName = config('session.cookie', 'laravel_session');
-        $response = redirect()->away(config('map.logout_url', 'http://127.0.0.1:8000/pengurusan/logout/'));
-
-        // Remove session cookie
-        $response->withCookie(cookie()->forget($cookieName));
+        // Get MAP logout URL from config
+        $mapLogoutUrl = config('map.logout_url', 'http://127.0.0.1:8000/pengurusan/logout/');
 
         // If the config URL is HTTP but we're on HTTPS, force HTTPS for security
-        $mapLogoutUrl = config('map.logout_url', 'http://127.0.0.1:8000/pengurusan/logout/');
         if ($request->secure() && str_starts_with($mapLogoutUrl, 'http://')) {
             $mapLogoutUrl = str_replace('http://', 'https://', $mapLogoutUrl);
         }
 
-        // Redirect to MAP logout (federated logout - also logs out from MAP)
-        return $response->away($mapLogoutUrl);
+        // Explicitly clear session cookie and redirect to MAP logout
+        $cookieName = config('session.cookie', 'laravel_session');
+
+        return redirect($mapLogoutUrl)->withCookie(cookie()->forget($cookieName));
     }
 
     /**
