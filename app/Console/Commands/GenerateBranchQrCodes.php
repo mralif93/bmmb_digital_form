@@ -61,6 +61,13 @@ class GenerateBranchQrCodes extends Command
                     continue;
                 }
 
+                // Skip branches without ti_agent_code
+                if (empty($branch->ti_agent_code)) {
+                    $this->warn("  ⚠ Skipped {$branch->branch_name}: Missing ti_agent_code");
+                    $skipped++;
+                    continue;
+                }
+
                 // Generate validation token
                 $validationToken = bin2hex(random_bytes(16));
 
@@ -71,14 +78,14 @@ class GenerateBranchQrCodes extends Command
                 ];
                 $qrContent = route('public.branch', $params);
 
-                // Generate QR code image
-                $qrCodeImage = QrCodeGenerator::format('png')
+                // Generate QR code image using SVG (no extension required)
+                $qrCodeImage = QrCodeGenerator::format('svg')
                     ->size(300)
                     ->margin(2)
                     ->generate($qrContent);
 
                 // Save QR code image
-                $fileName = 'qr_' . time() . '_' . uniqid() . '.png';
+                $fileName = 'qr_' . time() . '_' . uniqid() . '.svg';
                 $filePath = 'qr-codes/' . $fileName;
                 Storage::disk('public')->put($filePath, $qrCodeImage);
 
@@ -95,7 +102,7 @@ class GenerateBranchQrCodes extends Command
                     'qr_code_image' => $fileName,
                     'status' => 'active',
                     'size' => 300,
-                    'format' => 'png',
+                    'format' => 'svg',
                     'created_by' => null,
                     'last_regenerated_at' => now(),
                     'expires_at' => now()->addMinutes($expirationMinutes),
