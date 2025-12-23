@@ -270,11 +270,24 @@ class SyncMapBranchesFromDatabase extends Command
                     }
                 }
 
-                // Generate QR code for this branch (only if not skipping)
-                // Only generate if branch exists or was just created
-                if (!$skipQrCodes && ($existing || !$dryRun)) {
-                    // Use the actual eForm branch ID, not MAP ID
-                    $branchId = $existing ? $existing->id : $mapBranch['id'];
+                // Generate QR code for this branch (only if --skip-qr-codes flag not set)
+                // Process all branches: created, updated, AND skipped
+                if (!$skipQrCodes) {
+                    // Use the actual eForm branch ID
+                    // For existing branches, use their current ID
+                    // For new branches (not in dry-run), use the MAP ID
+                    if ($existing) {
+                        $branchId = $existing->id;
+                    } else {
+                        // New branch - in dry-run, we can't get the ID, so skip QR generation
+                        // In actual run, the branch will be created with MAP ID
+                        if ($dryRun) {
+                            // Can't generate QR for non-existent branch in dry-run
+                            continue;
+                        }
+                        $branchId = $mapBranch['id'];
+                    }
+
                     $qrResult = $this->generateQrCodeForBranch($branchId, $mapBranch['branch_name'], $dryRun);
                     if ($qrResult === 'created') {
                         $qrCreated++;
