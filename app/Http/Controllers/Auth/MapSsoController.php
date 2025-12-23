@@ -316,11 +316,11 @@ class MapSsoController extends Controller
             '1' => 'headquarters', // HQ
             '2' => 'branch_manager', // BM → Branch Manager
             '3' => 'cfe', // CFE → Customer Finance Executive
-            '4' => 'headquarters', // COD → Credit Operations Department
-            '5' => 'headquarters', // CRR → Credit Risk Review
-            '6' => 'headquarters', // CSO → Credit Support Officer
-            '7' => 'headquarters', // CFE-HQ → Customer Finance Executive (HQ)
-            '8' => 'headquarters', // CCQ → Credit Control Quality
+            '4' => 'cod', // COD → Credit Operations Department
+            '5' => 'crr', // CRR → Credit Risk Review
+            '6' => 'cso', // CSO → Credit Support Officer
+            '7' => 'cfe_hq', // CFE-HQ → Customer Finance Executive (HQ)
+            '8' => 'ccq', // CCQ → Credit Control Quality
             '9' => 'assistant_branch_manager', // ABM → Assistant Branch Manager
             '10' => 'operation_officer', // OO → Operation Officer
             default => 'headquarters',
