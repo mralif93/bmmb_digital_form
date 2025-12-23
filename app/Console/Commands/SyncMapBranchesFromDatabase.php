@@ -235,9 +235,20 @@ class SyncMapBranchesFromDatabase extends Command
                     $created++;
                     $this->line("  <fg=green>+</> Created: {$mapBranch['branch_name']}");
                 } else {
+                    // For updates, don't change the ID to avoid foreign key constraint violations
+                    $updateData = [
+                        'branch_name' => $mapBranch['branch_name'],
+                        'ti_agent_code' => $mapBranch['ti_agent_code'],
+                        'address' => $mapBranch['address'],
+                        'email' => $mapBranch['email'],
+                        'state_id' => $mapBranch['state_id'],
+                        'region_id' => $mapBranch['region_id'],
+                        'weekend_start_day' => $mapBranch['weekend_start_day'],
+                    ];
+
                     // Check if anything changed
                     $hasChanges = false;
-                    foreach ($data as $key => $value) {
+                    foreach ($updateData as $key => $value) {
                         if ($existing->$key != $value) {
                             $hasChanges = true;
                             break;
@@ -250,7 +261,7 @@ class SyncMapBranchesFromDatabase extends Command
                             if ($existing->trashed()) {
                                 $existing->restore();
                             }
-                            $existing->update($data);
+                            $existing->update($updateData);
                         }
                         $updated++;
                         $this->line("  <fg=yellow>~</> Updated: {$mapBranch['branch_name']}");
