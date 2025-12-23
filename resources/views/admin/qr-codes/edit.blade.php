@@ -167,14 +167,15 @@
     </div>
 
     @push('scripts')
-        <!-- QRCode.js CDN -->
-        <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+        <!-- qrjs2 CDN - Simpler QR code generation -->
+        <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const typeSelect = document.getElementById('type');
                 const contentInput = document.getElementById('content');
                 const branchSelect = document.getElementById('branch_id');
                 const previewDiv = document.getElementById('qrcode-preview');
+                let qrcode = null;
 
                 function generateQrContent(type, content, branchId) {
                     if (!content && type !== 'branch') return '';
@@ -182,7 +183,6 @@
                     type = type.toLowerCase();
                     switch (type) {
                         case 'branch':
-                            // For branch type, always generate from branch selection if available
                             if (branchId) {
                                 const branchOption = branchSelect.options[branchSelect.selectedIndex];
                                 if (branchOption && branchOption.value) {
@@ -192,7 +192,6 @@
                                     }
                                 }
                             }
-                            // If no branch selected but content exists (during edit), use content
                             if (content) {
                                 return content;
                             }
@@ -211,14 +210,6 @@
                 }
 
                 function updatePreview() {
-                    // Check if QRCode library is loaded
-                    if (typeof QRCode === 'undefined') {
-                        console.error('QRCode library not loaded');
-                        previewDiv.innerHTML = '<p class="text-xs text-red-500">QR Code library loading...</p>';
-                        setTimeout(updatePreview, 500); // Retry after 500ms
-                        return;
-                    }
-
                     const type = typeSelect ? typeSelect.value : '';
                     const content = contentInput ? contentInput.value : '';
                     const branchId = branchSelect ? branchSelect.value : '';
@@ -228,13 +219,11 @@
                         return;
                     }
 
-                    // For branch type, check if branch is selected
                     if (type === 'branch' && !branchId && !content) {
                         previewDiv.innerHTML = '<p class="text-xs text-gray-400 dark:text-gray-500">Select a branch to see preview</p>';
                         return;
                     }
 
-                    // For other types, check if content exists
                     if (type !== 'branch' && !content) {
                         previewDiv.innerHTML = '<p class="text-xs text-gray-400 dark:text-gray-500">Enter content to see preview</p>';
                         return;
@@ -250,24 +239,20 @@
                     // Clear previous QR code
                     previewDiv.innerHTML = '';
 
-                    // Generate new QR code using toDataURL
-                    QRCode.toDataURL(qrContent, {
-                        width: 256,
-                        margin: 2,
-                        color: {
-                            dark: '#000000',
-                            light: '#FFFFFF'
-                        }
-                    }).then(function (url) {
-                        const img = document.createElement('img');
-                        img.src = url;
-                        img.alt = 'QR Code Preview';
-                        img.className = 'max-w-full h-auto';
-                        previewDiv.appendChild(img);
-                    }).catch(function (error) {
+                    // Generate new QR code directly in the div
+                    try {
+                        qrcode = new QRCode(previewDiv, {
+                            text: qrContent,
+                            width: 256,
+                            height: 256,
+                            colorDark: '#000000',
+                            colorLight: '#ffffff',
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+                    } catch (error) {
                         previewDiv.innerHTML = '<p class="text-xs text-red-500">Error generating preview</p>';
-                        console.error('QR Code generation error:', error);
-                    });
+                        console.error('QR generation error:', error);
+                    }
                 }
 
                 // Add event listeners
@@ -281,11 +266,10 @@
                     branchSelect.addEventListener('change', updatePreview);
                 }
 
-                // Initial preview - wait for QRCode library to load
-                setTimeout(function () {
-                    updatePreview();
-                }, 500);
+                // Initial preview
+                setTimeout(updatePreview, 300);
             });
         </script>
     @endpush
 @endsection
+```
