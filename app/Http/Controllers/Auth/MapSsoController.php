@@ -317,8 +317,8 @@ class MapSsoController extends Controller
             '2' => 'branch_manager',
             '3' => 'cfe', // CFE → Customer Finance Executive
             '4' => 'headquarters',
-            '9' => 'branch_manager', // ABM → Assistant Branch Manager (same as BM)
-            '10' => 'cfe', // OO → Operation Officer (same as CFE)
+            '9' => 'assistant_branch_manager', // ABM → Assistant Branch Manager
+            '10' => 'operation_officer', // OO → Operation Officer
             default => 'headquarters',
         };
     }
