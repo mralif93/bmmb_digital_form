@@ -66,7 +66,10 @@ class QrCodeManagementController extends Controller
         // Get branches for filter dropdown
         $branches = Branch::orderBy('branch_name')->get();
 
-        return view('admin.qr-codes.index', compact('qrCodes', 'branches'));
+        // Get timezone helper
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
+
+        return view('admin.qr-codes.index', compact('qrCodes', 'branches', 'timezoneHelper'));
     }
 
     /**
