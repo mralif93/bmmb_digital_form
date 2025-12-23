@@ -286,13 +286,17 @@ class MigrateMapUsers extends Command
     private function mapPositionToRole(string $position): string
     {
         return match ($position) {
-            '1' => 'headquarters',        // HQ
-            '2' => 'branch_manager',      // Branch Manager
-            '3' => 'headquarters',        // CFE
-            '4' => 'headquarters',        // COD
-            '9' => 'operation_officer',   // Operation Officer
-            '10' => 'operation_officer',  // OO
-            default => 'headquarters',
+            '1' => 'hq', // HQ
+            '2' => 'bm', // BM → Branch Manager
+            '3' => 'cfe', // CFE → Customer Finance Executive
+            '4' => 'cod', // COD → Credit Operations Department
+            '5' => 'crr', // CRR → Credit Risk Review
+            '6' => 'cso', // CSO → Credit Support Officer
+            '7' => 'cfe_hq', // CFE-HQ → Customer Finance Executive (HQ)
+            '8' => 'ccq', // CCQ → Credit Control Quality
+            '9' => 'abm', // ABM → Assistant Branch Manager
+            '10' => 'oo', // OO → Operation Officer
+            default => 'hq',
         };
     }
 
