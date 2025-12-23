@@ -317,14 +317,14 @@ class MapSsoController extends Controller
             '2' => 'branch_manager',
             '3' => 'cfe', // CFE → Customer Finance Executive
             '4' => 'headquarters',
-            '9' => 'operation_officer',
-            '10' => 'operation_officer',
+            '9' => 'branch_manager', // ABM → Assistant Branch Manager (same as BM)
+            '10' => 'cfe', // OO → Operation Officer (same as CFE)
             default => 'headquarters',
         };
     }
 
     /**
-     * Check if user has access to eform (HQ/BM/CFE only)
+     * Check if user has access to eform (HQ/BM/ABM/CFE/OO)
      *
      * @param \App\Models\User $user
      * @return bool
@@ -336,8 +336,8 @@ class MapSsoController extends Controller
             return false;
         }
 
-        // Allow these MAP positions: 1=HQ, 2=BM, 3=CFE
-        $allowedPositions = ['1', '2', '3'];
+        // Allow these MAP positions: 1=HQ, 2=BM, 3=CFE, 9=ABM, 10=OO
+        $allowedPositions = ['1', '2', '3', '9', '10'];
 
         return in_array($user->map_position, $allowedPositions);
     }
