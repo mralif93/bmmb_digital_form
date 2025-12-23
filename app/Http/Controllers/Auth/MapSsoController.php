@@ -313,10 +313,14 @@ class MapSsoController extends Controller
     private function mapPositionToRole(string $position): string
     {
         return match ($position) {
-            '1' => 'headquarters',
-            '2' => 'branch_manager',
+            '1' => 'headquarters', // HQ
+            '2' => 'branch_manager', // BM → Branch Manager
             '3' => 'cfe', // CFE → Customer Finance Executive
-            '4' => 'headquarters',
+            '4' => 'headquarters', // COD → Credit Operations Department
+            '5' => 'headquarters', // CRR → Credit Risk Review
+            '6' => 'headquarters', // CSO → Credit Support Officer
+            '7' => 'headquarters', // CFE-HQ → Customer Finance Executive (HQ)
+            '8' => 'headquarters', // CCQ → Credit Control Quality
             '9' => 'assistant_branch_manager', // ABM → Assistant Branch Manager
             '10' => 'operation_officer', // OO → Operation Officer
             default => 'headquarters',
