@@ -25,7 +25,8 @@ class SyncMapBranchesFromDatabase extends Command
                             {--include-regions : Also sync regions}
                             {--include-states : Also sync states}
                             {--all : Sync regions, states, and branches}
-                            {--skip-qr-codes : Skip QR code generation for branches}';
+                            {--skip-qr-codes : Skip QR code generation for branches}
+                            {--reset-qr-codes : Delete all existing QR codes and regenerate fresh ones}';
 
     /**
      * The console command description.
@@ -55,6 +56,12 @@ class SyncMapBranchesFromDatabase extends Command
         }
 
         $skipQrCodes = $this->option('skip-qr-codes');
+        $resetQrCodes = $this->option('reset-qr-codes');
+
+        // Reset QR codes if flag is set
+        if ($resetQrCodes && !$dryRun) {
+            $this->resetAllQrCodes();
+        }
 
         // Connect to MAP database
         $mapDbPath = $this->getMapDatabasePath();
@@ -84,7 +91,9 @@ class SyncMapBranchesFromDatabase extends Command
             $this->newLine();
         }
 
-        $this->syncBranches($dryRun, $skipQrCodes);
+        // If resetting QR codes, force QR generation (ignore skip flag)
+        $generateQrCodes = $resetQrCodes ? true : !$skipQrCodes;
+        $this->syncBranches($dryRun, $generateQrCodes);
 
         $this->newLine();
         $this->info('✓ Sync completed!');
@@ -184,7 +193,7 @@ class SyncMapBranchesFromDatabase extends Command
     /**
      * Sync branches from MAP
      */
-    private function syncBranches(bool $dryRun, bool $skipQrCodes = false): void
+    private function syncBranches(bool $dryRun, bool $generateQrCodes = true): void
     {
         $this->info('Syncing Branches...');
 
@@ -270,9 +279,9 @@ class SyncMapBranchesFromDatabase extends Command
                     }
                 }
 
-                // Generate QR code for this branch (only if --skip-qr-codes flag not set)
+                // Generate QR code for this branch
                 // Process all branches: created, updated, AND skipped
-                if (!$skipQrCodes) {
+                if ($generateQrCodes) {
                     // Use the actual eForm branch ID
                     // For existing branches, use their current ID
                     // For new branches (not in dry-run), use the MAP ID
@@ -312,8 +321,8 @@ class SyncMapBranchesFromDatabase extends Command
             ['Errors', $errors],
         ]);
 
-        // Show QR code statistics if not skipped
-        if (!$skipQrCodes) {
+        // Show QR code statistics if generated
+        if ($generateQrCodes) {
             $this->newLine();
             $this->info('QR Code Generation:');
             $this->table(['Action', 'Count'], [
@@ -321,6 +330,39 @@ class SyncMapBranchesFromDatabase extends Command
                 ['QR Codes Skipped', $qrSkipped],
             ]);
         }
+    }
+
+    /**
+     * Reset all QR codes (delete existing ones)
+     */
+    private function resetAllQrCodes(): void
+    {
+        $this->warn('Resetting all QR codes...');
+
+        // Get all branch QR codes
+        $qrCodes = QrCode::where('type', 'branch')->get();
+        $count = $qrCodes->count();
+
+        if ($count === 0) {
+            $this->info('No existing QR codes to delete.');
+            return;
+        }
+
+        // Delete QR code image files
+        foreach ($qrCodes as $qrCode) {
+            if ($qrCode->qr_code_image) {
+                $filePath = 'qr-codes/' . $qrCode->qr_code_image;
+                if (Storage::disk('public')->exists($filePath)) {
+                    Storage::disk('public')->delete($filePath);
+                }
+            }
+        }
+
+        // Delete database records
+        QrCode::where('type', 'branch')->delete();
+
+        $this->info("✓ Deleted {$count} existing QR codes");
+        $this->newLine();
     }
 
     /**
