@@ -34,6 +34,15 @@ class AppServiceProvider extends ServiceProvider
         if ($shouldForceHttps) {
             URL::forceScheme('https');
         }
+
+        // Fix pagination URLs when served from subdirectory
+        // Nginx strips /eform before forwarding to Laravel, so we need to tell
+        // Laravel's paginator to include /eform in the current path
+        if (str_contains(config('app.url'), '/eform')) {
+            \Illuminate\Pagination\Paginator::currentPathResolver(function () {
+                return '/eform' . request()->path();
+            });
+        }
     }
 
     /**
