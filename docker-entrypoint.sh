@@ -2,9 +2,9 @@
 set -e
 
 # Fix permissions for storage and bootstrap/cache
-if [ -f /var/www/html/fix-permissions.sh ]; then
+if [ -f /var/www/html/docker-fix-permissions.sh ]; then
     echo "Fixing permissions..."
-    bash /var/www/html/fix-permissions.sh
+    bash /var/www/html/docker-fix-permissions.sh
 fi
 
 # Create storage link if it doesn't exist
