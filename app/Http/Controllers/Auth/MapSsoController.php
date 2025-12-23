@@ -389,18 +389,32 @@ class MapSsoController extends Controller
             );
         }
 
-        // Logout user
-        Auth::logout();
+        // Complete logout process
+        Auth::guard('web')->logout();
+
+        // Flush all session data
+        $request->session()->flush();
 
         // Invalidate session
         $request->session()->invalidate();
+
+        // Regenerate token to prevent CSRF attacks
         $request->session()->regenerateToken();
 
-        // Explicitly clear session cookie
-        $cookieName = config('session.cookie', 'laravel_session');
+        // Get session cookie name
+        $sessionCookie = config('session.cookie', 'laravel_session');
 
-        // Redirect to MAP login page (not logout URL which requires POST)
-        return redirect($this->getMapLoginUrl())->withCookie(cookie()->forget($cookieName));
+        // Create redirect response
+        $response = redirect($this->getMapLoginUrl());
+
+        // Remove session cookie
+        $response->withCookie(cookie()->forget($sessionCookie));
+
+        // Also remove remember me cookie if exists
+        $rememberCookie = Auth::getRecallerName();
+        $response->withCookie(cookie()->forget($rememberCookie));
+
+        return $response;
     }
 
     /**
