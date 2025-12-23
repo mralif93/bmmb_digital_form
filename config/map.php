@@ -27,6 +27,9 @@ return [
     // MAP API verify endpoint (for production use)
     'verify_url' => env('MAP_VERIFY_URL', 'http://127.0.0.1:8000/api/eform/verify/'),
 
+    // MAP login page URL (for logout redirect)
+    'login_url' => env('MAP_LOGIN_URL', 'http://127.0.0.1:8000/pengurusan/login/'),
+
     // MAP logout URL (for federated logout - logging out of eForm also logs out of MAP)
     'logout_url' => env('MAP_LOGOUT_URL', 'http://127.0.0.1:8000/pengurusan/logout/'),
 
