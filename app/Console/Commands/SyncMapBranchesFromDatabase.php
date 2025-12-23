@@ -5,8 +5,12 @@ namespace App\Console\Commands;
 use App\Models\Branch;
 use App\Models\State;
 use App\Models\Region;
+use App\Models\QrCode;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
+use SimpleSoftwareIO\QrCode\Facades\QrCode as QrCodeGenerator;
 use PDO;
 
 class SyncMapBranchesFromDatabase extends Command
@@ -20,7 +24,8 @@ class SyncMapBranchesFromDatabase extends Command
                             {--dry-run : Show what would be synced without making changes}
                             {--include-regions : Also sync regions}
                             {--include-states : Also sync states}
-                            {--all : Sync regions, states, and branches}';
+                            {--all : Sync regions, states, and branches}
+                            {--skip-qr-codes : Skip QR code generation for branches}';
 
     /**
      * The console command description.
@@ -49,11 +54,14 @@ class SyncMapBranchesFromDatabase extends Command
             $this->newLine();
         }
 
+        $skipQrCodes = $this->option('skip-qr-codes');
+
         // Connect to MAP database
         $mapDbPath = $this->getMapDatabasePath();
 
         if (!file_exists($mapDbPath)) {
             $this->error("MAP database not found at: {$mapDbPath}");
+            $this->info('Please set MAP_DATABASE_PATH in .env or ensure the path is correct.');
             return Command::FAILURE;
         }
 
@@ -76,7 +84,7 @@ class SyncMapBranchesFromDatabase extends Command
             $this->newLine();
         }
 
-        $this->syncBranches($dryRun);
+        $this->syncBranches($dryRun, $skipQrCodes);
 
         $this->newLine();
         $this->info('✓ Sync completed!');
@@ -176,7 +184,7 @@ class SyncMapBranchesFromDatabase extends Command
     /**
      * Sync branches from MAP
      */
-    private function syncBranches(bool $dryRun): void
+    private function syncBranches(bool $dryRun, bool $skipQrCodes = false): void
     {
         $this->info('Syncing Branches...');
 
@@ -199,6 +207,8 @@ class SyncMapBranchesFromDatabase extends Command
         $updated = 0;
         $skipped = 0;
         $errors = 0;
+        $qrCreated = 0;
+        $qrSkipped = 0;
 
         foreach ($mapBranches as $mapBranch) {
             try {
@@ -248,6 +258,16 @@ class SyncMapBranchesFromDatabase extends Command
                         $skipped++;
                     }
                 }
+
+                // Generate QR code for this branch (only if not skipping)
+                if (!$skipQrCodes) {
+                    $qrResult = $this->generateQrCodeForBranch($mapBranch['id'], $mapBranch['branch_name'], $dryRun);
+                    if ($qrResult === 'created') {
+                        $qrCreated++;
+                    } elseif ($qrResult === 'skipped') {
+                        $qrSkipped++;
+                    }
+                }
             } catch (\Exception $e) {
                 $errors++;
                 $this->error("  Error syncing {$mapBranch['branch_name']}: " . $e->getMessage());
@@ -264,6 +284,110 @@ class SyncMapBranchesFromDatabase extends Command
             ['Skipped', $skipped],
             ['Errors', $errors],
         ]);
+
+        // Show QR code statistics if not skipped
+        if (!$skipQrCodes) {
+            $this->newLine();
+            $this->info('QR Code Generation:');
+            $this->table(['Action', 'Count'], [
+                ['QR Codes Created', $qrCreated],
+                ['QR Codes Skipped', $qrSkipped],
+            ]);
+        }
+    }
+
+    /**
+     * Generate QR code for a branch
+     *
+     * @param int $branchId
+     * @param string $branchName
+     * @param bool $dryRun
+     * @return string 'created', 'skipped', or 'error'
+     */
+    private function generateQrCodeForBranch(int $branchId, string $branchName, bool $dryRun): string
+    {
+        try {
+            // Check if QR code already exists for this branch
+            $existingQrCode = QrCode::where('branch_id', $branchId)
+                ->where('type', 'branch')
+                ->first();
+
+            if ($existingQrCode) {
+                return 'skipped';
+            }
+
+            if ($dryRun) {
+                return 'created';
+            }
+
+            // Get the branch to retrieve ti_agent_code
+            $branch = Branch::find($branchId);
+            if (!$branch) {
+                return 'error';
+            }
+
+            // Generate validation token
+            $validationToken = bin2hex(random_bytes(16));
+
+            // Generate QR code content (branch URL with token)
+            $params = [
+                'tiAgentCode' => $branch->ti_agent_code,
+                'token' => $validationToken
+            ];
+            $qrContent = route('public.branch', $params);
+
+            // Default settings
+            $size = 300;
+            $format = 'png';
+
+            // Generate QR code image
+            $qrCodeImage = QrCodeGenerator::format($format)
+                ->size($size)
+                ->margin(2)
+                ->generate($qrContent);
+
+            // Save QR code image
+            $fileName = 'qr_' . time() . '_' . uniqid() . '.' . $format;
+            $filePath = 'qr-codes/' . $fileName;
+            Storage::disk('public')->put($filePath, $qrCodeImage);
+
+            // Get expiration minutes from settings
+            $expirationMinutes = $this->getQrCodeExpirationMinutes();
+
+            // Create QR code record
+            QrCode::create([
+                'name' => 'Branch QR - ' . $branchName,
+                'type' => 'branch',
+                'content' => $qrContent,
+                'branch_id' => $branchId,
+                'qr_code_image' => $fileName,
+                'status' => 'active',
+                'size' => $size,
+                'format' => $format,
+                'created_by' => null, // System-generated
+                'last_regenerated_at' => now(),
+                'expires_at' => now()->addMinutes($expirationMinutes),
+                'validation_token' => $validationToken,
+            ]);
+
+            return 'created';
+        } catch (\Exception $e) {
+            Log::error('QR code generation error', [
+                'branch_id' => $branchId,
+                'branch_name' => $branchName,
+                'error' => $e->getMessage()
+            ]);
+            return 'error';
+        }
+    }
+
+    /**
+     * Get QR code expiration minutes from settings
+     */
+    private function getQrCodeExpirationMinutes(): int
+    {
+        $settings = Cache::get('system_settings', []);
+        return (int) ($settings['qr_code_expiration_minutes'] ?? 60);
     }
 
     /**
@@ -271,6 +395,11 @@ class SyncMapBranchesFromDatabase extends Command
      */
     private function getMapDatabasePath(): string
     {
+        $envPath = env('MAP_DATABASE_PATH');
+        if ($envPath) {
+            return $envPath;
+        }
+
         return config(
             'map.database_path',
             base_path('../FinancingApp/FinancingApp_Backend/FinancingApp/db.sqlite3')
