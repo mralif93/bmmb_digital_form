@@ -29,4 +29,12 @@ class TimezoneHelper
         $timezone = self::getSystemTimezone();
         return $date->copy()->setTimezone($timezone);
     }
+
+    /**
+     * Alias for toSystemTimezone() for backward compatibility
+     */
+    public static function convert($date)
+    {
+        return self::toSystemTimezone($date);
+    }
 }
