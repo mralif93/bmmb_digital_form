@@ -395,6 +395,15 @@ class SyncMapBranchesFromDatabase extends Command
                 return 'error';
             }
 
+            // Skip branches without ti_agent_code
+            if (empty($branch->ti_agent_code)) {
+                Log::warning('QR code generation skipped: Branch missing ti_agent_code', [
+                    'branch_id' => $branchId,
+                    'branch_name' => $branchName
+                ]);
+                return 'skipped';
+            }
+
             // Generate validation token
             $validationToken = bin2hex(random_bytes(16));
 
@@ -405,11 +414,11 @@ class SyncMapBranchesFromDatabase extends Command
             ];
             $qrContent = route('public.branch', $params);
 
-            // Default settings
+            // Default settings (use SVG - no PHP extension required)
             $size = 300;
-            $format = 'png';
+            $format = 'svg';
 
-            // Generate QR code image
+            // Generate QR code image using SVG (no extension required)
             $qrCodeImage = QrCodeGenerator::format($format)
                 ->size($size)
                 ->margin(2)
