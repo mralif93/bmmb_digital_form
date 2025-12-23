@@ -49,6 +49,16 @@ RUN chown -R www-data:www-data /var/www/html/storage \
 # Make all shell scripts executable
 RUN find /var/www/html -type f -name "*.sh" -exec chmod +x {} \;
 
+RUN chmod +x deploy.sh
+RUN chmod +x diagnose-branch.sh
+RUN chmod +x fix-permissions.sh
+RUN chmod +x fix-schema.sh
+RUN chmod +x migrate-all-data.sh
+RUN chmod +x post-deploy.sh
+RUN chmod +x reset-migration.sh
+RUN chmod +x sync-data.sh
+RUN chmod +x verify-db-path.sh
+
 # Copy custom PHP-FPM configuration to listen on all interfaces
 COPY docker/php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
 
