@@ -88,7 +88,7 @@ class User extends Authenticatable
      */
     public function isBM(): bool
     {
-        return $this->role === 'branch_manager';
+        return $this->role === 'bm';
     }
 
     /**
@@ -96,7 +96,7 @@ class User extends Authenticatable
      */
     public function isABM(): bool
     {
-        return $this->role === 'assistant_branch_manager';
+        return $this->role === 'abm';
     }
 
     /**
@@ -104,7 +104,7 @@ class User extends Authenticatable
      */
     public function isOO(): bool
     {
-        return $this->role === 'operation_officer';
+        return $this->role === 'oo';
     }
 
     /**
@@ -112,7 +112,7 @@ class User extends Authenticatable
      */
     public function isHQ(): bool
     {
-        return $this->role === 'headquarters';
+        return $this->role === 'hq';
     }
 
     /**
@@ -139,12 +139,17 @@ class User extends Authenticatable
     {
         return match ($this->role) {
             'admin' => 'Administrator',
-            'branch_manager' => 'Branch Manager',
-            'assistant_branch_manager' => 'Assistant Branch Manager',
-            'operation_officer' => 'Operations Officer',
-            'headquarters' => 'Headquarters',
+            'bm' => 'Branch Manager',
+            'abm' => 'Assistant Branch Manager',
+            'oo' => 'Operations Officer',
+            'hq' => 'Headquarters',
             'iam' => 'Identity & Access Management',
             'cfe' => 'Customer Finance Executive',
+            'cod' => 'Credit Operations Department',
+            'crr' => 'Credit Risk Review',
+            'cso' => 'Credit Support Officer',
+            'cfe_hq' => 'Customer Finance Executive (HQ)',
+            'ccq' => 'Credit Control Quality',
             default => ucfirst(str_replace('_', ' ', $this->role)),
         };
     }
