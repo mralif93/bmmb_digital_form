@@ -92,8 +92,11 @@ class FormSubmissionPresenter
 
         // Data Access Request (DAR) Field Mappings
         'dar' => [
-            // Section 2: About You
-            'field_2_1' => 'Requester Type',
+            // Section 2: About Yourself
+            'field_2_1' => 'I am a customer / former customer',
+            'field_2_2' => 'I am a Third Party Requestor',
+
+            // Section 3: Particulars of Data Subject (Account Holder)
             'field_3_1' => 'Full Name (as per NRIC)',
             'field_3_2' => 'NRIC / Passport No.',
             'field_3_3' => 'Address',
@@ -102,20 +105,57 @@ class FormSubmissionPresenter
             'field_3_6' => 'Telephone No. (Office/Home)',
             'field_3_7' => 'Mobile No.',
 
-            // Request Details (Section 4)
-            'field_4_1' => 'Account Number',
-            'field_4_9' => 'Personal Information',
-            'field_4_10' => 'Account Status/Details',
-            'field_4_12' => 'Transaction History',
-            'field_4_13' => 'Other Information',
+            // Section 3: Third Party Requestor Details
+            'field_3_8' => 'Data Subject is a minor',
+            'field_3_9' => 'Data Subject is incapable of managing affairs',
+            'field_3_10' => 'Data Subject had passed away',
+            'field_3_11' => 'Data Subject authorised me in writing',
+            'field_3_12' => 'Others',
+            'field_3_12_1' => 'Other Reason',
+            'field_3_13' => 'Copy of NRIC/MyKid/Birth Certificate',
+            'field_3_14' => 'Original of Court Order/Power of Attorney',
+            'field_3_15' => 'Original of Authorisation Letter',
+            'field_3_16' => 'Other Documents',
+            'field_3_16_1' => 'Other Documents (Specify)',
 
-            // Additional Details (Section 5)
-            'field_5_1' => 'Purpose of Request',
+            // Section 4: Personal Data Requested
+            'field_4_1' => 'Savings Account',
+            'field_4_2' => 'Current Account',
+            'field_4_3' => 'FCy Current Account',
+            'field_4_4' => 'Fixed Term Account',
+            'field_4_5' => 'Credit Card Account',
+            'field_4_6' => 'Financing Account',
+            'field_4_7' => 'Ar Rahnu Account',
+            'field_4_8' => 'Other Products/Services',
+            'field_4_8_1' => 'Products/Services (Please specify)',
+            'field_4_9' => 'Account No.',
+            'field_4_10' => 'Mandatee',
+            'field_4_11' => 'Image of Signature(s)',
+            'field_4_11_1' => 'Specify Name',
+            'field_4_12' => 'Name',
+            'field_4_13' => 'IC/Passport/Other Identification',
+            'field_4_14' => 'Residence/Mailing Address',
+            'field_4_15' => 'Contact Details',
+            'field_4_16' => 'Gender',
+            'field_4_17' => 'Race',
+            'field_4_18' => 'Nationality',
+            'field_4_19' => 'Country of Tax Residence',
+            'field_4_20' => 'Name of Employer',
+            'field_4_21' => 'Customer\'s Consent',
+            'field_4_22' => 'Other Personal Data',
+            'field_4_22_1' => 'Other Personal Data (Specify)',
+            'field_4_23' => 'Confirm Personal Data Only',
+            'field_4_24' => 'Supply Me with Copy of Personal Data',
 
-            // Declaration (Section 6)
+            // Section 5: Method of Delivery
+            'field_5_1' => 'Mail to Address',
+            'field_5_2' => 'Collect from Branch',
+            'field_5_2_1' => 'Office/Branch',
+
+            // Section 6: Declaration
             'field_6_1' => 'Full Name (as per NRIC)',
             'field_6_2' => 'NRIC / Passport No.',
-            'field_6_3' => 'Applicant Signature',
+            'field_6_3' => 'Signature',
         ],
 
         // Data Correction Request (DCR) Field Mappings
