@@ -188,7 +188,9 @@
                                 if (branchOption && branchOption.value) {
                                     const branchCode = branchOption.textContent.match(/\(([^)]+)\)/)?.[1];
                                     if (branchCode) {
-                                        return window.location.origin + '/branch/' + branchCode;
+                                        // Generate preview token (real token generated on server)
+                                        const previewToken = 'preview-' + Math.random().toString(36).substring(2, 15);
+                                        return window.location.origin + '/eform/branch/' + branchCode + '?token=' + previewToken;
                                     }
                                 }
                             }
