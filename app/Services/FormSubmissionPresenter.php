@@ -120,10 +120,11 @@ class FormSubmissionPresenter
 
         // Data Correction Request (DCR) Field Mappings
         'dcr' => [
-            // Section 2: About You
-            'field_2_1' => 'Requester Type',
+            // Section 2: About Yourself
+            'field_2_1' => 'I am a customer / former customer',
+            'field_2_2' => 'I am a Third Party Requestor',
 
-            // Personal Information (Section 3)
+            // Section 3: Particulars of Data Subject (Account Holder)
             'field_3_1' => 'Full Name (as per NRIC)',
             'field_3_2' => 'NRIC / Passport No.',
             'field_3_3' => 'Address',
@@ -132,15 +133,59 @@ class FormSubmissionPresenter
             'field_3_6' => 'Telephone No. (Office/Home)',
             'field_3_7' => 'Mobile No.',
 
-            // Correction Details (Section 4)
-            'field_4_1' => 'Account Number',
-            'field_4_6' => 'Data Field to Correct',
-            'field_4_7' => 'Current (Incorrect) Information',
-            'field_4_8' => 'Correct Information',
+            // Section 3: Third Party Requestor Details
+            'field_3_8' => 'Data Subject is a minor',
+            'field_3_9' => 'Data Subject is incapable of managing affairs',
+            'field_3_10' => 'Data Subject had passed away',
+            'field_3_11' => 'Data Subject authorised me in writing',
+            'field_3_12' => 'Others',
+            'field_3_12_1' => 'Other Reason',
+            'field_3_13' => 'Copy of NRIC/MyKid/Birth Certificate',
+            'field_3_14' => 'Original of Court Order/Power of Attorney',
+            'field_3_15' => 'Original of Authorisation Letter',
+            'field_3_16' => 'Other Documents',
+            'field_3_16_1' => 'Other Documents (Specify)',
 
-            // Additional Details (Section 5)
-            'field_5_1' => 'Reason for Correction',
-            'field_5_2' => 'Supporting Documents',
+            // Section 4: Correction Details
+            'field_4_1' => 'Update Scope',
+            'field_4_2' => 'Account Type 1',
+            'field_4_3' => 'Account No. 1',
+            'field_4_4' => 'Account Type 2',
+            'field_4_5' => 'Account No. 2',
+            'field_4_6' => 'Effective Date',
+            'field_4_7 ' => 'Name of Data Subject',
+            'field_4_8' => 'Action for Name',
+            'field_4_9' => 'Old IC No.',
+            'field_4_10' => 'Action for Old IC',
+            'field_4_11' => 'New IC No.',
+            'field_4_12' => 'Action for New IC',
+            'field_4_13' => 'Passport No.',
+            'field_4_14' => 'Action for Passport',
+            'field_4_15' => 'Residential/Mailing Address',
+            'field_4_16' => 'Action for Address',
+            'field_4_17' => 'Postcode',
+            'field_4_18' => 'Action for Postcode',
+            'field_4_19' => 'Account Number',
+            'field_4_20' => 'Action for Account Number',
+            'field_4_21' => 'Telephone No. (House)',
+            'field_4_22' => 'Action for Tel (House)',
+            'field_4_23' => 'Telephone No. (Office)',
+            'field_4_24' => 'Action for Tel (Office)',
+            'field_4_25' => 'Mobile Phone Number',
+            'field_4_26' => 'Action for Mobile',
+            'field_4_27' => 'Nationality',
+            'field_4_28' => 'Action for Nationality',
+            'field_4_29' => 'Occupation',
+            'field_4_30' => 'Action for Occupation',
+            'field_4_31' => 'Name of Employer',
+            'field_4_32' => 'Action for Employer',
+            'field_4_33' => 'Others (Please specify)',
+            'field_4_34' => 'Action for Others',
+
+            // Section 5: Declaration
+            'field_5_1' => 'Full Name (as per NRIC)',
+            'field_5_2' => 'NRIC/Passport No.',
+            'field_5_3' => 'Signature',
         ],
     ];
 
