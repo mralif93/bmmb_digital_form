@@ -381,7 +381,7 @@ class MapSsoController extends Controller
     }
 
     /**
-     * Handle logout - redirect to MAP
+     * Handle logout - redirect to MAP logout (federated logout)
      *
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
@@ -400,7 +400,7 @@ class MapSsoController extends Controller
             );
         }
 
-        // Complete logout process
+        // Complete logout process from eForm
         Auth::guard('web')->logout();
 
         // Flush all session data
@@ -415,8 +415,16 @@ class MapSsoController extends Controller
         // Get session cookie name
         $sessionCookie = config('session.cookie', 'laravel_session');
 
-        // Create redirect response
-        $response = redirect($this->getMapLoginUrl());
+        // Get MAP logout URL (will logout from MAP and redirect to login)
+        $mapLogoutUrl = config('map.logout_url', 'http://127.0.0.1:8000/pengurusan/logout/');
+
+        // Force HTTPS if current request is secure
+        if ($request->secure() && str_starts_with($mapLogoutUrl, 'http://')) {
+            $mapLogoutUrl = str_replace('http://', 'https://', $mapLogoutUrl);
+        }
+
+        // Create redirect response to MAP logout
+        $response = redirect($mapLogoutUrl);
 
         // Remove session cookie
         $response->withCookie(cookie()->forget($sessionCookie));
