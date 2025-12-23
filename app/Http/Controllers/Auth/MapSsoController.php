@@ -369,8 +369,15 @@ class MapSsoController extends Controller
      */
     private function getMapLoginUrl(): string
     {
-        // For local development, use localhost; for production use the configured URL
-        return config('services.map.redirect_url', 'http://localhost:8000/redirect/eform/');
+        // Use MAP login URL from config
+        $loginUrl = config('map.login_url', config('services.map.redirect_url', 'http://localhost:8000/redirect/eform/'));
+
+        // Force HTTPS if current request is secure
+        if (request()->secure() && str_starts_with($loginUrl, 'http://')) {
+            $loginUrl = str_replace('http://', 'https://', $loginUrl);
+        }
+
+        return $loginUrl;
     }
 
     /**
