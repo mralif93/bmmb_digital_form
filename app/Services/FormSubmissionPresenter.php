@@ -329,12 +329,38 @@ class FormSubmissionPresenter
      */
     private static function formatFieldValue(string $formSlug, string $fieldName, $value)
     {
-        // Format Requester Type for DAR/DCR
+        // Format DCR Action fields (A = Add, D = Delete, R = Revise)
+        if ($formSlug === 'dcr' && str_starts_with($fieldName, 'field_4_') && str_ends_with($fieldName, '0')) {
+            // field_4_8, field_4_10, field_4_12, field_4_14, field_4_16, field_4_18, field_4_20, etc.
+            // These are "Action for X" fields
+            if ($value === 'A' || $value === 'a') {
+                return 'Add';
+            } elseif ($value === 'D' || $value === 'd') {
+                return 'Delete';
+            } elseif ($value === 'R' || $value === 'r') {
+                return 'Revise';
+            }
+        }
+
+        // Format Requester Type for DAR/DCR (field_2_1 is now checkbox, not the requester type)
         if (($formSlug === 'dar' || $formSlug === 'dcr') && $fieldName === 'field_2_1') {
-            if ($value == '1' || $value === 1) {
-                return 'Customer';
-            } elseif ($value == '2' || $value === 2) {
+            if ($value == '1' || $value === 1 || $value === true || $value === '✓') {
+                return 'Customer / Former Customer';
+            }
+        }
+
+        if (($formSlug === 'dar' || $formSlug === 'dcr') && $fieldName === 'field_2_2') {
+            if ($value == '1' || $value === 1 || $value === true || $value === '✓') {
                 return 'Third Party Requestor';
+            }
+        }
+
+        // Format Update Scope for DCR
+        if ($formSlug === 'dcr' && $fieldName === 'field_4_1') {
+            if ($value === 'all') {
+                return 'Update ALL accounts';
+            } elseif ($value === 'specific') {
+                return 'Update ONLY specific accounts';
             }
         }
 
