@@ -1029,15 +1029,10 @@ class SubmissionController extends Controller
         $submission->file_uploads = $fileUploads;
 
         // Update submission metadata (user, branch, status)
-        if ($request->has('user_id')) {
-            $submission->user_id = $request->input('user_id') ?: null;
-        }
-        if ($request->has('branch_id')) {
-            $submission->branch_id = $request->input('branch_id') ?: null;
-        }
-        if ($request->has('status')) {
-            $submission->status = $request->input('status');
-        }
+        // Allow null values for optional fields
+        $submission->user_id = $request->input('user_id') ?: null;
+        $submission->branch_id = $request->input('branch_id') ?: null;
+        $submission->status = $request->input('status', $submission->status);
 
         $submission->last_modified_at = now();
         $submission->save();
