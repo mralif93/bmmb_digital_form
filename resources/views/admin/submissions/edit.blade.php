@@ -199,6 +199,14 @@
                         @break
 
                     @case('radio')
+                        {{-- Debug: Remove after testing --}}
+                        @if($field->field_name == 'field_3_1')
+                        <div class="text-xs text-red-600 mb-2">
+                            DEBUG Radio: field_name={{ $field->field_name }} | 
+                            currentValue="{{ $currentValue }}" | 
+                            Options: {{ json_encode($field->field_options) }}
+                        </div>
+                        @endif
                         <div class="flex flex-wrap gap-3">
                             @if($field->field_options && is_array($field->field_options))
                                 @foreach($field->field_options as $option)
