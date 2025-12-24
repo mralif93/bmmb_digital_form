@@ -199,6 +199,13 @@
                         @break
 
                     @case('radio')
+                        {{-- DEBUG: Remove after testing --}}
+                        <div class="text-xs bg-yellow-100 border border-yellow-400 p-2 mb-2">
+                            <strong>DEBUG Radio Field:</strong><br>
+                            Field Name: {{ $field->field_name }}<br>
+                            Current Value: "{{ $currentValue }}" (type: {{ gettype($currentValue) }})<br>
+                            Options: @json($field->field_options)
+                        </div>
                         <div class="flex flex-wrap gap-3">
                             @if($field->field_options && is_array($field->field_options))
                                 @foreach($field->field_options as $option)
