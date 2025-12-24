@@ -850,11 +850,20 @@ class SubmissionController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        // Get current submission data
+        // Get current submission data from multiple sources
+        // Priority: field_responses > submission_data > submissionData relationship
         $submissionData = array_merge(
-            $submission->field_responses ?? [],
-            $submission->submission_data ?? []
+            $submission->submission_data ?? [],
+            $submission->field_responses ?? []
         );
+
+        // Also extract from submissionData relationship (new storage method)
+        foreach ($submission->submissionData as $data) {
+            $fieldName = $data->field->field_name ?? null;
+            if ($fieldName && !isset($submissionData[$fieldName])) {
+                $submissionData[$fieldName] = $data->field_value;
+            }
+        }
 
         // Get users and branches for selection
         $users = User::where('status', 'active')->orderBy('first_name')->get();
