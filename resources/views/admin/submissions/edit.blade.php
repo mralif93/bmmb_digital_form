@@ -207,15 +207,30 @@
                                     $savedValue = trim((string)($currentValue ?? ''));
                                     $optionValue = trim((string)$option);
                                     
-                                    // Legacy value mapping for backward compatibility
-                                    // Handle old "Specific" -> option 2, "All" -> option 1
-                                    if (strcasecmp($savedValue, 'Specific') === 0 && str_starts_with($optionValue, '2')) {
-                                        $isChecked = true;
-                                    } elseif (strcasecmp($savedValue, 'All') === 0 && str_starts_with($optionValue, '1')) {
-                                        $isChecked = true;
-                                    } else {
-                                        $isChecked = $savedValue === $optionValue || 
-                                                     old($field->field_name) === $optionValue;
+                                    // Check if values match exactly
+                                    $isChecked = $savedValue === $optionValue || 
+                                                 old($field->field_name) === $optionValue;
+                                    
+                                    // If not exact match, try flexible matching:
+                                    // 1. Check if option contains the saved value (e.g., option="2. Please update ONLY..." contains "Specific")
+                                    // 2. Check if both start with the same number (e.g., saved="2" and option="2. Please...")
+                                    if (!$isChecked && !empty($savedValue)) {
+                                        // Check if the option text contains the saved value
+                                        if (stripos($optionValue, $savedValue) !== false) {
+                                            $isChecked = true;
+                                        }
+                                        // Check if saved value is just a number and option starts with that number
+                                        elseif (is_numeric($savedValue) && preg_match('/^' . preg_quote($savedValue) . '[\.\s]/', $optionValue)) {
+                                            $isChecked = true;
+                                        }
+                                        // Legacy: Check if saved="Specific" and option contains "ONLY" (option 2)
+                                        elseif (strcasecmp($savedValue, 'Specific') === 0 && stripos($optionValue, 'ONLY') !== false) {
+                                            $isChecked = true;
+                                        }
+                                        // Legacy: Check if saved="All" and option contains "ALL" (option 1)
+                                        elseif (strcasecmp($savedValue, 'All') === 0 && stripos($optionValue, 'ALL') !== false) {
+                                            $isChecked = true;
+                                        }
                                     }
                                 @endphp
                                 <label class="flex items-center">
