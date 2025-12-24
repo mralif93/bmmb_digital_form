@@ -1024,6 +1024,18 @@ class SubmissionController extends Controller
         $submission->field_responses = $fieldResponses;
         $submission->submission_data = $submissionDataArray;
         $submission->file_uploads = $fileUploads;
+
+        // Update submission metadata (user, branch, status)
+        if ($request->has('user_id')) {
+            $submission->user_id = $request->input('user_id') ?: null;
+        }
+        if ($request->has('branch_id')) {
+            $submission->branch_id = $request->input('branch_id') ?: null;
+        }
+        if ($request->has('status')) {
+            $submission->status = $request->input('status');
+        }
+
         $submission->last_modified_at = now();
         $submission->save();
 
@@ -1033,10 +1045,17 @@ class SubmissionController extends Controller
             description: "Edited submission #{$submission->id} for form '{$form->name}'",
             modelType: get_class($submission),
             modelId: $submission->id,
-            oldValues: $oldValues,
+            oldValues: array_merge($oldValues, [
+                'user_id' => $oldValues['user_id'] ?? $submission->getOriginal('user_id'),
+                'branch_id' => $oldValues['branch_id'] ?? $submission->getOriginal('branch_id'),
+                'status' => $oldValues['status'] ?? $submission->getOriginal('status'),
+            ]),
             newValues: [
                 'field_responses' => $fieldResponses,
                 'submission_data' => $submissionDataArray,
+                'user_id' => $submission->user_id,
+                'branch_id' => $submission->branch_id,
+                'status' => $submission->status,
             ]
         );
 
