@@ -930,6 +930,9 @@ class SubmissionController extends Controller
         $oldValues = [
             'field_responses' => $submission->field_responses,
             'submission_data' => $submission->submission_data,
+            'user_id' => $submission->user_id,
+            'branch_id' => $submission->branch_id,
+            'status' => $submission->status,
         ];
 
         // Prepare submission data
@@ -1045,11 +1048,7 @@ class SubmissionController extends Controller
             description: "Edited submission #{$submission->id} for form '{$form->name}'",
             modelType: get_class($submission),
             modelId: $submission->id,
-            oldValues: array_merge($oldValues, [
-                'user_id' => $oldValues['user_id'] ?? $submission->getOriginal('user_id'),
-                'branch_id' => $oldValues['branch_id'] ?? $submission->getOriginal('branch_id'),
-                'status' => $oldValues['status'] ?? $submission->getOriginal('status'),
-            ]),
+            oldValues: $oldValues,
             newValues: [
                 'field_responses' => $fieldResponses,
                 'submission_data' => $submissionDataArray,
