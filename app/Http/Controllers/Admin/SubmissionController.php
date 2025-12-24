@@ -856,7 +856,11 @@ class SubmissionController extends Controller
             $submission->submission_data ?? []
         );
 
-        return view('admin.submissions.edit', compact('submission', 'form', 'sections', 'submissionData'));
+        // Get users and branches for selection
+        $users = User::where('status', 'active')->orderBy('first_name')->get();
+        $branches = Branch::orderBy('branch_name')->get();
+
+        return view('admin.submissions.edit', compact('submission', 'form', 'sections', 'submissionData', 'users', 'branches'));
     }
 
     /**

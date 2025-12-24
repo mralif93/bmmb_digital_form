@@ -23,29 +23,81 @@
 </div>
 @endif
 
-<form action="{{ route('admin.submissions.update', [$form->slug, $submission->id]) }}" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+<form action="{{ route('admin.submissions.update', [$form->slug, $submission->id]) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
     @csrf
     @method('PUT')
 
-    @foreach($sections as $section)
-    <!-- Section Divider (not for first section) -->
-    @if(!$loop->first)
-    <div class="border-t border-gray-200 dark:border-gray-700 my-6"></div>
-    @endif
+    <!-- Submission Metadata -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+            <i class='bx bx-info-circle mr-2 text-primary-600 dark:text-primary-400'></i>
+            Submission Information
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label for="user_id" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    User
+                </label>
+                <select name="user_id" 
+                        id="user_id"
+                        class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    <option value="">Select User (Optional)</option>
+                    @foreach($users as $user)
+                        <option value="{{ $user->id }}" {{ old('user_id', $submission->user_id) == $user->id ? 'selected' : '' }}>
+                            {{ $user->first_name }} {{ $user->last_name }} ({{ $user->email }})
+                        </option>
+                    @endforeach
+                </select>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Leave empty to use current admin user</p>
+            </div>
+            <div>
+                <label for="branch_id" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Branch
+                </label>
+                <select name="branch_id" 
+                        id="branch_id"
+                        class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    <option value="">Select Branch (Optional)</option>
+                    @foreach($branches as $branch)
+                        <option value="{{ $branch->id }}" {{ old('branch_id', $submission->branch_id) == $branch->id ? 'selected' : '' }}>
+                            {{ $branch->name }} ({{ $branch->code }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label for="status" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Status <span class="text-red-500">*</span>
+                </label>
+                <select name="status" 
+                        id="status"
+                        required
+                        class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    <option value="draft" {{ old('status', $submission->status) == 'draft' ? 'selected' : '' }}>Draft</option>
+                    <option value="submitted" {{ old('status', $submission->status) == 'submitted' ? 'selected' : '' }}>Submitted</option>
+                    <option value="under_review" {{ old('status', $submission->status) == 'under_review' ? 'selected' : '' }}>Under Review</option>
+                    <option value="in_progress" {{ old('status', $submission->status) == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                    <option value="approved" {{ old('status', $submission->status) == 'approved' ? 'selected' : '' }}>Approved</option>
+                    <option value="rejected" {{ old('status', $submission->status) == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                    <option value="completed" {{ old('status', $submission->status) == 'completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="expired" {{ old('status', $submission->status) == 'expired' ? 'selected' : '' }}>Expired</option>
+                    <option value="cancelled" {{ old('status', $submission->status) == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                </select>
+            </div>
+        </div>
+    </div>
 
-    <!-- Section Header -->
-    <div class="mb-4">
-        <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
+    @foreach($sections as $section)
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
             <i class='bx bx-file-blank mr-2 text-primary-600 dark:text-primary-400'></i>
             {!! $section->section_label !!}
         </h3>
         @if($section->section_description && trim(strip_tags($section->section_description)))
-        <p class="text-xs text-gray-600 dark:text-gray-400">{!! $section->section_description !!}</p>
+        <p class="text-xs text-gray-600 dark:text-gray-400 mb-4">{!! $section->section_description !!}</p>
         @endif
-    </div>
 
-    <!-- Section Fields -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             @foreach($section->fields as $field)
             @php
                 $currentValue = $submissionData[$field->field_name] ?? null;
@@ -314,6 +366,7 @@
             </div>
             @endforeach
         </div>
+    </div>
     @endforeach
 
     <!-- Action Buttons -->
