@@ -199,22 +199,24 @@
                         @break
 
                     @case('radio')
-                        {{-- DEBUG: Remove after testing --}}
-                        <div class="text-xs bg-yellow-100 border border-yellow-400 p-2 mb-2">
-                            <strong>DEBUG Radio Field:</strong><br>
-                            Field Name: {{ $field->field_name }}<br>
-                            Current Value: "{{ $currentValue }}" (type: {{ gettype($currentValue) }})<br>
-                            Options: @json($field->field_options)
-                        </div>
                         <div class="flex flex-wrap gap-3">
                             @if($field->field_options && is_array($field->field_options))
-                                @foreach($field->field_options as $option)
+                                @foreach($field->field_options as $index => $option)
                                 @php
                                     // Normalize both values for comparison
                                     $savedValue = trim((string)($currentValue ?? ''));
                                     $optionValue = trim((string)$option);
-                                    $isChecked = $savedValue === $optionValue || 
-                                                 old($field->field_name) === $optionValue;
+                                    
+                                    // Legacy value mapping for backward compatibility
+                                    // Handle old "Specific" -> option 2, "All" -> option 1
+                                    if (strcasecmp($savedValue, 'Specific') === 0 && str_starts_with($optionValue, '2')) {
+                                        $isChecked = true;
+                                    } elseif (strcasecmp($savedValue, 'All') === 0 && str_starts_with($optionValue, '1')) {
+                                        $isChecked = true;
+                                    } else {
+                                        $isChecked = $savedValue === $optionValue || 
+                                                     old($field->field_name) === $optionValue;
+                                    }
                                 @endphp
                                 <label class="flex items-center">
                                     <input type="radio" 
