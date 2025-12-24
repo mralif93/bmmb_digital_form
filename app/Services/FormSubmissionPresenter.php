@@ -23,70 +23,72 @@ class FormSubmissionPresenter
             'header_3' => 'ID No. / Business Registration No.',
             'header_4' => 'Account No.',
 
-            // Service Fields
-            'field_1' => 'Cash Withdrawal Service',
-            'field_1_1' => 'Account Number',
-            'field_1_2' => 'Currency',
+            // Section 2: Account Type Services
+            'field_1' => '1. Transfer Fund',
+            'field_1_1' => 'To account no.',
+            'field_1_2' => 'Under the name or company of',
             'field_1_3' => 'Amount',
 
-            'field_2' => 'Foreign Currency Exchange',
-            'field_2_1' => 'From Currency',
-            'field_2_2' => 'To Currency',
-            'field_2_3' => 'Amount',
+            'field_2' => '2. Cancellation or Repurchase of Cashier\'s Order',
+            'field_2_1' => 'Cheque No.',
+            'field_2_2' => 'Amount',
+            'field_2_3' => 'Reason',
 
-            'field_3' => 'Cheque Book Request',
-            'field_3_1' => 'Account Number',
-            'field_3_2' => 'Number of Leaves',
-            'field_3_3' => 'Collection Method',
+            'field_3' => '3. Stop payment on cheque',
+            'field_3_1' => 'Cheque No.',
+            'field_3_2' => 'Under the name or company of',
+            'field_3_3' => 'Reason',
 
-            'field_4' => 'Statement Request',
-            'field_4_1' => 'Period/Date Range',
+            'field_4' => '4. Bank account statement for the month',
+            'field_4_1' => 'Month',
 
-            'field_5' => 'Balance Inquiry',
-            'field_6' => 'Account Opening',
-            'field_7' => 'Account Closure',
+            'field_5' => '5. Closing of Savings or Current or Investment Account-i',
 
-            'field_8' => 'Fixed Deposit',
-            'field_8_1' => 'Amount',
-            'field_8_2' => 'Tenure (Months)',
-            'field_8_3' => 'Special Instructions',
+            'field_6' => '6. Conversion of Qard account to Tawarruq account',
 
-            'field_9' => 'Loan Application',
+            'field_7' => '7. Conversion of Savings Account-i / Current Account-i (Tawarruq / Qard) to Mudarabah Unrestricted Investment Account (SURIA)',
 
-            'field_10' => 'Credit/Debit Card',
-            'field_10_1' => 'Card Type',
-            'field_10_2' => 'Action (New/Replace/Cancel)',
-            'field_10_3' => 'Reason',
+            'field_8' => '8. Zakat on Savings Auto Deduction',
+            'field_8_1' => 'My/our savings account : and/or',
+            'field_8_2' => 'My/our current account',
+            'field_8_3' => 'On behalf of me/us and hereby appoint BMMB as my/our agent under a Wakalah arrangement by transferring the zakat payable to',
 
-            'field_11' => 'Internet Banking Registration',
+            'field_9' => '9. Cancellation or Stop Zakat on savings Auto Deduction with immediate effect',
 
-            'field_12' => 'Update Personal Information',
-            'field_12_1' => 'Details to Update',
+            'field_10' => '10. Zakat on Gold Account Auto Calculation and Deduction',
+            'field_10_1' => 'Conversion to Malaysian Ringgit (MYR)',
+            'field_10_2' => 'Transfer in gold form (in gram)',
+            'field_10_3' => 'On behalf of me/us and hereby appoint BMMB as my/our agent under a Wakalah arrangement by transferring the zakat payable to',
 
-            'field_13' => 'Others',
-            'field_13_1' => 'Specify Service',
+            'field_11' => '11. Cancellation or Stop Zakat on gold account Auto Deduction with immediate effect.',
 
-            // Content/Agreement
-            'content_1' => 'Terms and Conditions Agreement',
-            'content_2' => 'Privacy Policy Agreement',
+            'field_12' => '12. Physical Delivery of Purchased Commodity',
+            'field_12_1' => 'I hereby place the sum of RM',
 
-            // Section C: Remittance Details
+            'field_13' => '13. Others',
+            'field_13_1' => 'Others',
+
+            // Section 3: Consent
+            'content_1' => 'Yes, I agree to receive marketing promotions.',
+            'content_2' => 'No, I do not agree to receive marketing promotions.',
+
+            // Section C: Third Party Requestor
             'section_c_1' => 'Beneficiary Name',
-            'section_c_2' => 'Beneficiary IC/Passport',
-            'section_c_3' => 'Relationship to Customer',
-            'section_c_4' => 'Beneficiary Address',
-            'section_c_5' => 'Beneficiary Phone',
-            'section_c_6' => 'Beneficiary Email',
-            'section_c_7' => 'Purpose of Remittance',
-            'section_c_8' => 'Remittance Amount',
-            'section_c_8_1' => 'Currency',
-            'section_c_8_2' => 'Bank Name',
-            'section_c_8_3' => 'Bank Account Number',
-            'section_c_8_4' => 'Swift Code/Bank Code',
+            'section_c_2' => 'NRIC / Passport No.',
+            'section_c_3' => 'Relationship with Account Holder',
+            'section_c_4' => 'Address',
+            'section_c_5' => 'Mobile No.',
+            'section_c_6' => 'Email Address',
+            'section_c_7' => 'Purpose of request',
+            'section_c_8' => 'Supporting Documents',
+            'section_c_8_1' => 'Death certificate',
+            'section_c_8_2' => 'Birth Certificate',
+            'section_c_8_3' => 'Marriage certificate',
+            'section_c_8_4' => 'Others',
 
-            // Section D: Declaration
-            'section_d_1' => 'Declaration Confirmation',
-            'section_d_2' => 'Applicant Signature',
+            // Section D: Confirmation
+            'section_d_1' => 'I/We declare(s) that the above information is correct',
+            'section_d_2' => 'Signature',
             'section_d_3' => 'Date',
         ],
 
