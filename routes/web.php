@@ -753,6 +753,8 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
             Route::post('/forms/reorder', [FormController::class, 'reorder'])->name('forms.reorder');
             Route::get('/forms/{form}/export', [FormController::class, 'export'])->name('forms.export');
             Route::post('/forms/import', [FormController::class, 'import'])->name('forms.import');
+            Route::post('/forms/{id}/restore', [FormController::class, 'restore'])->name('forms.restore');
+            Route::delete('/forms/{id}/force-delete', [FormController::class, 'forceDelete'])->name('forms.force-delete');
 
             // Form Sections Management
             Route::prefix('forms/{form}/sections')->name('form-sections.')->group(function () {

@@ -17,11 +17,17 @@ class FormController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $forms = Form::orderBy('sort_order')->orderBy('name')->paginate(15);
+        $showTrashed = $request->query('trashed') === 'true';
 
-        return view('admin.forms.index', compact('forms'));
+        if ($showTrashed) {
+            $forms = Form::onlyTrashed()->orderBy('sort_order')->orderBy('name')->paginate(15);
+        } else {
+            $forms = Form::orderBy('sort_order')->orderBy('name')->paginate(15);
+        }
+
+        return view('admin.forms.index', compact('forms', 'showTrashed'));
     }
 
     /**
@@ -455,6 +461,83 @@ class FormController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Failed to import form: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Restore a soft-deleted form
+     */
+    public function restore($id): RedirectResponse
+    {
+        try {
+            $form = Form::onlyTrashed()->findOrFail($id);
+            $form->restore();
+
+            // Log audit trail
+            $this->logAuditTrail(
+                action: 'restore',
+                description: "Restored form '{$form->name}'",
+                modelType: Form::class,
+                modelId: $form->id
+            );
+
+            return redirect()->route('admin.forms.index')
+                ->with('success', "Form '{$form->name}' restored successfully!");
+
+        } catch (\Exception $e) {
+            \Log::error("Error restoring form ID {$id}: " . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to restore form: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Permanently delete a soft-deleted form
+     */
+    public function forceDelete($id): RedirectResponse
+    {
+        try {
+            $form = Form::onlyTrashed()->findOrFail($id);
+            $formName = $form->name;
+
+            // Manually delete related records to prevent Foreign Key constraints
+            // (If Cascades are not set in DB)
+            $form->submissions()->forceDelete(); // Delete submissions
+
+            // Delete sections and fields (fetch even trashed ones if any)
+            foreach ($form->sections()->withTrashed()->get() as $section) {
+                $section->fields()->withTrashed()->forceDelete(); // Delete fields first
+                $section->forceDelete(); // Then section
+            }
+
+            // Finally permanently delete the form
+            $form->forceDelete();
+
+            // Log audit trail
+            $this->logAuditTrail(
+                action: 'force_delete',
+                description: "Permanently deleted form '{$formName}'",
+                modelType: Form::class,
+                modelId: $id
+            );
+
+            // Check if there are any more trashed forms
+            $remainingTrashedCount = Form::onlyTrashed()->count();
+
+            if ($remainingTrashedCount > 0) {
+                // Stay on deleted forms view
+                return redirect()->route('admin.forms.index', ['trashed' => 'true'])
+                    ->with('success', "Form '{$formName}' permanently deleted!");
+            } else {
+                // No more deleted forms, go back to active forms
+                return redirect()->route('admin.forms.index')
+                    ->with('success', "Form '{$formName}' permanently deleted! No more deleted forms.");
+            }
+
+        } catch (\Exception $e) {
+            \Log::error("Error force deleting form ID {$id}: " . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to delete form: ' . $e->getMessage());
         }
     }
 

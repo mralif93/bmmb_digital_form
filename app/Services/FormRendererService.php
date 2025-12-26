@@ -341,7 +341,7 @@ class FormRendererService
         if ($field->field_placeholder) {
             $html .= 'placeholder="' . htmlspecialchars($field->field_placeholder) . '" ';
         }
-        $html .= 'class="form-input w-full px-3 py-2 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 text-xs transition-all duration-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:shadow-lg hover:border-gray-300 focus:outline-none shadow-sm" ';
+        $html .= 'class="form-input w-full h-[42px] px-3 py-2 border-2 border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 text-xs transition-all duration-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:shadow-lg hover:border-gray-300 focus:outline-none shadow-sm" ';
         if ($field->is_required) {
             $html .= 'required aria-required="true" ';
         }
@@ -431,7 +431,7 @@ class FormRendererService
         $html .= '<select ';
         $html .= 'id="' . $field->field_name . '" ';
         $html .= 'name="' . $field->field_name . '" ';
-        $html .= 'class="form-input w-full px-3 py-2 pr-10 border-2 border-gray-200 rounded-lg bg-white text-gray-900 text-xs transition-all duration-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:shadow-lg hover:border-gray-300 appearance-none cursor-pointer focus:outline-none shadow-sm" ';
+        $html .= 'class="form-input w-full h-[42px] px-3 py-2 pr-10 border-2 border-gray-200 rounded-lg bg-white text-gray-900 text-xs transition-all duration-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:shadow-lg hover:border-gray-300 appearance-none cursor-pointer focus:outline-none shadow-sm" ';
         if ($field->is_required) {
             $html .= 'required aria-required="true" ';
         }
@@ -472,12 +472,16 @@ class FormRendererService
     private function renderRadio($field): string
     {
         $html = '<div class="form-group">';
-        $html .= '<label class="block text-xs font-semibold text-gray-800 dark:text-gray-100 mb-1.5 leading-snug">';
+
+        // Flex container for Label
+        $html .= '<div class="mb-1.5">';
+        $html .= '<label class="block text-xs font-semibold text-gray-800 dark:text-gray-100 leading-snug">';
         $html .= '<span class="text-gray-900 dark:text-gray-100">' . htmlspecialchars($field->field_label) . '</span>';
         if ($field->is_required) {
             $html .= ' <span class="text-red-500 font-bold ml-1.5" aria-label="required" title="Required field">*</span>';
         }
         $html .= '</label>';
+        $html .= '</div>';
 
         // Render description above input if position is 'top'
         $descriptionPosition = $this->getDescriptionPosition($field);
@@ -490,8 +494,9 @@ class FormRendererService
         $optionCount = $field->hasOptions() ? count($field->getOptions()) : 0;
         $isInline = $optionCount <= 3;
 
-        // Use flex layout for inline, vertical stack for more options
-        $containerClass = $isInline ? 'flex flex-wrap gap-3' : 'space-y-2.5';
+        // Use flex layout for inline (tight gap), vertical stack for more options
+        // Reduced gap from 3 to 2 to fit Reset button inline
+        $containerClass = $isInline ? 'flex flex-wrap gap-2' : 'space-y-2.5';
         $html .= '<div class="' . $containerClass . '">';
 
         if ($field->hasOptions()) {
@@ -499,10 +504,11 @@ class FormRendererService
                 // Adjust styling based on inline vs stacked layout
                 if ($isInline) {
                     // Inline layout - adjust width and reduce padding
-                    $html .= '<div class="flex items-center px-3 py-2 rounded-lg border-2 border-gray-200 hover:border-primary-400 hover:bg-primary-50/50 transition-all duration-200 cursor-pointer group shadow-sm hover:shadow-md">';
+                    // Reduced px-3 to px-2.5 to save space
+                    $html .= '<div class="flex items-center px-2.5 py-2 h-[42px] rounded-lg border-2 border-gray-200 hover:border-primary-400 hover:bg-primary-50/50 transition-all duration-200 cursor-pointer group shadow-sm hover:shadow-md">';
                 } else {
                     // Stacked layout - full width
-                    $html .= '<div class="flex items-center p-2.5 rounded-lg border-2 border-gray-200 hover:border-primary-400 hover:bg-primary-50/50 transition-all duration-200 cursor-pointer group shadow-sm hover:shadow-md">';
+                    $html .= '<div class="flex items-center p-2.5 h-[42px] rounded-lg border-2 border-gray-200 hover:border-primary-400 hover:bg-primary-50/50 transition-all duration-200 cursor-pointer group shadow-sm hover:shadow-md">';
                 }
                 $html .= '<input type="radio" ';
                 $html .= 'id="' . $field->field_name . '_' . $value . '" ';
@@ -519,6 +525,21 @@ class FormRendererService
                 $html .= '</div>';
             }
         }
+
+        // Add Reset Button as the last item, styled EXACTLY like options (solid border)
+        // Red accents on hover to distinguish action
+        // Added h-[42px] to match typical input height
+        // Reduced px-3 to px-2.5 to match options and fit inline
+        $resetBtnClass = ($isInline)
+            ? 'flex items-center px-2.5 py-2 h-[42px] rounded-lg border-2 border-gray-200 hover:border-red-400 hover:bg-red-50 text-gray-500 hover:text-red-600 transition-all duration-200 cursor-pointer group shadow-sm hover:shadow-md'
+            : 'flex items-center p-2.5 h-[42px] rounded-lg border-2 border-gray-200 hover:border-red-400 hover:bg-red-50 text-gray-500 hover:text-red-600 transition-all duration-200 cursor-pointer group shadow-sm hover:shadow-md w-full';
+
+        $html .= '<button type="button" class="' . $resetBtnClass . '" ';
+        $html .= 'onclick="document.querySelectorAll(\'input[name=\\\'' . $field->field_name . '\\\']\').forEach(el => el.checked = false);" ';
+        $html .= 'title="Clear selection">';
+        $html .= '<i class="bx bx-reset mr-1.5 text-lg"></i>';
+        $html .= '<span class="text-xs font-medium">Reset</span>';
+        $html .= '</button>';
 
         $html .= '</div>';
 
@@ -641,7 +662,7 @@ class FormRendererService
         $html .= '<input type="date" ';
         $html .= 'id="' . $field->field_name . '" ';
         $html .= 'name="' . $field->field_name . '" ';
-        $html .= 'class="form-input w-full px-3 py-2 border-2 border-gray-200 rounded-lg bg-white text-gray-900 text-xs transition-all duration-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:shadow-lg hover:border-gray-300 focus:outline-none shadow-sm" ';
+        $html .= 'class="form-input w-full h-[42px] px-3 py-2 border-2 border-gray-200 rounded-lg bg-white text-gray-900 text-xs transition-all duration-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:shadow-lg hover:border-gray-300 focus:outline-none shadow-sm" ';
         if ($field->is_required) {
             $html .= 'required aria-required="true" ';
         }

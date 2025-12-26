@@ -288,7 +288,7 @@
     @if(in_array($submission->form->slug, ['dcr', 'dar']))
         <div class="form-section" style="margin-top: 10px;">
             <div
-                style="background: #f59e0b; color: white; padding: 4px 8px; font-size: 9pt; font-weight: bold; margin-bottom: 2px;">
+                style="background: #ea580c; color: white; padding: 4px 8px; font-size: 9pt; font-weight: bold; margin-bottom: 2px;">
                 IMPORTANT NOTE:
             </div>
             <table style="width: 100%; border-collapse: collapse; font-size: 7pt; border: 1px solid #ddd;">
@@ -335,7 +335,7 @@
         <div class="form-section" style="margin-top: 10px;">
             {{-- Section Header --}}
             <div
-                style="background: #f3f4f6; color: #000; padding: 6px 10px; font-size: 9pt; font-weight: bold; border: 1px solid #d1d5db; border-bottom: 2px solid #9ca3af;">
+                style="background: #ea580c; color: white; padding: 6px 10px; font-size: 9pt; font-weight: bold; border: 1px solid #c2410c; border-bottom: none;">
                 {{ strtoupper($sectionName) }}
             </div>
 
@@ -370,46 +370,63 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($fields as $field)
-                            @if(FormSubmissionPresenter::shouldDisplayField($field['field_name'], $field['value']))
-                                {{-- Check if this is an "Action for" field --}}
-                                @if(stripos($field['label'], 'action for') !== false)
-                                    {{-- This is an action field, display it in the action column --}}
-                                @else
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 6px 8px; vertical-align: top;">
-                                            <strong>{{ $field['label'] }}</strong>
-                                        </td>
-                                        <td style="border: 1px solid #000; padding: 6px 8px; vertical-align: top;">
-                                            {{ $field['value'] ?? '-' }}
-                                        </td>
-                                        @php
-                                            $actionFieldName = 'Action for ' . $field['label'];
-                                            $actionValue = '';
-                                            foreach ($fields as $actionField) {
-                                                if ($actionField['label'] === $actionFieldName) {
-                                                    $actionValue = strtoupper($actionField['value'] ?? '');
-                                                    break;
-                                                }
-                                            }
-                                        @endphp
-                                        <td style="border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle;">
-                                            {{ $actionValue === 'A' || $actionValue === 'ADD' ? '✓' : '' }}
-                                        </td>
-                                        <td style="border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle;">
-                                            {{ $actionValue === 'D' || $actionValue === 'DELETE' ? '✓' : '' }}
-                                        </td>
-                                        <td style="border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle;">
-                                            {{ $actionValue === 'R' || $actionValue === 'REVISE' ? '✓' : '' }}
-                                        </td>
-                                    </tr>
-                                @endif
-                            @endif
+                        @php
+                            // Define the specific fields to display for Data Correction Details
+                            $correctionFields = [
+                                'Name of Data Subject (account holder)',
+                                'Old IC No.',
+                                'New IC No.',
+                                'Passport No.',
+                                'Residential/Mailing Address*',
+                                'Postcode',
+                                'Account Number',
+                                'Telephone No. (House)',
+                                'Telephone No. (Office)',
+                                'Mobile Phone Number',
+                                'Nationality',
+                                'Occupation',
+                                'Name of Employer',
+                                'Others (Please specify)'
+                            ];
+
+                            // Create a map of field labels to their values
+                            $fieldMap = [];
+                            foreach ($fields as $field) {
+                                $fieldMap[$field['label']] = $field;
+                            }
+                        @endphp
+
+                        @foreach($correctionFields as $fieldLabel)
+                            <tr>
+                                <td style="border: 1px solid #000; padding: 6px 8px; vertical-align: top;">
+                                    <strong>{{ $fieldLabel }}</strong>
+                                </td>
+                                <td style="border: 1px solid #000; padding: 6px 8px; vertical-align: top;">
+                                    {{ $fieldMap[$fieldLabel]['value'] ?? '' }}
+                                </td>
+                                @php
+                                    $actionFieldName = 'Action for ' . $fieldLabel;
+                                    $actionValue = '';
+                                    if (isset($fieldMap[$actionFieldName])) {
+                                        $actionValue = strtoupper($fieldMap[$actionFieldName]['value'] ?? '');
+                                    }
+                                @endphp
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle;">
+                                    {{ $actionValue === 'A' || $actionValue === 'ADD' ? '✓' : '' }}
+                                </td>
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle;">
+                                    {{ $actionValue === 'D' || $actionValue === 'DELETE' ? '✓' : '' }}
+                                </td>
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle;">
+                                    {{ $actionValue === 'R' || $actionValue === 'REVISE' ? '✓' : '' }}
+                                </td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
-                <div style="font-size: 6pt; font-style: italic; padding: 4px 8px; border: 1px solid #000; border-top: none; background: #fff;">
-                    <strong>Note :</strong> A; Add  D; delete  ; R: Revise
+                <div
+                    style="font-size: 6pt; font-style: italic; padding: 4px 8px; border: 1px solid #000; border-top: none; background: #fff;">
+                    <strong>Note :</strong> A; Add D; delete ; R: Revise
                 </div>
             @else
                 {{-- Standard 2-column layout for other sections --}}
@@ -452,9 +469,9 @@
 
     {{-- Staff-Only Sections for PDF --}}
     @if($submission->acknowledgment_received_by || $submission->verification_verified_by)
-        <div class="form-section" style="background: #fef3c7; border: 2px solid #f59e0b; padding: 10px; margin-top: 10px;">
+        <div class="form-section" style="background: #fff7ed; border: 2px solid #ea580c; padding: 10px; margin-top: 10px;">
             <div
-                style="text-align: center; font-weight: bold; font-size: 9pt; margin-bottom: 8px; text-transform: uppercase; color: #92400e;">
+                style="text-align: center; font-weight: bold; font-size: 9pt; margin-bottom: 8px; text-transform: uppercase; color: #9a3412;">
                 FOR BMMB OFFICE USE ONLY
             </div>
 
@@ -466,7 +483,7 @@
                 @endphp
                 <div style="margin-bottom: 8px;">
                     <div
-                        style="background: #f59e0b; color: white; padding: 3px 6px; font-size: 8pt; font-weight: bold; margin-bottom: 4px;">
+                        style="background: #ea580c; color: white; padding: 3px 6px; font-size: 8pt; font-weight: bold; margin-bottom: 4px;">
                         {{ $acknowledgmentPart }}: ACKNOWLEDGMENT RECEIPT
                     </div>
                     <table style="width: 100%; border-collapse: collapse; font-size: 7pt;">
@@ -518,9 +535,9 @@
                     $verificationPart = $submission->form->slug === 'dar' ? 'PART H' : 'PART G';
                 @endphp
                 <div
-                    style="{{ $submission->acknowledgment_received_by ? 'padding-top: 8px; border-top: 2px dotted #f59e0b;' : '' }}">
+                    style="{{ $submission->acknowledgment_received_by ? 'padding-top: 8px; border-top: 2px dotted #ea580c;' : '' }}">
                     <div
-                        style="background: #f59e0b; color: white; padding: 3px 6px; font-size: 8pt; font-weight: bold; margin-bottom: 4px;">
+                        style="background: #ea580c; color: white; padding: 3px 6px; font-size: 8pt; font-weight: bold; margin-bottom: 4px;">
                         {{ $verificationPart }}: VERIFICATION
                     </div>
                     <table style="width: 100%; border-collapse: collapse; font-size: 7pt;">

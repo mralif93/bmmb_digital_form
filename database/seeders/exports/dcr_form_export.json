@@ -515,18 +515,8 @@
                     "active": true,
                     "sort_order": 2,
                     "grid_column": "left",
-                    "conditional": true,
-                    "conditional_logic": {
-                        "action": "show_if",
-                        "logic": "and",
-                        "conditions": [
-                            {
-                                "field": "field_4_1",
-                                "operator": "equals",
-                                "value": "specific"
-                            }
-                        ]
-                    },
+                    "conditional": false,
+                    "conditional_logic": null,
                     "options": null,
                     "settings": {
                         "description_position": "bottom"
@@ -544,18 +534,8 @@
                     "active": true,
                     "sort_order": 3,
                     "grid_column": "right",
-                    "conditional": true,
-                    "conditional_logic": {
-                        "action": "show_if",
-                        "logic": "and",
-                        "conditions": [
-                            {
-                                "field": "field_4_1",
-                                "operator": "equals",
-                                "value": "specific"
-                            }
-                        ]
-                    },
+                    "conditional": false,
+                    "conditional_logic": null,
                     "options": null,
                     "settings": {
                         "description_position": "bottom"
@@ -573,18 +553,8 @@
                     "active": true,
                     "sort_order": 4,
                     "grid_column": "left",
-                    "conditional": true,
-                    "conditional_logic": {
-                        "action": "show_if",
-                        "logic": "and",
-                        "conditions": [
-                            {
-                                "field": "field_4_1",
-                                "operator": "equals",
-                                "value": "specific"
-                            }
-                        ]
-                    },
+                    "conditional": false,
+                    "conditional_logic": null,
                     "options": null,
                     "settings": {
                         "description_position": "bottom"
@@ -602,18 +572,46 @@
                     "active": true,
                     "sort_order": 5,
                     "grid_column": "right",
-                    "conditional": true,
-                    "conditional_logic": {
-                        "action": "show_if",
-                        "logic": "and",
-                        "conditions": [
-                            {
-                                "field": "field_4_1",
-                                "operator": "equals",
-                                "value": "specific"
-                            }
-                        ]
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
                     },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_6_1",
+                    "label": "Account Type 3",
+                    "type": "text",
+                    "placeholder": "Enter account type (optional)",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 5.5,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_6_2",
+                    "label": "Account No. 3",
+                    "type": "text",
+                    "placeholder": "Enter account number (optional)",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 5.6,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
                     "options": null,
                     "settings": {
                         "description_position": "bottom"
