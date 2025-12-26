@@ -286,37 +286,60 @@
 
     {{-- Important Notes Section (Static for DCR and DAR Forms) --}}
     @if(in_array($submission->form->slug, ['dcr', 'dar']))
-        <div class="form-section" style="margin-top: 10px;">
-            <div
-                style="background: #ea580c; color: white; padding: 4px 8px; font-size: 9pt; font-weight: bold; margin-bottom: 2px;">
-                IMPORTANT NOTE:
-            </div>
-            <table style="width: 100%; border-collapse: collapse; font-size: 7pt; border: 1px solid #ddd;">
-                <tr>
-                    <td style="border: 1px solid #ddd; padding: 6px; vertical-align: top;">
-                        <ol style="margin: 0; padding-left: 18px; line-height: 1.6;">
-                            <li style="margin-bottom: 4px;">Please complete the Data Correction Request Form and ensure that
-                                your personal data provided herein is genuine and accurate.</li>
-                            <li style="margin-bottom: 4px;">Your request may not be processed if the information/document
-                                provided is incomplete.</li>
-                            <li style="margin-bottom: 4px;">Third Party Requestor is to be present at the branch / office to
-                                submit this form and for verification of information and documents required.</li>
-                            <li style="margin-bottom: 4px;">The supporting document(s) required in this form must be
-                                provided. We will respond within 21 days of receipt of the completed form with accompanying
-                                documents.</li>
-                            <li style="margin-bottom: 4px;">If you have any queries / need any guidance in filling-up this
-                                form, you may contact our Customer Service Department at the contact details below:</li>
-                        </ol>
-                        <p style="margin: 2px 0 2px 18px; font-style: italic;"><strong>Head, Customer Service Department,
-                                Bank Muamalat Malaysia Berhad</strong></p>
-                        <p style="margin: 2px 0 0 18px;">
-                            <strong>Address:</strong> 19th Floor, Menara Bumiputra, Jalan Melaka, 51000 Kuala Lumpur<br>
-                            <strong>Telephone:</strong> 1-300-88-8787 (Local), +603-26005500 (International)<br>
-                            <strong>Email:</strong> feedback@muamalat.com.my
-                        </p>
-                    </td>
-                </tr>
-            </table>
+        <div
+            style="margin-top: 15px; margin-bottom: 20px; background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 15px; font-size: 9pt; color: #1f2937;">
+            <div style="font-weight: bold; text-decoration: underline; margin-bottom: 10px; font-size: 9pt; color: #000;">
+                Important Notes:</div>
+            <ol style="margin: 0; padding-left: 18px; line-height: 1.5;">
+                <li style="margin-bottom: 6px;">Please complete the Data Correction Request Form and ensure that your
+                    personal data provided herein is genuine and accurate.</li>
+                <li style="margin-bottom: 6px;">Your request may not be processed if the information/document provided is
+                    incomplete.</li>
+                <li style="margin-bottom: 6px;">Third Party Requestor is to be present at the branch / office to submit this
+                    form and for verification of information and documents required.</li>
+                <li style="margin-bottom: 6px;">The supporting document(s) required in this form must be provided. We will
+                    respond within 21 days of receipt of the completed form with accompanying documents.</li>
+                <li style="margin-bottom: 6px;">If you have any queries / need any guidance in filling-up this form, you may
+                    contact our Customer Service Department at the contact details below:
+
+                    <div style="margin-top: 10px; margin-left: 2px;">
+                        <div style="font-weight: bold; font-style: italic; margin-bottom: 4px; color: #000;">Head, Customer
+                            Service Department, Bank Muamalat Malaysia Berhad</div>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 9pt; border: none;">
+                            <tr>
+                                <td
+                                    style="width: 80px; vertical-align: top; font-weight: bold; font-style: italic; border: none; padding: 2px 0;">
+                                    Address</td>
+                                <td
+                                    style="width: 15px; vertical-align: top; font-style: italic; border: none; padding: 2px 0; text-align: center;">
+                                    :</td>
+                                <td style="vertical-align: top; font-style: italic; border: none; padding: 2px 0;">19th
+                                    Floor, Menara Bumiputra, Jalan Melaka, 51000 Kuala Lumpur</td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="vertical-align: top; font-weight: bold; font-style: italic; border: none; padding: 2px 0;">
+                                    Telephone</td>
+                                <td
+                                    style="vertical-align: top; font-style: italic; border: none; padding: 2px 0; text-align: center;">
+                                    :</td>
+                                <td style="vertical-align: top; font-style: italic; border: none; padding: 2px 0;">
+                                    1-300-88-8787 (Local), +603-26005500 (International)</td>
+                            </tr>
+                            <tr>
+                                <td
+                                    style="vertical-align: top; font-weight: bold; font-style: italic; border: none; padding: 2px 0;">
+                                    Email</td>
+                                <td
+                                    style="vertical-align: top; font-style: italic; border: none; padding: 2px 0; text-align: center;">
+                                    :</td>
+                                <td style="vertical-align: top; font-style: italic; border: none; padding: 2px 0;">
+                                    feedback@muamalat.com.my</td>
+                            </tr>
+                        </table>
+                    </div>
+                </li>
+            </ol>
         </div>
     @endif
 
