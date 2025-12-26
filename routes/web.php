@@ -35,7 +35,9 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
     Route::get('/', function () {
         // Redirect to MAP SSO if not authenticated
         if (!Auth::check()) {
-            return redirect()->route('map.login');
+            // Direct redirect to MAP login page
+            $mapLoginUrl = config('map.login_url', 'http://127.0.0.1:8000/pengurusan/login/');
+            return redirect($mapLoginUrl);
         }
         return view('welcome');
     })->name('home');

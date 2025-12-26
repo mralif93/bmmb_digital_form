@@ -40,6 +40,18 @@ class FormSubmission extends Model
         'completed_by',
         'completed_at',
         'completion_notes',
+        // Part F: Acknowledgment Receipt
+        'acknowledgment_received_by',
+        'acknowledgment_date_received',
+        'acknowledgment_staff_name',
+        'acknowledgment_designation',
+        'acknowledgment_stamp',
+        // Part G: Verification
+        'verification_verified_by',
+        'verification_date',
+        'verification_staff_name',
+        'verification_designation',
+        'verification_stamp',
     ];
 
     protected $casts = [
@@ -54,6 +66,8 @@ class FormSubmission extends Model
         'reviewed_at' => 'datetime',
         'taken_up_at' => 'datetime',
         'completed_at' => 'datetime',
+        'acknowledgment_date_received' => 'date',
+        'verification_date' => 'date',
     ];
 
     public function form(): BelongsTo

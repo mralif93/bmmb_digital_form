@@ -234,10 +234,25 @@
 
 <body>
     <!-- Header -->
-    <div class="document-header">
-        <div class="document-title">{{ strtoupper($submission->form->name) }}</div>
-        <div class="document-subtitle">BMMB Digital Forms - Official Submission Receipt</div>
-        <div class="document-meta">Generated: {{ now()->format('d F Y, h:i A') }}</div>
+    <div class="document-header" style="position: relative; padding: 10px 15px;">
+        <table style="width: 100%; border: 0;">
+            <tr>
+                <td style="width: 70%; vertical-align: middle; border: 0;">
+                    <div class="document-title" style="text-align: left; margin-bottom: 3px;">
+                        {{ strtoupper($submission->form->name) }}
+                    </div>
+                    <div class="document-subtitle" style="text-align: left; font-size: 7pt;">BMMB Digital Forms -
+                        Official Submission Receipt</div>
+                    <div class="document-meta" style="text-align: left; font-size: 6pt; margin-top: 3px;">Generated:
+                        {{ now()->format('d F Y, h:i A') }}
+                    </div>
+                </td>
+                <td style="width: 30%; vertical-align: middle; text-align: right; border: 0;">
+                    <img src="{{ public_path('assets/images/logo-bmmb-white.png') }}" alt="Bank Muamalat"
+                        style="max-height: 80px; max-width: 180px; display: inline-block;">
+                </td>
+            </tr>
+        </table>
     </div>
 
     <!-- Submission Info -->
@@ -269,32 +284,126 @@
         @endif
     </table>
 
-    <!-- Form Data -->
+    {{-- Important Notes Section (Static for DCR and DAR Forms) --}}
+    @if(in_array($submission->form->slug, ['dcr', 'dar']))
+        <div class="form-section" style="margin-top: 10px;">
+            <div
+                style="background: #f59e0b; color: white; padding: 4px 8px; font-size: 9pt; font-weight: bold; margin-bottom: 2px;">
+                IMPORTANT NOTE:
+            </div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 7pt; border: 1px solid #ddd;">
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 6px; vertical-align: top;">
+                        <ol style="margin: 0; padding-left: 18px; line-height: 1.6;">
+                            <li style="margin-bottom: 4px;">Please complete the Data Correction Request Form and ensure that
+                                your personal data provided herein is genuine and accurate.</li>
+                            <li style="margin-bottom: 4px;">Your request may not be processed if the information/document
+                                provided is incomplete.</li>
+                            <li style="margin-bottom: 4px;">Third Party Requestor is to be present at the branch / office to
+                                submit this form and for verification of information and documents required.</li>
+                            <li style="margin-bottom: 4px;">The supporting document(s) required in this form must be
+                                provided. We will respond within 21 days of receipt of the completed form with accompanying
+                                documents.</li>
+                            <li style="margin-bottom: 4px;">If you have any queries / need any guidance in filling-up this
+                                form, you may contact our</li>
+                        </ol>
+                        <p style="margin: 6px 0 2px 18px; font-style: italic;"><strong>Customer Service Department at the
+                                contact details below:</strong></p>
+                        <p style="margin: 2px 0 2px 18px; font-style: italic;"><strong>Head, Customer Service Department,
+                                Bank Muamalat Malaysia Berhad</strong></p>
+                        <p style="margin: 2px 0 0 18px;">
+                            <strong>Address:</strong> 19th Floor, Menara Bumiputra, Jalan Melaka, 51000 Kuala Lumpur<br>
+                            <strong>Telephone:</strong> 1-300-88-8787 (Local), +603-26005500 (International)<br>
+                            <strong>Email:</strong> feedback@muamalat.com.my
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    @endif
+
+    {{-- Form Sections --}}
     @php
         use App\Services\FormSubmissionPresenter;
         $formattedData = FormSubmissionPresenter::formatSubmissionData($submission);
     @endphp
 
     @foreach($formattedData as $sectionName => $fields)
-        <div class="form-section">
-            <div class="section-header">{{ strtoupper($sectionName) }}</div>
+        {{-- Skip "Other Information" section as Important Notes is already displayed above --}}
+        @if(strtolower($sectionName) === 'other information')
+            @continue
+        @endif
 
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th style="width: 5%">No.</th>
-                        <th style="width: 35%">Field</th>
-                        <th style="width: 60%">Information</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php $no = 1; @endphp
+        <div class="form-section" style="margin-top: 10px;">
+            {{-- Section Header --}}
+            <div style="background: #f3f4f6; color: #000; padding: 6px 10px; font-size: 9pt; font-weight: bold; border: 1px solid #d1d5db; border-bottom: 2px solid #9ca3af;">
+                {{ strtoupper($sectionName) }}
+            </div>
+            
+            {{-- Special 3-column layout for Data Correction Details --}}
+            @if(stripos($sectionName, 'correction') !== false || stripos($sectionName, 'part d') !== false)
+                <table style="width: 100%; border-collapse: collapse; font-size: 7pt; border: 1px solid #d1d5db; border-top: none;">
+                    <thead>
+                        <tr style="background: #f9fafb;">
+                            <th style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: left; width: 25%; font-weight: bold;">PERSONAL DATA TYPE</th>
+                            <th style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; width: 50%; font-weight: bold;">PLEASE PROVIDE THE PERSONAL DATA TO BE CORRECTED</th>
+                            <th style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; width: 25%; font-weight: bold;">
+                                Please Tick (√) the Appropriate Column
+                                <div style="display: flex; margin-top: 4px;">
+                                    <div style="flex: 1; border-right: 1px solid #d1d5db; padding: 2px;">A</div>
+                                    <div style="flex: 1; border-right: 1px solid #d1d5db; padding: 2px;">D</div>
+                                    <div style="flex: 1; padding: 2px;">R</div>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($fields as $field)
+                            @if(FormSubmissionPresenter::shouldDisplayField($field['field_name'], $field['value']))
+                                {{-- Check if this is an "Action for" field --}}
+                                @if(stripos($field['label'], 'action for') !== false)
+                                    {{-- This is an action field, display it in the action column --}}
+                                @else
+                                    <tr>
+                                        <td style="border: 1px solid #e5e7eb; padding: 6px 8px; vertical-align: top; background: #fafafa;">
+                                            <strong>{{ $field['label'] }}</strong>
+                                        </td>
+                                        <td style="border: 1px solid #e5e7eb; padding: 6px 8px; vertical-align: top;">
+                                            {{ $field['value'] ?? '-' }}
+                                        </td>
+                                        <td style="border: 1px solid #e5e7eb; padding: 6px 8px; text-align: center; vertical-align: top;">
+                                            {{-- Find corresponding action field --}}
+                                            @php
+                                                $actionFieldName = 'Action for ' . $field['label'];
+                                                $actionValue = '';
+                                                foreach($fields as $actionField) {
+                                                    if($actionField['label'] === $actionFieldName) {
+                                                        $actionValue = $actionField['value'] ?? '';
+                                                        break;
+                                                    }
+                                                }
+                                            @endphp
+                                            {{ $actionValue }}
+                                        </td>
+                                    </tr>
+                                @endif
+                            @endif
+                        @endforeach
+                    </tbody>
+                </table>
+                <div style="font-size: 6pt; font-style: italic; padding: 4px 8px; border: 1px solid #d1d5db; border-top: none; background: #fafafa;">
+                    Note: A; Add  D; delete  ; R: Revise
+                </div>
+            @else
+                {{-- Standard 2-column layout for other sections --}}
+                <table style="width: 100%; border-collapse: collapse; font-size: 7pt; border: 1px solid #d1d5db; border-top: none;">
                     @foreach($fields as $field)
                         @if(FormSubmissionPresenter::shouldDisplayField($field['field_name'], $field['value']))
                             <tr>
-                                <td style="text-align: center">{{ $no++ }}</td>
-                                <td><strong>{{ $field['label'] }}</strong></td>
-                                <td>
+                                <td style="border: 1px solid #e5e7eb; padding: 6px 8px; width: 40%; background: #fafafa; vertical-align: top;">
+                                    <strong>{{ $field['label'] }}</strong>
+                                </td>
+                                <td style="border: 1px solid #e5e7eb; padding: 6px 8px; width: 60%; vertical-align: top;">
                                     @if($field['type'] === 'signature')
                                         <div class="signature-box">
                                             @php
@@ -315,10 +424,128 @@
                             </tr>
                         @endif
                     @endforeach
-                </tbody>
-            </table>
+                </table>
+            @endif
         </div>
     @endforeach
+
+
+
+    {{-- Staff-Only Sections for PDF --}}
+    @if($submission->acknowledgment_received_by || $submission->verification_verified_by)
+        <div class="form-section" style="background: #fef3c7; border: 2px solid #f59e0b; padding: 10px; margin-top: 10px;">
+            <div
+                style="text-align: center; font-weight: bold; font-size: 9pt; margin-bottom: 8px; text-transform: uppercase; color: #92400e;">
+                FOR BMMB OFFICE USE ONLY
+            </div>
+
+            {{-- Acknowledgment Receipt Section --}}
+            @if($submission->acknowledgment_received_by)
+                @php
+                    // Determine part label based on form type
+                    $acknowledgmentPart = $submission->form->slug === 'dar' ? 'PART G' : 'PART F';
+                @endphp
+                <div style="margin-bottom: 8px;">
+                    <div
+                        style="background: #f59e0b; color: white; padding: 3px 6px; font-size: 8pt; font-weight: bold; margin-bottom: 4px;">
+                        {{ $acknowledgmentPart }}: ACKNOWLEDGMENT RECEIPT
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 7pt;">
+                        <tr>
+                            <td
+                                style="border: 1px solid #ddd; padding: 4px; width: 30%; background: #f9fafb; font-weight: bold;">
+                                Received by:</td>
+                            <td style="border: 1px solid #ddd; padding: 4px; width: 70%;">
+                                {{ $submission->acknowledgment_received_by }}
+                            </td>
+                        </tr>
+                        @if($submission->acknowledgment_date_received)
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 4px; background: #f9fafb; font-weight: bold;">Date
+                                    Received:</td>
+                                <td style="border: 1px solid #ddd; padding: 4px;">
+                                    {{ $submission->acknowledgment_date_received->format('d M Y') }}
+                                </td>
+                            </tr>
+                        @endif
+                        @if($submission->acknowledgment_staff_name)
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 4px; background: #f9fafb; font-weight: bold;">Name:</td>
+                                <td style="border: 1px solid #ddd; padding: 4px;">{{ $submission->acknowledgment_staff_name }}</td>
+                            </tr>
+                        @endif
+                        @if($submission->acknowledgment_designation)
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 4px; background: #f9fafb; font-weight: bold;">
+                                    Designation:</td>
+                                <td style="border: 1px solid #ddd; padding: 4px;">{{ $submission->acknowledgment_designation }}</td>
+                            </tr>
+                        @endif
+                        @if($submission->acknowledgment_stamp)
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 4px; background: #f9fafb; font-weight: bold;">Official
+                                    Rubber Stamp:</td>
+                                <td style="border: 1px solid #ddd; padding: 4px;">{{ $submission->acknowledgment_stamp }}</td>
+                            </tr>
+                        @endif
+                    </table>
+                </div>
+            @endif
+
+            {{-- Verification Section --}}
+            @if($submission->verification_verified_by)
+                @php
+                    // Determine part label based on form type
+                    $verificationPart = $submission->form->slug === 'dar' ? 'PART H' : 'PART G';
+                @endphp
+                <div
+                    style="{{ $submission->acknowledgment_received_by ? 'padding-top: 8px; border-top: 2px dotted #f59e0b;' : '' }}">
+                    <div
+                        style="background: #f59e0b; color: white; padding: 3px 6px; font-size: 8pt; font-weight: bold; margin-bottom: 4px;">
+                        {{ $verificationPart }}: VERIFICATION
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 7pt;">
+                        <tr>
+                            <td
+                                style="border: 1px solid #ddd; padding: 4px; width: 30%; background: #f9fafb; font-weight: bold;">
+                                Verified by:</td>
+                            <td style="border: 1px solid #ddd; padding: 4px; width: 70%;">
+                                {{ $submission->verification_verified_by }}
+                            </td>
+                        </tr>
+                        @if($submission->verification_date)
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 4px; background: #f9fafb; font-weight: bold;">Date:</td>
+                                <td style="border: 1px solid #ddd; padding: 4px;">
+                                    {{ $submission->verification_date->format('d M Y') }}
+                                </td>
+                            </tr>
+                        @endif
+                        @if($submission->verification_staff_name)
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 4px; background: #f9fafb; font-weight: bold;">Name:</td>
+                                <td style="border: 1px solid #ddd; padding: 4px;">{{ $submission->verification_staff_name }}</td>
+                            </tr>
+                        @endif
+                        @if($submission->verification_designation)
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 4px; background: #f9fafb; font-weight: bold;">
+                                    Designation:</td>
+                                <td style="border: 1px solid #ddd; padding: 4px;">{{ $submission->verification_designation }}</td>
+                            </tr>
+                        @endif
+                        @if($submission->verification_stamp)
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 4px; background: #f9fafb; font-weight: bold;">
+                                    Verification Stamp:</td>
+                                <td style="border: 1px solid #ddd; padding: 4px;">{{ $submission->verification_stamp }}</td>
+                            </tr>
+                        @endif
+                    </table>
+                </div>
+            @endif
+        </div>
+    @endif
 
     <!-- Footer Note -->
     <div class="footer-note">

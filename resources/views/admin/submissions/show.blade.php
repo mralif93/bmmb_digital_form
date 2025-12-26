@@ -328,6 +328,133 @@
             </div>
         </div>
         @endif
+
+        {{-- Staff-Only Sections (Read-Only Display) --}}
+        @if($submission->acknowledgment_received_by || $submission->verification_verified_by)
+        <div class="bg-amber-50 dark:bg-amber-900/10 rounded-lg shadow-sm border-2 border-amber-300 dark:border-amber-700 p-6">
+            <h3 class="text-sm font-bold text-amber-900 dark:text-amber-100 mb-4 uppercase tracking-wider">
+                FOR BMMB OFFICE USE ONLY
+            </h3>
+
+            {{-- Part F: Acknowledgment Receipt --}}
+            @if($submission->acknowledgment_received_by)
+            <div class="mb-6">
+                <h4 class="text-xs font-semibold text-gray-900 dark:text-white mb-3">
+                    PART F: ACKNOWLEDGMENT RECEIPT
+                </h4>
+                <div class="space-y-3">
+                    <div class="flex items-start border-b border-amber-200 dark:border-amber-800 pb-2 gap-4">
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase flex-shrink-0 w-1/3">
+                            Received by
+                        </dt>
+                        <dd class="text-sm text-gray-900 dark:text-white flex-1">
+                            {{ $submission->acknowledgment_received_by }}
+                        </dd>
+                    </div>
+                    @if($submission->acknowledgment_date_received)
+                    <div class="flex items-start border-b border-amber-200 dark:border-amber-800 pb-2 gap-4">
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase flex-shrink-0 w-1/3">
+                            Date Received
+                        </dt>
+                        <dd class="text-sm text-gray-900 dark:text-white flex-1">
+                            {{ $submission->acknowledgment_date_received->format('M d, Y') }}
+                        </dd>
+                    </div>
+                    @endif
+                    @if($submission->acknowledgment_staff_name)
+                    <div class="flex items-start border-b border-amber-200 dark:border-amber-800 pb-2 gap-4">
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase flex-shrink-0 w-1/3">
+                            Name
+                        </dt>
+                        <dd class="text-sm text-gray-900 dark:text-white flex-1">
+                            {{ $submission->acknowledgment_staff_name }}
+                        </dd>
+                    </div>
+                    @endif
+                    @if($submission->acknowledgment_designation)
+                    <div class="flex items-start border-b border-amber-200 dark:border-amber-800 pb-2 gap-4">
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase flex-shrink-0 w-1/3">
+                            Designation
+                        </dt>
+                        <dd class="text-sm text-gray-900 dark:text-white flex-1">
+                            {{ $submission->acknowledgment_designation }}
+                        </dd>
+                    </div>
+                    @endif
+                    @if($submission->acknowledgment_stamp)
+                    <div class="flex items-start pb-2 gap-4">
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase flex-shrink-0 w-1/3">
+                            Official Rubber Stamp
+                        </dt>
+                        <dd class="text-sm text-gray-900 dark:text-white flex-1">
+                            {{ $submission->acknowledgment_stamp }}
+                        </dd>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
+
+            {{-- Part G: Verification --}}
+            @if($submission->verification_verified_by)
+            <div class="{{ $submission->acknowledgment_received_by ? 'pt-4 border-t border-amber-300 dark:border-amber-700' : '' }}">
+                <h4 class="text-xs font-semibold text-gray-900 dark:text-white mb-3">
+                    PART G: VERIFICATION
+                </h4>
+                <div class="space-y-3">
+                    <div class="flex items-start border-b border-amber-200 dark:border-amber-800 pb-2 gap-4">
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase flex-shrink-0 w-1/3">
+                            Verified by
+                        </dt>
+                        <dd class="text-sm text-gray-900 dark:text-white flex-1">
+                            {{ $submission->verification_verified_by }}
+                        </dd>
+                    </div>
+                    @if($submission->verification_date)
+                    <div class="flex items-start border-b border-amber-200 dark:border-amber-800 pb-2 gap-4">
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase flex-shrink-0 w-1/3">
+                            Date
+                        </dt>
+                        <dd class="text-sm text-gray-900 dark:text-white flex-1">
+                            {{ $submission->verification_date->format('M d, Y') }}
+                        </dd>
+                    </div>
+                    @endif
+                    @if($submission->verification_staff_name)
+                    <div class="flex items-start border-b border-amber-200 dark:border-amber-800 pb-2 gap-4">
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase flex-shrink-0 w-1/3">
+                            Name
+                        </dt>
+                        <dd class="text-sm text-gray-900 dark:text-white flex-1">
+                            {{ $submission->verification_staff_name }}
+                        </dd>
+                    </div>
+                    @endif
+                    @if($submission->verification_designation)
+                    <div class="flex items-start border-b border-amber-200 dark:border-amber-800 pb-2 gap-4">
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase flex-shrink-0 w-1/3">
+                            Designation
+                        </dt>
+                        <dd class="text-sm text-gray-900 dark:text-white flex-1">
+                            {{ $submission->verification_designation }}
+                        </dd>
+                    </div>
+                    @endif
+                    @if($submission->verification_stamp)
+                    <div class="flex items-start pb-2 gap-4">
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase flex-shrink-0 w-1/3">
+                            Official Rubber Stamp
+                        </dt>
+                        <dd class="text-sm text-gray-900 dark:text-white flex-1">
+                            {{ $submission->verification_stamp }}
+                        </dd>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
+        </div>
+        @endif
     </div>
 
     @if(auth()->user()->isAdmin())

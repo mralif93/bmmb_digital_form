@@ -19,13 +19,15 @@ class FormSubmissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get all forms
-        $forms = Form::whereIn('slug', ['dar', 'dcr', 'srf'])->get();
+        // Get all active forms (dynamic - works with any forms in the database)
+        $forms = Form::where('status', 'active')->get();
 
         if ($forms->isEmpty()) {
-            $this->command->warn('No forms found. Please run FormManagementSeeder first.');
+            $this->command->warn('No active forms found. Please run FormSeeder first.');
             return;
         }
+
+        $this->command->info("Found {$forms->count()} active form(s) to seed submissions for:");
 
         // Get branches and users
         $branches = Branch::all();
@@ -40,6 +42,8 @@ class FormSubmissionSeeder extends Seeder
         // $statuses = ['draft', 'submitted', 'pending_process', 'under_review', 'approved', 'rejected', 'completed', 'in_progress'];
 
         foreach ($forms as $form) {
+            $this->command->info("  Seeding submissions for: {$form->name} ({$form->slug})");
+
             // Load form with sections and fields
             $form->load([
                 'sections.fields' => function ($query) {
@@ -74,7 +78,9 @@ class FormSubmissionSeeder extends Seeder
 
             for ($i = 1; $i <= $submissionCount; $i++) {
                 $startedAt = now()->subDays(rand(1, 90))->subHours(rand(1, 23));
-                $status = 'submitted';
+                // Mix of statuses - some will have staff sections
+                $statusOptions = ['submitted', 'submitted', 'submitted', 'pending_process', 'completed', 'approved'];
+                $status = $statusOptions[array_rand($statusOptions)];
                 $submittedAt = in_array($status, ['draft'])
                     ? null
                     : $startedAt->copy()->addMinutes(rand(15, 120));
@@ -143,6 +149,11 @@ class FormSubmissionSeeder extends Seeder
                 }
 
                 // Create submission
+                // Generate staff section data (Part F & Part G) for some submissions
+                $hasStaffSections = in_array($status, ['pending_process', 'completed', 'approved']) && rand(0, 1);
+                $staffUsers = $allUsers->whereIn('role', ['bm', 'abm', 'oo', 'branch_manager']);
+                $staffUser = $hasStaffSections && $staffUsers->isNotEmpty() ? $staffUsers->random() : null;
+
                 $submission = FormSubmission::create([
                     'form_id' => $form->id,
                     'user_id' => $user->id,
@@ -163,6 +174,18 @@ class FormSubmissionSeeder extends Seeder
                     'reviewed_at' => $reviewedBy ? ($submittedAt ? $submittedAt->copy()->addHours(rand(1, 48)) : null) : null,
                     'review_notes' => in_array($status, ['approved', 'rejected']) ? fake()->sentence() : null,
                     'rejection_reason' => $status === 'rejected' ? fake()->sentence() : null,
+                    // Part F: Acknowledgment Receipt (populated for pending_process, completed, approved)
+                    'acknowledgment_received_by' => $hasStaffSections ? $staffUser->full_name : null,
+                    'acknowledgment_date_received' => $hasStaffSections ? $submittedAt->copy()->addHours(rand(1, 12)) : null,
+                    'acknowledgment_staff_name' => $hasStaffSections ? $staffUser->full_name : null,
+                    'acknowledgment_designation' => $hasStaffSections ? $staffUser->role_display : null,
+                    'acknowledgment_stamp' => $hasStaffSections ? 'BMMB ' . $branch->branch_code . ' Official Stamp' : null,
+                    // Part G: Verification (only for completed & approved)
+                    'verification_verified_by' => in_array($status, ['completed', 'approved']) && $hasStaffSections ? $staffUser->full_name : null,
+                    'verification_date' => in_array($status, ['completed', 'approved']) && $hasStaffSections ? $submittedAt->copy()->addHours(rand(24, 72)) : null,
+                    'verification_staff_name' => in_array($status, ['completed', 'approved']) && $hasStaffSections ? $staffUser->full_name : null,
+                    'verification_designation' => in_array($status, ['completed', 'approved']) && $hasStaffSections ? $staffUser->role_display : null,
+                    'verification_stamp' => in_array($status, ['completed', 'approved']) && $hasStaffSections ? 'BMMB ' . $branch->branch_code . ' Verification Stamp' : null,
                     'audit_trail' => [
                         [
                             'action' => 'created',
@@ -217,6 +240,11 @@ class FormSubmissionSeeder extends Seeder
             }
 
         }
+
+        // Show summary
+        $totalSubmissions = FormSubmission::count();
+        $this->command->info("\n✓ Seeding completed!");
+        $this->command->info("  Total submissions in database: {$totalSubmissions}");
     }
 
     /**
@@ -323,6 +351,9 @@ class FormSubmissionSeeder extends Seeder
             $takenUpAt = $submittedAt->copy()->addHours(rand(1, 24));
         }
 
+        // Generate staff section data for test submissions
+        $hasStaffSections = $status === 'pending_process';
+
         // Create submission
         $submission = FormSubmission::create([
             'form_id' => $form->id,
@@ -342,6 +373,18 @@ class FormSubmissionSeeder extends Seeder
             'last_modified_at' => $takenUpAt ?? $submittedAt,
             'taken_up_by' => $takenUpBy,
             'taken_up_at' => $takenUpAt,
+            // Part F: Acknowledgment Receipt (populated for pending_process status)
+            'acknowledgment_received_by' => $hasStaffSections ? $user->full_name : null,
+            'acknowledgment_date_received' => $hasStaffSections ? $takenUpAt : null,
+            'acknowledgment_staff_name' => $hasStaffSections ? $user->full_name : null,
+            'acknowledgment_designation' => $hasStaffSections ? $user->role_display : null,
+            'acknowledgment_stamp' => $hasStaffSections ? 'BMMB ' . $branch->branch_code . ' Official Stamp' : null,
+            // Part G: Verification (not populated for test submissions - will be tested manually)
+            'verification_verified_by' => null,
+            'verification_date' => null,
+            'verification_staff_name' => null,
+            'verification_designation' => null,
+            'verification_stamp' => null,
             'audit_trail' => [
                 [
                     'action' => 'created',

@@ -15,7 +15,8 @@ class DatabaseSeeder extends Seeder
      * 3. Branches - from MAP database (requires regions & states)
      * 4. Users - from MAP database (requires branches)
      * 5. Forms - from JSON exports (DAR, DCR, SRF)
-     * 6. QR Codes - generated for each branch + form combination
+     * 6. Form Submissions - sample data with staff sections (requires forms & users)
+     * 7. QR Codes - generated for each branch + form combination
      */
     public function run(): void
     {
@@ -41,7 +42,10 @@ class DatabaseSeeder extends Seeder
                 // 5. Forms from JSON exports
             FormSeeder::class,
 
-                // 6. QR Codes for branches (requires forms & branches)
+                // 6. Form Submissions - sample data (requires forms & users)
+            FormSubmissionSeeder::class,
+
+                // 7. QR Codes for branches (requires forms & branches)
             QrCodeSeeder::class,
         ]);
 

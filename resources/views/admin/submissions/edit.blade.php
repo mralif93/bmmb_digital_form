@@ -400,7 +400,134 @@
     </div>
     @endforeach
 
-    <!-- Action Buttons -->
+    {{-- Staff-Only Sections --}}
+    <div class="bg-amber-50 dark:bg-amber-900/10 rounded-lg shadow-sm border-2 border-amber-300 dark:border-amber-700 p-6">
+        <h3 class="text-sm font-bold text-amber-900 dark:text-amber-100 mb-4 uppercase tracking-wider">
+            FOR BMMB OFFICE USE ONLY
+        </h3>
+
+        {{-- Part F: Acknowledgment Receipt --}}
+        <div class="mb-6">
+            <h4 class="text-xs font-semibold text-gray-900 dark:text-white mb-3">
+                PART F: ACKNOWLEDGMENT RECEIPT
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                    <label for="acknowledgment_received_by" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Received by
+                    </label>
+                    <input type="text" 
+                           name="acknowledgment_received_by" 
+                           id="acknowledgment_received_by"
+                           value="{{ old('acknowledgment_received_by', $submission->acknowledgment_received_by) }}"
+                           class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400 italic">(signature of staff receiving the correction request)</p>
+                </div>
+                <div>
+                    <label for="acknowledgment_date_received" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Date Received
+                    </label>
+                    <input type="date" 
+                           name="acknowledgment_date_received" 
+                           id="acknowledgment_date_received"
+                           value="{{ old('acknowledgment_date_received', $submission->acknowledgment_date_received ? $submission->acknowledgment_date_received->format('Y-m-d') : '') }}"
+                           class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                </div>
+                <div>
+                    <label for="acknowledgment_staff_name" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Name
+                    </label>
+                    <input type="text" 
+                           name="acknowledgment_staff_name" 
+                           id="acknowledgment_staff_name"
+                           value="{{ old('acknowledgment_staff_name', $submission->acknowledgment_staff_name) }}"
+                           class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                </div>
+                <div>
+                    <label for="acknowledgment_designation" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Designation
+                    </label>
+                    <input type="text" 
+                           name="acknowledgment_designation" 
+                           id="acknowledgment_designation"
+                           value="{{ old('acknowledgment_designation', $submission->acknowledgment_designation) }}"
+                           class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                </div>
+                <div class="md:col-span-2">
+                    <label for="acknowledgment_stamp" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Official Rubber Stamp
+                    </label>
+                    <input type="text" 
+                           name="acknowledgment_stamp" 
+                           id="acknowledgment_stamp"
+                           value="{{ old('acknowledgment_stamp', $submission->acknowledgment_stamp) }}"
+                           class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                </div>
+            </div>
+        </div>
+
+        {{-- Part G: Verification --}}
+        <div class="pt-4 border-t border-amber-300 dark:border-amber-700">
+            <h4 class="text-xs font-semibold text-gray-900 dark:text-white mb-3">
+                PART G: VERIFICATION
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                    <label for="verification_verified_by" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Verified by
+                    </label>
+                    <input type="text" 
+                           name="verification_verified_by" 
+                           id="verification_verified_by"
+                           value="{{ old('verification_verified_by', $submission->verification_verified_by) }}"
+                           class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400 italic">(signature of staff verifying the correction request)</p>
+                </div>
+                <div>
+                    <label for="verification_date" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Date
+                    </label>
+                    <input type="date" 
+                           name="verification_date" 
+                           id="verification_date"
+                           value="{{ old('verification_date', $submission->verification_date ? $submission->verification_date->format('Y-m-d') : '') }}"
+                           class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                </div>
+                <div>
+                    <label for="verification_staff_name" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Name
+                    </label>
+                    <input type="text" 
+                           name="verification_staff_name" 
+                           id="verification_staff_name"
+                           value="{{ old('verification_staff_name', $submission->verification_staff_name) }}"
+                           class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                </div>
+                <div>
+                    <label for="verification_designation" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Designation
+                    </label>
+                    <input type="text" 
+                           name="verification_designation" 
+                           id="verification_designation"
+                           value="{{ old('verification_designation', $submission->verification_designation) }}"
+                           class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                </div>
+                <div class="md:col-span-2">
+                    <label for="verification_stamp" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Official Rubber Stamp
+                    </label>
+                    <input type="text" 
+                           name="verification_stamp" 
+                           id="verification_stamp"
+                           value="{{ old('verification_stamp', $submission->verification_stamp) }}"
+                           class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Action Buttons --}}
     <div class="flex items-center justify-end space-x-3">
         <a href="{{ route('admin.submissions.show', [$form->slug, $submission->id]) }}" 
            class="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
