@@ -1043,6 +1043,19 @@ class SubmissionController extends Controller
         $submission->branch_id = $request->input('branch_id') ?: null;
         $submission->status = $request->input('status', $submission->status);
 
+        // Update staff sections (Part F & Part G) - editable by staff
+        $submission->acknowledgment_received_by = $request->input('acknowledgment_received_by');
+        $submission->acknowledgment_date_received = $request->input('acknowledgment_date_received');
+        $submission->acknowledgment_staff_name = $request->input('acknowledgment_staff_name');
+        $submission->acknowledgment_designation = $request->input('acknowledgment_designation');
+        $submission->acknowledgment_stamp = $request->input('acknowledgment_stamp');
+
+        $submission->verification_verified_by = $request->input('verification_verified_by');
+        $submission->verification_date = $request->input('verification_date');
+        $submission->verification_staff_name = $request->input('verification_staff_name');
+        $submission->verification_designation = $request->input('verification_designation');
+        $submission->verification_stamp = $request->input('verification_stamp');
+
         $submission->last_modified_at = now();
         $submission->save();
 
@@ -1243,9 +1256,9 @@ class SubmissionController extends Controller
     {
         $user = auth()->user();
 
-        // Only CFE and BM can take up submissions
-        if (!$user->isCFE() && !$user->isBM()) {
-            abort(403, 'Only CFE and Branch Managers can take up submissions.');
+        // Only CFE, BM, ABM, and OO can take up submissions
+        if (!$user->isCFE() && !$user->isBM() && !$user->isABM() && !$user->isOO()) {
+            abort(403, 'Only CFE, Branch Managers, ABM, and Operations Officers can take up submissions.');
         }
 
         $form = Form::where('slug', $formSlug)->firstOrFail();
@@ -1266,6 +1279,15 @@ class SubmissionController extends Controller
         $submission->taken_up_by = $user->id;
         $submission->taken_up_at = now();
         $submission->last_modified_at = now();
+
+        // Auto-populate Part F: Acknowledgment Receipt
+        if (!$submission->acknowledgment_received_by) {
+            $submission->acknowledgment_received_by = $user->full_name;
+            $submission->acknowledgment_date_received = now()->toDateString();
+            $submission->acknowledgment_staff_name = $user->full_name;
+            $submission->acknowledgment_designation = $user->role_display ?? $user->role;
+        }
+
         $submission->save();
 
         // Log audit trail
@@ -1289,9 +1311,9 @@ class SubmissionController extends Controller
     {
         $user = auth()->user();
 
-        // Only CFE and BM can complete submissions
-        if (!$user->isCFE() && !$user->isBM()) {
-            abort(403, 'Only CFE and Branch Managers can complete submissions.');
+        // Only CFE, BM, ABM, and OO can complete submissions
+        if (!$user->isCFE() && !$user->isBM() && !$user->isABM() && !$user->isOO()) {
+            abort(403, 'Only CFE, Branch Managers, ABM, and Operations Officers can complete submissions.');
         }
 
         $form = Form::where('slug', $formSlug)->firstOrFail();
@@ -1318,6 +1340,15 @@ class SubmissionController extends Controller
         $submission->completed_at = now();
         $submission->completion_notes = $request->input('completion_notes');
         $submission->last_modified_at = now();
+
+        // Auto-populate Part G: Verification
+        if (!$submission->verification_verified_by) {
+            $submission->verification_verified_by = $user->full_name;
+            $submission->verification_date = now()->toDateString();
+            $submission->verification_staff_name = $user->full_name;
+            $submission->verification_designation = $user->role_display ?? $user->role;
+        }
+
         $submission->save();
 
         // Log audit trail
