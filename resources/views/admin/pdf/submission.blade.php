@@ -305,10 +305,8 @@
                                 provided. We will respond within 21 days of receipt of the completed form with accompanying
                                 documents.</li>
                             <li style="margin-bottom: 4px;">If you have any queries / need any guidance in filling-up this
-                                form, you may contact our</li>
+                                form, you may contact our Customer Service Department at the contact details below:</li>
                         </ol>
-                        <p style="margin: 6px 0 2px 18px; font-style: italic;"><strong>Customer Service Department at the
-                                contact details below:</strong></p>
                         <p style="margin: 2px 0 2px 18px; font-style: italic;"><strong>Head, Customer Service Department,
                                 Bank Muamalat Malaysia Berhad</strong></p>
                         <p style="margin: 2px 0 0 18px;">
@@ -336,25 +334,39 @@
 
         <div class="form-section" style="margin-top: 10px;">
             {{-- Section Header --}}
-            <div style="background: #f3f4f6; color: #000; padding: 6px 10px; font-size: 9pt; font-weight: bold; border: 1px solid #d1d5db; border-bottom: 2px solid #9ca3af;">
+            <div
+                style="background: #f3f4f6; color: #000; padding: 6px 10px; font-size: 9pt; font-weight: bold; border: 1px solid #d1d5db; border-bottom: 2px solid #9ca3af;">
                 {{ strtoupper($sectionName) }}
             </div>
-            
+
             {{-- Special 3-column layout for Data Correction Details --}}
             @if(stripos($sectionName, 'correction') !== false || stripos($sectionName, 'part d') !== false)
-                <table style="width: 100%; border-collapse: collapse; font-size: 7pt; border: 1px solid #d1d5db; border-top: none;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 7pt; border: 1px solid #000;">
                     <thead>
-                        <tr style="background: #f9fafb;">
-                            <th style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: left; width: 25%; font-weight: bold;">PERSONAL DATA TYPE</th>
-                            <th style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; width: 50%; font-weight: bold;">PLEASE PROVIDE THE PERSONAL DATA TO BE CORRECTED</th>
-                            <th style="border: 1px solid #d1d5db; padding: 6px 8px; text-align: center; width: 25%; font-weight: bold;">
-                                Please Tick (√) the Appropriate Column
-                                <div style="display: flex; margin-top: 4px;">
-                                    <div style="flex: 1; border-right: 1px solid #d1d5db; padding: 2px;">A</div>
-                                    <div style="flex: 1; border-right: 1px solid #d1d5db; padding: 2px;">D</div>
-                                    <div style="flex: 1; padding: 2px;">R</div>
-                                </div>
+                        <tr style="background: #fff;">
+                            <th rowspan="2"
+                                style="border: 1px solid #000; padding: 8px; text-align: center; width: 25%; font-weight: bold; vertical-align: middle;">
+                                PERSONAL DATA TYPE
                             </th>
+                            <th rowspan="2"
+                                style="border: 1px solid #000; padding: 8px; text-align: center; width: 50%; font-weight: bold; vertical-align: middle;">
+                                PLEASE PROVIDE THE PERSONAL DATA TO BE CORRECTED
+                            </th>
+                            <th colspan="3"
+                                style="border: 1px solid #000; padding: 4px 8px; text-align: center; font-weight: bold;">
+                                Please Tick (√) the Appropriate Column
+                            </th>
+                        </tr>
+                        <tr style="background: #fff;">
+                            <th
+                                style="border: 1px solid #000; padding: 4px; text-align: center; width: 8.33%; font-weight: bold;">
+                                A</th>
+                            <th
+                                style="border: 1px solid #000; padding: 4px; text-align: center; width: 8.33%; font-weight: bold;">
+                                D</th>
+                            <th
+                                style="border: 1px solid #000; padding: 4px; text-align: center; width: 8.33%; font-weight: bold;">
+                                R</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -365,25 +377,30 @@
                                     {{-- This is an action field, display it in the action column --}}
                                 @else
                                     <tr>
-                                        <td style="border: 1px solid #e5e7eb; padding: 6px 8px; vertical-align: top; background: #fafafa;">
+                                        <td style="border: 1px solid #000; padding: 6px 8px; vertical-align: top;">
                                             <strong>{{ $field['label'] }}</strong>
                                         </td>
-                                        <td style="border: 1px solid #e5e7eb; padding: 6px 8px; vertical-align: top;">
+                                        <td style="border: 1px solid #000; padding: 6px 8px; vertical-align: top;">
                                             {{ $field['value'] ?? '-' }}
                                         </td>
-                                        <td style="border: 1px solid #e5e7eb; padding: 6px 8px; text-align: center; vertical-align: top;">
-                                            {{-- Find corresponding action field --}}
-                                            @php
-                                                $actionFieldName = 'Action for ' . $field['label'];
-                                                $actionValue = '';
-                                                foreach($fields as $actionField) {
-                                                    if($actionField['label'] === $actionFieldName) {
-                                                        $actionValue = $actionField['value'] ?? '';
-                                                        break;
-                                                    }
+                                        @php
+                                            $actionFieldName = 'Action for ' . $field['label'];
+                                            $actionValue = '';
+                                            foreach ($fields as $actionField) {
+                                                if ($actionField['label'] === $actionFieldName) {
+                                                    $actionValue = strtoupper($actionField['value'] ?? '');
+                                                    break;
                                                 }
-                                            @endphp
-                                            {{ $actionValue }}
+                                            }
+                                        @endphp
+                                        <td style="border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle;">
+                                            {{ $actionValue === 'A' || $actionValue === 'ADD' ? '✓' : '' }}
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle;">
+                                            {{ $actionValue === 'D' || $actionValue === 'DELETE' ? '✓' : '' }}
+                                        </td>
+                                        <td style="border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle;">
+                                            {{ $actionValue === 'R' || $actionValue === 'REVISE' ? '✓' : '' }}
                                         </td>
                                     </tr>
                                 @endif
@@ -391,16 +408,18 @@
                         @endforeach
                     </tbody>
                 </table>
-                <div style="font-size: 6pt; font-style: italic; padding: 4px 8px; border: 1px solid #d1d5db; border-top: none; background: #fafafa;">
-                    Note: A; Add  D; delete  ; R: Revise
+                <div style="font-size: 6pt; font-style: italic; padding: 4px 8px; border: 1px solid #000; border-top: none; background: #fff;">
+                    <strong>Note :</strong> A; Add  D; delete  ; R: Revise
                 </div>
             @else
                 {{-- Standard 2-column layout for other sections --}}
-                <table style="width: 100%; border-collapse: collapse; font-size: 7pt; border: 1px solid #d1d5db; border-top: none;">
+                <table
+                    style="width: 100%; border-collapse: collapse; font-size: 7pt; border: 1px solid #d1d5db; border-top: none;">
                     @foreach($fields as $field)
                         @if(FormSubmissionPresenter::shouldDisplayField($field['field_name'], $field['value']))
                             <tr>
-                                <td style="border: 1px solid #e5e7eb; padding: 6px 8px; width: 40%; background: #fafafa; vertical-align: top;">
+                                <td
+                                    style="border: 1px solid #e5e7eb; padding: 6px 8px; width: 40%; background: #fafafa; vertical-align: top;">
                                     <strong>{{ $field['label'] }}</strong>
                                 </td>
                                 <td style="border: 1px solid #e5e7eb; padding: 6px 8px; width: 60%; vertical-align: top;">
