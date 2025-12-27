@@ -252,10 +252,46 @@ class FormSubmissionSeeder extends Seeder
      */
     private function generateFieldValue($field): mixed
     {
+        $name = strtolower($field->field_name);
+        $label = strtolower($field->field_label);
+
         switch ($field->field_type) {
             case 'text':
             case 'textarea':
-                return fake()->sentence();
+                if (str_contains($name, 'email') || str_contains($label, 'email')) {
+                    return fake()->email();
+                }
+                if (str_contains($name, 'phone') || str_contains($label, 'phone') || str_contains($name, 'tel') || str_contains($label, 'tel')) {
+                    return fake()->phoneNumber();
+                }
+                if (str_contains($name, 'name') || str_contains($label, 'name')) {
+                    return fake()->name();
+                }
+                if (str_contains($name, 'address') || str_contains($label, 'address')) {
+                    return fake()->address();
+                }
+                if (str_contains($name, 'ic') || str_contains($label, 'ic') || str_contains($name, 'nric') || str_contains($label, 'nric')) {
+                    return fake()->numerify('######-##-####');
+                }
+                if (str_contains($name, 'cif') || str_contains($label, 'cif')) {
+                    return fake()->numerify('########');
+                }
+                if (str_contains($name, 'company') || str_contains($label, 'company') || str_contains($name, 'entity') || str_contains($label, 'entity')) {
+                    return fake()->company();
+                }
+
+                // DCR Account fields
+                if ($name === 'field_4_2' || $name === 'field_4_4') { // Account Type
+                    return 'Savings Account-i';
+                }
+                if ($name === 'field_4_3' || $name === 'field_4_5') { // Account No
+                    return fake()->numerify('##########');
+                }
+
+                if ($field->field_type === 'textarea') {
+                    return fake()->paragraph();
+                }
+                return fake()->words(3, true);
 
             case 'email':
                 return fake()->email();
@@ -265,31 +301,63 @@ class FormSubmissionSeeder extends Seeder
                 return fake()->phoneNumber();
 
             case 'number':
-                return (string) rand(1, 10000);
+                return (string) rand(1000, 99999);
 
             case 'date':
-                return fake()->date('Y-m-d');
+                if ($name === 'field_4_6') { // Effective Date
+                    return date('d/m/Y');
+                }
+                return fake()->dateTimeBetween('-5 years', 'now')->format('Y-m-d');
 
-            case 'select':
+            case 'time':
+                return fake()->time('H:i');
+
             case 'radio':
+                if ($name === 'field_4_1') { // Update Scope
+                    return rand(0, 1) ? 'all' : 'specific';
+                }
+            // Fallthrough to standard select/radio handling
+            case 'select':
+
                 if ($field->field_options && is_array($field->field_options)) {
                     $options = array_keys($field->field_options);
-                    return $options[array_rand($options)] ?? null;
+                    if (!empty($options)) {
+                        return $options[array_rand($options)];
+                    }
                 }
-                return null;
+                return 'Option 1'; // Fallback if no options defined
 
             case 'checkbox':
             case 'multiselect':
-                if ($field->field_options && is_array($field->field_options)) {
-                    $options = array_keys($field->field_options);
-                    if (empty($options)) {
-                        return [];
-                    }
-                    $count = min(rand(1, 3), count($options));
-                    shuffle($options);
-                    return array_slice($options, 0, $count);
+                // Special handling for DCR form checkboxes which might not have options configured
+                if (
+                    in_array($name, [
+                        'field_2_1', // Customer
+                        'field_2_2', // Third Party
+                        'field_3_8', // Minor
+                        'field_3_9', // Incapable
+                        'field_3_10', // Deceased
+                        'field_3_11', // Authorised
+                        'field_3_12', // Others
+                        'field_3_13', // NRIC copy
+                        'field_3_14', // Court Order
+                        'field_3_15', // Auth Letter
+                        'field_3_16', // Others (Proof)
+                    ])
+                ) {
+                    return ['Yes'];
                 }
-                return [];
+
+                if ($field->field_options && is_array($field->field_options)) {
+
+                    $options = array_keys($field->field_options);
+                    if (!empty($options)) {
+                        $count = rand(1, count($options));
+                        shuffle($options);
+                        return array_slice($options, 0, $count);
+                    }
+                }
+                return ['Option 1']; // Fallback
 
             case 'boolean':
             case 'yes_no':
@@ -299,8 +367,15 @@ class FormSubmissionSeeder extends Seeder
             case 'image':
                 return 'document_' . uniqid() . '.pdf';
 
+            case 'signature':
+                return 'signature_' . uniqid() . '.png';
+
+            case 'divider':
+            case 'static_text':
+                return null;
+
             default:
-                return fake()->word();
+                return fake()->words(3, true);
         }
     }
 

@@ -294,7 +294,7 @@ class FormSubmissionPresenter
                     'field_name' => $fieldName,
                     'label' => $label,
                     'value' => self::formatFieldValue($formSlug, $fieldName, $value),
-                    'type' => self::detectFieldType($fieldName, $value),
+                    'type' => $data->field->field_type ?? self::detectFieldType($fieldName, $value),
                 ];
             }
 
@@ -396,7 +396,7 @@ class FormSubmissionPresenter
             } elseif (str_starts_with($fieldName, 'field_4_')) {
                 return $formSlug === 'dar' ? 'Data Access Request Details' : 'Data Correction Details';
             } elseif (str_starts_with($fieldName, 'field_5_')) {
-                return 'Additional Information';
+                return $formSlug === 'dcr' ? 'Declaration & Signature' : 'Additional Information';
             } elseif (str_starts_with($fieldName, 'field_6_')) {
                 return 'Declaration & Signature';
             }
@@ -471,6 +471,9 @@ class FormSubmissionPresenter
                 return is_string($value) ? date('d M Y', strtotime($value)) : $value;
 
             default:
+                if (is_array($value)) {
+                    return '<pre class="bg-gray-50 dark:bg-gray-900 p-2 rounded text-xs overflow-x-auto">' . json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
+                }
                 return $value ?? '<span class="text-gray-400 italic">N/A</span>';
         }
     }
