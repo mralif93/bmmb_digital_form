@@ -329,11 +329,13 @@ class FormSubmissionSeeder extends Seeder
 
             case 'checkbox':
             case 'multiselect':
-                // Special handling for DCR form checkboxes which might not have options configured
+                // Special handling for DCR/DAR form checkboxes which might not have options configured
                 if (
                     in_array($name, [
+                        // DCR/DAR Part A checkboxes
                         'field_2_1', // Customer
                         'field_2_2', // Third Party
+                        // DCR/DAR Part C checkboxes
                         'field_3_8', // Minor
                         'field_3_9', // Incapable
                         'field_3_10', // Deceased
@@ -343,6 +345,34 @@ class FormSubmissionSeeder extends Seeder
                         'field_3_14', // Court Order
                         'field_3_15', // Auth Letter
                         'field_3_16', // Others (Proof)
+                        // DAR Part D - Account Type checkboxes
+                        'field_4_1', // Savings Account
+                        'field_4_2', // Current Account
+                        'field_4_3', // FCy Current Account
+                        'field_4_4', // Fixed Term Account
+                        'field_4_5', // Credit Card Account
+                        'field_4_6', // Financing Account
+                        'field_4_7', // Ar Rahnu Account
+                        'field_4_8', // Others
+                        // DAR Part D - Personal Data Type checkboxes
+                        'field_4_10', // Mandatee
+                        'field_4_11', // Image of Signature
+                        'field_4_12', // Name
+                        'field_4_13', // IC/Passport
+                        'field_4_14', // Residence Address
+                        'field_4_15', // Contact Details
+                        'field_4_16', // Gender
+                        'field_4_17', // Race
+                        'field_4_18', // Nationality
+                        'field_4_19', // Country of Tax Residence
+                        'field_4_20', // Name of Employer
+                        'field_4_21', // Customer's Consent
+                        'field_4_22', // Others
+                        'field_4_23', // Confirm personal data
+                        'field_4_24', // Supply me with copy
+                        // DAR Part E - Method of Delivery checkboxes
+                        'field_5_1', // Mail to address
+                        'field_5_2', // Collect personally
                     ])
                 ) {
                     return ['Yes'];
