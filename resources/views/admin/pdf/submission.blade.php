@@ -385,7 +385,7 @@
                     stripos($sectionName, 'signature') !== false
                 )
             )
-            @continue
+                @continue
         @endif
 
         {{-- Skip Remittance Details, Declaration, and Signature for SRF --}}
@@ -402,9 +402,9 @@
                     && !(stripos($sectionName, 'declaration') !== false && $submission->form->slug === 'dar')
                     && !($submission->form->slug === 'srf' && (strtolower($sectionName) === 'account type' || strtolower($sectionName) === 'service request details' || stripos($sectionName, 'consent') !== false || stripos($sectionName, 'agreements') !== false || strtolower($sectionName) === 'customer information'))
                 )
-                <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
-                    {{ strtoupper($sectionName) }}
-                </div>
+                    <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
+                        {{ strtoupper($sectionName) }}
+                    </div>
             @endif
 
             {{-- Special 3-column layout for Data Correction Details --}}
@@ -732,7 +732,7 @@
 
                     {{-- 8. Zakat Savings --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cZak = $isChecked('field_8');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cZak = $isChecked('field_8');
                         $zakSav = $isChecked('field_8_1');
                         $zakCur = $isChecked('field_8_2');
                         $zakAgent = $getField('field_8_3');
@@ -820,7 +820,7 @@
 
                     {{-- 10. Zakat Gold --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cZakGold = $isChecked('field_10');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cZakGold = $isChecked('field_10');
                         $zGoldMYR = $isChecked('field_10_1');
                         $zGoldGram = $isChecked('field_10_2');
                         $zGoldAgent = $getField('field_10_3');
@@ -908,7 +908,7 @@
 
                     {{-- 12. Physical Delivery --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cPhys = $isChecked('field_12');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cPhys = $isChecked('field_12');
                         $physRM = $getField('field_12_1');    
                     @endphp
                     <div style="margin-top: 2px;">
@@ -931,7 +931,7 @@
 
                     {{-- 13. Others --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cOthers = $isChecked('field_13');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cOthers = $isChecked('field_13');
                         $othersText = $getField('field_13_1');
                     @endphp
                     <div style="margin-top: 2px;">
@@ -1221,7 +1221,7 @@
                     @endphp
 
                     {{-- Part A: About Yourself --}}
-                    <div style="border: 1px solid #000; padding: 10px; margin-bottom: 6px; font-size: 6pt;">
+                    <div style="border: 1px solid #000; padding: 10px; margin-bottom: 4px; font-size: 6pt;">
                         <div style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">PART A : ABOUT YOURSELF</div>
                         <table style="width: 100%; border-collapse: collapse; border: none; font-size: 6pt;">
                             <tr>
@@ -1251,7 +1251,7 @@
                     </div>
 
                     {{-- Part B: Particulars of Data Subject --}}
-                    <div style="border: 1px solid #000; padding: 10px; margin-bottom: 6px; font-size: 6pt;">
+                    <div style="border: 1px solid #000; padding: 10px; margin-bottom: 4px; font-size: 6pt;">
                         <div style="font-weight: bold; text-decoration: underline; margin-bottom: 6px;">PART B : PARTICULARS OF THE DATA SUBJECT (ACCOUNT HOLDER)</div>
 
                         <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
@@ -1311,7 +1311,7 @@
 
                     {{-- Part C: Particulars of Third Party Requestor --}}
                     <div
-                        style="border: 1px solid #000; padding: 10px; margin-bottom: 2px; font-size: 6pt; page-break-inside: avoid;">
+                        style="border: 1px solid #000; padding: 10px; margin-bottom: 4px; font-size: 6pt; page-break-inside: avoid;">
                         <div style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">PART C : PARTICULARS OF THIRD PARTY REQUESTOR</div>
                         <div style="font-style: italic; font-size: 6pt; margin-bottom: 6px;">[ to be filled if request is made by a person other than Data Subject (account holder) ]</div>
 
@@ -1531,7 +1531,6 @@
 
                     {{-- DCR Part D: Force Render after Part C --}}
                     <div style="margin-top: 0px; page-break-before: always; page-break-inside: avoid; border: 1px solid #000; border-bottom: none; padding: 10px;">
-
                         @php
                             // Fetch Part D Data (Raw) to ensure it renders even if section is missing
                             $getRawD = function ($fieldName) use ($submission) {
@@ -1551,7 +1550,7 @@
                             $effectiveDate = $getRawD('field_4_6');
                         @endphp
 
-                        <div class="dcr-bordered-container" style="background: #fff; font-size: 7pt; margin-bottom: 10px;">
+                        <div class="dcr-bordered-container" style="background: #fff; font-size: 6pt; margin-bottom: 4px;">
                             <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART D : PERSONAL DATA CORRECTION</div>
                             <div style="margin-bottom: 2px;">Please tick [✓] the appropriate box:</div>
 
@@ -1586,7 +1585,7 @@
                         </div>
 
                         {{-- Account Table --}}
-                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 6pt;">
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 6pt;">
                             <thead>
                                 <tr>
                                     <th style="border: 1px solid #000; padding: 5px; width: 50%; text-align: center; font-weight: bold; background: #f3f4f6;">ACCOUNT TYPE</th>
@@ -1605,7 +1604,7 @@
                             </tbody>
                         </table>
 
-                        <div style="margin-bottom: 5px;">
+                        <div style="font-size: 6pt;">
                             Please update the following information with effect from : <span style="display: inline-block; min-width: 100px; border-bottom: 1px dotted #000; padding: 0 5px;">{{ $effectiveDate }}</span> (DD/MM/YYYY)
                         </div>
                     </div>
@@ -2438,7 +2437,7 @@
                         $declSigPath = str_replace('storage/', '', $declSigPath);
                     }
                 @endphp
-                <div style="border: 1px solid #000; padding: 10px; font-size: 6pt; background: #fff; margin-top: 3px;">
+                <div style="border: 1px solid #000; padding: 10px; font-size: 6pt; background: #fff; margin-bottom: 4px;">
                     <div style="font-weight: bold; text-decoration: underline; margin-bottom: 5px;">PART E : DECLARATION</div>
                     <div style="margin-bottom: 5px;">(by Data Subject (account holder) / Third Party Requestor)</div>
 
@@ -2630,168 +2629,8 @@
 
     {{-- Staff-Only Sections for PDF --}}
     @if($submission->acknowledgment_received_by || $submission->verification_verified_by)
-        @if($submission->form->slug === 'dcr')
-            {{-- Updated Black & White Layout for DCR --}}
-            <div class="form-section"
-                style="border: 1px solid #000; padding: 10px; margin-top: 3px; font-size: 6pt; background: #fff;">
-                <div style="font-weight: bold; text-decoration: underline; margin-bottom: 5px; font-size: 6pt;">FOR BMMB OFFICE USE ONLY</div>
-
-                {{-- Part F: Acknowledgment Receipt --}}
-                @if($submission->acknowledgment_received_by)
-                    <div style="margin-bottom: 10px;">
-                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">PART F : ACKNOWLEDGMENT RECEIPT</div>
-
-                        <div style="margin-bottom: 3px;">
-                            <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
-                                <tr>
-                                    <td style="width: 60%; vertical-align: top; padding-bottom: 2px;">
-                                        {{-- Received By --}}
-                                        <table style="width: 95%; border-collapse: collapse; margin-bottom: 2px;">
-                                            <tr>
-                                                <td style="white-space: nowrap; padding-right: 3px; vertical-align: bottom; height: 20px; width: 1%;">
-                                                    Received by:</td>
-                                                <td style="border-bottom: 1px dotted #000; height: 20px; vertical-align: bottom; text-align: left;">
-                                                    {{ $submission->acknowledgment_received_by }}
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <div style="font-style: italic; font-size: 6pt; margin-left: 50px;">(signature of staff
-                                            receiving the correction request)</div>
-                                    </td>
-                                    <td style="width: 40%; vertical-align: top; padding-bottom: 2px;">
-                                        {{-- Date Received (Aligned Right) --}}
-                                        <table style="width: auto; border-collapse: collapse; margin-left: auto;">
-                                            <tr>
-                                                <td style="white-space: nowrap; padding-right: 3px; vertical-align: bottom; height: 20px;">
-                                                    Date Received:</td>
-                                                <td style="border-bottom: 1px dotted #000; height: 20px; text-align: left; vertical-align: bottom; width: 100px;">
-                                                    {{ $submission->acknowledgment_date_received ? $submission->acknowledgment_date_received->format('d/m/Y') : '' }}
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 60%; vertical-align: top; padding-bottom: 2px;">
-                                        {{-- Name --}}
-                                        <table style="width: 95%; border-collapse: collapse; margin-top: 2px;">
-                                            <tr>
-                                                <td style="white-space: nowrap; padding-right: 3px; vertical-align: bottom; width: 1%;">
-                                                    Name:</td>
-                                                <td style="border-bottom: 1px dotted #000; text-align: left; vertical-align: bottom;">
-                                                    {{ $submission->acknowledgment_staff_name }}
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td style="width: 40%; vertical-align: top; padding-bottom: 2px;">
-                                        {{-- Designation (Aligned Right) --}}
-                                        <table style="width: auto; border-collapse: collapse; margin-left: auto; margin-top: 2px;">
-                                            <tr>
-                                                <td style="white-space: nowrap; padding-right: 3px; vertical-align: bottom;">
-                                                    Designation:</td>
-                                                <td style="border-bottom: 1px dotted #000; width: 100px; text-align: left; vertical-align: bottom;">
-                                                    {{ $submission->acknowledgment_designation }}
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                            {{-- Official Rubber Stamp --}}
-                            <table style="width: 95%; border-collapse: collapse; margin-top: 5px; font-size: 6pt;">
-                                <tr>
-                                    <td style="white-space: nowrap; padding-right: 3px; vertical-align: bottom; height: 30px; width: 1%;">
-                                        Official Rubber Stamp:</td>
-                                    <td style="border-bottom: 1px dotted #000; height: 30px; vertical-align: bottom;">
-                                        {{ $submission->acknowledgment_stamp }}
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    @if($submission->acknowledgment_received_by && $submission->verification_verified_by)
-                        <div style="border-bottom: 1px solid #000; margin-bottom: 15px;"></div>
-                    @endif
-                @endif
-
-                {{-- Part G: Verification --}}
-                @if($submission->verification_verified_by)
-                    <div>
-                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART G: VERIFICATION</div>
-
-                        <div style="margin-bottom: 2px;">
-                            <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
-                                <tr>
-                                    <td style="width: 60%; vertical-align: top; padding-bottom: 2px;">
-                                        {{-- Verified By --}}
-                                        <table style="width: 95%; border-collapse: collapse; margin-bottom: 2px;">
-                                            <tr>
-                                                <td style="white-space: nowrap; width: 1%; padding-right: 3px; vertical-align: bottom; height: 20px;">
-                                                    Verified by:</td>
-                                                <td style="border-bottom: 1px dotted #000; height: 20px; vertical-align: bottom; text-align: left;">
-                                                    {{ $submission->verification_verified_by }}
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <div style="font-style: italic; font-size: 6pt; margin-left: 50px;">(signature of staff verifying the correction request)</div>
-                                    </td>
-                                    <td style="width: 40%; vertical-align: top; padding-bottom: 2px;">
-                                        {{-- Date (Aligned Right) --}}
-                                        <table style="width: auto; border-collapse: collapse; margin-left: auto;">
-                                            <tr>
-                                                <td style="white-space: nowrap; padding-right: 3px; vertical-align: bottom; height: 20px;">
-                                                    Date :</td>
-                                                <td style="border-bottom: 1px dotted #000; height: 20px; text-align: left; vertical-align: bottom; width: 100px;">
-                                                    {{ $submission->verification_date ? $submission->verification_date->format('d/m/Y') : '' }}
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 60%; vertical-align: top; padding-bottom: 2px;">
-                                        {{-- Name --}}
-                                        <table style="width: 95%; border-collapse: collapse; margin-top: 2px;">
-                                            <tr>
-                                                <td style="white-space: nowrap; padding-right: 3px; vertical-align: bottom; width: 1%;">
-                                                    Name:
-                                                </td>
-                                                <td style="border-bottom: 1px dotted #000; text-align: left; vertical-align: bottom;">
-                                                    {{ $submission->verification_staff_name }}
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td style="width: 40%; vertical-align: top; padding-bottom: 2px;">
-                                        {{-- Designation (Aligned Right) --}}
-                                        <table style="width: auto; border-collapse: collapse; margin-left: auto; margin-top: 2px;">
-                                            <tr>
-                                                <td style="white-space: nowrap; padding-right: 3px; vertical-align: bottom;">
-                                                    Designation:</td>
-                                                <td style="border-bottom: 1px dotted #000; width: 100px; text-align: left; vertical-align: bottom;">
-                                                    {{ $submission->verification_designation }}
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                            {{-- Official Rubber Stamp --}}
-                            <table style="width: 95%; border-collapse: collapse; margin-top: 5px; font-size: 6pt;">
-                                <tr>
-                                    <td style="white-space: nowrap; padding-right: 3px; vertical-align: bottom; height: 30px; width: 1%;">
-                                        Official Rubber Stamp:</td>
-                                    <td style="border-bottom: 1px dotted #000; height: 30px; text-align: left; vertical-align: bottom;">
-                                        {{ $submission->verification_stamp }}
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                @endif
-            </div>
-
+        @if(false)
+            {{-- REMOVED DCR SPECIFIC LAYOUT TO UNIFY DESIGN --}}
         @else
             <div class="form-section">
                 {{-- Unified Office Use Section (Consistent Design for DAR and DCR) --}}
@@ -2802,7 +2641,7 @@
                         $partVerLabel = $isDAR ? 'PART H' : 'PART G';
                     @endphp
 
-                    <div style="border: 1px solid #000; padding: 10px; font-size: 6pt; margin-bottom: 4px;">
+                    <div style="border: 1px solid #000;border-bottom: none; padding: 10px; font-size: 6pt;">
                         <div style="font-weight: bold; text-decoration: underline; margin-bottom: 5px; font-size: 7pt;">FOR BMMB OFFICE USE ONLY</div>
 
                         {{-- Acknowledgment Receipt --}}
@@ -2862,14 +2701,11 @@
                         @endif
                     </div>
 
-                    <div style="border: 1px solid #000; padding: 10px; font-size: 6pt; margin-bottom: 10px;">
+                    <div style="border: 1px solid #000; padding: 10px; font-size: 6pt; margin-bottom: 4px;">
                         {{-- Verification --}}
                         @if($submission->verification_verified_by)
                             <div style="margin-bottom: 5px;">
-                                <div
-                                    style="font-weight: bold; margin-bottom: 5px; text-transform: uppercase; text-decoration: underline;">
-                                    {{ $partVerLabel }} : VERIFICATION
-                                </div>
+                                <div style="font-weight: bold; margin-bottom: 5px; text-transform: uppercase; text-decoration: underline;">{{ $partVerLabel }} : VERIFICATION</div>
                                 <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
                                     <tr>
                                         {{-- Col 1: Label Left --}}
@@ -2892,17 +2728,13 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style="padding-bottom: 5px; vertical-align: bottom;">
-                                            Name:
-                                        </td>
+                                        <td style="padding-bottom: 5px; vertical-align: bottom;">Name:</td>
                                         <td style="padding-bottom: 5px; vertical-align: bottom;">
                                             <div style="border-bottom: 1px dotted #000; width: 100%; min-height: 14px;">
                                                 {{ $submission->verification_staff_name }}
                                             </div>
                                         </td>
-                                        <td style="padding-bottom: 5px; padding-left: 10px; text-align: right; vertical-align: bottom;">
-                                            Designation:
-                                        </td>
+                                        <td style="padding-bottom: 5px; padding-left: 10px; text-align: right; vertical-align: bottom;">Designation:</td>
                                         <td style="padding-bottom: 5px; vertical-align: bottom;">
                                             <div style="border-bottom: 1px dotted #000; width: 100%; min-height: 14px;">
                                                 {{ $submission->verification_designation }}
@@ -2910,9 +2742,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style="padding-top: 15px; vertical-align: bottom; white-space: nowrap;">
-                                            Official Rubber Stamp:
-                                        </td>
+                                        <td style="padding-top: 15px; vertical-align: bottom; white-space: nowrap;">Official Rubber Stamp:</td>
                                         <td colspan="3" style="padding-top: 15px; vertical-align: bottom;">
                                             <div style="border-bottom: 1px dotted #000; width: 100%; min-height: 14px;">
                                                 {{ $submission->verification_stamp }}
