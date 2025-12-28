@@ -2411,7 +2411,7 @@
                                     <td style="width: 60%; vertical-align: bottom; padding-bottom: 3px;">
                                         <div style="border-bottom: 1px dotted #000; display: inline-block; min-width: 200px; height: 30px; margin-bottom: 3px;">
                                             @if($declSigPath)
-                                                <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature" style="max-height: 22px; max-width: 180px;">
+                                                <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature" style="max-height: 30px; max-width: 180px;">
                                             @endif
                                         </div>
                                         <div style="font-size: 6pt;">(Signature of Data Subject (account holder) / Third Party Requestor)</div>
@@ -2452,7 +2452,7 @@
                                 <td style="width: 60%; vertical-align: bottom; padding-bottom: 3px;">
                                     <div style="border-bottom: 1px dotted #000; display: inline-block; min-width: 200px; height: 30px; margin-bottom: 3px;">
                                         @if($declSigPath)
-                                            <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature" style="max-height: 22px; max-width: 180px;">
+                                            <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature" style="max-height: 30px; max-width: 180px;">
                                         @endif
                                     </div>
                                     <div style="font-size: 6pt;">(Signature of Data Subject (account holder) / Third Party Requestor)</div>
