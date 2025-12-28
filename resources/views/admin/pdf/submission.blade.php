@@ -385,7 +385,7 @@
                     stripos($sectionName, 'signature') !== false
                 )
             )
-                                                                                                                                                @continue
+            @continue
         @endif
 
         {{-- Skip Remittance Details, Declaration, and Signature for SRF --}}
@@ -402,9 +402,9 @@
                     && !(stripos($sectionName, 'declaration') !== false && $submission->form->slug === 'dar')
                     && !($submission->form->slug === 'srf' && (strtolower($sectionName) === 'account type' || strtolower($sectionName) === 'service request details' || stripos($sectionName, 'consent') !== false || stripos($sectionName, 'agreements') !== false || strtolower($sectionName) === 'customer information'))
                 )
-                                                                                                                        <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
-                                                                                                                            {{ strtoupper($sectionName) }}
-                                                                                                                        </div>
+                <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
+                    {{ strtoupper($sectionName) }}
+                </div>
             @endif
 
             {{-- Special 3-column layout for Data Correction Details --}}
@@ -2409,7 +2409,7 @@
                             <table style="width: 100%; border-collapse: collapse;">
                                 <tr>
                                     <td style="width: 60%; vertical-align: bottom; padding-bottom: 3px;">
-                                        <div style="border-bottom: 1px dotted #000; display: inline-block; min-width: 200px; height: 50px; margin-bottom: 3px;">
+                                        <div style="border-bottom: 1px dotted #000; display: inline-block; min-width: 200px; height: 30px; margin-bottom: 3px;">
                                             @if($declSigPath)
                                                 <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature" style="max-height: 22px; max-width: 180px;">
                                             @endif
@@ -2450,7 +2450,7 @@
                         <table style="width: 100%; border-collapse: collapse;">
                             <tr>
                                 <td style="width: 60%; vertical-align: bottom; padding-bottom: 3px;">
-                                    <div style="border-bottom: 1px dotted #000; display: inline-block; min-width: 200px; height: 50px; margin-bottom: 3px;">
+                                    <div style="border-bottom: 1px dotted #000; display: inline-block; min-width: 200px; height: 30px; margin-bottom: 3px;">
                                         @if($declSigPath)
                                             <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature" style="max-height: 22px; max-width: 180px;">
                                         @endif
@@ -2879,8 +2879,7 @@
                                             <div style="border-bottom: 1px dotted #000; width: 100%; min-height: 14px;">
                                                 {{ $submission->verification_verified_by }}
                                             </div>
-                                            <div style="font-size: 6pt; font-style: italic;">(signature of staff verifying the
-                                                correction request)</div>
+                                            <div style="font-size: 6pt; font-style: italic;">(signature of staff verifying the correction request)</div>
                                         </td>
                                         {{-- Col 3: Label Right --}}
                                         <td style="width: 15%; padding-bottom: 5px; padding-left: 10px; white-space: nowrap; vertical-align: top; text-align: right;">Date:</td>
