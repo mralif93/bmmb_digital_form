@@ -473,6 +473,9 @@ class FormSubmissionSeeder extends Seeder
                 return 'document_' . uniqid() . '.pdf';
 
             case 'signature':
+                if ($name === 'section_d_2') {
+                    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAAyCAYAAACbg+u9AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAABiSURBVHgB7c6xCQAgDAVRR90/WVsI6g0S8u4C74dLA1uT7j5nZmbvPoM1sDSwNLHMzMwaWBpYmlhmZmaNLA0sTSwzM7NGlgaWJpaZmVkjSwNLE8vMzKyRpYGlid19zszM3n0C2C0D/2FyYXAAAAAASUVORK5CYII=';
+                }
                 return 'signature_' . uniqid() . '.png';
 
             case 'divider':

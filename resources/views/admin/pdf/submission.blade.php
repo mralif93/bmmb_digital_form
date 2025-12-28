@@ -408,7 +408,7 @@
                     stripos($sectionName, 'signature') !== false
                 )
             )
-                                                                                                @continue
+                                                                                                    @continue
         @endif
 
         {{-- Skip Remittance Details, Declaration, and Signature for SRF --}}
@@ -425,9 +425,9 @@
                     && !(stripos($sectionName, 'declaration') !== false && $submission->form->slug === 'dar')
                     && !($submission->form->slug === 'srf' && (strtolower($sectionName) === 'account type' || strtolower($sectionName) === 'service request details' || stripos($sectionName, 'consent') !== false || stripos($sectionName, 'agreements') !== false || strtolower($sectionName) === 'customer information'))
                 )
-                                                                        <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
-                                                                            {{ strtoupper($sectionName) }}
-                                                                        </div>
+                                                                            <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
+                                                                                {{ strtoupper($sectionName) }}
+                                                                            </div>
             @endif
 
             {{-- Special 3-column layout for Data Correction Details --}}
@@ -755,7 +755,7 @@
 
                     {{-- 8. Zakat Savings --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                        $cZak = $isChecked('field_8');
+                                                                                                                                                                                                                                                                                                                                                                                        $cZak = $isChecked('field_8');
                         $zakSav = $isChecked('field_8_1');
                         $zakCur = $isChecked('field_8_2');
                         $zakAgent = $getField('field_8_3');
@@ -843,7 +843,7 @@
 
                     {{-- 10. Zakat Gold --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                        $cZakGold = $isChecked('field_10');
+                                                                                                                                                                                                                                                                                                                                                                                        $cZakGold = $isChecked('field_10');
                         $zGoldMYR = $isChecked('field_10_1');
                         $zGoldGram = $isChecked('field_10_2');
                         $zGoldAgent = $getField('field_10_3');
@@ -931,7 +931,7 @@
 
                     {{-- 12. Physical Delivery --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                        $cPhys = $isChecked('field_12');
+                                                                                                                                                                                                                                                                                                                                                                                        $cPhys = $isChecked('field_12');
                         $physRM = $getField('field_12_1');    
                     @endphp
                     <div style="margin-top: 2px;">
@@ -954,7 +954,7 @@
 
                     {{-- 13. Others --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                        $cOthers = $isChecked('field_13');
+                                                                                                                                                                                                                                                                                                                                                                                        $cOthers = $isChecked('field_13');
                         $othersText = $getField('field_13_1');
                     @endphp
                     <div style="margin-top: 2px;">
@@ -1069,7 +1069,7 @@
                             <div style="padding: 5px; font-size: 6pt;">
                                 <table style="width: 100%; border-collapse: collapse;">
                                     <tr>
-                                        <td style="width: 35%; padding: 2px 0; vertical-align: top;">Beneficiary Name:</td>
+                                        <td style="width: 20%; padding: 2px 0; vertical-align: top;">Beneficiary Name:</td>
                                         <td style="width: 2%;">:</td>
                                         <td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $tpName }}</td>
                                     </tr>
@@ -1109,7 +1109,7 @@
                                 <div style="margin-top: 5px;">
                                     <table style="width: 100%; border-collapse: collapse;">
                                         <tr>
-                                            <td style="width: 35%; padding: 2px 0; vertical-align: top;">Supporting documents:</td>
+                                            <td style="width: 20%; padding: 2px 0; vertical-align: top;">Supporting documents:</td>
                                             <td>
                                                 <table style="width: 100%; border-collapse: collapse;">
                                                     <tr>
@@ -1168,7 +1168,12 @@
                                             </div>
 
                                             {{-- Signature Box --}}
-                                            <div style="border: 1px solid #000; height: 50px; margin-bottom: 2px;"></div>
+                                            <div style="border: 1px solid #000; height: 50px; margin-bottom: 2px; text-align: center; overflow: hidden;">
+                                                @php $dSignature = $getField('section_d_2'); @endphp
+                                                @if($dSignature)
+                                                    <img src="{{ $dSignature }}" style="max-height: 48px; max-width: 100%; margin-top: 1px;" alt="Signature">
+                                                @endif
+                                            </div>
                                             <div style="font-style: italic; margin-bottom: 3px;">Signature</div>
 
                                             <div style="margin-bottom: 3px;">
@@ -2591,57 +2596,57 @@
                 @endif
 
             @elseif($submission->form->slug === 'dcr' && (stripos($sectionName, 'correction') !== false || stripos($sectionName, 'part d') !== false))
-                    @continue
+                @continue
 
-                @elseif(stripos($sectionName, 'declaration') !== false && $submission->form->slug === 'dcr')
-                @php
-                    $declName = collect($fields)->firstWhere('label', 'Full Name (as per NRIC)')['value'] ?? '';
-                    $declIC = collect($fields)->firstWhere('label', 'NRIC/Passport No.')['value'] ?? '';
-                    $declSigField = collect($fields)->firstWhere('label', 'Signature');
-                    $declSigPath = $declSigField ? ($declSigField['value'] ?? '') : '';
-                    if (is_string($declSigPath)) {
-                        $declSigPath = str_replace('storage/', '', $declSigPath);
-                    }
-                @endphp
-                <div style="border: 1px solid #000; padding: 3px; font-size: 7pt; background: #fff; margin-top: 3px;">
-                    <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART E : DECLARATION</div>
-                    <div style="margin-bottom: 2px;">(by Data Subject (account holder) / Third Party Requestor)</div>
+            @elseif(stripos($sectionName, 'declaration') !== false && $submission->form->slug === 'dcr')
+                    @php
+                        $declName = collect($fields)->firstWhere('label', 'Full Name (as per NRIC)')['value'] ?? '';
+                        $declIC = collect($fields)->firstWhere('label', 'NRIC/Passport No.')['value'] ?? '';
+                        $declSigField = collect($fields)->firstWhere('label', 'Signature');
+                        $declSigPath = $declSigField ? ($declSigField['value'] ?? '') : '';
+                        if (is_string($declSigPath)) {
+                            $declSigPath = str_replace('storage/', '', $declSigPath);
+                        }
+                    @endphp
+                    <div style="border: 1px solid #000; padding: 3px; font-size: 7pt; background: #fff; margin-top: 3px;">
+                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART E : DECLARATION</div>
+                        <div style="margin-bottom: 2px;">(by Data Subject (account holder) / Third Party Requestor)</div>
 
-                    <div style="margin-bottom: 3px; line-height: 1.2; text-align: justify;">
-                        I, <span
-                            style="display: inline-block; min-width: 180px; border-bottom: 1px solid #000; text-align: center; font-weight: bold;">{{ $declName }}</span>
-                        (NRIC / Passport No: <span
-                            style="display: inline-block; min-width: 120px; border-bottom: 1px solid #000; text-align: center; font-weight: bold;">{{ $declIC }}</span>
-                        ) hereby certify that the information given in this form and all documents enclosed are true and
-                        accurate. I understand that it will be necessary for the Bank to verify my identity , and the Bank may
-                        contact me for more detailed information in order to locate the personal data requested.
+                        <div style="margin-bottom: 3px; line-height: 1.2; text-align: justify;">
+                            I, <span
+                                style="display: inline-block; min-width: 180px; border-bottom: 1px solid #000; text-align: center; font-weight: bold;">{{ $declName }}</span>
+                            (NRIC / Passport No: <span
+                                style="display: inline-block; min-width: 120px; border-bottom: 1px solid #000; text-align: center; font-weight: bold;">{{ $declIC }}</span>
+                            ) hereby certify that the information given in this form and all documents enclosed are true and
+                            accurate. I understand that it will be necessary for the Bank to verify my identity , and the Bank may
+                            contact me for more detailed information in order to locate the personal data requested.
+                        </div>
+
+                        <div style="margin-top: 5px;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="width: 60%; vertical-align: bottom; padding-bottom: 3px;">
+                                        <div
+                                            style="border-bottom: 1px dotted #000; display: inline-block; min-width: 200px; height: 25px; margin-bottom: 3px;">
+                                            @if($declSigPath)
+                                                <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature"
+                                                    style="max-height: 22px; max-width: 180px;">
+                                            @endif
+                                        </div>
+                                        <div style="font-size: 6pt;">(Signature of Data Subject (account holder) / Third Party
+                                            Requestor)</div>
+                                    </td>
+                                    <td style="width: 40%; vertical-align: bottom; text-align: right; padding-bottom: 3px;">
+                                        <div>Date: <span
+                                                style="display: inline-block; min-width: 100px; border-bottom: 1px dotted #000; text-align: center;">{{ $submission->submitted_at ? $submission->submitted_at->format('d/m/Y') : date('d/m/Y') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
 
-                    <div style="margin-top: 5px;">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <tr>
-                                <td style="width: 60%; vertical-align: bottom; padding-bottom: 3px;">
-                                    <div
-                                        style="border-bottom: 1px dotted #000; display: inline-block; min-width: 200px; height: 25px; margin-bottom: 3px;">
-                                        @if($declSigPath)
-                                            <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature"
-                                                style="max-height: 22px; max-width: 180px;">
-                                        @endif
-                                    </div>
-                                    <div style="font-size: 6pt;">(Signature of Data Subject (account holder) / Third Party
-                                        Requestor)</div>
-                                </td>
-                                <td style="width: 40%; vertical-align: bottom; text-align: right; padding-bottom: 3px;">
-                                    <div>Date: <span
-                                            style="display: inline-block; min-width: 100px; border-bottom: 1px dotted #000; text-align: center;">{{ $submission->submitted_at ? $submission->submitted_at->format('d/m/Y') : date('d/m/Y') }}</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-
-            @elseif(stripos($sectionName, 'personal information') !== false){{-- Split into Part A, B, C --}}
+                @elseif(stripos($sectionName, 'personal information') !== false){{-- Split into Part A, B, C --}}
                 @php
                     $partAFields = [
                         'I am a customer / former customer and I would like to correct my personal data',
