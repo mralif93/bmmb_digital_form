@@ -385,7 +385,7 @@
                     stripos($sectionName, 'signature') !== false
                 )
             )
-                @continue
+                    @continue
         @endif
 
         {{-- Skip Remittance Details, Declaration, and Signature for SRF --}}
@@ -402,9 +402,9 @@
                     && !(stripos($sectionName, 'declaration') !== false && $submission->form->slug === 'dar')
                     && !($submission->form->slug === 'srf' && (strtolower($sectionName) === 'account type' || strtolower($sectionName) === 'service request details' || stripos($sectionName, 'consent') !== false || stripos($sectionName, 'agreements') !== false || strtolower($sectionName) === 'customer information'))
                 )
-                    <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
-                        {{ strtoupper($sectionName) }}
-                    </div>
+                        <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
+                            {{ strtoupper($sectionName) }}
+                        </div>
             @endif
 
             {{-- Special 3-column layout for Data Correction Details --}}
@@ -732,7 +732,7 @@
 
                     {{-- 8. Zakat Savings --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cZak = $isChecked('field_8');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cZak = $isChecked('field_8');
                         $zakSav = $isChecked('field_8_1');
                         $zakCur = $isChecked('field_8_2');
                         $zakAgent = $getField('field_8_3');
@@ -820,7 +820,7 @@
 
                     {{-- 10. Zakat Gold --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cZakGold = $isChecked('field_10');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cZakGold = $isChecked('field_10');
                         $zGoldMYR = $isChecked('field_10_1');
                         $zGoldGram = $isChecked('field_10_2');
                         $zGoldAgent = $getField('field_10_3');
@@ -908,7 +908,7 @@
 
                     {{-- 12. Physical Delivery --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cPhys = $isChecked('field_12');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cPhys = $isChecked('field_12');
                         $physRM = $getField('field_12_1');    
                     @endphp
                     <div style="margin-top: 2px;">
@@ -931,7 +931,7 @@
 
                     {{-- 13. Others --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cOthers = $isChecked('field_13');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cOthers = $isChecked('field_13');
                         $othersText = $getField('field_13_1');
                     @endphp
                     <div style="margin-top: 2px;">
@@ -1130,7 +1130,7 @@
                                         <td style="width: 50%; vertical-align: top; padding-right: 5px;">
                                             @php $dDeclare = $isChecked('section_d_1'); @endphp
                                             <div style="margin-bottom: 3px;">
-                                                <table style="width: 100%; border-collapse: collapse; font-size: 7pt;">
+                                                <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
                                                     <tr>
                                                         <td style="width: 18px; vertical-align: top;">
                                                             <div style="width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-weight: bold;">
@@ -1547,6 +1547,8 @@
                             $accNo1 = $getRawD('field_4_3');
                             $accType2 = $getRawD('field_4_4');
                             $accNo2 = $getRawD('field_4_5');
+                            $accType3 = $getRawD('field_4_7');
+                            $accNo3 = $getRawD('field_4_8');
                             $effectiveDate = $getRawD('field_4_6');
                         @endphp
 
@@ -1601,12 +1603,14 @@
                                     <td style="border: 1px solid #000; padding: 5px;">{{ $accType2 }}</td>
                                     <td style="border: 1px solid #000; padding: 5px;">{{ $accNo2 }}</td>
                                 </tr>
+                                <tr>
+                                    <td style="border: 1px solid #000; padding: 5px;">{{ $accType3 }}</td>
+                                    <td style="border: 1px solid #000; padding: 5px;">{{ $accNo3 }}</td>
+                                </tr>
                             </tbody>
                         </table>
 
-                        <div style="font-size: 6pt;">
-                            Please update the following information with effect from : <span style="display: inline-block; min-width: 100px; border-bottom: 1px dotted #000; padding: 0 5px;">{{ $effectiveDate }}</span> (DD/MM/YYYY)
-                        </div>
+                        <div style="font-size: 6pt;">Please update the following information with effect from : <span style="display: inline-block; min-width: 100px; border-bottom: 1px dotted #000; padding: 0 5px;">{{ $effectiveDate }}</span> (DD/MM/YYYY)</div>
                     </div>
 
                     <table class="dcr-details-table" style="width: 100%; border-collapse: collapse; font-size: 6pt; border: 1px solid #d1d5db; border-top: none; border-color: #000 !important;">
@@ -1718,8 +1722,7 @@
 
                 {{-- Part A: About Yourself --}}
                 <div style="border: 1px solid #000; padding: 10px; margin-bottom: 3px; font-size: 6pt;">
-                    <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART A : ABOUT YOURSELF
-                    </div>
+                    <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART A : ABOUT YOURSELF</div>
                     <table style="width: 100%; border-collapse: collapse; border: none; font-size: 6pt;">
                         <tr>
                             <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
@@ -1740,8 +1743,7 @@
                                 </div>
                             </td>
                             <td style="vertical-align: top; padding: 3px 0 1px 0; border: none;">
-                                I am a Third Party Requestor [i.e. I am making this personal data correction request for another
-                                person.]
+                                I am a Third Party Requestor [i.e. I am making this personal data correction request for another person.]
                             </td>
                         </tr>
                     </table>
@@ -1749,8 +1751,7 @@
 
                 {{-- Part B: Particulars of Data Subject --}}
                 <div style="border: 1px solid #000; padding: 10px; margin-bottom: 3px; font-size: 6pt;">
-                    <div style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">PART B : PARTICULARS OF THE
-                        DATA SUBJECT (ACCOUNT HOLDER)</div>
+                    <div style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">PART B : PARTICULARS OF THE DATA SUBJECT (ACCOUNT HOLDER)</div>
 
                     <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
                         {{-- R1: Full Name --}}
@@ -1808,10 +1809,8 @@
 
                 {{-- Part C: Particulars of Third Party Requestor --}}
                 <div style="border: 1px solid #000; padding: 10px; margin-bottom: 2px; font-size: 6pt; page-break-inside: avoid;">
-                    <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART C : PARTICULARS OF
-                        THIRD PARTY REQUESTOR</div>
-                    <div style="font-style: italic; font-size: 6pt; margin-bottom: 3px;">[ to be filled if request is made by a
-                        person other than Data Subject (account holder) ]</div>
+                    <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART C : PARTICULARS OF THIRD PARTY REQUESTOR</div>
+                    <div style="font-style: italic; font-size: 6pt; margin-bottom: 3px;">[ to be filled if request is made by a person other than Data Subject (account holder) ]</div>
 
                     <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
                         {{-- R1: Full Name --}}
@@ -1858,8 +1857,7 @@
                         </tr>
                     </table>
 
-                    <div style="margin-bottom: 2px; margin-top: 5px;">I am making this request for the Access of personal
-                        data of Data Subject (account holder) because of Data Subject (account holder) :</div>
+                    <div style="margin-bottom: 2px; margin-top: 5px;">I am making this request for the Access of personal data of Data Subject (account holder) because of Data Subject (account holder) :</div>
 
                     {{-- Part C Checkboxes --}}
                     @php
@@ -1881,8 +1879,7 @@
                                     </div>
                                 </td>
                                 <td style="vertical-align: top; padding: 2px 0 1px 0; border: none; font-size: 6pt;">
-                                    is a minor and I am the parent / legal guardian / parental responsibility over the Data
-                                    Subject (account holder)
+                                    is a minor and I am the parent / legal guardian / parental responsibility over the Data Subject (account holder)
                                 </td>
                             </tr>
                         </table>
@@ -1897,8 +1894,7 @@
                                     </div>
                                 </td>
                                 <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
-                                    is incapable of managing his/her affairs and I have been appointed by Court to manage his /
-                                    her affairs
+                                    is incapable of managing his/her affairs and I have been appointed by Court to manage his / her affairs
                                 </td>
                             </tr>
                         </table>
@@ -1913,8 +1909,7 @@
                                     </div>
                                 </td>
                                 <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
-                                    had passed away and I have been appointed as administrator of Data Subject's (account
-                                    holder) estate
+                                    had passed away and I have been appointed as administrator of Data Subject's (account holder) estate
                                 </td>
                             </tr>
                         </table>
@@ -1972,8 +1967,7 @@
                                     </div>
                                 </td>
                                 <td style="vertical-align: top; padding: 2px 0 1px 0; border: none; font-size: 6pt;">
-                                    copy of my NRIC /MyKid/Birth certificate for minor account, Passport (original to be
-                                    produced for inspection); and
+                                    copy of my NRIC /MyKid/Birth certificate for minor account, Passport (original to be produced for inspection); and
                                 </td>
                             </tr>
                         </table>
@@ -2762,14 +2756,6 @@
     <div class="footer-note">
         <strong>NOTE:</strong> This is an electronically generated document and does not require manual signature.
         Please quote the Reference Number above for any inquiries related to this submission.
-    </div>
-
-    <!-- Footer -->
-    <div class="document-footer">
-        <p><strong>BMMB Digital Forms System</strong></p>
-        <p>Bank Muamalat Malaysia Berhad</p>
-        <p>Email: support@bmmb.com.my | Phone: 03-2161 1000</p>
-
     </div>
 </body>
 
