@@ -175,17 +175,17 @@ class FormSubmissionSeeder extends Seeder
                     'review_notes' => in_array($status, ['approved', 'rejected']) ? fake()->sentence() : null,
                     'rejection_reason' => $status === 'rejected' ? fake()->sentence() : null,
                     // Part F: Acknowledgment Receipt (populated for pending_process, completed, approved)
-                    'acknowledgment_received_by' => $hasStaffSections ? 'Khairul Zaid Omar' : null,
-                    'acknowledgment_date_received' => $hasStaffSections ? $submittedAt->copy()->addHours(rand(1, 12)) : null,
-                    'acknowledgment_staff_name' => $hasStaffSections ? 'Khairul Zaid Omar' : null,
-                    'acknowledgment_designation' => $hasStaffSections ? 'Operations Officer' : null,
-                    'acknowledgment_stamp' => $hasStaffSections ? 'BMMB ' . $branch->branch_code . ' Official Stamp' : null,
+                    'acknowledgment_received_by' => 'Khairul Zaid Omar',
+                    'acknowledgment_date_received' => $submittedAt->copy()->addHours(rand(1, 12)),
+                    'acknowledgment_staff_name' => 'Khairul Zaid Omar',
+                    'acknowledgment_designation' => 'Operations Officer',
+                    'acknowledgment_stamp' => 'BMMB ' . $branch->branch_code . ' Official Stamp',
                     // Part G: Verification (only for completed & approved)
-                    'verification_verified_by' => in_array($status, ['completed', 'approved']) && $hasStaffSections ? 'Khairul Zaid Omar' : null,
-                    'verification_date' => in_array($status, ['completed', 'approved']) && $hasStaffSections ? $submittedAt->copy()->addHours(rand(24, 72)) : null,
-                    'verification_staff_name' => in_array($status, ['completed', 'approved']) && $hasStaffSections ? 'Khairul Zaid Omar' : null,
-                    'verification_designation' => in_array($status, ['completed', 'approved']) && $hasStaffSections ? 'Operations Officer' : null,
-                    'verification_stamp' => in_array($status, ['completed', 'approved']) && $hasStaffSections ? 'BMMB ' . $branch->branch_code . ' Verification Stamp' : null,
+                    'verification_verified_by' => in_array($status, ['completed', 'approved']) ? 'Khairul Zaid Omar' : null,
+                    'verification_date' => in_array($status, ['completed', 'approved']) ? $submittedAt->copy()->addHours(rand(24, 72)) : null,
+                    'verification_staff_name' => in_array($status, ['completed', 'approved']) ? 'Khairul Zaid Omar' : null,
+                    'verification_designation' => in_array($status, ['completed', 'approved']) ? 'Operations Officer' : null,
+                    'verification_stamp' => in_array($status, ['completed', 'approved']) ? 'BMMB ' . $branch->branch_code . ' Verification Stamp' : null,
                     'audit_trail' => [
                         [
                             'action' => 'created',
