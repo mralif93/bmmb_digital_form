@@ -328,55 +328,32 @@
 
     {{-- Important Notes Section (Static for DCR and DAR Forms) --}}
     @if(in_array($submission->form->slug, ['dcr', 'dar']))
-        <div class="important-notes"
-            style="margin-top: 2px; margin-bottom: 3px; border: 1px solid #000; padding: 2px; font-size: 6pt; color: #000;">
-            <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px; font-size: 7pt; color: #000;">
-                Important Notes:</div>
+        <div class="important-notes" style="margin-top: 2px; margin-bottom: 3px; border: 1px solid #000; padding: 2px; font-size: 6pt; color: #000; padding: 10px;">
+            <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px; font-size: 7pt; color: #000;">Important Notes:</div>
             <ol style="margin: 0; padding-left: 15px; line-height: 1.3;">
-                <li style="margin-bottom: 1px;">Please complete the Data Correction Request Form and ensure that your
-                    personal data provided herein is genuine and accurate.</li>
-                <li style="margin-bottom: 1px;">Your request may not be processed if the information/document provided is
-                    incomplete.</li>
-                <li style="margin-bottom: 1px;">Third Party Requestor is to be present at the branch / office to submit this
-                    form and for verification of information and documents required.</li>
-                <li style="margin-bottom: 1px;">The supporting document(s) required in this form must be provided. We will
-                    respond within 21 days of receipt of the completed form with accompanying documents.</li>
-                <li style="margin-bottom: 3px;">If you have any queries / need any guidance in filling-up this form, you may
-                    contact our Customer Service Department at the contact details below:
+                <li style="margin-bottom: 1px;">Please complete the Data Correction Request Form and ensure that your personal data provided herein is genuine and accurate.</li>
+                <li style="margin-bottom: 1px;">Your request may not be processed if the information/document provided is incomplete.</li>
+                <li style="margin-bottom: 1px;">Third Party Requestor is to be present at the branch / office to submit this form and for verification of information and documents required.</li>
+                <li style="margin-bottom: 1px;">The supporting document(s) required in this form must be provided. We will respond within 21 days of receipt of the completed form with accompanying documents.</li>
+                <li style="margin-bottom: 3px;">If you have any queries / need any guidance in filling-up this form, you may contact our Customer Service Department at the contact details below:
 
                     <div style="margin-top: 6px; margin-left: 2px;">
-                        <div style="font-weight: bold; font-style: italic; margin-bottom: 2px; color: #000;">Head, Customer
-                            Service Department, Bank Muamalat Malaysia Berhad</div>
+                        <div style="font-weight: bold; font-style: italic; margin-bottom: 2px; color: #000;">Head, Customer Service Department, Bank Muamalat Malaysia Berhad</div>
                         <table style="width: 100%; border-collapse: collapse; font-size: 6pt; border: none;">
                             <tr>
-                                <td
-                                    style="width: 60px; vertical-align: top; font-weight: bold; font-style: italic; border: none; padding: 1px 0;">
-                                    Address</td>
-                                <td
-                                    style="width: 10px; vertical-align: top; font-style: italic; border: none; padding: 1px 0; text-align: center;">
-                                    :</td>
-                                <td style="vertical-align: top; font-style: italic; border: none; padding: 1px 0;">19th
-                                    Floor, Menara Bumiputra, Jalan Melaka, 51000 Kuala Lumpur</td>
+                                <td style="width: 60px; vertical-align: top; font-weight: bold; font-style: italic; border: none; padding: 1px 0;">Address</td>
+                                <td style="width: 10px; vertical-align: top; font-style: italic; border: none; padding: 1px 0; text-align: center;">:</td>
+                                <td style="vertical-align: top; font-style: italic; border: none; padding: 1px 0;">19th Floor, Menara Bumiputra, Jalan Melaka, 51000 Kuala Lumpur</td>
                             </tr>
                             <tr>
-                                <td
-                                    style="width: 60px; vertical-align: top; font-weight: bold; font-style: italic; border: none; padding: 1px 0;">
-                                    Telephone</td>
-                                <td
-                                    style="width: 10px; vertical-align: top; font-style: italic; border: none; padding: 1px 0; text-align: center;">
-                                    :</td>
-                                <td style="vertical-align: top; font-style: italic; border: none; padding: 1px 0;">
-                                    1-300-88-8787 (Local), +603-26005500 (International)</td>
+                                <td style="width: 60px; vertical-align: top; font-weight: bold; font-style: italic; border: none; padding: 1px 0;">Telephone</td>
+                                <td style="width: 10px; vertical-align: top; font-style: italic; border: none; padding: 1px 0; text-align: center;">:</td>
+                                <td style="vertical-align: top; font-style: italic; border: none; padding: 1px 0;">1-300-88-8787 (Local), +603-26005500 (International)</td>
                             </tr>
                             <tr>
-                                <td
-                                    style="width: 60px; vertical-align: top; font-weight: bold; font-style: italic; border: none; padding: 1px 0;">
-                                    Email</td>
-                                <td
-                                    style="width: 10px; vertical-align: top; font-style: italic; border: none; padding: 1px 0; text-align: center;">
-                                    :</td>
-                                <td style="vertical-align: top; font-style: italic; border: none; padding: 1px 0;">
-                                    feedback@muamalat.com.my</td>
+                                <td style="width: 60px; vertical-align: top; font-weight: bold; font-style: italic; border: none; padding: 1px 0;">Email</td>
+                                <td style="width: 10px; vertical-align: top; font-style: italic; border: none; padding: 1px 0; text-align: center;">:</td>
+                                <td style="vertical-align: top; font-style: italic; border: none; padding: 1px 0;">feedback@muamalat.com.my</td>
                             </tr>
                         </table>
                     </div>
@@ -408,7 +385,7 @@
                     stripos($sectionName, 'signature') !== false
                 )
             )
-                                                                                                    @continue
+                                                                                                                                    @continue
         @endif
 
         {{-- Skip Remittance Details, Declaration, and Signature for SRF --}}
@@ -425,9 +402,9 @@
                     && !(stripos($sectionName, 'declaration') !== false && $submission->form->slug === 'dar')
                     && !($submission->form->slug === 'srf' && (strtolower($sectionName) === 'account type' || strtolower($sectionName) === 'service request details' || stripos($sectionName, 'consent') !== false || stripos($sectionName, 'agreements') !== false || strtolower($sectionName) === 'customer information'))
                 )
-                                                                            <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
-                                                                                {{ strtoupper($sectionName) }}
-                                                                            </div>
+                                                                                                            <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
+                                                                                                                {{ strtoupper($sectionName) }}
+                                                                                                            </div>
             @endif
 
             {{-- Special 3-column layout for Data Correction Details --}}
@@ -755,7 +732,7 @@
 
                     {{-- 8. Zakat Savings --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                        $cZak = $isChecked('field_8');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cZak = $isChecked('field_8');
                         $zakSav = $isChecked('field_8_1');
                         $zakCur = $isChecked('field_8_2');
                         $zakAgent = $getField('field_8_3');
@@ -843,7 +820,7 @@
 
                     {{-- 10. Zakat Gold --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                        $cZakGold = $isChecked('field_10');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cZakGold = $isChecked('field_10');
                         $zGoldMYR = $isChecked('field_10_1');
                         $zGoldGram = $isChecked('field_10_2');
                         $zGoldAgent = $getField('field_10_3');
@@ -931,7 +908,7 @@
 
                     {{-- 12. Physical Delivery --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                        $cPhys = $isChecked('field_12');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cPhys = $isChecked('field_12');
                         $physRM = $getField('field_12_1');    
                     @endphp
                     <div style="margin-top: 2px;">
@@ -954,7 +931,7 @@
 
                     {{-- 13. Others --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                        $cOthers = $isChecked('field_13');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cOthers = $isChecked('field_13');
                         $othersText = $getField('field_13_1');
                     @endphp
                     <div style="margin-top: 2px;">
@@ -1244,14 +1221,13 @@
                     @endphp
 
                     {{-- Part A: About Yourself --}}
-                    <div style="border: 1px solid #000; padding: 4px; margin-bottom: 6px; font-size: 8pt;">
-                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">PART A : ABOUT YOURSELF
-                        </div>
-                        <table style="width: 100%; border-collapse: collapse; border: none; font-size: 8pt;">
+                    <div style="border: 1px solid #000; padding: 10px; margin-bottom: 6px; font-size: 6pt;">
+                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">PART A : ABOUT YOURSELF</div>
+                        <table style="width: 100%; border-collapse: collapse; border: none; font-size: 6pt;">
                             <tr>
                                 <td style="width: 20px; vertical-align: middle; padding: 1px 0; border: none;">
                                     <div
-                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                        style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                         {{ $isCustomer ? '✓' : '' }}
                                     </div>
                                 </td>
@@ -1262,7 +1238,7 @@
                             <tr>
                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                     <div
-                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                        style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                         {{ $isThirdParty ? '✓' : '' }}
                                     </div>
                                 </td>
@@ -1275,11 +1251,10 @@
                     </div>
 
                     {{-- Part B: Particulars of Data Subject --}}
-                    <div style="border: 1px solid #000; padding: 4px; margin-bottom: 6px; font-size: 8pt;">
-                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 6px;">PART B : PARTICULARS OF THE
-                            DATA SUBJECT (ACCOUNT HOLDER)</div>
+                    <div style="border: 1px solid #000; padding: 10px; margin-bottom: 6px; font-size: 6pt;">
+                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 6px;">PART B : PARTICULARS OF THE DATA SUBJECT (ACCOUNT HOLDER)</div>
 
-                        <table style="width: 100%; border-collapse: collapse; font-size: 8pt;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
                             {{-- R1: Full Name --}}
                             <tr>
                                 <td colspan="3" style="padding-bottom: 5px;">
@@ -1336,13 +1311,11 @@
 
                     {{-- Part C: Particulars of Third Party Requestor --}}
                     <div
-                        style="border: 1px solid #000; padding: 4px; margin-bottom: 2px; font-size: 7pt; page-break-inside: avoid;">
-                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">PART C : PARTICULARS OF
-                            THIRD PARTY REQUESTOR</div>
-                        <div style="font-style: italic; font-size: 6pt; margin-bottom: 6px;">[ to be filled if request is made by a
-                            person other than Data Subject (account holder) ]</div>
+                        style="border: 1px solid #000; padding: 10px; margin-bottom: 2px; font-size: 6pt; page-break-inside: avoid;">
+                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">PART C : PARTICULARS OF THIRD PARTY REQUESTOR</div>
+                        <div style="font-style: italic; font-size: 6pt; margin-bottom: 6px;">[ to be filled if request is made by a person other than Data Subject (account holder) ]</div>
 
-                        <table style="width: 100%; border-collapse: collapse; font-size: 7pt;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
                             {{-- R1: Full Name --}}
                             <tr>
                                 <td colspan="3" style="padding-bottom: 4px;">
@@ -1406,7 +1379,7 @@
                                 <tr>
                                     <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                         <div
-                                            style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                            style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                             {{ $cMinor ? '✓' : '' }}
                                         </div>
                                     </td>
@@ -1422,7 +1395,7 @@
                                 <tr>
                                     <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                         <div
-                                            style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                            style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                             {{ $cIncapable ? '✓' : '' }}
                                         </div>
                                     </td>
@@ -1438,7 +1411,7 @@
                                 <tr>
                                     <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                         <div
-                                            style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                            style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                             {{ $cDeceased ? '✓' : '' }}
                                         </div>
                                     </td>
@@ -1454,11 +1427,11 @@
                                 <tr>
                                     <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                         <div
-                                            style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                            style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                             {{ $cAuth ? '✓' : '' }}
                                         </div>
                                     </td>
-                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
+                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                         authorised me in writing to make this data correction request
                                     </td>
                                 </tr>
@@ -1469,11 +1442,11 @@
                                 <tr>
                                     <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                         <div
-                                            style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                            style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                             {{ $cOther ? '✓' : '' }}
                                         </div>
                                     </td>
-                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
+                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                         other reason: (please specify): <span
                                             style="border-bottom: 1px dotted #000; min-width: 200px; display: inline-block; margin-left: 5px;">{{ $cOtherReason }}</span>
                                     </td>
@@ -1497,11 +1470,11 @@
                                 <tr>
                                     <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                         <div
-                                            style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                            style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                             {{ $docNRIC ? '✓' : '' }}
                                         </div>
                                     </td>
-                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
+                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                         copy of my NRIC /MyKid/Birth certificate for minor account, Passport (original to be
                                         produced for inspection); and
                                     </td>
@@ -1513,11 +1486,11 @@
                                 <tr>
                                     <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                         <div
-                                            style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                            style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                             {{ $docCourt ? '✓' : '' }}
                                         </div>
                                     </td>
-                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
+                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                         original of Court Order / Power of Attorney
                                     </td>
                                 </tr>
@@ -1528,11 +1501,11 @@
                                 <tr>
                                     <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                         <div
-                                            style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                            style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                             {{ $docAuth ? '✓' : '' }}
                                         </div>
                                     </td>
-                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
+                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                         original of authorisation letter from Data Subject (account holder)
                                     </td>
                                 </tr>
@@ -1543,11 +1516,11 @@
                                 <tr>
                                     <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                         <div
-                                            style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                            style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                             {{ $docOther ? '✓' : '' }}
                                         </div>
                                     </td>
-                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
+                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                         other reason: (please specify): <span
                                             style="border-bottom: 1px dotted #000; min-width: 200px; display: inline-block; margin-left: 5px;">{{ $docOtherSpec }}</span>
                                     </td>
@@ -1557,7 +1530,7 @@
                     </div>
 
                     {{-- DCR Part D: Force Render after Part C --}}
-                    <div style="margin-top: 0px; page-break-before: always; page-break-inside: avoid;">
+                    <div style="margin-top: 0px; page-break-before: always; page-break-inside: avoid; border: 1px solid #000; border-bottom: none; padding: 10px;">
 
                         @php
                             // Fetch Part D Data (Raw) to ensure it renders even if section is missing
@@ -1578,100 +1551,76 @@
                             $effectiveDate = $getRawD('field_4_6');
                         @endphp
 
-                        <div class="dcr-bordered-container"
-                            style="border: 1px solid #000; border-bottom: none; padding: 3px; background: #fff; font-size: 7pt;">
-                            <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART D : PERSONAL DATA
-                                CORRECTION</div>
+                        <div class="dcr-bordered-container" style="background: #fff; font-size: 7pt; margin-bottom: 10px;">
+                            <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART D : PERSONAL DATA CORRECTION</div>
                             <div style="margin-bottom: 2px;">Please tick [✓] the appropriate box:</div>
 
-                            <div style="margin-bottom: 2px;">
-                                <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
+                            <div style="margin-bottom: 4px;">
+                                <table style="width: 100%; border-collapse: collapse;">
                                     <tr>
-                                        <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
+                                        <td style="width: 20px; vertical-align: top; padding: 1px 0;">
                                             <div
-                                                style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                                style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                                 {{ strtolower($updateScope) === 'all' ? '✓' : '' }}
                                             </div>
                                         </td>
                                         <td style="vertical-align: top; padding: 3px 0 1px 0; border: none;">
-                                            Please update ALL of the Data Subject’s (account holder) account(s) maintained with your
-                                            branch.
+                                            Please update ALL of the Data Subject’s (account holder) account(s) maintained with your branch.
                                         </td>
                                     </tr>
                                 </table>
                             </div>
 
-                            <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
+                            <table style="width: 100%; border-collapse: collapse;">
                                 <tr>
-                                    <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                        <div
-                                            style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                    <td style="width: 20px; vertical-align: top; padding: 1px 0;">
+                                        <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                             {{ strtolower($updateScope) === 'specific' ? '✓' : '' }}
                                         </div>
                                     </td>
                                     <td style="vertical-align: top; padding: 3px 0 1px 0; border: none;">
-                                        Please update ONLY the Data Subject’s (account holder) account(s) maintained with your
-                                        branch as stated below:
+                                        Please update ONLY the Data Subject’s (account holder) account(s) maintained with your branch as stated below:
                                     </td>
                                 </tr>
                             </table>
                         </div>
 
                         {{-- Account Table --}}
-                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 2px; font-size: 7pt;">
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 6pt;">
                             <thead>
                                 <tr>
-                                    <th
-                                        style="border: 1px solid #000; padding: 2px; width: 50%; text-align: center; font-weight: bold; background: #f3f4f6;">
-                                        ACCOUNT TYPE</th>
-                                    <th
-                                        style="border: 1px solid #000; padding: 2px; width: 50%; text-align: center; font-weight: bold; background: #f3f4f6;">
-                                        ACCOUNT NO.</th>
+                                    <th style="border: 1px solid #000; padding: 5px; width: 50%; text-align: center; font-weight: bold; background: #f3f4f6;">ACCOUNT TYPE</th>
+                                    <th style="border: 1px solid #000; padding: 5px; width: 50%; text-align: center; font-weight: bold; background: #f3f4f6;">ACCOUNT NO.</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td style="border: 1px solid #000; padding: 2px; height: 14px;">{{ $accType1 }}</td>
-                                    <td style="border: 1px solid #000; padding: 2px; height: 14px;">{{ $accNo1 }}</td>
+                                    <td style="border: 1px solid #000; padding: 5px; height: 18px;">{{ $accType1 }}</td>
+                                    <td style="border: 1px solid #000; padding: 5px; height: 18px;">{{ $accNo1 }}</td>
                                 </tr>
                                 <tr>
-                                    <td style="border: 1px solid #000; padding: 2px; height: 14px;">{{ $accType2 }}</td>
-                                    <td style="border: 1px solid #000; padding: 2px; height: 14px;">{{ $accNo2 }}</td>
+                                    <td style="border: 1px solid #000; padding: 5px; height: 18px;">{{ $accType2 }}</td>
+                                    <td style="border: 1px solid #000; padding: 5px; height: 18px;">{{ $accNo2 }}</td>
                                 </tr>
                             </tbody>
                         </table>
 
                         <div style="margin-bottom: 5px;">
-                            Please update the following information with effect from : <span
-                                style="display: inline-block; min-width: 100px; border-bottom: 1px solid #000; padding: 0 5px;">{{ $effectiveDate }}</span>
-                            (DD/MM/YYYY)
+                            Please update the following information with effect from : <span style="display: inline-block; min-width: 100px; border-bottom: 1px dotted #000; padding: 0 5px;">{{ $effectiveDate }}</span> (DD/MM/YYYY)
                         </div>
                     </div>
 
-                    <table class="dcr-details-table"
-                        style="width: 100%; border-collapse: collapse; font-size: 5.5pt; border: 1px solid #d1d5db; border-top: none; border-color: #000 !important;">
+                    <table class="dcr-details-table" style="width: 100%; border-collapse: collapse; font-size: 6pt; border: 1px solid #d1d5db; border-top: none; border-color: #000 !important;">
                         <thead>
                             <tr style="background: #fff;">
-                                <th rowspan="2"
-                                    style="border: 1px solid #000; padding: 3px; text-align: center; width: 35%; font-weight: bold; vertical-align: middle;">
-                                    PERSONAL DATA TYPE
-                                </th>
-                                <th rowspan="2"
-                                    style="border: 1px solid #000; padding: 3px; text-align: center; width: 50%; font-weight: bold; vertical-align: middle;">
-                                    PLEASE PROVIDE THE PERSONAL DATA TO BE CORRECTED
-                                </th>
-                                <th colspan="3"
-                                    style="border: 1px solid #000; padding: 1px 4px; text-align: center; font-weight: bold;">
-                                    Please Tick (√) the Appropriate Column
-                                </th>
+                                <th rowspan="2" style="border: 1px solid #000; padding: 5px; text-align: center; width: 35%; font-weight: bold; vertical-align: middle;">PERSONAL DATA TYPE</th>
+                                <th rowspan="2" style="border: 1px solid #000; padding: 5px; text-align: center; width: 50%; font-weight: bold; vertical-align: middle;">PLEASE PROVIDE THE PERSONAL DATA TO BE CORRECTED</th>
+                                <th colspan="3" style="border: 1px solid #000; padding: 2px 4px; text-align: center; font-weight: bold;">Please Tick (√) the Appropriate Column</th>
                             </tr>
                             <tr style="background: #fff;">
-                                <th style="border: 1px solid #000; padding: 2px; text-align: center; width: 5%; font-weight: bold;">
-                                    A</th>
-                                <th style="border: 1px solid #000; padding: 2px; text-align: center; width: 5%; font-weight: bold;">
-                                    D</th>
-                                <th style="border: 1px solid #000; padding: 2px; text-align: center; width: 5%; font-weight: bold;">
-                                    R</th>
+                                <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 5%; font-weight: bold;">A</th>
+                                <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 5%; font-weight: bold;">D</th>
+                                <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 5%; font-weight: bold;">R</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1704,27 +1653,27 @@
                                     $act = strtoupper($getRawD($actionKey));
                                 @endphp
                                 <tr>
-                                    <td style="border: 1px solid #000; padding: 1px 3px; vertical-align: top;">
+                                    <td style="border: 1px solid #000; padding: 5px 3px; vertical-align: top;">
                                         <strong>{{ $label }}</strong>
                                     </td>
-                                    <td style="border: 1px solid #000; padding: 1px 3px; vertical-align: top;">
+                                    <td style="border: 1px solid #000; padding: 5px 3px; vertical-align: top;">
                                         {{ $val }}
                                     </td>
-                                    <td style="border: 1px solid #000; padding: 2px; text-align: center; vertical-align: middle;">
+                                    <td style="border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle;">
                                         <div
-                                            style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                            style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                             {{ ($act == 'A' || $act == 'ADD') ? '✓' : '' }}
                                         </div>
                                     </td>
-                                    <td style="border: 1px solid #000; padding: 2px; text-align: center; vertical-align: middle;">
+                                    <td style="border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle;">
                                         <div
-                                            style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                            style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                             {{ ($act == 'D' || $act == 'DELETE') ? '✓' : '' }}
                                         </div>
                                     </td>
-                                    <td style="border: 1px solid #000; padding: 2px; text-align: center; vertical-align: middle;">
+                                    <td style="border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle;">
                                         <div
-                                            style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                            style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                             {{ ($act == 'R' || $act == 'REVISE') ? '✓' : '' }}
                                         </div>
                                     </td>
@@ -1769,14 +1718,14 @@
                 @endphp
 
                 {{-- Part A: About Yourself --}}
-                <div style="border: 1px solid #000; padding: 2px; margin-bottom: 3px; font-size: 8pt;">
+                <div style="border: 1px solid #000; padding: 10px; margin-bottom: 3px; font-size: 6pt;">
                     <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART A : ABOUT YOURSELF
                     </div>
-                    <table style="width: 100%; border-collapse: collapse; border: none; font-size: 8pt;">
+                    <table style="width: 100%; border-collapse: collapse; border: none; font-size: 6pt;">
                         <tr>
                             <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                 <div
-                                    style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                    style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                     {{ $isCustomer ? '✓' : '' }}
                                 </div>
                             </td>
@@ -1787,7 +1736,7 @@
                         <tr>
                             <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                 <div
-                                    style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                    style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                     {{ $isThirdParty ? '✓' : '' }}
                                 </div>
                             </td>
@@ -1800,11 +1749,11 @@
                 </div>
 
                 {{-- Part B: Particulars of Data Subject --}}
-                <div style="border: 1px solid #000; padding: 2px; margin-bottom: 3px; font-size: 8pt;">
+                <div style="border: 1px solid #000; padding: 10px; margin-bottom: 3px; font-size: 6pt;">
                     <div style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">PART B : PARTICULARS OF THE
                         DATA SUBJECT (ACCOUNT HOLDER)</div>
 
-                    <table style="width: 100%; border-collapse: collapse; font-size: 8pt;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
                         {{-- R1: Full Name --}}
                         <tr>
                             <td colspan="3" style="padding-bottom: 5px;">
@@ -1859,13 +1808,13 @@
                 </div>
 
                 {{-- Part C: Particulars of Third Party Requestor --}}
-                <div style="border: 1px solid #000; padding: 2px; margin-bottom: 2px; font-size: 7pt; page-break-inside: avoid;">
+                <div style="border: 1px solid #000; padding: 10px; margin-bottom: 2px; font-size: 6pt; page-break-inside: avoid;">
                     <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART C : PARTICULARS OF
                         THIRD PARTY REQUESTOR</div>
                     <div style="font-style: italic; font-size: 6pt; margin-bottom: 3px;">[ to be filled if request is made by a
                         person other than Data Subject (account holder) ]</div>
 
-                    <table style="width: 100%; border-collapse: collapse; font-size: 7pt;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
                         {{-- R1: Full Name --}}
                         <tr>
                             <td colspan="3" style="padding-bottom: 2px;">
@@ -1928,11 +1877,11 @@
                             <tr>
                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                     <div
-                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                        style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                         {{ $cMinor ? '✓' : '' }}
                                     </div>
                                 </td>
-                                <td style="vertical-align: top; padding: 2px 0 1px 0; border: none; font-size: 8pt;">
+                                <td style="vertical-align: top; padding: 2px 0 1px 0; border: none; font-size: 6pt;">
                                     is a minor and I am the parent / legal guardian / parental responsibility over the Data
                                     Subject (account holder)
                                 </td>
@@ -1944,11 +1893,11 @@
                             <tr>
                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                     <div
-                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                        style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                         {{ $cIncapable ? '✓' : '' }}
                                     </div>
                                 </td>
-                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 8pt;">
+                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                     is incapable of managing his/her affairs and I have been appointed by Court to manage his /
                                     her affairs
                                 </td>
@@ -1960,11 +1909,11 @@
                             <tr>
                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                     <div
-                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                        style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                         {{ $cDeceased ? '✓' : '' }}
                                     </div>
                                 </td>
-                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 8pt;">
+                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                     had passed away and I have been appointed as administrator of Data Subject's (account
                                     holder) estate
                                 </td>
@@ -1976,11 +1925,11 @@
                             <tr>
                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                     <div
-                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                        style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                         {{ $cAuth ? '✓' : '' }}
                                     </div>
                                 </td>
-                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 8pt;">
+                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                     authorised me in writing to make this data correction request
                                 </td>
                             </tr>
@@ -1991,11 +1940,11 @@
                             <tr>
                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                     <div
-                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                        style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                         {{ $cOther ? '✓' : '' }}
                                     </div>
                                 </td>
-                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 8pt;">
+                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                     other reason: (please specify): <span
                                         style="border-bottom: 1px dotted #000; min-width: 200px; display: inline-block; margin-left: 5px;">{{ $cOtherReason }}</span>
                                 </td>
@@ -2019,11 +1968,11 @@
                             <tr>
                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                     <div
-                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                        style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                         {{ $docNRIC ? '✓' : '' }}
                                     </div>
                                 </td>
-                                <td style="vertical-align: top; padding: 2px 0 1px 0; border: none; font-size: 8pt;">
+                                <td style="vertical-align: top; padding: 2px 0 1px 0; border: none; font-size: 6pt;">
                                     copy of my NRIC /MyKid/Birth certificate for minor account, Passport (original to be
                                     produced for inspection); and
                                 </td>
@@ -2035,11 +1984,11 @@
                             <tr>
                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                     <div
-                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                        style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                         {{ $docCourt ? '✓' : '' }}
                                     </div>
                                 </td>
-                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 8pt;">
+                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                     original of Court Order / Power of Attorney
                                 </td>
                             </tr>
@@ -2050,11 +1999,11 @@
                             <tr>
                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                     <div
-                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                        style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                         {{ $docAuth ? '✓' : '' }}
                                     </div>
                                 </td>
-                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 8pt;">
+                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                     original of authorisation letter from Data Subject (account holder)
                                 </td>
                             </tr>
@@ -2065,11 +2014,11 @@
                             <tr>
                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                     <div
-                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                        style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                         {{ $docOther ? '✓' : '' }}
                                     </div>
                                 </td>
-                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 8pt;">
+                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                     other reason (please specify): <span
                                         style="border-bottom: 1px dotted #000; min-width: 200px; display: inline-block; margin-left: 5px;">{{ $docOtherSpec }}</span>
                                 </td>
@@ -2148,14 +2097,12 @@
                         $deliveryCollectBranch = $getRawDAR('field_5_2_1');
                     @endphp
 
-                    <div style="border: 1px solid #000; padding: 4px; font-size: 7pt; margin-bottom: 2px;">
-                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">PART D: DESCRIPTION OF
-                            PERSONAL DATA REQUESTED</div>
+                    <div style="border: 1px solid #000; padding: 10px; font-size: 6pt; margin-bottom: 2px;">
+                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">PART D: DESCRIPTION OF PERSONAL DATA REQUESTED</div>
 
                         {{-- Section 1: Account Type --}}
                         <div style="margin-bottom: 3px;">
-                            <div style="font-weight: bold; margin-bottom: 2px;">1&nbsp;&nbsp;&nbsp;I would like to request for the
-                                personal data of the following account by indicating the relevant account number:</div>
+                            <div style="font-weight: bold; margin-bottom: 2px;">1. &nbsp;&nbsp;&nbsp;I would like to request for the personal data of the following account by indicating the relevant account number:</div>
 
                             <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; border: 1px solid #000;">
                                 <tr>
@@ -2167,49 +2114,41 @@
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin-bottom: 2px;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                                         {{ $accSavings ? '✓' : '' }}
                                                     </div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Savings Account</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Savings Account</td>
                                             </tr>
                                         </table>
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin-bottom: 2px;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                                         {{ $accFCy ? '✓' : '' }}
                                                     </div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    FCy Current Account</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">FCy Current Account</td>
                                             </tr>
                                         </table>
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin-bottom: 2px;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                                         {{ $accCredit ? '✓' : '' }}
                                                     </div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Credit Card Account</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Credit Card Account</td>
                                             </tr>
                                         </table>
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin-bottom: 2px;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                                         {{ $accArRahnu ? '✓' : '' }}
                                                     </div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Ar Rahnu Account</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Ar Rahnu Account</td>
                                             </tr>
                                         </table>
                                     </td>
@@ -2217,48 +2156,33 @@
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin-bottom: 2px;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $accCurrent ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $accCurrent ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Current Account</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Current Account</td>
                                             </tr>
                                         </table>
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin-bottom: 2px;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $accFixed ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $accFixed ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Fixed Term Account</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Fixed Term Account</td>
                                             </tr>
                                         </table>
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin-bottom: 2px;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $accFinancing ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $accFinancing ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Financing Account</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Financing Account</td>
                                             </tr>
                                         </table>
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin-bottom: 2px;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $accOthers ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $accOthers ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                                     Other products/services (please specify)
                                                     <div style="border-bottom: 1px solid #000; min-height: 14px; margin-top: 2px;">
                                                         {{ $accOthersSpec }}
@@ -2275,18 +2199,15 @@
                             </table>
 
                             <div style="font-size: 6pt; font-style: italic; margin-bottom: 4px;">
-                                <strong>Note:</strong> For the Requestor requesting access to multiple accounts with the branch,
-                                complete a separate form for each account.
+                                <strong>Note:</strong> For the Requestor requesting access to multiple accounts with the branch, complete a separate form for each account.
                             </div>
                         </div>
 
                         {{-- Section 2: Personal Data Types --}}
                         <div style="margin-bottom: 3px;">
-                            <div style="font-weight: bold; margin-bottom: 2px;">2&nbsp;&nbsp;&nbsp;Personal Data includes one or
-                                more of the following:</div>
+                            <div style="font-weight: bold; margin-bottom: 2px;">2. &nbsp;&nbsp;&nbsp;Personal Data includes one or more of the following:</div>
                             <div style="margin-bottom: 1px; margin-left: 20px;">Please tick [✓] the appropriate box.</div>
-                            <div style="margin-bottom: 1px; margin-left: 20px; font-weight: bold;">Specified Account Information
-                            </div>
+                            <div style="margin-bottom: 1px; margin-left: 20px; font-weight: bold;">Specified Account Information</div>
 
                             <table style="width: 100%; margin-left: 20px;">
                                 {{-- First two checkboxes span both columns --}}
@@ -2295,13 +2216,9 @@
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $dataMandatee ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $dataMandatee ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Mandatee, if applicable</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Mandatee, if applicable</td>
                                             </tr>
                                         </table>
                                     </td>
@@ -2311,16 +2228,9 @@
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $dataSignature ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $dataSignature ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Image of the Signature(s) of the account-holder(s) i.e. (specify the name)
-                                                    <span
-                                                        style="border-bottom: 1px dotted #000; min-width: 150px; display: inline-block; margin-left: 5px;">{{ $dataSignatureName }}</span>
-                                                </td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Image of the Signature(s) of the account-holder(s) i.e. (specify the name)<span style="border-bottom: 1px dotted #000; min-width: 150px; display: inline-block; margin-left: 5px;">{{ $dataSignatureName }}</span></td>
                                             </tr>
                                         </table>
                                     </td>
@@ -2331,75 +2241,49 @@
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $dataName ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $dataName ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Name</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Name</td>
                                             </tr>
                                         </table>
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $dataAddress ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $dataAddress ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Residence/Mailing* Address</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Residence/Mailing* Address</td>
                                             </tr>
                                         </table>
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $dataGender ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $dataGender ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Gender</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Gender</td>
                                             </tr>
                                         </table>
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $dataNationality ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $dataNationality ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Nationality</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Nationality</td>
                                             </tr>
                                         </table>
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $dataEmployer ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $dataEmployer ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Name of Employer</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Name of Employer</td>
                                             </tr>
                                         </table>
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $dataOthers ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $dataOthers ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Others, please specify: <span
-                                                        style="border-bottom: 1px dotted #000; min-width: 100px; display: inline-block;">{{ $dataOthersSpec }}</span>
-                                                </td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Others, please specify: <span style="border-bottom: 1px dotted #000; min-width: 100px; display: inline-block;">{{ $dataOthersSpec }}</span></td>
                                             </tr>
                                         </table>
                                     </td>
@@ -2407,61 +2291,41 @@
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $dataIC ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $dataIC ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    IC/Passport/Other Identification Documentation*</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">IC/Passport/Other Identification Documentation*</td>
                                             </tr>
                                         </table>
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $dataContact ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $dataContact ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Contact Details</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Contact Details</td>
                                             </tr>
                                         </table>
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $dataRace ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $dataRace ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Race</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Race</td>
                                             </tr>
                                         </table>
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $dataTaxRes ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $dataTaxRes ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Country of Tax Residence</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Country of Tax Residence</td>
                                             </tr>
                                         </table>
                                         <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                             <tr>
                                                 <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                                    <div
-                                                        style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                        {{ $dataConsent ? '✓' : '' }}
-                                                    </div>
+                                                    <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $dataConsent ? '✓' : '' }}</div>
                                                 </td>
-                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                                    Customer's Consent</td>
+                                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Customer's Consent</td>
                                             </tr>
                                         </table>
                                     </td>
@@ -2471,20 +2335,14 @@
 
                         {{-- Section 3: Request Type --}}
                         <div style="margin-bottom: 4px;">
-                            <div style="font-weight: bold; margin-bottom: 4px;">3&nbsp;&nbsp;&nbsp;Please:-</div>
+                            <div style="font-weight: bold; margin-bottom: 4px;">3. &nbsp;&nbsp;&nbsp;Please:-</div>
                             <div style="margin-left: 20px; margin-bottom: 3px;">
                                 <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                     <tr>
                                         <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                            <div
-                                                style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                {{ $confirmData ? '✓' : '' }}
-                                            </div>
+                                            <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $confirmData ? '✓' : '' }}</div>
                                         </td>
-                                        <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                            Confirm whether the personal data as specified under items 1 and/ or 2 of Part D is held
-                                            by the Bank; and I do not require a copy of the Personal Data.
-                                        </td>
+                                        <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Confirm whether the personal data as specified under items 1 and/ or 2 of Part D is held by the Bank; and I do not require a copy of the Personal Data.</td>
                                     </tr>
                                 </table>
                             </div>
@@ -2492,15 +2350,9 @@
                                 <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                     <tr>
                                         <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                            <div
-                                                style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                                {{ $supplyData ? '✓' : '' }}
-                                            </div>
+                                            <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $supplyData ? '✓' : '' }}</div>
                                         </td>
-                                        <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                            Supply me with a copy of the personal data for the account(s) maintained with the Bank
-                                            as specified under items 1 and/or 2 of Part D.
-                                        </td>
+                                        <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">Supply me with a copy of the personal data for the account(s) maintained with the Bank as specified under items 1 and/or 2 of Part D.</td>
                                     </tr>
                                 </table>
                             </div>
@@ -2508,7 +2360,7 @@
                     </div>
 
                     {{-- Part E: Method of Delivery --}}
-                    <div style="border: 1px solid #000; padding: 6px; font-size: 7pt; margin-bottom: 4px;">
+                    <div style="border: 1px solid #000; padding: 10px; font-size: 6pt; margin-bottom: 4px;">
                         <div style="font-weight: bold; text-decoration: underline; margin-bottom: 4px;">PART E : METHOD OF DELIVERY
                         </div>
                         <div style="margin-bottom: 4px;">The personal data requested :</div>
@@ -2517,12 +2369,9 @@
                             <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                 <tr>
                                     <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                        <div
-                                            style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                            {{ $deliveryMail ? '✓' : '' }}
-                                        </div>
+                                        <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $deliveryMail ? '✓' : '' }}</div>
                                     </td>
-                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">is to be
+                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">is to be
                                         mailed to my address stated above.</td>
                                 </tr>
                             </table>
@@ -2531,15 +2380,10 @@
                             <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                 <tr>
                                     <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
-                                        <div
-                                            style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
-                                            {{ $deliveryCollect ? '✓' : '' }}
-                                        </div>
+                                        <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">{{ $deliveryCollect ? '✓' : '' }}</div>
                                     </td>
-                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
-                                        will be collected by me personally from your office / branch at:
-                                        <span
-                                            style="border-bottom: 1px dotted #000; min-width: 200px; display: inline-block; margin-left: 5px;">{{ $deliveryCollectBranch }}</span>
+                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">will be collected by me personally from your office / branch at:
+                                        <span style="border-bottom: 1px dotted #000; min-width: 200px; display: inline-block; margin-left: 5px;">{{ $deliveryCollectBranch }}</span>
                                     </td>
                                 </tr>
                             </table>
@@ -2555,38 +2399,25 @@
                             $declSigPath = str_replace('storage/', '', $declSigPath);
                         }
                     @endphp
-                    <div style="border: 1px solid #000; padding: 4px; font-size: 7pt; margin-bottom: 2px;">
+                    <div style="border: 1px solid #000; padding: 10px; font-size: 6pt; margin-bottom: 2px;">
                         <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART F : DECLARATION</div>
-                        <div style="margin-bottom: 2px;">(by Data Subject (account holder) / Third Party Requestor)</div>
+                        <div style="margin-bottom: 10px;">(by Data Subject (account holder) / Third Party Requestor)</div>
 
-                        <div style="margin-bottom: 3px; line-height: 1.2; text-align: justify;">
-                            I, <span
-                                style="display: inline-block; min-width: 180px; border-bottom: 1px solid #000; text-align: center; font-weight: bold;">{{ $declName }}</span>
-                            (NRIC / Passport No: <span
-                                style="display: inline-block; min-width: 120px; border-bottom: 1px solid #000; text-align: center; font-weight: bold;">{{ $declIC }}</span>
-                            ) hereby certify that the information given in this form and all documents enclosed are true and
-                            accurate. I understand that it will be necessary for the Bank to verify my identity, and the Bank may
-                            contact me for more detailed information in order to locate the personal data requested.
-                        </div>
+                        <div style="margin-bottom: 10px; line-height: 1.2; text-align: justify;">I, <span style="display: inline-block; min-width: 180px; border-bottom: 1px dotted #000; text-align: center; font-weight: bold;">{{ $declName }}</span>(NRIC / Passport No: <span style="display: inline-block; min-width: 120px; border-bottom: 1px dotted #000; text-align: center; font-weight: bold;">{{ $declIC }}</span>) hereby certify that the information given in this form and all documents enclosed are true and accurate. I understand that it will be necessary for the Bank to verify my identity, and the Bank may contact me for more detailed information in order to locate the personal data requested.</div>
 
                         <div style="margin-top: 5px;">
                             <table style="width: 100%; border-collapse: collapse;">
                                 <tr>
                                     <td style="width: 60%; vertical-align: bottom; padding-bottom: 3px;">
-                                        <div
-                                            style="border-bottom: 1px dotted #000; display: inline-block; min-width: 200px; height: 25px; margin-bottom: 3px;">
+                                        <div style="border-bottom: 1px dotted #000; display: inline-block; min-width: 200px; height: 50px; margin-bottom: 3px;">
                                             @if($declSigPath)
-                                                <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature"
-                                                    style="max-height: 22px; max-width: 180px;">
+                                                <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature" style="max-height: 22px; max-width: 180px;">
                                             @endif
                                         </div>
-                                        <div style="font-size: 6pt;">(Signature of Data Subject (account holder) / Third Party
-                                            Requestor)</div>
+                                        <div style="font-size: 6pt;">(Signature of Data Subject (account holder) / Third Party Requestor)</div>
                                     </td>
                                     <td style="width: 40%; vertical-align: bottom; text-align: right; padding-bottom: 3px;">
-                                        <div>Date: <span
-                                                style="display: inline-block; min-width: 100px; border-bottom: 1px dotted #000; text-align: center;">{{ $submission->submitted_at ? $submission->submitted_at->format('d/m/Y') : date('d/m/Y') }}</span>
-                                        </div>
+                                        <div>Date: <span style="display: inline-block; min-width: 100px; border-bottom: 1px dotted #000; text-align: center;">{{ $submission->submitted_at ? $submission->submitted_at->format('d/m/Y') : date('d/m/Y') }}</span></div>
                                     </td>
                                 </tr>
                             </table>
@@ -2599,54 +2430,43 @@
                 @continue
 
             @elseif(stripos($sectionName, 'declaration') !== false && $submission->form->slug === 'dcr')
-                    @php
-                        $declName = collect($fields)->firstWhere('label', 'Full Name (as per NRIC)')['value'] ?? '';
-                        $declIC = collect($fields)->firstWhere('label', 'NRIC/Passport No.')['value'] ?? '';
-                        $declSigField = collect($fields)->firstWhere('label', 'Signature');
-                        $declSigPath = $declSigField ? ($declSigField['value'] ?? '') : '';
-                        if (is_string($declSigPath)) {
-                            $declSigPath = str_replace('storage/', '', $declSigPath);
-                        }
-                    @endphp
-                    <div style="border: 1px solid #000; padding: 3px; font-size: 7pt; background: #fff; margin-top: 3px;">
-                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART E : DECLARATION</div>
-                        <div style="margin-bottom: 2px;">(by Data Subject (account holder) / Third Party Requestor)</div>
+                @php
+                    $declName = collect($fields)->firstWhere('label', 'Full Name (as per NRIC)')['value'] ?? '';
+                    $declIC = collect($fields)->firstWhere('label', 'NRIC/Passport No.')['value'] ?? '';
+                    $declSigField = collect($fields)->firstWhere('label', 'Signature');
+                    $declSigPath = $declSigField ? ($declSigField['value'] ?? '') : '';
+                    if (is_string($declSigPath)) {
+                        $declSigPath = str_replace('storage/', '', $declSigPath);
+                    }
+                @endphp
+                <div style="border: 1px solid #000; padding: 10px; font-size: 6pt; background: #fff; margin-top: 3px;">
+                    <div style="font-weight: bold; text-decoration: underline; margin-bottom: 5px;">PART E : DECLARATION</div>
+                    <div style="margin-bottom: 5px;">(by Data Subject (account holder) / Third Party Requestor)</div>
 
-                        <div style="margin-bottom: 3px; line-height: 1.2; text-align: justify;">
-                            I, <span
-                                style="display: inline-block; min-width: 180px; border-bottom: 1px solid #000; text-align: center; font-weight: bold;">{{ $declName }}</span>
-                            (NRIC / Passport No: <span
-                                style="display: inline-block; min-width: 120px; border-bottom: 1px solid #000; text-align: center; font-weight: bold;">{{ $declIC }}</span>
-                            ) hereby certify that the information given in this form and all documents enclosed are true and
-                            accurate. I understand that it will be necessary for the Bank to verify my identity , and the Bank may
-                            contact me for more detailed information in order to locate the personal data requested.
-                        </div>
-
-                        <div style="margin-top: 5px;">
-                            <table style="width: 100%; border-collapse: collapse;">
-                                <tr>
-                                    <td style="width: 60%; vertical-align: bottom; padding-bottom: 3px;">
-                                        <div
-                                            style="border-bottom: 1px dotted #000; display: inline-block; min-width: 200px; height: 25px; margin-bottom: 3px;">
-                                            @if($declSigPath)
-                                                <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature"
-                                                    style="max-height: 22px; max-width: 180px;">
-                                            @endif
-                                        </div>
-                                        <div style="font-size: 6pt;">(Signature of Data Subject (account holder) / Third Party
-                                            Requestor)</div>
-                                    </td>
-                                    <td style="width: 40%; vertical-align: bottom; text-align: right; padding-bottom: 3px;">
-                                        <div>Date: <span
-                                                style="display: inline-block; min-width: 100px; border-bottom: 1px dotted #000; text-align: center;">{{ $submission->submitted_at ? $submission->submitted_at->format('d/m/Y') : date('d/m/Y') }}</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
+                    <div style="margin-bottom: 3px; line-height: 1.2; text-align: justify;">
+                        I, <span style="display: inline-block; min-width: 180px; border-bottom: 1px dotted #000; text-align: center; font-weight: bold;">{{ $declName }}</span> (NRIC / Passport No: <span style="display: inline-block; min-width: 120px; border-bottom: 1px dotted #000; text-align: center; font-weight: bold;">{{ $declIC }}</span>) hereby certify that the information given in this form and all documents enclosed are true and accurate. I understand that it will be necessary for the Bank to verify my identity , and the Bank may contact me for more detailed information in order to locate the personal data requested.
                     </div>
 
-                @elseif(stripos($sectionName, 'personal information') !== false){{-- Split into Part A, B, C --}}
+                    <div style="margin-top: 5px;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="width: 60%; vertical-align: bottom; padding-bottom: 3px;">
+                                    <div style="border-bottom: 1px dotted #000; display: inline-block; min-width: 200px; height: 50px; margin-bottom: 3px;">
+                                        @if($declSigPath)
+                                            <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature" style="max-height: 22px; max-width: 180px;">
+                                        @endif
+                                    </div>
+                                    <div style="font-size: 6pt;">(Signature of Data Subject (account holder) / Third Party Requestor)</div>
+                                </td>
+                                <td style="width: 40%; vertical-align: bottom; text-align: right; padding-bottom: 3px;">
+                                    <div>Date: <span style="display: inline-block; min-width: 100px; border-bottom: 1px dotted #000; text-align: center;">{{ $submission->submitted_at ? $submission->submitted_at->format('d/m/Y') : date('d/m/Y') }}</span></div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+            @elseif(stripos($sectionName, 'personal information') !== false){{-- Split into Part A, B, C --}}
                 @php
                     $partAFields = [
                         'I am a customer / former customer and I would like to correct my personal data',
@@ -2680,11 +2500,11 @@
 
                 @foreach($parts as $partTitle => $targetLabels)
                     <div style="margin-bottom: 5px; page-break-inside: avoid;">
-                        <table style="width: 100%; border-collapse: collapse; font-size: 7pt; border: 1px solid #d1d5db;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 6pt; border: 1px solid #d1d5db;">
                             {{-- Render Part Header --}}
                             <tr>
                                 <td
-                                    style="border: 1px solid #d1d5db; padding: 4px 6px; background: #fff; font-weight: bold; text-decoration: underline; border-bottom: 1px solid #d1d5db; font-size: 9pt;">
+                                    style="border: 1px solid #d1d5db; padding: 4px 6px; background: #fff; font-weight: bold; text-decoration: underline; border-bottom: 1px solid #d1d5db; font-size: 7pt;">
                                     {{ $partTitle }}
                                 </td>
                             </tr>
@@ -2714,11 +2534,11 @@
                                                     <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                                         @if($isChecked)
                                                             <div
-                                                                style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 12px; font-size: 10px; color: #000;">
+                                                                style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                                                 ✓</div>
                                                         @else
                                                             <div
-                                                                style="display: inline-block; width: 14px; height: 14px; border: 1px solid #000; background-color: #fff;">
+                                                                style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; background-color: #fff;">
                                                                 &nbsp;</div>
                                                         @endif
                                                     </td>
@@ -2814,7 +2634,7 @@
         @if($submission->form->slug === 'dcr')
             {{-- Updated Black & White Layout for DCR --}}
             <div class="form-section"
-                style="border: 1px solid #000; padding: 4px; margin-top: 3px; font-size: 7pt; background: #fff;">
+                style="border: 1px solid #000; padding: 4px; margin-top: 3px; font-size: 6pt; background: #fff;">
                 <div style="font-weight: bold; text-decoration: underline; margin-bottom: 4px;">FOR BMMB OFFICE USE ONLY</div>
 
                 {{-- Part F: Acknowledgment Receipt --}}
