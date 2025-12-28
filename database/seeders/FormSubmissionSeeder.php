@@ -288,6 +288,17 @@ class FormSubmissionSeeder extends Seeder
                     return fake()->numerify('##########');
                 }
 
+                // SRF Header Fields
+                if ($name === 'header_1' || $name === 'header_2') { // Customer Name / Account Holder
+                    return fake()->name();
+                }
+                if ($name === 'header_3') { // ID No
+                    return fake()->numerify('######-##-####');
+                }
+                if ($name === 'header_4') { // Account No
+                    return fake()->numerify('##########');
+                }
+
                 if ($field->field_type === 'textarea') {
                     return fake()->paragraph();
                 }
@@ -333,6 +344,7 @@ class FormSubmissionSeeder extends Seeder
                 if (
                     in_array($name, [
                         // DCR/DAR Part A checkboxes
+                        // DCR/DAR Part A checkboxes
                         'field_2_1', // Customer
                         'field_2_2', // Third Party
                         // DCR/DAR Part C checkboxes
@@ -373,10 +385,73 @@ class FormSubmissionSeeder extends Seeder
                         // DAR Part E - Method of Delivery checkboxes
                         'field_5_1', // Mail to address
                         'field_5_2', // Collect personally
+                        // SRF Part A
+                        'field_1',
+                        'field_2',
+                        'field_3',
+                        'field_4',
+                        'field_5',
+                        'field_6',
+                        'field_7',
+                        'field_8',
+                        'field_9',
+                        'field_10',
+                        'field_11',
+                        'field_12',
+                        'field_13',
+                        'field_8_1',
+                        'field_8_2',
+                        'field_10_1',
+                        'field_10_2',
+                        // SRF Part B
+                        'content_1',
+                        'content_2',
+                        // SRF Part C
+                        'section_c_8',
+                        'section_c_8_1',
+                        'section_c_8_2',
+                        'section_c_8_3',
+                        'section_c_8_4',
+                        // SRF Part D
+                        'section_d_1'
                     ])
                 ) {
                     return ['Yes'];
                 }
+
+                if ($name === 'field_1_1' || $name === 'field_2_1' || $name === 'field_3_1')
+                    return fake()->numerify('##########'); // Account/Cheque No
+                if ($name === 'field_1_2' || $name === 'field_3_2')
+                    return fake()->name(); // Name found in Part A
+                if ($name === 'field_1_3' || $name === 'field_2_2')
+                    return fake()->numerify('RM ####.##'); // Amount
+                if ($name === 'field_2_3' || $name === 'field_3_3')
+                    return fake()->sentence(); // Reason
+
+                // Added SRF Sub-fields
+                if ($name === 'field_4_1')
+                    return fake()->monthName() . ' ' . date('Y'); // Statement Month
+                if ($name === 'field_8_3' || $name === 'field_10_3')
+                    return 'Pusat Pungutan Zakat (PPZ)'; // Zakat Agent
+                if ($name === 'field_12_1')
+                    return fake()->numerify('####.##'); // Physical Delivery Amount
+                if ($name === 'field_13_1')
+                    return 'Specific instructions for others option'; // Others Text
+
+                if ($name === 'section_c_1')
+                    return fake()->name(); // Bene Name
+                if ($name === 'section_c_2')
+                    return fake()->numerify('######-##-####'); // IC
+                if ($name === 'section_c_3')
+                    return 'Sibling'; // Relation
+                if ($name === 'section_c_4')
+                    return fake()->address(); // Address
+                if ($name === 'section_c_5')
+                    return fake()->phoneNumber(); // Mobile
+                if ($name === 'section_c_6')
+                    return fake()->email(); // Email
+                if ($name === 'section_c_7')
+                    return 'Authorised Representative'; // Purpose
 
                 if ($field->field_options && is_array($field->field_options)) {
 
