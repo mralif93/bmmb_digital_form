@@ -607,7 +607,7 @@
                                             <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
                                                 <tr><td style="width: 120px; padding-right: 3px;">Cheque no.:</td><td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $sChequeNo }}</td></tr>
                                                 <tr><td style="width: 120px; padding-right: 3px;">Under the name/company of:</td><td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $sName }}</td></tr>
-                                                <tr><td style="width: 120px; padding-right: 3px;">Reason:</td><td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $sReason }}</td></tr>
+                                                <tr><td style="width: 120px; padding-right: 3px; vertical-align: top;">Reason:</td><td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $sReason }}</td></tr>
                                             </table>
                                         </td>
                                     </tr>
@@ -635,7 +635,7 @@
                                             <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
                                                 <tr><td style="width: 120px; padding-right: 3px;">Cheque no.:</td><td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $cChequeNo }}</td></tr>
                                                 <tr><td style="width: 120px; padding-right: 3px;">Amount:</td><td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $cAmount }}</td></tr>
-                                                <tr><td style="width: 120px; padding-right: 3px;">Reason:</td><td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $cReason }}</td></tr>
+                                                <tr><td style="width: 120px; padding-right: 3px; vertical-align: top;">Reason:</td><td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $cReason }}</td></tr>
                                             </table>
                                         </td>
                                     </tr>
@@ -776,7 +776,7 @@
 
                                     <div style="margin-top: 2px; font-size: 6pt;">
                                         on behalf of me/us and hereby appoint BMMB as my/our agent under a Wakalah arrangement by transferring the zakat payable to
-                                        <span style="border-bottom: 1px dotted #000; font-weight: bold; display: inline-block; min-width: 120px;">{{ $zakAgent }}</span>
+                                        <span style="border-bottom: 1px dotted #000; font-weight: bold; display: inline-block; min-width: 120px; text-align: center;">{{ $zakAgent }}</span>
                                         (name of zakat for each state)
                                     </div>
 
@@ -820,7 +820,7 @@
 
                     {{-- 10. Zakat Gold --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cZakGold = $isChecked('field_10');
+                        $cZakGold = $isChecked('field_10');
                         $zGoldMYR = $isChecked('field_10_1');
                         $zGoldGram = $isChecked('field_10_2');
                         $zGoldAgent = $getField('field_10_3');
@@ -870,7 +870,7 @@
 
                                     <div style="margin-top: 2px; font-size: 6pt;">
                                         on behalf of me/us and hereby appoint BMMB as my/our agent under a Wakalah arrangement by transferring the zakat payable to
-                                        <span style="border-bottom: 1px dotted #000; font-weight: bold; display: inline-block; min-width: 120px;">{{ $zGoldAgent }}</span>
+                                        <span style="border-bottom: 1px dotted #000; font-weight: bold; display: inline-block; min-width: 120px; text-align: center;">{{ $zGoldAgent }}</span>
                                         (name of zakat for each state)
                                     </div>
 
