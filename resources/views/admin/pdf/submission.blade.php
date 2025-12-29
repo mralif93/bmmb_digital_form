@@ -331,7 +331,7 @@
         <div class="important-notes" style="margin-top: 2px; margin-bottom: 3px; border: 1px solid #000; padding: 2px; font-size: 6pt; color: #000; padding: 10px;">
             <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px; font-size: 7pt; color: #000;">Important Notes:</div>
             <ol style="margin: 0; padding-left: 15px; line-height: 1.3;">
-                <li style="margin-bottom: 1px;">Please complete the Data Correction Request Form and ensure that your personal data provided herein is genuine and accurate.</li>
+                <li style="margin-bottom: 1px;">Please complete the {{ $submission->form->slug === 'dcr' ? 'Data Correction Request Form' : 'Data Access Request Form' }} and ensure that your personal data provided herein is genuine and accurate.</li>
                 <li style="margin-bottom: 1px;">Your request may not be processed if the information/document provided is incomplete.</li>
                 <li style="margin-bottom: 1px;">Third Party Requestor is to be present at the branch / office to submit this form and for verification of information and documents required.</li>
                 <li style="margin-bottom: 1px;">The supporting document(s) required in this form must be provided. We will respond within 21 days of receipt of the completed form with accompanying documents.</li>
@@ -343,7 +343,7 @@
                             <tr>
                                 <td style="width: 60px; vertical-align: top; font-weight: bold; font-style: italic; border: none; padding: 1px 0;">Address</td>
                                 <td style="width: 10px; vertical-align: top; font-style: italic; border: none; padding: 1px 0; text-align: center;">:</td>
-                                <td style="vertical-align: top; font-style: italic; border: none; padding: 1px 0;">19th Floor, Menara Bumiputra, Jalan Melaka, 51000 Kuala Lumpur</td>
+                                <td style="vertical-align: top; font-style: italic; border: none; padding: 1px 0;">19th Floor, Menara Bumiputra, Jalan Melaka, 50100 Kuala Lumpur</td>
                             </tr>
                             <tr>
                                 <td style="width: 60px; vertical-align: top; font-weight: bold; font-style: italic; border: none; padding: 1px 0;">Telephone</td>
@@ -385,7 +385,7 @@
                     stripos($sectionName, 'signature') !== false
                 )
             )
-                                                                                                @continue
+                                    @continue
         @endif
 
         {{-- Skip Remittance Details, Declaration, and Signature for SRF --}}
@@ -404,7 +404,7 @@
                     stripos($sectionName, 'confirmation') !== false
                 )
             )
-                    @continue
+                                    @continue
         @endif
 
 
@@ -418,9 +418,9 @@
                     && !(stripos($sectionName, 'declaration') !== false && $submission->form->slug === 'dar')
                     && !($submission->form->slug === 'srf' && (strtolower($sectionName) === 'account type' || strtolower($sectionName) === 'service request details' || stripos($sectionName, 'consent') !== false || stripos($sectionName, 'agreements') !== false || strtolower($sectionName) === 'customer information'))
                 )
-                                            <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
-                                                {{ strtoupper($sectionName) }}
-                                            </div>
+                                        <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
+                                            {{ strtoupper($sectionName) }}
+                                        </div>
             @endif
 
             {{-- Special 3-column layout for Data Correction Details --}}
@@ -570,7 +570,7 @@
                     $cQard = $isChecked('field_6');
                 @endphp
 
-                <div style="border: 1px solid #000; font-size: 7pt; margin-bottom: 3px;">
+                <div style="border: 1px solid #000; font-size: 7pt;">
                     <div style="background-color: #002b80; color: white; padding: 3px 5px; font-size: 7pt; font-weight: bold;">
                         A. Savings / Current / Investment Account-i Instruction
                     </div>
@@ -713,6 +713,10 @@
                                         <strong>Customer:</strong><br>
                                         I/We hereby authorize Bank Muamalat Malaysia Berhad (BMMB) to utilize all my funds in my Qard account and hereby appoint BMMB as my/our agent under a Wakalah arrangement to do and execute all acts to purchase Shariah compliant commodities at the Purchase Price from time to time. I/We also hereby to appoint the Bank to be my/our agent restricted only to conclude the sale of the commodity and to enter into, on my/our behalf, the Sale Transaction with the Bank at the Murabahah Sale Price, pursuant to which my/our funds shall be converted into a Tawarruq account and be governed by the terms and conditions of the Tawarruq account.
                                     </div>
+                                    <div style="font-size: 6pt; margin-top: 1px; text-align: justify;">
+                                        <strong>Bank:</strong><br>
+                                        We, hereby agree to accept the appointment as the agent as stipulated in the offer above.We will,in performing our obligations in relation to the transactions,protect theinterest of the Customer and act in good faith.Your funds in a Qard accountshall now be transferred into a Tawarruq account and shall hereinafter be governed by the terms and conditions of the Tawarruq account.
+                                    </div>
                                 </td>
                             </tr>
                         </table>
@@ -748,7 +752,7 @@
 
                     {{-- 8. Zakat Savings --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cZak = $isChecked('field_8');
+                                                                                                        $cZak = $isChecked('field_8');
                         $zakSav = $isChecked('field_8_1');
                         $zakCur = $isChecked('field_8_2');
                         $zakAgent = $getField('field_8_3');
@@ -806,20 +810,22 @@
                     </div>
 
                     {{-- Footer Notices for Page 1 --}}
-                    <div style="margin-top: 10px; margin-left: -3px; margin-right: -3px; margin-bottom: -3px; border: 1px solid #000; border-top: 1px solid #000; padding: 5px; font-size: 6pt;">
-                        <div style="padding-bottom: 5px; margin-left: -5px; margin-right: -5px; padding-left: 5px; padding-right: 5px; border-bottom: 1px solid #000; margin-bottom: 5px;">
+                    <div style="border: 1px solid #000; font-size: 5pt; margin: -4px; margin-top: 5px;">
+                        <div style="border-bottom: 1px solid #000; padding: 5px;">
                             <em>(Applicable for SURIA Investment Account-i Mudarabah)</em><br>
                             <strong>THE RETURNS ON THE SURIA INVESTMENT ACCOUNT WILL BE AFFECTED BY THE PERFORMANCE OF THE UNDERLYING ASSETS. THE PRINCIPAL AND RETURNS ARE NOT GUARANTEED AND INVESTMENT ACCOUNT HOLDER RISKS EARNING NO RETURNS AT ALL. SURIA ACCOUNT IS NOT PROTECTED BY PIDM.</strong>
                         </div>
-                        <div>
+                        <div style="padding: 5px;">
                             <em>(Applicable for Savings Account-i / Current Account-i (Tawarruq/Qard))</em><br>
                             <strong>PROTECTED BY PIDM UP TO RM250,000 FOR EACH DEPOSITOR.</strong>
                         </div>
                     </div>
 
                     {{-- 9. Cancel Zakat Savings - PAGE BREAK HERE --}}
-                    @php $cCancelZak = $isChecked('field_9'); @endphp
-                    <div style="margin-top: 2px; margin-left: -3px; margin-right: -3px; padding-top: 5px; padding-left: 4px; padding-right: 4px; border-top: 1px solid #000; page-break-before: always;">
+                    @php
+                        $cCancelZak = $isChecked('field_9');
+                    @endphp
+                    <div style="margin-left: -4px; margin-right: -4px; padding-top: 3px; padding-left: 5px; padding-right: 4px; border-top: 1px solid #000; page-break-before: always;">
                         <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
                             <tr>
                                 <td style="width: 18px; vertical-align: top;">
@@ -835,13 +841,13 @@
                     </div>
 
                     {{-- 10. Zakat Gold --}}
-                    @php 
-                                                                                                                                        $cZakGold = $isChecked('field_10');
+                    @php
+                        $cZakGold = $isChecked('field_10');
                         $zGoldMYR = $isChecked('field_10_1');
                         $zGoldGram = $isChecked('field_10_2');
                         $zGoldAgent = $getField('field_10_3');
                     @endphp
-                    <div style="margin-top: 2px;">
+                    <div style="margin-top: 2px; padding-left: 1px;">
                         <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
                             <tr>
                                 <td style="width: 18px; vertical-align: top;">
@@ -924,7 +930,7 @@
 
                     {{-- 12. Physical Delivery --}}
                     @php 
-                                                                                                                                        $cPhys = $isChecked('field_12');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cPhys = $isChecked('field_12');
                         $physRM = $getField('field_12_1');    
                     @endphp
                     <div style="margin-top: 2px;">
@@ -947,7 +953,7 @@
 
                     {{-- 13. Others --}}
                     @php 
-                                                                                                                                        $cOthers = $isChecked('field_13');
+                                                                                                                                                                                                                                                                                        $cOthers = $isChecked('field_13');
                         $othersText = $getField('field_13_1');
                     @endphp
                     <div style="margin-top: 2px;">
@@ -964,7 +970,6 @@
                                 </td>
                             </tr>
                         </table>
-                    </div>
                     </div>
                 </div>
 
@@ -997,17 +1002,17 @@
                     @endphp
 
                     {{-- Part A: About Yourself --}}
-                    <div style="border: 1px solid #000; padding: 10px; margin-bottom: 4px; font-size: 6pt;">
-                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">PART A : ABOUT YOURSELF</div>
+                    <div style="border: 1px solid #000; padding: 10px; margin-bottom: 3px; font-size: 6pt;">
+                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART A : ABOUT YOURSELF</div>
                         <table style="width: 100%; border-collapse: collapse; border: none; font-size: 6pt;">
                             <tr>
-                                <td style="width: 20px; vertical-align: middle; padding: 1px 0; border: none;">
+                                <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
                                     <div
                                         style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; color: #000;">
                                         {{ $isCustomer ? '✓' : '' }}
                                     </div>
                                 </td>
-                                <td style="vertical-align: middle; padding: 1px 0; border: none;">
+                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none;">
                                     I am a customer / former customer and I would like to correct my personal data
                                 </td>
                             </tr>
@@ -1018,7 +1023,7 @@
                                         {{ $isThirdParty ? '✓' : '' }}
                                     </div>
                                 </td>
-                                <td style="vertical-align: top; padding: 1px 0; border: none;">
+                                <td style="vertical-align: top; padding: 3px 0 1px 0; border: none;">
                                     I am a Third Party Requestor [i.e. I am making this personal data correction request for another
                                     person.]
                                 </td>
@@ -1027,8 +1032,8 @@
                     </div>
 
                     {{-- Part B: Particulars of Data Subject --}}
-                    <div style="border: 1px solid #000; padding: 10px; margin-bottom: 4px; font-size: 6pt;">
-                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 6px;">PART B : PARTICULARS OF THE DATA SUBJECT (ACCOUNT HOLDER)</div>
+                    <div style="border: 1px solid #000; padding: 10px; margin-bottom: 3px; font-size: 6pt;">
+                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">PART B : PARTICULARS OF THE DATA SUBJECT (ACCOUNT HOLDER)</div>
 
                         <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
                             {{-- R1: Full Name --}}
@@ -1043,8 +1048,8 @@
                             <tr>
                                 <td colspan="3" style="padding-bottom: 5px;">
                                     <div style="margin-bottom: 2px;">NRIC/Passport Number:</div>
-                                    <div style="border-bottom: 1px dotted #000; min-height: 16px; font-weight: bold;">{{ $bIC }}
-                                    </div>
+                                    <div style="border-bottom: 1px dotted #000; min-height: 16px; font-weight: bold;">{{ $bIC }}</div>
+                                    <div style="text-align: right; font-size: 5pt;">(Copy to be attached)</div>
                                 </td>
                             </tr>
                             {{-- R3: Address | Postcode --}}
@@ -1087,9 +1092,9 @@
 
                     {{-- Part C: Particulars of Third Party Requestor --}}
                     <div
-                        style="border: 1px solid #000; padding: 10px; margin-bottom: 4px; font-size: 6pt; page-break-inside: avoid;">
-                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 3px;">PART C : PARTICULARS OF THIRD PARTY REQUESTOR</div>
-                        <div style="font-style: italic; font-size: 6pt; margin-bottom: 6px;">[ to be filled if request is made by a person other than Data Subject (account holder) ]</div>
+                        style="border: 1px solid #000; padding: 10px; margin-bottom: 2px; font-size: 6pt; page-break-inside: avoid;">
+                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">PART C : PARTICULARS OF THIRD PARTY REQUESTOR</div>
+                        <div style="font-style: italic; font-size: 6pt; margin-bottom: 3px;">[ to be filled if request is made by a person other than Data Subject (account holder) ]</div>
 
                         <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
                             {{-- R1: Full Name --}}
@@ -1104,6 +1109,7 @@
                                 <td colspan="3" style="padding-bottom: 4px;">
                                     <div style="margin-bottom: 1px;">NRIC/Passport Number:</div>
                                     <div style="border-bottom: 1px dotted #000; min-height: 14px; font-weight: bold;"></div>
+                                    <div style="text-align: right; font-size: 5pt;">(Copy to be attached)</div>
                                 </td>
                             </tr>
                             {{-- R3: Address | Postcode --}}
@@ -1150,7 +1156,7 @@
                             $cOtherReason = $getField('field_3_12_1');
                         @endphp
 
-                        <div style="margin-bottom: 2px;">
+                        <div style="margin-bottom: 1px;">
                             <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
                                 <tr>
                                     <td style="width: 20px; vertical-align: top; padding: 1px 0; border: none;">
@@ -1159,7 +1165,7 @@
                                             {{ $cMinor ? '✓' : '' }}
                                         </div>
                                     </td>
-                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
+                                    <td style="vertical-align: top; padding: 2px 0 1px 0; border: none; font-size: 6pt;">
                                         is a minor and I am the parent / legal guardian / parental responsibility over the Data
                                         Subject (account holder)
                                     </td>
@@ -1175,7 +1181,7 @@
                                             {{ $cIncapable ? '✓' : '' }}
                                         </div>
                                     </td>
-                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
+                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                         is incapable of managing his/her affairs and I have been appointed by Court to manage his /
                                         her affairs
                                     </td>
@@ -1191,7 +1197,7 @@
                                             {{ $cDeceased ? '✓' : '' }}
                                         </div>
                                     </td>
-                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 7pt;">
+                                    <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
                                         had passed away and I have been appointed as administrator of Data Subject's (account
                                         holder) estate
                                     </td>
@@ -1542,8 +1548,8 @@
                         <tr>
                             <td colspan="3" style="padding-bottom: 5px;">
                                 <div style="margin-bottom: 2px;">NRIC/Passport Number:</div>
-                                <div style="border-bottom: 1px dotted #000; min-height: 16px; font-weight: bold;">{{ $bIC }}
-                                </div>
+                                <div style="border-bottom: 1px dotted #000; min-height: 16px; font-weight: bold;">{{ $bIC }}</div>
+                                <div style="text-align: right; font-size: 5pt;">(Copy to be attached)</div>
                             </td>
                         </tr>
                         {{-- R3: Address | Postcode --}}
@@ -1601,6 +1607,7 @@
                             <td colspan="3" style="padding-bottom: 2px;">
                                 <div style="margin-bottom: 1px;">NRIC/Passport Number:</div>
                                 <div style="border-bottom: 1px dotted #000; min-height: 12px; font-weight: bold;"></div>
+                                <div style="text-align: right; font-size: 5pt;">(Copy to be attached)</div>
                             </td>
                         </tr>
                         {{-- R3: Address | Postcode --}}
@@ -1633,7 +1640,7 @@
                         </tr>
                     </table>
 
-                    <div style="margin-bottom: 2px; margin-top: 5px;">I am making this request for the Access of personal data of Data Subject (account holder) because of Data Subject (account holder) :</div>
+                    <div style="margin-bottom: 2px; margin-top: 5px;">I am making this request for the Access of personal data of Data Subject (account holder) because Data Subject (account holder):</div>
 
                     {{-- Part C Checkboxes --}}
                     @php
@@ -1700,7 +1707,7 @@
                                     </div>
                                 </td>
                                 <td style="vertical-align: top; padding: 3px 0 1px 0; border: none; font-size: 6pt;">
-                                    authorised me in writing to make this data correction request
+                                    authorised me in writing to make this data Access request
                                 </td>
                             </tr>
                         </table>
@@ -2445,7 +2452,7 @@
         @endphp
 
         {{-- PART B: Update PDPA Consent --}}
-        <div style="border: 1px solid #000; font-size: 6pt; margin-bottom: 2px;">
+        <div style="border: 1px solid #000; border-top: none; font-size: 6pt;">
             <div style="background-color: #002b80; color: white; padding: 3px 5px; font-size: 7pt; font-weight: bold;">B. Update PDPA Consent</div>
             <div style="padding: 5px;">
                 <div style="margin-bottom: 5px;">
@@ -2470,9 +2477,9 @@
         </div>
 
         {{-- PART C: Third Party Requester --}}
-        <div style="border: 1px solid #000; margin-bottom: 2px;">
+        <div style="border: 1px solid #000; border-top: none;">
             <div style="background-color: #002b80; color: white; padding: 3px 5px; font-size: 7pt; font-weight: bold;">C. Third Party Requester</div>
-            <div style="background-color: #002b80; color: white; padding: 2px 5px; font-size: 6pt;">(Permitted disclosures - Item 2 Schedule 11 (subsection 146 (1)) Islamic Financial Services Act 2013</div>
+            <div style="background-color: #002b80; color: white; padding: 2px 5px; font-size: 5pt;">(Permitted disclosures - Item 2 Schedule 11 (subsection 146 (1)) Islamic Financial Services Act 2013</div>
             <div style="padding: 5px; font-size: 6pt;">
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr>
@@ -2520,23 +2527,29 @@
                             <td>
                                 <table style="width: 100%; border-collapse: collapse;">
                                     <tr>
-                                        <td style="width: 50%; padding: 2px 0;">
-                                            <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; vertical-align: middle;">{{ $tpDeath ? '✓' : '' }}</div>
-                                            Death certificate
-                                        </td>
-                                        <td style="width: 50%; padding: 2px 0;">
-                                            <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; vertical-align: middle;">{{ $tpBirth ? '✓' : '' }}</div>
-                                            Birth Certificate
-                                        </td>
-                                    </tr>
-                                    <tr>
                                         <td style="padding: 2px 0;">
-                                            <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; vertical-align: middle;">{{ $tpMarriage ? '✓' : '' }}</div>
-                                            Marriage certificate
+                                            <table style="border-collapse: collapse;"><tr>
+                                                <td style="vertical-align: middle; padding-right: 3px;"><div style="width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px;">{{ $tpDeath ? '✓' : '' }}</div></td>
+                                                <td style="vertical-align: middle;">Death certificate</td>
+                                            </tr></table>
                                         </td>
                                         <td style="padding: 2px 0;">
-                                            <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; vertical-align: middle;">{{ $tpOthers ? '✓' : '' }}</div>
-                                            Others: <span style="border-bottom: 1px dotted #000; display: inline-block; min-width: 100px;">{{ $tpOthersText }}</span>
+                                            <table style="border-collapse: collapse;"><tr>
+                                                <td style="vertical-align: middle; padding-right: 3px;"><div style="width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px;">{{ $tpBirth ? '✓' : '' }}</div></td>
+                                                <td style="vertical-align: middle;">Birth Certificate</td>
+                                            </tr></table>
+                                        </td>
+                                        <td style="padding: 2px 0;">
+                                            <table style="border-collapse: collapse;"><tr>
+                                                <td style="vertical-align: middle; padding-right: 3px;"><div style="width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px;">{{ $tpMarriage ? '✓' : '' }}</div></td>
+                                                <td style="vertical-align: middle;">Marriage certificate</td>
+                                            </tr></table>
+                                        </td>
+                                        <td style="padding: 2px 0;">
+                                            <table style="border-collapse: collapse;"><tr>
+                                                <td style="vertical-align: middle; padding-right: 3px;"><div style="width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px;">{{ $tpOthers ? '✓' : '' }}</div></td>
+                                                <td style="vertical-align: bottom;">Others: <span style="border-bottom: 1px dotted #000; display: inline-block; min-width: 100px;">{{ $tpOthersText }}</span></td>
+                                            </tr></table>
                                         </td>
                                     </tr>
                                 </table>
@@ -2587,7 +2600,7 @@
                                     <div style="margin-bottom: 2px; border-bottom: 1px dotted #000;"></div>
                                     <div style="margin-bottom: 5px;">Date:</div>
 
-                                    <div style="margin-bottom: 35px; margin-top: 10px;">Verified by (Signature & Name):</div>
+                                    <div style="margin-bottom: 20px; margin-top: 10px;">Verified by (Signature & Name):</div>
                                     <div style="margin-bottom: 2px; border-bottom: 1px dotted #000;"></div>
                                     <div>Date:</div>
                                 </div>
@@ -2614,8 +2627,8 @@
                         $partVerLabel = $isDAR ? 'PART H' : 'PART G';
                     @endphp
 
-                    <div style="border: 1px solid #000;border-top: none; padding: 10px; font-size: 6pt;">
-                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 5px; font-size: 7pt;">FOR BMMB OFFICE USE ONLY</div>
+                    <div style="border: 1px solid #000;border-top: none; padding: 5px; font-size: 5pt;">
+                        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 5px; font-size: 6pt;">FOR BMMB OFFICE USE ONLY</div>
 
                         {{-- Acknowledgment Receipt --}}
                         @if($submission->acknowledgment_received_by)
@@ -2662,8 +2675,8 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style="padding-top: 15px; vertical-align: bottom; white-space: nowrap;">Official Rubber Stamp:</td>
-                                        <td colspan="3" style="padding-top: 15px; vertical-align: bottom;">
+                                        <td style="padding-top: 5px; vertical-align: bottom; white-space: nowrap;">Official Rubber Stamp:</td>
+                                        <td colspan="3" style="padding-top: 10px; vertical-align: bottom;">
                                             <div style="border-bottom: 1px dotted #000; width: 100%; min-height: 14px;">
                                                 {{ $submission->acknowledgment_stamp }}
                                             </div>
@@ -2674,9 +2687,9 @@
                         @endif
                     </div>
 
-                    <div style="border: 1px solid #000; padding: 10px; border-top: none; font-size: 6pt; margin-bottom: 4px;">
-                        {{-- Verification --}}
-                        @if($submission->verification_verified_by)
+                     {{-- Verification --}}
+                    @if($submission->verification_verified_by)
+                        <div style="border: 1px solid #000; padding: 5px; border-top: none; font-size: 6pt;">
                             <div style="margin-bottom: 5px;">
                                 <div style="font-weight: bold; margin-bottom: 5px; text-transform: uppercase; text-decoration: underline;">{{ $partVerLabel }} : VERIFICATION</div>
                                 <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
@@ -2715,8 +2728,8 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style="padding-top: 15px; vertical-align: bottom; white-space: nowrap;">Official Rubber Stamp:</td>
-                                        <td colspan="3" style="padding-top: 15px; vertical-align: bottom;">
+                                        <td style="padding-top: 5px; vertical-align: bottom; white-space: nowrap;">Official Rubber Stamp:</td>
+                                        <td colspan="3" style="padding-top: 10px; vertical-align: bottom;">
                                             <div style="border-bottom: 1px dotted #000; width: 100%; min-height: 14px;">
                                                 {{ $submission->verification_stamp }}
                                             </div>
@@ -2724,9 +2737,23 @@
                                     </tr>
                                 </table>
                             </div>
-                        @endif
-                    </div>
+                        </div>
+                     @endif
                 @endif
+            </div>
+        @endif
+
+        {{-- Footer Notices for SRF (End of Page 2 / Office Use) --}}
+        @if($submission->form->slug === 'srf')
+            <div style="border: 1px solid #000; border-top: none; font-size: 5pt;">
+                <div style="border-bottom: 1px solid #000; padding: 5px;">
+                    <em>(Applicable for SURIA Investment Account-i Mudarabah)</em><br>
+                    <strong>THE RETURNS ON THE SURIA INVESTMENT ACCOUNT WILL BE AFFECTED BY THE PERFORMANCE OF THE UNDERLYING ASSETS. THE PRINCIPAL AND RETURNS ARE NOT GUARANTEED AND INVESTMENT ACCOUNT HOLDER RISKS EARNING NO RETURNS AT ALL. SURIA ACCOUNT IS NOT PROTECTED BY PIDM.</strong>
+                </div>
+                <div style="padding: 5px;">
+                    <em>(Applicable for Savings Account-i / Current Account-i (Tawarruq/Qard))</em><br>
+                    <strong>PROTECTED BY PIDM UP TO RM250,000 FOR EACH DEPOSITOR.</strong>
+                </div>
             </div>
         @endif
     @endif
