@@ -329,7 +329,8 @@
     {{-- Important Notes Section (Static for DCR and DAR Forms) --}}
     @if(in_array($submission->form->slug, ['dcr', 'dar']))
         <div class="important-notes" style="margin-top: 2px; margin-bottom: 3px; border: 1px solid #000; padding: 2px; font-size: 6pt; color: #000; padding: 10px;">
-            <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px; font-size: 7pt; color: #000;">Important Notes:</div>
+            <div style="margin-bottom: 8px; font-size: 6pt;">This {{ $submission->form->slug === 'dcr' ? 'Data Correction Request' : 'Data Access Request' }} is made to Bank Muamalat Malaysia Berhad</div>
+            <div style="font-weight: bold; text-decoration: underline; margin-bottom: 2px; font-size: 7pt; color: #000;">IMPORTANT NOTE:</div>
             <ol style="margin: 0; padding-left: 15px; line-height: 1.3;">
                 <li style="margin-bottom: 1px;">Please complete the {{ $submission->form->slug === 'dcr' ? 'Data Correction Request Form' : 'Data Access Request Form' }} and ensure that your personal data provided herein is genuine and accurate.</li>
                 <li style="margin-bottom: 1px;">Your request may not be processed if the information/document provided is incomplete.</li>
@@ -385,7 +386,7 @@
                     stripos($sectionName, 'signature') !== false
                 )
             )
-                                    @continue
+                                        @continue
         @endif
 
         {{-- Skip Remittance Details, Declaration, and Signature for SRF --}}
@@ -404,7 +405,7 @@
                     stripos($sectionName, 'confirmation') !== false
                 )
             )
-                                    @continue
+                                        @continue
         @endif
 
 
@@ -418,9 +419,9 @@
                     && !(stripos($sectionName, 'declaration') !== false && $submission->form->slug === 'dar')
                     && !($submission->form->slug === 'srf' && (strtolower($sectionName) === 'account type' || strtolower($sectionName) === 'service request details' || stripos($sectionName, 'consent') !== false || stripos($sectionName, 'agreements') !== false || strtolower($sectionName) === 'customer information'))
                 )
-                                        <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
-                                            {{ strtoupper($sectionName) }}
-                                        </div>
+                                            <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
+                                                {{ strtoupper($sectionName) }}
+                                            </div>
             @endif
 
             {{-- Special 3-column layout for Data Correction Details --}}
@@ -752,7 +753,7 @@
 
                     {{-- 8. Zakat Savings --}}
                     @php 
-                                                                                                        $cZak = $isChecked('field_8');
+                                                                                                                        $cZak = $isChecked('field_8');
                         $zakSav = $isChecked('field_8_1');
                         $zakCur = $isChecked('field_8_2');
                         $zakAgent = $getField('field_8_3');
@@ -930,7 +931,7 @@
 
                     {{-- 12. Physical Delivery --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cPhys = $isChecked('field_12');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cPhys = $isChecked('field_12');
                         $physRM = $getField('field_12_1');    
                     @endphp
                     <div style="margin-top: 2px;">
@@ -953,7 +954,7 @@
 
                     {{-- 13. Others --}}
                     @php 
-                                                                                                                                                                                                                                                                                        $cOthers = $isChecked('field_13');
+                                                                                                                                                                                                                                                                                                        $cOthers = $isChecked('field_13');
                         $othersText = $getField('field_13_1');
                     @endphp
                     <div style="margin-top: 2px;">
