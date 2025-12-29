@@ -385,13 +385,29 @@
                     stripos($sectionName, 'signature') !== false
                 )
             )
-                                                @continue
+                                                                                                @continue
         @endif
 
         {{-- Skip Remittance Details, Declaration, and Signature for SRF --}}
         @if($submission->form->slug === 'srf' && (stripos($sectionName, 'remittance details') !== false || stripos($sectionName, 'declaration') !== false || stripos($sectionName, 'signature') !== false))
             @continue
         @endif
+
+        {{-- Skip Parts B, C, D for SRF - these are rendered with custom styling after the loop ends --}}
+        {{-- CRITICAL: Do NOT delete this! It prevents duplicate rendering --}}
+        @if(
+                $submission->form->slug === 'srf' && (
+                    strtolower($sectionName) === 'agreements' ||
+                    stripos($sectionName, 'agreements') !== false ||
+                    stripos($sectionName, 'consent') !== false ||
+                    stripos($sectionName, 'third party') !== false ||
+                    stripos($sectionName, 'confirmation') !== false
+                )
+            )
+                    @continue
+        @endif
+
+
 
         <div class="form-section" style="margin-top: 3px;">
             {{-- Section Header --}}
@@ -402,9 +418,9 @@
                     && !(stripos($sectionName, 'declaration') !== false && $submission->form->slug === 'dar')
                     && !($submission->form->slug === 'srf' && (strtolower($sectionName) === 'account type' || strtolower($sectionName) === 'service request details' || stripos($sectionName, 'consent') !== false || stripos($sectionName, 'agreements') !== false || strtolower($sectionName) === 'customer information'))
                 )
-                                                    <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
-                                                        {{ strtoupper($sectionName) }}
-                                                    </div>
+                                            <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
+                                                {{ strtoupper($sectionName) }}
+                                            </div>
             @endif
 
             {{-- Special 3-column layout for Data Correction Details --}}
@@ -732,7 +748,7 @@
 
                     {{-- 8. Zakat Savings --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cZak = $isChecked('field_8');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cZak = $isChecked('field_8');
                         $zakSav = $isChecked('field_8_1');
                         $zakCur = $isChecked('field_8_2');
                         $zakAgent = $getField('field_8_3');
@@ -820,7 +836,7 @@
 
                     {{-- 10. Zakat Gold --}}
                     @php 
-                                                                                                                        $cZakGold = $isChecked('field_10');
+                                                                                                                                        $cZakGold = $isChecked('field_10');
                         $zGoldMYR = $isChecked('field_10_1');
                         $zGoldGram = $isChecked('field_10_2');
                         $zGoldAgent = $getField('field_10_3');
@@ -908,7 +924,7 @@
 
                     {{-- 12. Physical Delivery --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cPhys = $isChecked('field_12');
+                                                                                                                                        $cPhys = $isChecked('field_12');
                         $physRM = $getField('field_12_1');    
                     @endphp
                     <div style="margin-top: 2px;">
@@ -931,7 +947,7 @@
 
                     {{-- 13. Others --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cOthers = $isChecked('field_13');
+                                                                                                                                        $cOthers = $isChecked('field_13');
                         $othersText = $getField('field_13_1');
                     @endphp
                     <div style="margin-top: 2px;">
@@ -951,233 +967,6 @@
                     </div>
                     </div>
                 </div>
-
-            @elseif($submission->form->slug === 'srf')
-                @php
-                    // Helper to get field value (local section first, then global submission data)
-                    $getField = function ($fieldName) use ($fields, $submission) {
-                        $local = collect($fields)->firstWhere('field_name', $fieldName)['value'] ?? null;
-                        if ($local !== null && $local !== '')
-                            return $local;
-                        return $submission->submission_data[$fieldName] ?? '';
-                    };
-
-                    // Helper to check if a checkbox is checked
-                    $isChecked = function ($fieldName) use ($getField) {
-                        $value = $getField($fieldName);
-                        if (is_array($value)) {
-                            // Check for various truthy values in array (Yes, 1, true, string 'true')
-                            return !empty($value) && (
-                                in_array('Yes', $value) ||
-                                in_array('1', $value) ||
-                                in_array(true, $value, true) ||
-                                in_array('true', $value)
-                            );
-                        }
-                        return !empty($value) && $value !== '0' && $value !== 'false' && $value !== 'no';
-                    };
-                    $cAgree = $isChecked('content_1');
-                    $cDisagree = $isChecked('content_2');
-                @endphp
-
-                    <div style="border: 1px solid #000; font-size: 6pt; margin-bottom: 2px;">
-                        {{-- Part B Header --}}
-                        <div style="background-color: #002b80; color: white; padding: 3px 5px; font-size: 7pt; font-weight: bold;">B. Update PDPA Consent</div>
-
-                        {{-- Content --}}
-                        <div style="padding: 5px;">
-                            <div style="margin-bottom: 2px;">
-                                Updating of prior consent given by you in relation to purpose of cross selling, marketing and promotions.
-                            </div>
-
-                            <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
-                                <tr>
-                                    <td style="width: 25px; vertical-align: top; padding-bottom: 2px;">
-                                        <div style="width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-weight: bold;">
-                                            {{ $cAgree ? '✓' : '' }}
-                                                        </div>
-                                    </td>
-                                    <td style="vertical-align: top;">
-                                        <div style="margin-top: 1px;">Yes, I agree to receive marketing promotions.</div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 25px; vertical-align: top;">
-                                        <div style="width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-weight: bold;">
-                                            {{ $cDisagree ? '✓' : '' }}
-                                        </div>
-                                    </td>
-                                    <td style="vertical-align: top;">
-                                        <div style="margin-top: 1px;">No, I do not agree to receive marketing promotions</div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-
-                    {{-- PART C: Third Party Requester --}}
-                    @php
-                        $tpName = $getField('section_c_1') ?? '';
-                        $tpNric = $getField('section_c_2') ?? '';
-                        $tpRelationship = $getField('section_c_3') ?? '';
-                        $tpAddress = $getField('section_c_4') ?? '';
-                        $tpMobile = $getField('section_c_5') ?? '';
-                        $tpEmail = $getField('section_c_6') ?? '';
-                        $tpPurpose = $getField('section_c_7') ?? '';
-                        $tpDeath = $isChecked('section_c_8_1');
-                        $tpBirth = $isChecked('section_c_8_2');
-                        $tpMarriage = $isChecked('section_c_8_3');
-                        $tpOthers = $isChecked('section_c_8_4');
-                        $tpOthersText = $getField('section_c_8_5') ?? '';
-                    @endphp
-                    <div style="border: 1px solid #000; margin-bottom: 2px;">
-                        {{-- Part C Header --}}
-                        <div style="background-color: #002b80; color: white; padding: 3px 5px; font-size: 7pt; font-weight: bold;">C. Third Party Requester</div>
-
-                        {{-- Permitted disclosures notice --}}
-                        <div style="background-color: #002b80; color: white; padding: 2px 5px; font-size: 6pt;">(Permitted disclosures - Item 2 Schedule 11 (subsection 146 (1)) Islamic Financial Services Act 2013</div>
-
-                        {{-- Fields --}}
-                        <div style="padding: 5px; font-size: 6pt;">
-                            <table style="width: 100%; border-collapse: collapse;">
-                                <tr>
-                                    <td style="width: 20%; padding: 2px 0; vertical-align: top;">Beneficiary Name:</td>
-                                    <td style="width: 2%;">:</td>
-                                    <td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $tpName }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 2px 0; vertical-align: top;">NRIC/ Passport No.:</td>
-                                    <td>:</td>
-                                    <td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $tpNric }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 2px 0; vertical-align: top;">Relationship With Account Holder:</td>
-                                    <td>:</td>
-                                    <td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $tpRelationship }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 2px 0; vertical-align: top;">Address:</td>
-                                    <td>:</td>
-                                    <td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $tpAddress }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 2px 0; vertical-align: top;">Mobile No.:</td>
-                                    <td>:</td>
-                                    <td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $tpMobile }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 2px 0; vertical-align: top;">Email Address:</td>
-                                    <td>:</td>
-                                    <td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $tpEmail }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 2px 0; vertical-align: top;">Purpose of request:</td>
-                                    <td>:</td>
-                                    <td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $tpPurpose }}</td>
-                                </tr>
-                            </table>
-
-                            {{-- Supporting documents --}}
-                            <div style="margin-top: 5px;">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <tr>
-                                        <td style="width: 20%; padding: 2px 0; vertical-align: top;">Supporting documents:</td>
-                                        <td>
-                                            <table style="width: 100%; border-collapse: collapse;">
-                                                <tr>
-                                                    <td style="width: 50%; padding: 2px 0;">
-                                                        <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; vertical-align: middle;">{{ $tpDeath ? '✓' : '' }}</div>
-                                                        Death certificate
-                                                    </td>
-                                                    <td style="width: 50%; padding: 2px 0;">
-                                                        <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; vertical-align: middle;">{{ $tpBirth ? '✓' : '' }}</div>
-                                                        Birth Certificate
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="padding: 2px 0;">
-                                                        <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; vertical-align: middle;">{{ $tpMarriage ? '✓' : '' }}</div>
-                                                        Marriage certificate
-                                                    </td>
-                                                    <td style="padding: 2px 0;">
-                                                        <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; vertical-align: middle;">{{ $tpOthers ? '✓' : '' }}</div>
-                                                        Others: <span style="border-bottom: 1px dotted #000; display: inline-block; min-width: 100px;">{{ $tpOthersText }}</span>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Part D: Confirmation / Pengesahan --}}
-                    <div style="border: 1px solid #000; font-size: 6pt;">
-                        <div style="background-color: #002b80; color: #fff; padding: 3px 5px; font-weight: bold; font-size: 7pt;">D. Confirmation</div>
-                        <div style="padding: 5px;">
-                            <table style="width: 100%; border-collapse: collapse;">
-                                <tr>
-                                    {{-- Left Column: Customer Declaration --}}
-                                    <td style="width: 50%; vertical-align: top; padding-right: 5px;">
-                                        @php $dDeclare = $isChecked('section_d_1'); @endphp
-                                        <div style="margin-bottom: 3px;">
-                                            <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
-                                                <tr>
-                                                    <td style="width: 18px; vertical-align: top;">
-                                                        <div style="width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-weight: bold;">
-                                                            {{ $dDeclare ? '✓' : '' }}
-                                                        </div>
-                                                    </td>
-                                                    <td style="vertical-align: top;">
-                                                        I/We declare(s) that the above information is correct.
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </div>
-
-                                        {{-- Signature Box --}}
-                                        <div style="border: 1px solid #000; height: 50px; margin-bottom: 2px; text-align: center; overflow: hidden;">
-                                            @php
-                                                $dSignature = $getField('section_d_2');
-                                                // Handle file path vs base64
-                                                if ($dSignature && !str_starts_with($dSignature, 'data:image')) {
-                                                    $dSignature = str_replace('storage/', '', $dSignature);
-                                                    $dSignature = public_path('storage/' . $dSignature);
-                                                }
-                                            @endphp
-                                            @if($dSignature)
-                                                <img src="{{ $dSignature }}" style="max-height: 48px; max-width: 100%; margin-top: 1px;" alt="Signature">
-                                            @endif
-                                        </div>
-                                        <div style="font-style: italic; margin-bottom: 3px;">Signature</div>
-
-                                        <div style="margin-bottom: 3px;">
-                                            Date: <span style="font-weight: bold;">{{ $submission->submitted_at ? $submission->submitted_at->format('d/m/Y') : now()->format('d/m/Y') }}</span>
-                                        </div>
-
-                                        <div style="font-size: 5pt; margin-top: 5px; line-height: 1.1;">* Failure to provide the Bank with required details may cause the request to be delayed/rejected.</div>
-                                    </td>
-
-                                    {{-- Right Column: Bank Use --}}
-                                    <td style="width: 50%; vertical-align: top; padding-left: 5px;">
-                                        <div style="border: 1px solid #000;">
-                                            <div style="background-color: #d1d5db; padding: 3px 5px; font-weight: bold; border-bottom: 1px solid #000;">For Bank Use</div>
-                                            <div style="padding: 5px;">
-                                                <div style="margin-bottom: 20px;">Attended by (Signature & Name):</div>
-                                                <div style="margin-bottom: 2px; border-bottom: 1px dotted #000;"></div>
-                                                <div style="margin-bottom: 5px;">Date:</div>
-
-                                                <div style="margin-bottom: 35px; margin-top: 10px;">Verified by (Signature & Name):</div>
-                                                <div style="margin-bottom: 2px; border-bottom: 1px dotted #000;"></div>
-                                                <div>Date:</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
 
             @elseif($submission->form->slug === 'dcr' && strtolower($sectionName) === 'personal information')
                     @php
@@ -2606,6 +2395,209 @@
         </div>
     @endforeach
 
+    {{-- SRF Parts B, C, D - Always display for SRF forms --}}
+    @if($submission->form->slug === 'srf')
+        @php
+            // Helper to get field value
+            $getField = function ($fieldName) use ($submission) {
+                return $submission->submission_data[$fieldName] ?? '';
+            };
+
+            // Helper to check if a checkbox is checked
+            $isChecked = function ($fieldName) use ($getField) {
+                $value = $getField($fieldName);
+                if (is_array($value)) {
+                    return !empty($value) && (
+                        in_array('Yes', $value) ||
+                        in_array('1', $value) ||
+                        in_array(true, $value, true) ||
+                        in_array('true', $value)
+                    );
+                }
+                return !empty($value) && $value !== '0' && $value !== 'false' && $value !== 'no';
+            };
+
+            // Part B
+            $cAgree = $isChecked('content_1');
+            $cDisagree = $isChecked('content_2');
+
+            // Part C
+            $tpName = $getField('section_c_1') ?? '';
+            $tpNric = $getField('section_c_2') ?? '';
+            $tpRelationship = $getField('section_c_3') ?? '';
+            $tpAddress = $getField('section_c_4') ?? '';
+            $tpMobile = $getField('section_c_5') ?? '';
+            $tpEmail = $getField('section_c_6') ?? '';
+            $tpPurpose = $getField('section_c_7') ?? '';
+            $tpDeath = $isChecked('section_c_8_1');
+            $tpBirth = $isChecked('section_c_8_2');
+            $tpMarriage = $isChecked('section_c_8_3');
+            $tpOthers = $isChecked('section_c_8_4');
+            $tpOthersText = $getField('section_c_8_5') ?? '';
+
+            // Part D
+            $dDeclare = $isChecked('section_d_1');
+            $dSignature = $getField('section_d_2');
+            if ($dSignature && !str_starts_with($dSignature, 'data:image')) {
+                $dSignature = str_replace('storage/', '', $dSignature);
+                $dSignature = public_path('storage/' . $dSignature);
+            }
+        @endphp
+
+        {{-- PART B: Update PDPA Consent --}}
+        <div style="border: 1px solid #000; font-size: 6pt; margin-bottom: 2px;">
+            <div style="background-color: #002b80; color: white; padding: 3px 5px; font-size: 7pt; font-weight: bold;">B. Update PDPA Consent</div>
+            <div style="padding: 5px;">
+                <div style="margin-bottom: 5px;">
+                    Updating of prior consent given by you in relation to purpose of cross selling, marketing and promotions.
+                </div>
+                {{-- Checkbox on left, text on right - using table for proper alignment --}}
+                <table style="border-collapse: collapse; font-size: 6pt;">
+                    <tr>
+                        <td style="vertical-align: middle; padding-right: 5px; padding-bottom: 3px;">
+                            <div style="width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-weight: bold;">{{ $cAgree ? '✓' : '' }}</div>
+                        </td>
+                        <td style="vertical-align: middle; padding-bottom: 3px;">Yes, I agree to receive marketing promotions.</td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: middle; padding-right: 5px;">
+                            <div style="width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-weight: bold;">{{ $cDisagree ? '✓' : '' }}</div>
+                        </td>
+                        <td style="vertical-align: middle;">No, I do not agree to receive marketing promotions</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        {{-- PART C: Third Party Requester --}}
+        <div style="border: 1px solid #000; margin-bottom: 2px;">
+            <div style="background-color: #002b80; color: white; padding: 3px 5px; font-size: 7pt; font-weight: bold;">C. Third Party Requester</div>
+            <div style="background-color: #002b80; color: white; padding: 2px 5px; font-size: 6pt;">(Permitted disclosures - Item 2 Schedule 11 (subsection 146 (1)) Islamic Financial Services Act 2013</div>
+            <div style="padding: 5px; font-size: 6pt;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 20%; padding: 2px 0; vertical-align: top;">Beneficiary Name:</td>
+                        <td style="width: 2%;">:</td>
+                        <td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $tpName }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 2px 0; vertical-align: top;">NRIC/ Passport No.:</td>
+                        <td>:</td>
+                        <td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $tpNric }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 2px 0; vertical-align: top;">Relationship With Account Holder:</td>
+                        <td>:</td>
+                        <td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $tpRelationship }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 2px 0; vertical-align: top;">Address:</td>
+                        <td>:</td>
+                        <td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $tpAddress }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 2px 0; vertical-align: top;">Mobile No.:</td>
+                        <td>:</td>
+                        <td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $tpMobile }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 2px 0; vertical-align: top;">Email Address:</td>
+                        <td>:</td>
+                        <td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $tpEmail }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 2px 0; vertical-align: top;">Purpose of request:</td>
+                        <td>:</td>
+                        <td style="border-bottom: 1px dotted #000; font-weight: bold;">{{ $tpPurpose }}</td>
+                    </tr>
+                </table>
+
+                {{-- Supporting documents --}}
+                <div style="margin-top: 5px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="width: 20%; padding: 2px 0; vertical-align: top;">Supporting documents:</td>
+                            <td>
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="width: 50%; padding: 2px 0;">
+                                            <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; vertical-align: middle;">{{ $tpDeath ? '✓' : '' }}</div>
+                                            Death certificate
+                                        </td>
+                                        <td style="width: 50%; padding: 2px 0;">
+                                            <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; vertical-align: middle;">{{ $tpBirth ? '✓' : '' }}</div>
+                                            Birth Certificate
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 2px 0;">
+                                            <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; vertical-align: middle;">{{ $tpMarriage ? '✓' : '' }}</div>
+                                            Marriage certificate
+                                        </td>
+                                        <td style="padding: 2px 0;">
+                                            <div style="display: inline-block; width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; vertical-align: middle;">{{ $tpOthers ? '✓' : '' }}</div>
+                                            Others: <span style="border-bottom: 1px dotted #000; display: inline-block; min-width: 100px;">{{ $tpOthersText }}</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {{-- PART D: Confirmation --}}
+        <div style="border: 1px solid #000; font-size: 6pt;">
+            <div style="background-color: #002b80; color: #fff; padding: 3px 5px; font-weight: bold; font-size: 7pt;">D. Confirmation</div>
+            <div style="padding: 5px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 50%; vertical-align: top; padding-right: 5px;">
+                            <div style="margin-bottom: 3px;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
+                                    <tr>
+                                        <td style="width: 18px; vertical-align: top;">
+                                            <div style="width: 12px; height: 12px; border: 1px solid #000; text-align: center; line-height: 10px; font-weight: bold;">{{ $dDeclare ? '✓' : '' }}</div>
+                                        </td>
+                                        <td style="vertical-align: top;">I/We declare(s) that the above information is correct.</td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div style="border: 1px solid #000; height: 50px; margin-bottom: 2px; text-align: center; overflow: hidden;">
+                                @if($dSignature)
+                                    <img src="{{ $dSignature }}" style="max-height: 48px; max-width: 100%; margin-top: 1px;" alt="Signature">
+                                @endif
+                            </div>
+                            <div style="font-style: italic; margin-bottom: 3px;">Signature</div>
+
+                            <div style="margin-bottom: 3px;">
+                                Date: <span style="font-weight: bold;">{{ $submission->submitted_at ? $submission->submitted_at->format('d/m/Y') : now()->format('d/m/Y') }}</span>
+                            </div>
+
+                            <div style="font-size: 5pt; margin-top: 5px; line-height: 1.1;">* Failure to provide the Bank with required details may cause the request to be delayed/rejected.</div>
+                        </td>
+
+                        <td style="width: 50%; vertical-align: top; padding-left: 5px;">
+                            <div style="border: 1px solid #000;">
+                                <div style="background-color: #d1d5db; padding: 3px 5px; font-weight: bold; border-bottom: 1px solid #000;">For Bank Use</div>
+                                <div style="padding: 5px;">
+                                    <div style="margin-bottom: 20px;">Attended by (Signature & Name):</div>
+                                    <div style="margin-bottom: 2px; border-bottom: 1px dotted #000;"></div>
+                                    <div style="margin-bottom: 5px;">Date:</div>
+
+                                    <div style="margin-bottom: 35px; margin-top: 10px;">Verified by (Signature & Name):</div>
+                                    <div style="margin-bottom: 2px; border-bottom: 1px dotted #000;"></div>
+                                    <div>Date:</div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    @endif
 
 
     {{-- Staff-Only Sections for PDF --}}
