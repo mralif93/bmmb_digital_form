@@ -790,7 +790,7 @@
                     </div>
 
                     {{-- Footer Notices for Page 1 --}}
-                    <div style="margin-top: 10px; margin-left: -4px; margin-right: -4px; margin-bottom: -4px; border: 1px solid #000; border-top: 1px solid #000; padding: 5px; font-size: 6pt;">
+                    <div style="margin-top: 10px; margin-left: -3px; margin-right: -3px; margin-bottom: -3px; border: 1px solid #000; border-top: 1px solid #000; padding: 5px; font-size: 6pt;">
                         <div style="padding-bottom: 5px; margin-left: -5px; margin-right: -5px; padding-left: 5px; padding-right: 5px; border-bottom: 1px solid #000; margin-bottom: 5px;">
                             <em>(Applicable for SURIA Investment Account-i Mudarabah)</em><br>
                             <strong>THE RETURNS ON THE SURIA INVESTMENT ACCOUNT WILL BE AFFECTED BY THE PERFORMANCE OF THE UNDERLYING ASSETS. THE PRINCIPAL AND RETURNS ARE NOT GUARANTEED AND INVESTMENT ACCOUNT HOLDER RISKS EARNING NO RETURNS AT ALL. SURIA ACCOUNT IS NOT PROTECTED BY PIDM.</strong>
@@ -803,7 +803,7 @@
 
                     {{-- 9. Cancel Zakat Savings - PAGE BREAK HERE --}}
                     @php $cCancelZak = $isChecked('field_9'); @endphp
-                    <div style="margin-top: 2px; margin-left: -4px; margin-right: -4px; padding-top: 5px; padding-left: 4px; padding-right: 4px; border-top: 1px solid #000; page-break-before: always;">
+                    <div style="margin-top: 2px; margin-left: -3px; margin-right: -3px; padding-top: 5px; padding-left: 4px; padding-right: 4px; border-top: 1px solid #000; page-break-before: always;">
                         <table style="width: 100%; border-collapse: collapse; font-size: 6pt;">
                             <tr>
                                 <td style="width: 18px; vertical-align: top;">
