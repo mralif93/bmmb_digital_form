@@ -215,6 +215,8 @@ class FormSubmissionPresenter
             'field_4_24' => 'Action for Tel (Office)',
             'field_4_25' => 'Mobile Phone Number',
             'field_4_26' => 'Action for Mobile',
+            'field_4_35' => 'Email Address',
+            'field_4_36' => 'Action for Email',
             'field_4_27' => 'Nationality',
             'field_4_28' => 'Action for Nationality',
             'field_4_29' => 'Occupation',

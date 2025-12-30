@@ -1077,6 +1077,48 @@
                     "validation": null
                 },
                 {
+                    "name": "field_4_35",
+                    "label": "Email Address",
+                    "type": "text",
+                    "placeholder": "Enter corrected email address",
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 26.5,
+                    "grid_column": "left",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": null,
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
+                    "name": "field_4_36",
+                    "label": "Action for Email",
+                    "type": "radio",
+                    "placeholder": null,
+                    "description": "<p><br></p>",
+                    "help_text": null,
+                    "required": false,
+                    "active": true,
+                    "sort_order": 26.6,
+                    "grid_column": "right",
+                    "conditional": false,
+                    "conditional_logic": null,
+                    "options": {
+                        "A": "Add",
+                        "D": "Delete",
+                        "R": "Revise"
+                    },
+                    "settings": {
+                        "description_position": "bottom"
+                    },
+                    "validation": null
+                },
+                {
                     "name": "field_4_27",
                     "label": "Nationality",
                     "type": "text",
