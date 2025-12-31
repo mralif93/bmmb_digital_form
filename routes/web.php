@@ -100,6 +100,12 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Admin Routes
+
+    // Shared Admin Routes (Accessible to BM, ABM, HQ, etc.)
+    Route::prefix('admin')->middleware(['auth'])->group(function () {
+        Route::get('/branch/qr-display', [\App\Http\Controllers\Admin\BranchQrController::class, 'display'])->name('branch.qr-display');
+    });
+
     Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
         // Dashboard
         Route::get('/dashboard', function () {
@@ -709,6 +715,8 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
             Route::resource('states', \App\Http\Controllers\Admin\StateController::class);
             Route::resource('regions', \App\Http\Controllers\Admin\RegionController::class);
         });
+
+
 
         // QR Code Management (Admin and HQ)
         Route::middleware('admin-or-hq')->group(function () {
