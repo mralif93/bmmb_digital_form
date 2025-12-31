@@ -523,7 +523,87 @@
         </div>
     </div>
     @endif
-</div>
+
+    <!-- Application Processing Actions (BM, ABM, OO, CFE) -->
+    @if(auth()->user()->isBM() || auth()->user()->isABM() || auth()->user()->isOO() || auth()->user()->isCFE())
+    <div class="space-y-6">
+        <!-- Process Application -->
+        @if($submission->status === 'submitted')
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Process Application</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-400 mb-4">
+                This application is currently submitted. You can take it up to start the assessment process.
+            </p>
+            <form action="{{ route('admin.submissions.take-up', [$form->slug, $submission->id]) }}" method="POST">
+                @csrf
+                <button type="button" onclick="confirmTakeUp(this.form)" class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center">
+                    <i class='bx bx-check-circle mr-2 text-lg'></i>
+                    Take Up Application
+                </button>
+            </form>
+        </div>
+        @endif
+
+        <!-- Complete Assessment -->
+        @if($submission->status === 'pending_process' && ($submission->taken_up_by == auth()->id() || !$submission->taken_up_by))
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Complete Assessment</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-400 mb-4">
+                The application is currently being processed. Once you have finished your assessment, you can mark it as completed.
+            </p>
+            <form action="{{ route('admin.submissions.complete', [$form->slug, $submission->id]) }}" method="POST" id="complete-form">
+                @csrf
+                <div class="mb-4">
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Completion Notes</label>
+                    <textarea name="completion_notes" rows="3" class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Enter any notes regarding the completion of this application..."></textarea>
+                </div>
+                <button type="button" onclick="confirmComplete()" class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center">
+                    <i class='bx bx-check-double mr-2 text-lg'></i>
+                    Complete Assessment
+                </button>
+            </form>
+        </div>
+        @elseif($submission->status === 'pending_process' && $submission->taken_up_by != auth()->id())
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Processing Status</h3>
+            <div class="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                <p class="text-xs text-yellow-800 dark:text-yellow-300 flex items-start">
+                    <i class='bx bx-lock-alt mr-2 text-base mt-0.5'></i>
+                    <span>
+                        This application is currently being processed by 
+                        <strong>{{ $submission->takenUpBy ? $submission->takenUpBy->full_name : 'Unknown User' }}</strong>.
+                    </span>
+                </p>
+            </div>
+        </div>
+        @endif
+        
+        <!-- Metadata Display for Staff -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Metadata</h3>
+            <dl class="space-y-2 text-xs">
+                @if($submission->reference_number)
+                <div>
+                    <dt class="text-gray-500 dark:text-gray-400">Ref No</dt>
+                    <dd class="text-gray-900 dark:text-white font-mono">{{ $submission->reference_number }}</dd>
+                </div>
+                @endif
+                @if($submission->started_at)
+                <div>
+                    <dt class="text-gray-500 dark:text-gray-400">Started At</dt>
+                    <dd class="text-gray-900 dark:text-white">{{ $submission->started_at->format('M d, Y h:i A') }}</dd>
+                </div>
+                @endif
+                @if($submission->submitted_at)
+                <div>
+                    <dt class="text-gray-500 dark:text-gray-400">Submitted At</dt>
+                    <dd class="text-gray-900 dark:text-white">{{ $submission->submitted_at->format('M d, Y h:i A') }}</dd>
+                </div>
+                @endif
+            </dl>
+        </div>
+    </div>
+    @endif
 
 @push('scripts')
 <script>
@@ -533,6 +613,58 @@
     ]);
     $primaryColor = $settings['primary_color'] ?? '#FE8000';
 @endphp
+
+function confirmTakeUp(form) {
+    Swal.fire({
+        title: 'Take Up Application?',
+        html: `
+            <div class="text-center">
+                <p class="mb-2">Are you sure you want to take up this application?</p>
+                <p class="text-sm text-gray-600">The status will be changed to "Pending Process" and you will be assigned as the processor.</p>
+            </div>
+        `,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Take Up',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '{{ $primaryColor }}',
+        cancelButtonColor: '#6b7280',
+        customClass: {
+            popup: 'rounded-lg',
+            htmlContainer: 'text-center',
+            confirmButton: 'rounded-lg',
+            cancelButton: 'rounded-lg'
+        },
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+}
+
+function confirmComplete() {
+    Swal.fire({
+        title: 'Complete Assessment?',
+        text: "Are you sure you want to mark this application as completed?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Complete',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#10b981', // Green for complete
+        cancelButtonColor: '#6b7280',
+        customClass: {
+            popup: 'rounded-lg',
+            confirmButton: 'rounded-lg',
+            cancelButton: 'rounded-lg'
+        },
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('complete-form').submit();
+        }
+    });
+}
 
 function confirmStatusUpdate() {
     const statusSelect = document.getElementById('status-select');
