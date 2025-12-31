@@ -102,7 +102,8 @@
                         <option value="">All Branches</option>
                         @foreach($branches as $branch)
                             <option value="{{ $branch->id }}" {{ request('branch_id') == $branch->id ? 'selected' : '' }}>
-                                {{ $branch->branch_name }}</option>
+                                {{ $branch->branch_name }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -231,10 +232,12 @@
                             <td class="px-4 py-3 whitespace-nowrap text-right text-xs font-medium">
                                 <div class="flex items-center justify-end space-x-2">
                                     @if($qrCode->status === 'active')
-                            <button onclick="showQrCodePopup({{ json_encode($qrCode->content) }}, {{ json_encode($qrCode->name) }})" class="inline-flex items-center justify-center px-3 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-700 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 dark:text-purple-400 rounded-lg text-xs transition-colors">
-                                QR Code
-                            </button>
-                            @elseif($qrCode->status !== 'active')
+                                        <button
+                                            onclick="showQrCodePopup({{ json_encode($qrCode->content) }}, {{ json_encode($qrCode->name) }})"
+                                            class="inline-flex items-center justify-center px-3 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-700 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 dark:text-purple-400 rounded-lg text-xs transition-colors">
+                                            QR Code
+                                        </button>
+                                    @elseif($qrCode->status !== 'active')
                                         <button onclick="showInactiveQrCodeError()"
                                             class="inline-flex items-center justify-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-500 dark:bg-gray-900/30 dark:hover:bg-gray-900/50 dark:text-gray-400 rounded-lg text-xs transition-colors cursor-not-allowed"
                                             title="QR Code is inactive">
@@ -293,15 +296,15 @@
                 Swal.fire({
                     title: qrCodeName,
                     html: `
-                    <div class="flex flex-col items-center">
-                        <div id="qrcode-popup" class="w-64 h-64 border border-gray-300 rounded-lg p-4 bg-white mb-4 flex items-center justify-center"></div>
-                        <button onclick="downloadQrCode('${qrCodeName}')" 
-                           class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                            <i class='bx bx-download mr-2'></i>
-                            Download QR Code
-                        </button>
-                    </div>
-                `,
+                            <div class="flex flex-col items-center">
+                                <div id="qrcode-popup" class="w-64 h-64 border border-gray-300 rounded-lg p-4 bg-white mb-4 flex items-center justify-center"></div>
+                                <button onclick="downloadQrCode('${qrCodeName}')" 
+                                   class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                                    <i class='bx bx-download mr-2'></i>
+                                    Download QR Code
+                                </button>
+                            </div>
+                        `,
                     width: '500px',
                     showCloseButton: true,
                     showConfirmButton: false,
@@ -347,16 +350,16 @@
                 Swal.fire({
                     title: 'Regenerate All QR Codes?',
                     html: `
-                    <div class="text-center">
-                        <p class="mb-2">Are you sure you want to regenerate all active QR codes?</p>
-                        <p class="text-sm text-gray-600 mb-2">This will:</p>
-                        <ul class="text-sm text-gray-600 list-disc list-inside mt-2 inline-block text-left">
-                            <li>Update all QR code images</li>
-                            <li>Generate new validation tokens</li>
-                            <li>Invalidate old QR codes</li>
-                        </ul>
-                    </div>
-                `,
+                            <div class="text-center">
+                                <p class="mb-2">Are you sure you want to regenerate all active QR codes?</p>
+                                <p class="text-sm text-gray-600 mb-2">This will:</p>
+                                <ul class="text-sm text-gray-600 list-disc list-inside mt-2 inline-block text-left">
+                                    <li>Update all QR code images</li>
+                                    <li>Generate new validation tokens</li>
+                                    <li>Invalidate old QR codes</li>
+                                </ul>
+                            </div>
+                        `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, Regenerate All',
@@ -375,6 +378,53 @@
                         document.getElementById('regenerate-all-form').submit();
                     }
                 });
+            }
+
+            function downloadQrCode(filename) {
+                const qrDiv = document.getElementById('qrcode-popup');
+                if (!qrDiv) return;
+
+                // Try to simple find the image first (qrcodejs usually generates an img)
+                let imgParams = qrDiv.querySelector('img');
+
+                // If no img, check for canvas
+                if (!imgParams) {
+                    const canvas = qrDiv.querySelector('canvas');
+                    if (canvas) {
+                        try {
+                            const dataUrl = canvas.toDataURL('image/png');
+                            const link = document.createElement('a');
+                            link.href = dataUrl;
+                            link.download = (filename || 'qrcode') + '.png';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            return;
+                        } catch (e) {
+                            console.error('Error converting canvas to image:', e);
+                        }
+                    }
+                }
+
+                if (imgParams && imgParams.src) {
+                    const link = document.createElement('a');
+                    link.href = imgParams.src;
+                    link.download = (filename || 'qrcode') + '.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    // If still nothing, it might be because the image hasn't loaded yet? 
+                    // qrcodejs is usually synchronous for canvas but async for img src generation sometimes.
+                    // But here it was generated in didOpen, so it should be ready by the time user clicks download.
+                    console.error('No QR code image found to download');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Download Failed',
+                        text: 'Could not find the QR code image to download.',
+                        confirmButtonColor: '#ea580c'
+                    });
+                }
             }
 
             function deleteQrCode(qrCodeId) {
