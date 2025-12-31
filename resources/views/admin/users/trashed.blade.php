@@ -189,8 +189,8 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             @if($user->deleted_at)
-                                <div>{{ $user->deleted_at->format('M d, Y') }}</div>
-                                <div class="text-xs text-gray-400">{{ $user->deleted_at->format('h:i A') }}</div>
+                                <div>{{ $user->deleted_at->format($dateFormat) }}</div>
+                                <div class="text-xs text-gray-400">{{ $user->deleted_at->format($timeFormat) }}</div>
                             @else
                                 <div class="text-xs text-gray-400">N/A</div>
                             @endif
@@ -198,15 +198,12 @@
                         <td class="px-6 py-4 whitespace-nowrap text-right text-xs font-medium">
                             <div class="flex items-center justify-end space-x-2">
                                 <a href="{{ route('admin.users.show', $user->id) }}" class="inline-flex items-center justify-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 rounded-lg transition-colors">
-                                    <i class='bx bx-show mr-1'></i>
                                     View
                                 </a>
                                 <button onclick="restoreUser({{ $user->id }})" class="inline-flex items-center justify-center px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-400 rounded-lg transition-colors">
-                                    <i class='bx bx-refresh mr-1'></i>
                                     Restore
                                 </button>
                                 <button onclick="forceDeleteUser({{ $user->id }})" class="inline-flex items-center justify-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg transition-colors">
-                                    <i class='bx bx-trash mr-1'></i>
                                     Delete Permanently
                                 </button>
                             </div>

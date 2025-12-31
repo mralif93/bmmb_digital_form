@@ -29,8 +29,7 @@
             <i class='bx bx-trash mr-1.5'></i>
             Trashed Users
         </a>
-        <button onclick="openUserCreateModal()" class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors">
-        <i class='bx bx-plus mr-1.5'></i>
+            <button onclick="openUserCreateModal()" class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors">
         Create New
         </button>
     </div>
@@ -167,8 +166,8 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         @if($user->last_login_at)
-                            <div>{{ $user->last_login_at->format('M d, Y') }}</div>
-                            <div class="text-xs text-gray-400">{{ $user->last_login_at->format('h:i A') }}</div>
+                            <div>{{ $user->last_login_at->format($dateFormat) }}</div>
+                            <div class="text-xs text-gray-400">{{ $user->last_login_at->format($timeFormat) }}</div>
                         @else
                             <span class="text-gray-400">Never</span>
                         @endif
@@ -176,15 +175,12 @@
                     <td class="px-6 py-4 whitespace-nowrap text-right text-xs font-medium">
                         <div class="flex items-center justify-end space-x-2">
                             <button onclick="openUserViewModal({{ $user->id }})" class="inline-flex items-center justify-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 rounded-lg transition-colors">
-                                <i class='bx bx-show mr-1'></i>
                                 View
                             </button>
                             <button onclick="openUserEditModal({{ $user->id }})" class="inline-flex items-center justify-center px-3 py-1.5 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 dark:bg-yellow-900/30 dark:hover:bg-yellow-900/50 dark:text-yellow-400 rounded-lg transition-colors">
-                                <i class='bx bx-edit mr-1'></i>
                                 Edit
                             </button>
                             <button onclick="deleteUser({{ $user->id }})" class="inline-flex items-center justify-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg transition-colors">
-                                <i class='bx bx-trash mr-1'></i>
                                 Delete
                             </button>
                         </div>

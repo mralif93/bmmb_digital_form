@@ -24,9 +24,9 @@ class UserController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('first_name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
 
@@ -41,8 +41,12 @@ class UserController extends Controller
         }
 
         $users = $query->with('branch')->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
-        
-        return view('admin.users.index', compact('users'));
+
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
+        return view('admin.users.index', compact('users', 'dateFormat', 'timeFormat'));
     }
 
     /**
@@ -61,10 +65,10 @@ class UserController extends Controller
     {
         try {
             $branches = Branch::orderBy('branch_name')->get();
-            
+
             // Render the user create form partial
             $html = view('admin.users.modal-create', compact('branches'))->render();
-            
+
             return response()->json([
                 'success' => true,
                 'html' => $html
@@ -114,12 +118,12 @@ class UserController extends Controller
             // Check if request came from dashboard (IAM users)
             $isFromDashboard = $request->header('Referer') && str_contains($request->header('Referer'), '/dashboard');
             $redirectUrl = $isFromDashboard ? route('admin.dashboard') : route('admin.users.index');
-            
+
             // If AJAX request, return JSON response with redirect URL
             if ($request->ajax() || $request->wantsJson()) {
                 // Store success message in session for the redirect
                 session()->flash('success', 'User created successfully.');
-                
+
                 return response()->json([
                     'success' => true,
                     'message' => 'User created successfully.',
@@ -141,7 +145,7 @@ class UserController extends Controller
             throw $e;
         } catch (\Exception $e) {
             \Log::error('Error creating user: ' . $e->getMessage());
-            
+
             // If AJAX request, return JSON response
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
@@ -149,7 +153,7 @@ class UserController extends Controller
                     'message' => 'Error creating user: ' . $e->getMessage()
                 ], 500);
             }
-            
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Error creating user. Please try again.');
@@ -159,10 +163,15 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show($id)
     {
-        $user->load('branch');
-        return view('admin.users.show', compact('user'));
+        $user = User::withTrashed()->with('branch')->findOrFail($id);
+
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
+        return view('admin.users.show', compact('user', 'dateFormat', 'timeFormat'));
     }
 
     /**
@@ -171,10 +180,14 @@ class UserController extends Controller
     public function details(User $user)
     {
         $user->load('branch');
-        
+
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
         // Render the user details partial
-        $html = view('admin.users.modal-content', compact('user'))->render();
-        
+        $html = view('admin.users.modal-content', compact('user', 'dateFormat', 'timeFormat'))->render();
+
         return response()->json([
             'success' => true,
             'html' => $html
@@ -196,10 +209,10 @@ class UserController extends Controller
     public function editModal(User $user)
     {
         $branches = Branch::orderBy('branch_name')->get();
-        
+
         // Render the user edit form partial
         $html = view('admin.users.modal-edit', compact('user', 'branches'))->render();
-        
+
         return response()->json([
             'success' => true,
             'html' => $html
@@ -239,7 +252,7 @@ class UserController extends Controller
                     $oldValues[$key] = $value->format('Y-m-d H:i:s');
                 }
             }
-            
+
             $user->update($validated);
             $user->refresh();
 
@@ -265,12 +278,12 @@ class UserController extends Controller
             // Check if request came from dashboard (IAM users)
             $isFromDashboard = $request->header('Referer') && str_contains($request->header('Referer'), '/dashboard');
             $redirectUrl = $isFromDashboard ? route('admin.dashboard') : route('admin.users.index');
-            
+
             // If AJAX request, return JSON response with redirect URL
             if ($request->ajax() || $request->wantsJson()) {
                 // Store success message in session for the redirect
                 session()->flash('success', 'User updated successfully.');
-                
+
                 return response()->json([
                     'success' => true,
                     'message' => 'User updated successfully.',
@@ -292,7 +305,7 @@ class UserController extends Controller
             throw $e;
         } catch (\Exception $e) {
             \Log::error('Error updating user: ' . $e->getMessage());
-            
+
             // If AJAX request, return JSON response
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
@@ -300,7 +313,7 @@ class UserController extends Controller
                     'message' => 'Error updating user: ' . $e->getMessage()
                 ], 500);
             }
-            
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Error updating user. Please try again.');
@@ -317,7 +330,7 @@ class UserController extends Controller
         $userName = $user->full_name;
         $userEmail = $user->email;
         $userId = $user->id;
-        
+
         $user->delete();
 
         // Log audit trail
@@ -339,7 +352,7 @@ class UserController extends Controller
     public function toggleStatus(User $user)
     {
         $oldStatus = $user->status;
-        
+
         // Only toggle between active and inactive
         // If suspended, change to inactive
         if ($oldStatus === 'active') {
@@ -348,7 +361,7 @@ class UserController extends Controller
             // For inactive or suspended, set to active
             $newStatus = 'active';
         }
-        
+
         $user->update([
             'status' => $newStatus
         ]);
@@ -395,11 +408,11 @@ class UserController extends Controller
         }
 
         $oldEmailVerifiedAt = $user->email_verified_at;
-        
+
         $user->update([
             'email_verified_at' => now()
         ]);
-        
+
         // Refresh the model to get the updated value
         $user->refresh();
 
@@ -446,11 +459,11 @@ class UserController extends Controller
         }
 
         $oldEmailVerifiedAt = $user->email_verified_at;
-        
+
         $user->update([
             'email_verified_at' => null
         ]);
-        
+
         // Refresh the model to get the updated value
         $user->refresh();
 
@@ -488,9 +501,9 @@ class UserController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('first_name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
 
@@ -513,8 +526,12 @@ class UserController extends Controller
         }
 
         $users = $query->with('branch')->orderBy('deleted_at', 'desc')->paginate(15)->withQueryString();
-        
-        return view('admin.users.trashed', compact('users'));
+
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
+        return view('admin.users.trashed', compact('users', 'dateFormat', 'timeFormat'));
     }
 
     /**
@@ -564,7 +581,7 @@ class UserController extends Controller
         $userName = $user->full_name;
         $userEmail = $user->email;
         $userId = $user->id;
-        
+
         $user->forceDelete();
 
         // Log audit trail

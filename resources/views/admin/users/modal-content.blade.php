@@ -11,7 +11,8 @@
         </h3>
         <dl class="space-y-3">
             <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
-                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                <dt
+                    class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
                     First Name
                 </dt>
                 <dd class="text-sm text-gray-900 dark:text-white font-semibold flex-1 text-left">
@@ -19,7 +20,8 @@
                 </dd>
             </div>
             <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
-                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                <dt
+                    class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
                     Last Name
                 </dt>
                 <dd class="text-sm text-gray-900 dark:text-white font-semibold flex-1 text-left">
@@ -27,7 +29,8 @@
                 </dd>
             </div>
             <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
-                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                <dt
+                    class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
                     Email
                 </dt>
                 <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
@@ -37,7 +40,8 @@
                 </dd>
             </div>
             <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
-                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                <dt
+                    class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
                     Phone
                 </dt>
                 <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
@@ -45,7 +49,8 @@
                 </dd>
             </div>
             <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
-                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                <dt
+                    class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
                     Role
                 </dt>
                 <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
@@ -63,7 +68,8 @@
                 </dd>
             </div>
             <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
-                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                <dt
+                    class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
                     Status
                 </dt>
                 <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
@@ -88,7 +94,8 @@
                 </dd>
             </div>
             <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
-                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                <dt
+                    class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
                     Branch
                 </dt>
                 <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
@@ -100,7 +107,8 @@
                 </dd>
             </div>
             <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
-                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                <dt
+                    class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
                     Email Verified
                 </dt>
                 <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
@@ -111,7 +119,7 @@
                                 Verified
                             </span>
                             <span class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                                {{ \App\Helpers\TimezoneHelper::toSystemTimezone($user->email_verified_at)->format('M d, Y h:i A') }}
+                                {{ \App\Helpers\TimezoneHelper::toSystemTimezone($user->email_verified_at)->format($dateFormat . ' ' . $timeFormat) }}
                             </span>
                         </div>
                     @else
@@ -123,80 +131,75 @@
                 </dd>
             </div>
             <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
-                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                <dt
+                    class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
                     Last Login
                 </dt>
                 <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
-                    {{ $user->last_login_at ? \App\Helpers\TimezoneHelper::toSystemTimezone($user->last_login_at)->format('M d, Y h:i A') : 'Never' }}
+                    {{ $user->last_login_at ? \App\Helpers\TimezoneHelper::toSystemTimezone($user->last_login_at)->format($dateFormat . ' ' . $timeFormat) : 'Never' }}
                 </dd>
             </div>
             <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
-                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                <dt
+                    class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
                     Created At
                 </dt>
                 <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
-                    {{ \App\Helpers\TimezoneHelper::toSystemTimezone($user->created_at)->format('M d, Y h:i A') }}
+                    {{ \App\Helpers\TimezoneHelper::toSystemTimezone($user->created_at)->format($dateFormat . ' ' . $timeFormat) }}
                 </dd>
             </div>
             <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
-                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                <dt
+                    class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
                     Updated At
                 </dt>
                 <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
-                    {{ \App\Helpers\TimezoneHelper::toSystemTimezone($user->updated_at)->format('M d, Y h:i A') }}
+                    {{ \App\Helpers\TimezoneHelper::toSystemTimezone($user->updated_at)->format($dateFormat . ' ' . $timeFormat) }}
                 </dd>
             </div>
             @if($user->bio)
-            <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
-                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
-                    Bio
-                </dt>
-                <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
-                    {{ $user->bio }}
-                </dd>
-            </div>
+                <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
+                    <dt
+                        class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                        Bio
+                    </dt>
+                    <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
+                        {{ $user->bio }}
+                    </dd>
+                </div>
             @endif
         </dl>
     </div>
-    
+
     <!-- Action Buttons -->
     <div class="flex items-center justify-end space-x-2 pt-4 border-t border-gray-200 dark:border-gray-700">
-        <button type="button" 
-                onclick="handleResetPassword({{ $user->id }})"
-                class="inline-flex items-center justify-center px-4 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 dark:text-purple-400 rounded-lg text-xs font-semibold transition-colors">
-            <i class='bx bx-key mr-1.5'></i>
+        <button type="button" onclick="handleResetPassword({{ $user->id }})"
+            class="inline-flex items-center justify-center px-4 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 dark:text-purple-400 rounded-lg text-xs font-semibold transition-colors">
             Reset Password
         </button>
         @if(!$user->email_verified_at)
-        <button type="button" 
-                onclick="handleVerifyEmail({{ $user->id }})"
+            <button type="button" onclick="handleVerifyEmail({{ $user->id }})"
                 class="inline-flex items-center justify-center px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-400 rounded-lg text-xs font-semibold transition-colors">
-            <i class='bx bx-check-circle mr-1.5'></i>
-            Verify Email
-        </button>
+                Verify Email
+            </button>
         @else
-        <button type="button" 
-                onclick="handleUnverifyEmail({{ $user->id }})"
+            <button type="button" onclick="handleUnverifyEmail({{ $user->id }})"
                 class="inline-flex items-center justify-center px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg text-xs font-semibold transition-colors">
-            <i class='bx bx-x-circle mr-1.5'></i>
-            Unverify Email
-        </button>
+                Unverify Email
+            </button>
         @endif
-        <form id="toggleStatusForm" action="{{ route('admin.users.toggle-status', $user) }}" method="POST" class="inline">
+        <form id="toggleStatusForm" action="{{ route('admin.users.toggle-status', $user) }}" method="POST"
+            class="inline">
             @csrf
             @method('PATCH')
-            <button type="button" 
-                    onclick="handleToggleStatus({{ $user->id }}, '{{ $user->status }}')"
-                    class="inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs font-semibold transition-colors
+            <button type="button" onclick="handleToggleStatus({{ $user->id }}, '{{ $user->status }}')" class="inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs font-semibold transition-colors
                     @if($user->status === 'active')
                         bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-900/30 dark:hover:bg-gray-900/50 dark:text-gray-400
                     @else
                         bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-400
                     @endif">
-                <i class='bx {{ $user->status === 'active' ? 'bx-toggle-right' : 'bx-toggle-left' }} mr-1.5'></i>
                 {{ $user->status === 'active' ? 'Set Inactive' : 'Set Active' }}
             </button>
         </form>
     </div>
 </div>
-
