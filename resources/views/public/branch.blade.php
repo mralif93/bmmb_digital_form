@@ -22,15 +22,6 @@
                     <span class="flex items-center gap-2"><i class='bx bx-envelope text-lg'></i> {{ $branch->email }}</span>
                     <span class="flex items-center gap-2"><i class='bx bx-map text-lg'></i> {{ $branch->state }}</span>
                 </div>
-                @if(isset($qrCodeInfo) && $qrCodeInfo['expires_at'])
-                    <div class="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-white/20">
-                        <div class="flex flex-col items-center space-y-2 text-white/80 text-sm sm:text-base">
-                            <span class="text-white/70">
-                                Expires: {{ $qrCodeInfo['expires_at']->format('M d, Y h:i A') }}
-                            </span>
-                        </div>
-                    </div>
-                @endif
             </div>
         </div>
     </section>
