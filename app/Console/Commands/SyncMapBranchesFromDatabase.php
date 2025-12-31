@@ -221,10 +221,15 @@ class SyncMapBranchesFromDatabase extends Command
 
         foreach ($mapBranches as $mapBranch) {
             try {
-                // Find by ti_agent_code (unique identifier) instead of id
-                $existing = Branch::withTrashed()
-                    ->where('ti_agent_code', $mapBranch['ti_agent_code'])
-                    ->first();
+                // Try finding by ID first (primary map ID)
+                $existing = Branch::withTrashed()->find($mapBranch['id']);
+
+                // If not found by ID, try finding by TI code (only if not empty)
+                if (!$existing && !empty($mapBranch['ti_agent_code'])) {
+                    $existing = Branch::withTrashed()
+                        ->where('ti_agent_code', $mapBranch['ti_agent_code'])
+                        ->first();
+                }
 
                 $data = [
                     'id' => $mapBranch['id'], // Preserve MAP ID
@@ -275,7 +280,16 @@ class SyncMapBranchesFromDatabase extends Command
                         $updated++;
                         $this->line("  <fg=yellow>~</> Updated: {$mapBranch['branch_name']}");
                     } else {
-                        $skipped++;
+                        // Even if data is same, ensure it is restored if trashed
+                        if ($existing->trashed()) {
+                            if (!$dryRun) {
+                                $existing->restore();
+                            }
+                            $updated++;
+                            $this->line("  <fg=yellow>~</> Restored: {$mapBranch['branch_name']}");
+                        } else {
+                            $skipped++;
+                        }
                     }
                 }
 
