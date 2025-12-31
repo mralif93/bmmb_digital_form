@@ -8,8 +8,14 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Counter Display - {{ $branch->name }}</title>
 
-    <!-- Auto-refresh every 5 minutes -->
-    <meta http-equiv="refresh" content="300">
+    <!-- Auto-refresh every 60 seconds to keep session alive and QR updated -->
+    <meta http-equiv="refresh" content="60">
+    <script>
+        // Robust fallback: Force reload every 60 seconds
+        setTimeout(function () {
+            window.location.reload();
+        }, 60000);
+    </script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
