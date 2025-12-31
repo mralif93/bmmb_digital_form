@@ -132,18 +132,19 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Format</label>
-                            <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
-                                <option value="Y-m-d" selected>YYYY-MM-DD</option>
-                                <option value="m/d/Y">MM/DD/YYYY</option>
-                                <option value="d/m/Y">DD/MM/YYYY</option>
-                                <option value="M d, Y">Jan 1, 2024</option>
+                            <select name="date_format" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
+                                <option value="Y-m-d" {{ ($settings['date_format'] ?? 'Y-m-d') == 'Y-m-d' ? 'selected' : '' }}>YYYY-MM-DD (2024-12-31)</option>
+                                <option value="m/d/Y" {{ ($settings['date_format'] ?? 'Y-m-d') == 'm/d/Y' ? 'selected' : '' }}>MM/DD/YYYY (12/31/2024)</option>
+                                <option value="d/m/Y" {{ ($settings['date_format'] ?? 'Y-m-d') == 'd/m/Y' ? 'selected' : '' }}>DD/MM/YYYY (31/12/2024)</option>
+                                <option value="M d, Y" {{ ($settings['date_format'] ?? 'Y-m-d') == 'M d, Y' ? 'selected' : '' }}>M d, Y (Dec 31, 2024)</option>
+                                <option value="d M Y" {{ ($settings['date_format'] ?? 'Y-m-d') == 'd M Y' ? 'selected' : '' }}>d M Y (31 Dec 2024)</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Time Format</label>
-                            <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
-                                <option value="H:i" selected>24 Hour (14:30)</option>
-                                <option value="g:i A">12 Hour (2:30 PM)</option>
+                            <select name="time_format" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
+                                <option value="H:i" {{ ($settings['time_format'] ?? 'H:i') == 'H:i' ? 'selected' : '' }}>24 Hour (14:30)</option>
+                                <option value="g:i A" {{ ($settings['time_format'] ?? 'H:i') == 'g:i A' ? 'selected' : '' }}>12 Hour (2:30 PM)</option>
                             </select>
                         </div>
                         <div>

@@ -690,7 +690,14 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
                 $viewData['users'] = collect(); // Empty for non-IAM
             }
 
+            // Get system settings for date/time formatting
+            $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+            $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+            $timeFormat = $settings['time_format'] ?? 'H:i';
+
             $viewData['stats'] = $stats;
+            $viewData['dateFormat'] = $dateFormat;
+            $viewData['timeFormat'] = $timeFormat;
 
             return view('admin.dashboard', $viewData);
         })->name('dashboard');

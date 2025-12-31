@@ -102,7 +102,11 @@ class SubmissionController extends Controller
 
         $branches = Branch::orderBy('branch_name')->get();
 
-        return view('admin.submissions.index', compact('submissions', 'branches', 'form'));
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
+        return view('admin.submissions.index', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat'));
     }
 
     /**
@@ -190,7 +194,11 @@ class SubmissionController extends Controller
 
         $branches = Branch::orderBy('branch_name')->get();
 
-        return view('admin.submissions.trashed', compact('submissions', 'branches', 'form'));
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
+        return view('admin.submissions.trashed', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat'));
     }
 
     /**
@@ -549,7 +557,11 @@ class SubmissionController extends Controller
         }
         $branches = Branch::orderBy('branch_name')->get();
 
-        return view('admin.submissions.index', compact('submissions', 'branches', 'form'));
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
+        return view('admin.submissions.index', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat'));
     }
 
     /**
@@ -623,7 +635,11 @@ class SubmissionController extends Controller
         }
         $branches = Branch::orderBy('branch_name')->get();
 
-        return view('admin.submissions.index', compact('submissions', 'branches', 'form'));
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
+        return view('admin.submissions.index', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat'));
     }
 
     /**
@@ -697,7 +713,11 @@ class SubmissionController extends Controller
         }
         $branches = Branch::orderBy('branch_name')->get();
 
-        return view('admin.submissions.index', compact('submissions', 'branches', 'form'));
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
+        return view('admin.submissions.index', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat'));
     }
 
     /**
@@ -771,7 +791,11 @@ class SubmissionController extends Controller
         }
         $branches = Branch::orderBy('branch_name')->get();
 
-        return view('admin.submissions.index', compact('submissions', 'branches', 'form'));
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
+        return view('admin.submissions.index', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat'));
     }
 
     /**

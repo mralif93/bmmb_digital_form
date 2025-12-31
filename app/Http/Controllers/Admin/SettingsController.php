@@ -31,6 +31,8 @@ class SettingsController extends Controller
             'app_description' => 'nullable|string|max:1000',
             'timezone' => 'nullable|string',
             'language' => 'nullable|string',
+            'date_format' => 'nullable|string',
+            'time_format' => 'nullable|string',
             'qr_code_expiration_minutes' => 'nullable|integer|min:1|max:10080', // 1 minute to 7 days (10080 minutes)
             'enable_registration' => 'nullable|boolean',
             'enable_offline_mode' => 'nullable|boolean',
@@ -75,7 +77,7 @@ class SettingsController extends Controller
     {
         // First check if settings exist in cache
         $settings = Cache::get('system_settings');
-        
+
         // If not in cache, return defaults
         if (!$settings) {
             return [
@@ -84,6 +86,8 @@ class SettingsController extends Controller
                 'app_description' => 'Digital form management system for BMMB',
                 'timezone' => 'UTC',
                 'language' => 'en',
+                'date_format' => 'Y-m-d',
+                'time_format' => 'H:i',
                 'qr_code_expiration_minutes' => 60, // Default 60 minutes (1 hour)
                 'enable_registration' => true,
                 'enable_offline_mode' => true,
@@ -93,7 +97,7 @@ class SettingsController extends Controller
                 'primary_color' => '#FE8000', // Default orange color
             ];
         }
-        
+
         // Merge with defaults to ensure all keys exist
         return array_merge([
             'app_name' => 'BMMB Digital Forms',
@@ -101,6 +105,8 @@ class SettingsController extends Controller
             'app_description' => 'Digital form management system for BMMB',
             'timezone' => 'UTC',
             'language' => 'en',
+            'date_format' => 'Y-m-d',
+            'time_format' => 'H:i',
             'qr_code_expiration_minutes' => 60,
             'enable_registration' => true,
             'enable_offline_mode' => true,

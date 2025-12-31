@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\FormSubmission;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Service to present form submissions in a human-readable format
@@ -470,7 +471,20 @@ class FormSubmissionPresenter
                 return '<pre class="bg-gray-50 dark:bg-gray-900 p-2 rounded text-xs overflow-x-auto">' . json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
 
             case 'date':
-                return is_string($value) ? date('d M Y', strtotime($value)) : $value;
+                if (is_string($value)) {
+                    $settings = Cache::get('system_settings', []);
+                    $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+                    $timeFormat = $settings['time_format'] ?? 'H:i';
+
+                    // Simple check if it's a full timestamp or just date
+                    // If it contains ':', it likely has time
+                    if (str_contains($value, ':')) {
+                        return date("$dateFormat $timeFormat", strtotime($value));
+                    }
+
+                    return date($dateFormat, strtotime($value));
+                }
+                return $value;
 
             default:
                 if (is_array($value)) {

@@ -278,11 +278,11 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             @if($submission->submitted_at)
-                                <div>{{ $submission->submitted_at->format('M d, Y') }}</div>
-                                <div class="text-xs text-gray-400">{{ $submission->submitted_at->format('h:i A') }}</div>
+                                <div>{{ $submission->submitted_at ? $submission->submitted_at->format($dateFormat) : '-' }}</div>
+                                <div class="text-xs text-gray-400">{{ $submission->submitted_at ? $submission->submitted_at->format($timeFormat) : '' }}</div>
                             @else
-                                <div>{{ $submission->created_at->format('M d, Y') }}</div>
-                                <div class="text-xs text-gray-400">{{ $submission->created_at->format('h:i A') }}</div>
+                                <div>{{ $submission->created_at->format($dateFormat) }}</div>
+                                <div class="text-xs text-gray-400">{{ $submission->created_at->format($timeFormat) }}</div>
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-xs font-medium">

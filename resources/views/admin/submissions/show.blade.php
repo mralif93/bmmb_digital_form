@@ -9,6 +9,11 @@
 @endpush
 
 @section('content')
+@php
+    $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+    $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+    $timeFormat = $settings['time_format'] ?? 'H:i';
+@endphp
 <div class="mb-4 flex items-center justify-between">
     <div></div>
     <div class="flex items-center space-x-2">
@@ -53,7 +58,7 @@
     <i class='bx bx-error-circle mr-2 text-lg'></i>
     <div>
         <strong>This submission has been deleted.</strong>
-        <p class="text-xs mt-1">Deleted on {{ $submission->deleted_at->format('M d, Y h:i A') }}</p>
+        <p class="text-xs mt-1">Deleted on {{ $submission->deleted_at->format($dateFormat . ' ' . $timeFormat) }}</p>
     </div>
 </div>
 @endif
@@ -190,7 +195,7 @@
                         Submitted At
                     </dt>
                     <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
-                        {{ $submission->submitted_at ? $submission->submitted_at->format('M d, Y h:i A') : 'Not submitted' }}
+                        {{ $submission->submitted_at ? $submission->submitted_at->format($dateFormat . ' ' . $timeFormat) : 'Not submitted' }}
                     </dd>
                 </div>
                 <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
@@ -198,7 +203,7 @@
                         Created At
                     </dt>
                     <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
-                        {{ $submission->created_at->format('M d, Y h:i A') }}
+                        {{ $submission->created_at->format($dateFormat . ' ' . $timeFormat) }}
                     </dd>
                 </div>
                 @if($submission->taken_up_by && $submission->taken_up_at)
@@ -208,7 +213,7 @@
                     </dt>
                     <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
                         {{ $submission->takenUpBy ? $submission->takenUpBy->first_name . ' ' . $submission->takenUpBy->last_name : 'N/A' }}
-                        <span class="text-gray-500 dark:text-gray-400 text-xs block mt-1">on {{ $submission->taken_up_at->format('M d, Y h:i A') }}</span>
+                        <span class="text-gray-500 dark:text-gray-400 text-xs block mt-1">on {{ $submission->taken_up_at->format($dateFormat . ' ' . $timeFormat) }}</span>
                     </dd>
                 </div>
                 @endif
@@ -219,7 +224,7 @@
                     </dt>
                     <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
                         {{ $submission->completedBy ? $submission->completedBy->first_name . ' ' . $submission->completedBy->last_name : 'N/A' }}
-                        <span class="text-gray-500 dark:text-gray-400 text-xs block mt-1">on {{ $submission->completed_at->format('M d, Y h:i A') }}</span>
+                        <span class="text-gray-500 dark:text-gray-400 text-xs block mt-1">on {{ $submission->completed_at->format($dateFormat . ' ' . $timeFormat) }}</span>
                     </dd>
                 </div>
                 @endif
@@ -321,7 +326,7 @@
                         Reviewed By
                     </dt>
                     <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
-                        {{ $submission->reviewedBy->first_name . ' ' . $submission->reviewedBy->last_name }} on {{ $submission->reviewed_at->format('M d, Y h:i A') }}
+                        {{ $submission->reviewedBy->first_name . ' ' . $submission->reviewedBy->last_name }} on {{ $submission->reviewed_at->format($dateFormat . ' ' . $timeFormat) }}
                     </dd>
                 </div>
                 @endif
@@ -357,7 +362,7 @@
                             Date Received
                         </dt>
                         <dd class="text-sm text-gray-900 dark:text-white flex-1">
-                            {{ $submission->acknowledgment_date_received->format('M d, Y') }}
+                            {{ $submission->acknowledgment_date_received->format($dateFormat) }}
                         </dd>
                     </div>
                     @endif
@@ -416,7 +421,7 @@
                             Date
                         </dt>
                         <dd class="text-sm text-gray-900 dark:text-white flex-1">
-                            {{ $submission->verification_date->format('M d, Y') }}
+                            {{ $submission->verification_date->format($dateFormat) }}
                         </dd>
                     </div>
                     @endif
@@ -510,13 +515,13 @@
                 @if($submission->started_at)
                 <div>
                     <dt class="text-gray-500 dark:text-gray-400">Started At</dt>
-                    <dd class="text-gray-900 dark:text-white">{{ $submission->started_at->format('M d, Y h:i A') }}</dd>
+                    <dd class="text-gray-900 dark:text-white">{{ $submission->started_at->format($dateFormat . ' ' . $timeFormat) }}</dd>
                 </div>
                 @endif
                 @if($submission->last_modified_at)
                 <div>
                     <dt class="text-gray-500 dark:text-gray-400">Last Modified</dt>
-                    <dd class="text-gray-900 dark:text-white">{{ $submission->last_modified_at->format('M d, Y h:i A') }}</dd>
+                    <dd class="text-gray-900 dark:text-white">{{ $submission->last_modified_at->format($dateFormat . ' ' . $timeFormat) }}</dd>
                 </div>
                 @endif
             </dl>
@@ -591,13 +596,13 @@
                 @if($submission->started_at)
                 <div>
                     <dt class="text-gray-500 dark:text-gray-400">Started At</dt>
-                    <dd class="text-gray-900 dark:text-white">{{ $submission->started_at->format('M d, Y h:i A') }}</dd>
+                    <dd class="text-gray-900 dark:text-white">{{ $submission->started_at->format($dateFormat . ' ' . $timeFormat) }}</dd>
                 </div>
                 @endif
                 @if($submission->submitted_at)
                 <div>
                     <dt class="text-gray-500 dark:text-gray-400">Submitted At</dt>
-                    <dd class="text-gray-900 dark:text-white">{{ $submission->submitted_at->format('M d, Y h:i A') }}</dd>
+                    <dd class="text-gray-900 dark:text-white">{{ $submission->submitted_at->format($dateFormat . ' ' . $timeFormat) }}</dd>
                 </div>
                 @endif
             </dl>
