@@ -19,6 +19,8 @@ class TimezoneHelper
     /**
      * Convert a Carbon instance to system timezone.
      * Returns null if date is null.
+     * 
+     * @return \Illuminate\Support\Carbon|null
      */
     public static function toSystemTimezone($date)
     {

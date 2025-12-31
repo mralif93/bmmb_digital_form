@@ -89,7 +89,12 @@ class BranchController extends Controller
     public function show(Branch $branch)
     {
         $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
-        return view('admin.branches.show', compact('branch', 'timezoneHelper'));
+
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i:s';
+
+        return view('admin.branches.show', compact('branch', 'timezoneHelper', 'dateFormat', 'timeFormat'));
     }
 
     /**

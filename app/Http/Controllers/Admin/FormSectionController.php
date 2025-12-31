@@ -80,6 +80,11 @@ class FormSectionController extends Controller
         // Load relationships
         $section->load('fields');
 
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i:s';
+
         // Return JSON if requested via AJAX
         if (request()->expectsJson() || request()->ajax()) {
             return response()->json([
@@ -91,8 +96,8 @@ class FormSectionController extends Controller
                     'section_description' => $section->section_description,
                     'sort_order' => $section->sort_order,
                     'is_active' => $section->is_active,
-                    'created_at' => $section->created_at?->format('Y-m-d H:i:s'),
-                    'updated_at' => $section->updated_at?->format('Y-m-d H:i:s'),
+                    'created_at' => $timezoneHelper->convert($section->created_at)?->format($dateFormat . ' ' . $timeFormat),
+                    'updated_at' => $timezoneHelper->convert($section->updated_at)?->format($dateFormat . ' ' . $timeFormat),
                     'fields_count' => $section->fields->count(),
                     'fields' => $section->fields->map(function ($field) {
                         return [
@@ -106,7 +111,7 @@ class FormSectionController extends Controller
             ]);
         }
 
-        return view('admin.form-sections.show', compact('form', 'section'));
+        return view('admin.form-sections.show', compact('form', 'section', 'timezoneHelper', 'dateFormat', 'timeFormat'));
     }
 
     /**

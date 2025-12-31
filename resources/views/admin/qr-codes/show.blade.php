@@ -115,7 +115,7 @@
                             Created At
                         </dt>
                         <dd class="text-sm text-gray-900 dark:text-white">
-                            {{ $timezoneHelper->convert($qrCode->created_at)?->format('M d, Y h:i A') }}
+                            {{ $timezoneHelper->convert($qrCode->created_at)?->format($dateFormat . ' ' . $timeFormat) }}
                         </dd>
                     </div>
                     <div>
@@ -123,7 +123,7 @@
                             Updated At
                         </dt>
                         <dd class="text-sm text-gray-900 dark:text-white">
-                            {{ $timezoneHelper->convert($qrCode->updated_at)?->format('M d, Y h:i A') }}
+                            {{ $timezoneHelper->convert($qrCode->updated_at)?->format($dateFormat . ' ' . $timeFormat) }}
                         </dd>
                     </div>
                 </dl>

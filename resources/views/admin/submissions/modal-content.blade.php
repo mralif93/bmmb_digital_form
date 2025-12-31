@@ -89,7 +89,7 @@
                     Submitted At
                 </dt>
                 <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
-                    {{ $submission->submitted_at ? $submission->submitted_at->format($dateFormat . ' ' . $timeFormat) : 'Not submitted' }}
+                    {{ $submission->submitted_at ? $timezoneHelper->convert($submission->submitted_at)->format($dateFormat . ' ' . $timeFormat) : 'Not submitted' }}
                 </dd>
             </div>
             <div class="flex items-start gap-4">
@@ -98,7 +98,7 @@
                     Created At
                 </dt>
                 <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
-                    {{ $submission->created_at->format($dateFormat . ' ' . $timeFormat) }}
+                    {{ $timezoneHelper->convert($submission->created_at)->format($dateFormat . ' ' . $timeFormat) }}
                 </dd>
             </div>
             @if($submission->taken_up_by && $submission->taken_up_at)
@@ -110,7 +110,7 @@
                     <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
                         {{ $submission->takenUpBy ? $submission->takenUpBy->first_name . ' ' . $submission->takenUpBy->last_name : 'N/A' }}
                         <span class="text-gray-500 dark:text-gray-400 text-xs block mt-1">on
-                            {{ $submission->taken_up_at->format($dateFormat . ' ' . $timeFormat) }}</span>
+                            {{ $timezoneHelper->convert($submission->taken_up_at)->format($dateFormat . ' ' . $timeFormat) }}</span>
                     </dd>
                 </div>
             @endif

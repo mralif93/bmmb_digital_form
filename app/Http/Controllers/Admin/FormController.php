@@ -27,7 +27,12 @@ class FormController extends Controller
             $forms = Form::orderBy('sort_order')->orderBy('name')->paginate(15);
         }
 
-        return view('admin.forms.index', compact('forms', 'showTrashed'));
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i:s';
+
+        return view('admin.forms.index', compact('forms', 'showTrashed', 'timezoneHelper', 'dateFormat', 'timeFormat'));
     }
 
     /**
@@ -128,7 +133,12 @@ class FormController extends Controller
             ]);
         }
 
-        return view('admin.forms.show', compact('form'));
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i:s';
+
+        return view('admin.forms.show', compact('form', 'timezoneHelper', 'dateFormat', 'timeFormat'));
     }
 
     /**

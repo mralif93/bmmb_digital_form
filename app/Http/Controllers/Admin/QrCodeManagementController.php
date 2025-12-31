@@ -69,7 +69,11 @@ class QrCodeManagementController extends Controller
         // Get timezone helper
         $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
 
-        return view('admin.qr-codes.index', compact('qrCodes', 'branches', 'timezoneHelper'));
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i:s';
+
+        return view('admin.qr-codes.index', compact('qrCodes', 'branches', 'timezoneHelper', 'dateFormat', 'timeFormat'));
     }
 
     /**
@@ -148,7 +152,12 @@ class QrCodeManagementController extends Controller
     {
         $qr_code->load(['branch', 'creator']);
         $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
-        return view('admin.qr-codes.show', ['qrCode' => $qr_code, 'timezoneHelper' => $timezoneHelper]);
+
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i:s';
+
+        return view('admin.qr-codes.show', ['qrCode' => $qr_code, 'timezoneHelper' => $timezoneHelper, 'dateFormat' => $dateFormat, 'timeFormat' => $timeFormat]);
     }
 
     /**

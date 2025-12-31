@@ -12,6 +12,7 @@ use App\Models\Branch;
 use App\Traits\LogsAuditTrail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class SubmissionController extends Controller
 {
@@ -102,11 +103,12 @@ class SubmissionController extends Controller
 
         $branches = Branch::orderBy('branch_name')->get();
 
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
         $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
         $dateFormat = $settings['date_format'] ?? 'Y-m-d';
         $timeFormat = $settings['time_format'] ?? 'H:i';
 
-        return view('admin.submissions.index', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat'));
+        return view('admin.submissions.index', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat', 'timezoneHelper'));
     }
 
     /**
@@ -194,11 +196,12 @@ class SubmissionController extends Controller
 
         $branches = Branch::orderBy('branch_name')->get();
 
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
         $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
         $dateFormat = $settings['date_format'] ?? 'Y-m-d';
         $timeFormat = $settings['time_format'] ?? 'H:i';
 
-        return view('admin.submissions.trashed', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat'));
+        return view('admin.submissions.trashed', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat', 'timezoneHelper'));
     }
 
     /**
@@ -476,8 +479,13 @@ class SubmissionController extends Controller
             }
         }
 
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
         // Render the submission details partial
-        $html = view('admin.submissions.modal-content', compact('submission', 'form'))->render();
+        $html = view('admin.submissions.modal-content', compact('submission', 'form', 'timezoneHelper', 'dateFormat', 'timeFormat'))->render();
 
         return response()->json([
             'success' => true,
@@ -557,11 +565,12 @@ class SubmissionController extends Controller
         }
         $branches = Branch::orderBy('branch_name')->get();
 
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
         $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
         $dateFormat = $settings['date_format'] ?? 'Y-m-d';
         $timeFormat = $settings['time_format'] ?? 'H:i';
 
-        return view('admin.submissions.index', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat'));
+        return view('admin.submissions.index', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat', 'timezoneHelper'));
     }
 
     /**
@@ -635,11 +644,12 @@ class SubmissionController extends Controller
         }
         $branches = Branch::orderBy('branch_name')->get();
 
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
         $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
         $dateFormat = $settings['date_format'] ?? 'Y-m-d';
         $timeFormat = $settings['time_format'] ?? 'H:i';
 
-        return view('admin.submissions.index', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat'));
+        return view('admin.submissions.index', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat', 'timezoneHelper'));
     }
 
     /**
@@ -713,11 +723,12 @@ class SubmissionController extends Controller
         }
         $branches = Branch::orderBy('branch_name')->get();
 
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
         $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
         $dateFormat = $settings['date_format'] ?? 'Y-m-d';
         $timeFormat = $settings['time_format'] ?? 'H:i';
 
-        return view('admin.submissions.index', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat'));
+        return view('admin.submissions.index', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat', 'timezoneHelper'));
     }
 
     /**
@@ -791,11 +802,12 @@ class SubmissionController extends Controller
         }
         $branches = Branch::orderBy('branch_name')->get();
 
+        $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
         $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
         $dateFormat = $settings['date_format'] ?? 'Y-m-d';
         $timeFormat = $settings['time_format'] ?? 'H:i';
 
-        return view('admin.submissions.index', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat'));
+        return view('admin.submissions.index', compact('submissions', 'branches', 'form', 'dateFormat', 'timeFormat', 'timezoneHelper'));
     }
 
     /**

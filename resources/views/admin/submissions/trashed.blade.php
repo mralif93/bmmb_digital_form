@@ -213,8 +213,8 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             @if($submission->deleted_at)
-                                <div>{{ $submission->deleted_at ? $submission->deleted_at->format($dateFormat) : '-' }}</div>
-                                <div class="text-xs text-gray-400">{{ $submission->deleted_at ? $submission->deleted_at->format($timeFormat) : '' }}</div>
+                                <div>{{ $timezoneHelper->convert($submission->deleted_at)?->format($dateFormat) ?? '-' }}</div>
+                                <div class="text-xs text-gray-400">{{ $timezoneHelper->convert($submission->deleted_at)?->format($timeFormat) ?? '' }}</div>
                             @else
                                 <div class="text-xs text-gray-400">N/A</div>
                             @endif

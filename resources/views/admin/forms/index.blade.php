@@ -157,7 +157,7 @@
                             </td>
                             <td class="px-3 sm:px-4 py-3 whitespace-nowrap hidden lg:table-cell">
                                 <div class="text-xs text-gray-600 dark:text-gray-400">
-                                    {{ $form->created_at->format('M d, Y') }}
+                                    {{ $timezoneHelper->convert($form->created_at)->format($dateFormat) }}
                                 </div>
                             </td>
                             <td class="px-2 sm:px-4 py-3 text-right text-xs font-medium">
@@ -523,81 +523,81 @@
 
                 // Build create form HTML
                 container.innerHTML = `
-                                                            <!-- Form Name -->
-                                                            <div>
-                                                                <label for="create_name" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                                    Form Name <span class="text-red-500">*</span>
-                                                                </label>
-                                                                <input type="text" name="name" id="create_name" required
-                                                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                                                       placeholder="e.g., Customer Feedback Form">
-                                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The display name for this form</p>
-                                                            </div>
+                                                                    <!-- Form Name -->
+                                                                    <div>
+                                                                        <label for="create_name" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                                            Form Name <span class="text-red-500">*</span>
+                                                                        </label>
+                                                                        <input type="text" name="name" id="create_name" required
+                                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                                                               placeholder="e.g., Customer Feedback Form">
+                                                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The display name for this form</p>
+                                                                    </div>
 
-                                                            <!-- Slug -->
-                                                            <div>
-                                                                <label for="create_slug" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                                    Slug
-                                                                </label>
-                                                                <input type="text" name="slug" id="create_slug"
-                                                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono"
-                                                                       placeholder="e.g., customer-feedback-form">
-                                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">URL-friendly identifier (auto-generated if left empty)</p>
-                                                            </div>
+                                                                    <!-- Slug -->
+                                                                    <div>
+                                                                        <label for="create_slug" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                                            Slug
+                                                                        </label>
+                                                                        <input type="text" name="slug" id="create_slug"
+                                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono"
+                                                                               placeholder="e.g., customer-feedback-form">
+                                                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">URL-friendly identifier (auto-generated if left empty)</p>
+                                                                    </div>
 
-                                                            <!-- Description -->
-                                                            <div>
-                                                                <label for="create_description" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                                    Description
-                                                                </label>
-                                                                <textarea name="description" id="create_description" rows="3"
-                                                                          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                                                          placeholder="Brief description of what this form is used for"></textarea>
-                                                            </div>
+                                                                    <!-- Description -->
+                                                                    <div>
+                                                                        <label for="create_description" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                                            Description
+                                                                        </label>
+                                                                        <textarea name="description" id="create_description" rows="3"
+                                                                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                                                                  placeholder="Brief description of what this form is used for"></textarea>
+                                                                    </div>
 
-                                                            <!-- Status -->
-                                                            <div>
-                                                                <label for="create_status" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                                    Status <span class="text-red-500">*</span>
-                                                                </label>
-                                                                <select name="status" id="create_status" required
-                                                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                                                                    ${Object.entries(statusOptions).map(([value, label]) =>
+                                                                    <!-- Status -->
+                                                                    <div>
+                                                                        <label for="create_status" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                                            Status <span class="text-red-500">*</span>
+                                                                        </label>
+                                                                        <select name="status" id="create_status" required
+                                                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                                                            ${Object.entries(statusOptions).map(([value, label]) =>
                     `<option value="${value}" ${value === 'draft' ? 'selected' : ''}>${label}</option>`
                 ).join('')}
-                                                                </select>
-                                                            </div>
+                                                                        </select>
+                                                                    </div>
 
-                                                            <!-- Submission Limit -->
-                                                            <div>
-                                                                <label for="create_submission_limit" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                                    Submission Limit
-                                                                </label>
-                                                                <input type="number" name="submission_limit" id="create_submission_limit" min="1"
-                                                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                                                       placeholder="Leave empty for unlimited">
-                                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Maximum number of submissions allowed per user (leave empty for unlimited)</p>
-                                                            </div>
+                                                                    <!-- Submission Limit -->
+                                                                    <div>
+                                                                        <label for="create_submission_limit" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                                            Submission Limit
+                                                                        </label>
+                                                                        <input type="number" name="submission_limit" id="create_submission_limit" min="1"
+                                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                                                               placeholder="Leave empty for unlimited">
+                                                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Maximum number of submissions allowed per user (leave empty for unlimited)</p>
+                                                                    </div>
 
-                                                            <!-- Checkboxes -->
-                                                            <div class="space-y-2">
-                                                                <label class="flex items-center">
-                                                                    <input type="checkbox" name="is_public" id="create_is_public" value="1" checked
-                                                                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
-                                                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Public Form (accessible to all users)</span>
-                                                                </label>
-                                                                <label class="flex items-center">
-                                                                    <input type="checkbox" name="allow_multiple_submissions" id="create_allow_multiple" value="1" checked
-                                                                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
-                                                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Allow Multiple Submissions</span>
-                                                                </label>
+                                                                    <!-- Checkboxes -->
+                                                                    <div class="space-y-2">
+                                                                        <label class="flex items-center">
+                                                                            <input type="checkbox" name="is_public" id="create_is_public" value="1" checked
+                                                                                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                                                                            <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Public Form (accessible to all users)</span>
+                                                                        </label>
+                                                                        <label class="flex items-center">
+                                                                            <input type="checkbox" name="allow_multiple_submissions" id="create_allow_multiple" value="1" checked
+                                                                                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                                                                            <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Allow Multiple Submissions</span>
+                                                                        </label>
 
-                                                            <!-- Submit Button -->
-                                                            <button type="submit" 
-                                                                    class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition-colors">
-                                                                Create Form
-                                                            </button>
-                                                        `;
+                                                                    <!-- Submit Button -->
+                                                                    <button type="submit" 
+                                                                            class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition-colors">
+                                                                        Create Form
+                                                                    </button>
+                                                                `;
 
 
                 // Show modal with animation
@@ -651,81 +651,81 @@
 
                 // Build edit form HTML
                 container.innerHTML = `
-                                                            <!-- Form Name -->
-                                                            <div>
-                                                                <label for="edit_name" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                                    Form Name <span class="text-red-500">*</span>
-                                                                </label>
-                                                                <input type="text" name="name" id="edit_name" value="${formName.replace(/"/g, '&quot;')}" required
-                                                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                                                       placeholder="e.g., Customer Feedback Form">
-                                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The display name for this form</p>
-                                                            </div>
+                                                                    <!-- Form Name -->
+                                                                    <div>
+                                                                        <label for="edit_name" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                                            Form Name <span class="text-red-500">*</span>
+                                                                        </label>
+                                                                        <input type="text" name="name" id="edit_name" value="${formName.replace(/"/g, '&quot;')}" required
+                                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                                                               placeholder="e.g., Customer Feedback Form">
+                                                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The display name for this form</p>
+                                                                    </div>
 
-                                                            <!-- Slug -->
-                                                            <div>
-                                                                <label for="edit_slug" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                                    Slug
-                                                                </label>
-                                                                <input type="text" name="slug" id="edit_slug" value="${formSlug.replace(/"/g, '&quot;')}"
-                                                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono"
-                                                                       placeholder="e.g., customer-feedback-form">
-                                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">URL-friendly identifier (auto-generated if left empty)</p>
-                                                            </div>
+                                                                    <!-- Slug -->
+                                                                    <div>
+                                                                        <label for="edit_slug" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                                            Slug
+                                                                        </label>
+                                                                        <input type="text" name="slug" id="edit_slug" value="${formSlug.replace(/"/g, '&quot;')}"
+                                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono"
+                                                                               placeholder="e.g., customer-feedback-form">
+                                                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">URL-friendly identifier (auto-generated if left empty)</p>
+                                                                    </div>
 
-                                                            <!-- Description -->
-                                                            <div>
-                                                                <label for="edit_description" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                                    Description
-                                                                </label>
-                                                                <textarea name="description" id="edit_description" rows="3"
-                                                                          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                                                          placeholder="Brief description of what this form is used for">${formDescription.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                                                            </div>
+                                                                    <!-- Description -->
+                                                                    <div>
+                                                                        <label for="edit_description" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                                            Description
+                                                                        </label>
+                                                                        <textarea name="description" id="edit_description" rows="3"
+                                                                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                                                                  placeholder="Brief description of what this form is used for">${formDescription.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                                                                    </div>
 
-                                                            <!-- Status -->
-                                                            <div>
-                                                                <label for="edit_status" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                                    Status <span class="text-red-500">*</span>
-                                                                </label>
-                                                                <select name="status" id="edit_status" required
-                                                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                                                                    ${Object.entries(statusOptions).map(([value, label]) =>
+                                                                    <!-- Status -->
+                                                                    <div>
+                                                                        <label for="edit_status" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                                            Status <span class="text-red-500">*</span>
+                                                                        </label>
+                                                                        <select name="status" id="edit_status" required
+                                                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                                                            ${Object.entries(statusOptions).map(([value, label]) =>
                     `<option value="${value}" ${value === formStatus ? 'selected' : ''}>${label}</option>`
                 ).join('')}
-                                                                </select>
-                                                            </div>
+                                                                        </select>
+                                                                    </div>
 
-                                                            <!-- Submission Limit -->
-                                                            <div>
-                                                                <label for="edit_submission_limit" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                                    Submission Limit
-                                                                </label>
-                                                                <input type="number" name="submission_limit" id="edit_submission_limit" value="${submissionLimit}" min="1"
-                                                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                                                       placeholder="Leave empty for unlimited">
-                                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Maximum number of submissions allowed per user (leave empty for unlimited)</p>
-                                                            </div>
+                                                                    <!-- Submission Limit -->
+                                                                    <div>
+                                                                        <label for="edit_submission_limit" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                                            Submission Limit
+                                                                        </label>
+                                                                        <input type="number" name="submission_limit" id="edit_submission_limit" value="${submissionLimit}" min="1"
+                                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                                                               placeholder="Leave empty for unlimited">
+                                                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Maximum number of submissions allowed per user (leave empty for unlimited)</p>
+                                                                    </div>
 
-                                                            <!-- Checkboxes -->
-                                                            <div class="space-y-2">
-                                                                <label class="flex items-center">
-                                                                    <input type="checkbox" name="is_public" id="edit_is_public" value="1" ${isPublic ? 'checked' : ''}
-                                                                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
-                                                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Public Form (accessible to all users)</span>
-                                                                </label>
-                                                                <label class="flex items-center">
-                                                                    <input type="checkbox" name="allow_multiple_submissions" id="edit_allow_multiple" value="1" ${allowMultiple ? 'checked' : ''}
-                                                                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
-                                                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Allow Multiple Submissions</span>
-                                                                </label>
+                                                                    <!-- Checkboxes -->
+                                                                    <div class="space-y-2">
+                                                                        <label class="flex items-center">
+                                                                            <input type="checkbox" name="is_public" id="edit_is_public" value="1" ${isPublic ? 'checked' : ''}
+                                                                                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                                                                            <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Public Form (accessible to all users)</span>
+                                                                        </label>
+                                                                        <label class="flex items-center">
+                                                                            <input type="checkbox" name="allow_multiple_submissions" id="edit_allow_multiple" value="1" ${allowMultiple ? 'checked' : ''}
+                                                                                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                                                                            <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Allow Multiple Submissions</span>
+                                                                        </label>
 
-                                                            <!-- Submit Button -->
-                                                            <button type="submit" 
-                                                                    class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition-colors">
-                                                                Update Form
-                                                            </button>
-                                                        `;
+                                                                    <!-- Submit Button -->
+                                                                    <button type="submit" 
+                                                                            class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition-colors">
+                                                                        Update Form
+                                                                    </button>
+                                                                `;
 
 
                 // Set form action
@@ -890,10 +890,10 @@
                 // Show modal with loading state
                 modal.classList.remove('hidden');
                 contentContainer.innerHTML = `
-                                                            <div class="flex items-center justify-center py-8">
-                                                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-                                                            </div>
-                                                        `;
+                                                                    <div class="flex items-center justify-center py-8">
+                                                                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                                                                    </div>
+                                                                `;
 
                 // Trigger animation
                 setTimeout(() => {
@@ -929,138 +929,138 @@
                                     let fieldsHtml = '';
                                     if (section.fields && section.fields.length > 0) {
                                         fieldsHtml = section.fields.map(field => `
-                                                                                <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
-                                                                                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300">${field.field_label || field.field_name}</span>
-                                                                                    <span class="text-xs text-gray-500 dark:text-gray-400">${field.field_type ? field.field_type.charAt(0).toUpperCase() + field.field_type.slice(1) : ''}</span>
-                                                                                </div>
-                                                                            `).join('');
+                                                                                        <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+                                                                                            <span class="text-xs font-medium text-gray-700 dark:text-gray-300">${field.field_label || field.field_name}</span>
+                                                                                            <span class="text-xs text-gray-500 dark:text-gray-400">${field.field_type ? field.field_type.charAt(0).toUpperCase() + field.field_type.slice(1) : ''}</span>
+                                                                                        </div>
+                                                                                    `).join('');
                                     } else {
                                         fieldsHtml = '<div class="py-2 text-xs text-gray-500 dark:text-gray-400 italic text-center">No fields in this section</div>';
                                     }
 
                                     return `
-                                                                            <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-4">
-                                                                                <!-- Title Section -->
-                                                                                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
-                                                                                    <div class="flex items-center justify-between">
-                                                                                        <h4 class="text-xs font-semibold text-gray-900 dark:text-white">
-                                                                                            ${section.section_label || section.section_key}
-                                                                                        </h4>
-                                                                                        <span class="text-xs text-gray-500 dark:text-gray-400">
-                                                                                            ${section.fields_count || 0} field(s)
-                                                                                        </span>
+                                                                                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-4">
+                                                                                        <!-- Title Section -->
+                                                                                        <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
+                                                                                            <div class="flex items-center justify-between">
+                                                                                                <h4 class="text-xs font-semibold text-gray-900 dark:text-white">
+                                                                                                    ${section.section_label || section.section_key}
+                                                                                                </h4>
+                                                                                                <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                                                                    ${section.fields_count || 0} field(s)
+                                                                                                </span>
+                                                                                            </div>
+                                                                                            ${section.section_description ? `<p class="text-xs text-gray-600 dark:text-gray-400 mt-1">${section.section_description}</p>` : ''}
+                                                                                        </div>
+                                                                                        <!-- Fields List -->
+                                                                                        <div class="px-4 py-2">
+                                                                                            ${fieldsHtml}
+                                                                                        </div>
                                                                                     </div>
-                                                                                    ${section.section_description ? `<p class="text-xs text-gray-600 dark:text-gray-400 mt-1">${section.section_description}</p>` : ''}
-                                                                                </div>
-                                                                                <!-- Fields List -->
-                                                                                <div class="px-4 py-2">
-                                                                                    ${fieldsHtml}
-                                                                                </div>
-                                                                            </div>
-                                                                        `;
+                                                                                `;
                                 }).join('');
                             } else {
                                 sectionsHtml = `
-                                                                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8 text-center">
-                                                                            <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
-                                                                                <i class='bx bx-layer text-2xl text-gray-400 dark:text-gray-500'></i>
-                                                                            </div>
-                                                                            <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">No sections configured</h4>
-                                                                            <p class="text-xs text-gray-600 dark:text-gray-400 mb-4">Start building your form by adding sections and fields</p>
-                                                                        </div>
-                                                                    `;
+                                                                                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8 text-center">
+                                                                                    <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
+                                                                                        <i class='bx bx-layer text-2xl text-gray-400 dark:text-gray-500'></i>
+                                                                                    </div>
+                                                                                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">No sections configured</h4>
+                                                                                    <p class="text-xs text-gray-600 dark:text-gray-400 mb-4">Start building your form by adding sections and fields</p>
+                                                                                </div>
+                                                                            `;
                             }
 
                             contentContainer.innerHTML = `
-                                                                    <!-- Form Details Card -->
-                                                                    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
-                                                                        <!-- Title Section -->
-                                                                        <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
-                                                                            <div class="flex items-center justify-between">
-                                                                                <div>
-                                                                                    <h2 class="text-sm font-semibold text-gray-900 dark:text-white">${form.name || ''}</h2>
-                                                                                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">${form.description || 'No description provided'}</p>
-                                                                                </div>
-                                                                                <div class="flex items-center space-x-2">
-                                                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[form.status] || statusColors['draft']}">
-                                                                                        ${form.status ? form.status.charAt(0).toUpperCase() + form.status.slice(1) : 'Draft'}
-                                                                                    </span>
-                                                                                    ${form.is_public ?
+                                                                            <!-- Form Details Card -->
+                                                                            <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+                                                                                <!-- Title Section -->
+                                                                                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
+                                                                                    <div class="flex items-center justify-between">
+                                                                                        <div>
+                                                                                            <h2 class="text-sm font-semibold text-gray-900 dark:text-white">${form.name || ''}</h2>
+                                                                                            <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">${form.description || 'No description provided'}</p>
+                                                                                        </div>
+                                                                                        <div class="flex items-center space-x-2">
+                                                                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[form.status] || statusColors['draft']}">
+                                                                                                ${form.status ? form.status.charAt(0).toUpperCase() + form.status.slice(1) : 'Draft'}
+                                                                                            </span>
+                                                                                            ${form.is_public ?
                                     '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">Public</span>' :
                                     '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300">Private</span>'
                                 }
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <!-- Form Details List -->
+                                                                                <div class="px-4 py-2">
+                                                                                    <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                                                                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Slug</span>
+                                                                                        <span class="text-xs font-mono text-gray-900 dark:text-white">${form.slug || ''}</span>
+                                                                                    </div>
+                                                                                    <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                                                                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Submission Limit</span>
+                                                                                        <span class="text-xs text-gray-900 dark:text-white">${form.submission_limit || 'Unlimited'}</span>
+                                                                                    </div>
+                                                                                    <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                                                                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Multiple Submissions</span>
+                                                                                        <span class="text-xs text-gray-900 dark:text-white">${form.allow_multiple_submissions ? 'Allowed' : 'Not Allowed'}</span>
+                                                                                    </div>
+                                                                                    <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                                                                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Created At</span>
+                                                                                        <span class="text-xs text-gray-600 dark:text-gray-400">${form.created_at || ''}</span>
+                                                                                    </div>
+                                                                                    <div class="flex items-center justify-between py-2 last:border-b-0">
+                                                                                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Updated At</span>
+                                                                                        <span class="text-xs text-gray-600 dark:text-gray-400">${form.updated_at || ''}</span>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <!-- Action Buttons -->
+                                                                                <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+                                                                                    <div class="flex items-center justify-end space-x-2">
+                                                                                        <a href="{{ url('admin/forms') }}/${formId}/builder" class="inline-flex items-center px-3 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-700 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 dark:text-purple-400 rounded-lg text-xs transition-colors">
+                                                                                            <i class='bx bx-code-alt mr-1'></i>
+                                                                                            Form Builder
+                                                                                        </a>
+                                                                                        <a href="{{ url('admin/forms') }}/${formId}/sections" class="inline-flex items-center px-3 py-1.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 dark:text-indigo-400 rounded-lg text-xs transition-colors">
+                                                                                            <i class='bx bx-list-ul mr-1'></i>
+                                                                                            Sections
+                                                                                        </a>
+                                                                                        <button onclick="closeViewFormModal(); setTimeout(() => openEditFormModal(${formId}), 300);" class="inline-flex items-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 dark:text-orange-400 rounded-lg text-xs transition-colors">
+                                                                                            <i class='bx bx-edit mr-1'></i>
+                                                                                            Edit
+                                                                                        </button>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
-                                                                        </div>
 
-                                                                        <!-- Form Details List -->
-                                                                        <div class="px-4 py-2">
-                                                                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                                                                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Slug</span>
-                                                                                <span class="text-xs font-mono text-gray-900 dark:text-white">${form.slug || ''}</span>
-                                                                            </div>
-                                                                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                                                                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Submission Limit</span>
-                                                                                <span class="text-xs text-gray-900 dark:text-white">${form.submission_limit || 'Unlimited'}</span>
-                                                                            </div>
-                                                                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                                                                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Multiple Submissions</span>
-                                                                                <span class="text-xs text-gray-900 dark:text-white">${form.allow_multiple_submissions ? 'Allowed' : 'Not Allowed'}</span>
-                                                                            </div>
-                                                                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                                                                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Created At</span>
-                                                                                <span class="text-xs text-gray-600 dark:text-gray-400">${form.created_at || ''}</span>
-                                                                            </div>
-                                                                            <div class="flex items-center justify-between py-2 last:border-b-0">
-                                                                                <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Updated At</span>
-                                                                                <span class="text-xs text-gray-600 dark:text-gray-400">${form.updated_at || ''}</span>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <!-- Action Buttons -->
-                                                                        <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
-                                                                            <div class="flex items-center justify-end space-x-2">
-                                                                                <a href="{{ url('admin/forms') }}/${formId}/builder" class="inline-flex items-center px-3 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-700 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 dark:text-purple-400 rounded-lg text-xs transition-colors">
-                                                                                    <i class='bx bx-code-alt mr-1'></i>
-                                                                                    Form Builder
-                                                                                </a>
-                                                                                <a href="{{ url('admin/forms') }}/${formId}/sections" class="inline-flex items-center px-3 py-1.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 dark:text-indigo-400 rounded-lg text-xs transition-colors">
-                                                                                    <i class='bx bx-list-ul mr-1'></i>
-                                                                                    Sections
-                                                                                </a>
-                                                                                <button onclick="closeViewFormModal(); setTimeout(() => openEditFormModal(${formId}), 300);" class="inline-flex items-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 dark:text-orange-400 rounded-lg text-xs transition-colors">
-                                                                                    <i class='bx bx-edit mr-1'></i>
-                                                                                    Edit
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <!-- Sections and Fields Overview -->
-                                                                    ${sections.length > 0 ? `
-                                                                        <div class="bg-white dark:bg-gray-800 rounded-lg">
-                                                                            <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Form Structure</h3>
-                                                                            <div class="space-y-4">
-                                                                                ${sectionsHtml}
-                                                                            </div>
-                                                                        </div>
-                                                                    ` : sectionsHtml}
-                                                                `;
+                                                                            <!-- Sections and Fields Overview -->
+                                                                            ${sections.length > 0 ? `
+                                                                                <div class="bg-white dark:bg-gray-800 rounded-lg">
+                                                                                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Form Structure</h3>
+                                                                                    <div class="space-y-4">
+                                                                                        ${sectionsHtml}
+                                                                                    </div>
+                                                                                </div>
+                                                                            ` : sectionsHtml}
+                                                                        `;
                         } else {
                             contentContainer.innerHTML = `
-                                                                    <div class="text-center py-8">
-                                                                        <p class="text-xs text-red-600 dark:text-red-400">Failed to load form details</p>
-                                                                    </div>
-                                                                `;
+                                                                            <div class="text-center py-8">
+                                                                                <p class="text-xs text-red-600 dark:text-red-400">Failed to load form details</p>
+                                                                            </div>
+                                                                        `;
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
                         contentContainer.innerHTML = `
-                                                                <div class="text-center py-8">
-                                                                    <p class="text-xs text-red-600 dark:text-red-400">Error loading form details</p>
-                                                                </div>
-                                                            `;
+                                                                        <div class="text-center py-8">
+                                                                            <p class="text-xs text-red-600 dark:text-red-400">Error loading form details</p>
+                                                                        </div>
+                                                                    `;
                     });
             }
 

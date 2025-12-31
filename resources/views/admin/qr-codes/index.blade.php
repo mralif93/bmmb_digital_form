@@ -209,19 +209,19 @@
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <div class="text-xs text-gray-900 dark:text-white">
-                                    {{ $timezoneHelper->convert($qrCode->created_at)?->format('M d, Y') }}
+                                    {{ $timezoneHelper->convert($qrCode->created_at)?->format($dateFormat) }}
                                 </div>
                                 <div class="text-xs text-gray-500 dark:text-gray-400">
-                                    {{ $timezoneHelper->convert($qrCode->created_at)?->format('h:i A') }}
+                                    {{ $timezoneHelper->convert($qrCode->created_at)?->format($timeFormat) }}
                                 </div>
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap">
                                 @if($qrCode->last_regenerated_at)
                                     <div class="text-xs text-gray-900 dark:text-white">
-                                        {{ $timezoneHelper->convert($qrCode->last_regenerated_at)?->format('M d, Y') }}
+                                        {{ $timezoneHelper->convert($qrCode->last_regenerated_at)?->format($dateFormat) }}
                                     </div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400">
-                                        {{ $timezoneHelper->convert($qrCode->last_regenerated_at)?->format('h:i A') }}
+                                        {{ $timezoneHelper->convert($qrCode->last_regenerated_at)?->format($timeFormat) }}
                                     </div>
                                 @else
                                     <div class="text-xs text-gray-400 dark:text-gray-500 italic">
@@ -296,15 +296,15 @@
                 Swal.fire({
                     title: qrCodeName,
                     html: `
-                            <div class="flex flex-col items-center">
-                                <div id="qrcode-popup" class="w-64 h-64 border border-gray-300 rounded-lg p-4 bg-white mb-4 flex items-center justify-center"></div>
-                                <button onclick="downloadQrCode('${qrCodeName}')" 
-                                   class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                    <i class='bx bx-download mr-2'></i>
-                                    Download QR Code
-                                </button>
-                            </div>
-                        `,
+                                    <div class="flex flex-col items-center">
+                                        <div id="qrcode-popup" class="w-64 h-64 border border-gray-300 rounded-lg p-4 bg-white mb-4 flex items-center justify-center"></div>
+                                        <button onclick="downloadQrCode('${qrCodeName}')" 
+                                           class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                                            <i class='bx bx-download mr-2'></i>
+                                            Download QR Code
+                                        </button>
+                                    </div>
+                                `,
                     width: '500px',
                     showCloseButton: true,
                     showConfirmButton: false,
@@ -350,16 +350,16 @@
                 Swal.fire({
                     title: 'Regenerate All QR Codes?',
                     html: `
-                            <div class="text-center">
-                                <p class="mb-2">Are you sure you want to regenerate all active QR codes?</p>
-                                <p class="text-sm text-gray-600 mb-2">This will:</p>
-                                <ul class="text-sm text-gray-600 list-disc list-inside mt-2 inline-block text-left">
-                                    <li>Update all QR code images</li>
-                                    <li>Generate new validation tokens</li>
-                                    <li>Invalidate old QR codes</li>
-                                </ul>
-                            </div>
-                        `,
+                                    <div class="text-center">
+                                        <p class="mb-2">Are you sure you want to regenerate all active QR codes?</p>
+                                        <p class="text-sm text-gray-600 mb-2">This will:</p>
+                                        <ul class="text-sm text-gray-600 list-disc list-inside mt-2 inline-block text-left">
+                                            <li>Update all QR code images</li>
+                                            <li>Generate new validation tokens</li>
+                                            <li>Invalidate old QR codes</li>
+                                        </ul>
+                                    </div>
+                                `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, Regenerate All',

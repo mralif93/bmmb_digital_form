@@ -20,7 +20,12 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
-        return view('admin.profile', compact('user', 'timezoneHelper'));
+
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i:s';
+
+        return view('admin.profile', compact('user', 'timezoneHelper', 'dateFormat', 'timeFormat'));
     }
 
     /**
