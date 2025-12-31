@@ -19,14 +19,30 @@ class BranchController extends Controller
     public function show($tiAgentCode, Request $request)
     {
         $branch = Branch::where('ti_agent_code', $tiAgentCode)->firstOrFail();
+        $token = $request->query('token');
 
-        // Check if there's an active QR code for this branch
-        $qrCode = QrCode::where('branch_id', $branch->id)
-            ->where('type', 'branch')
-            ->where('status', 'active')
-            ->first();
+        // 1. Try to find the specific QR code using the token if provided
+        if ($token) {
+            $qrCode = QrCode::where('branch_id', $branch->id)
+                ->where('type', 'branch')
+                ->where('validation_token', $token)
+                ->first();
 
-        // If no active QR code exists, show error
+            if (!$qrCode) {
+                // Token provided but no matching QR found -> Invalid Token
+                abort(403, 'Invalid or expired QR code token. Please scan the current QR code.');
+            }
+        } else {
+            // 2. If no token, find the latest active QR code for today
+            $qrCode = QrCode::where('branch_id', $branch->id)
+                ->where('type', 'branch')
+                ->where('status', 'active')
+                ->whereDate('expires_at', '>=', today())
+                ->latest()
+                ->first();
+        }
+
+        // If no active QR code exists (and we didn't find one by token), show error
         if (!$qrCode) {
             abort(403, 'This QR code is not active or has been deactivated. Please contact the administrator.');
         }
@@ -36,38 +52,21 @@ class BranchController extends Controller
             abort(403, 'This QR Code has expired. Please use the QR code for today.');
         }
 
-        // Validate token if QR code has one
-        // Token verification is required for security
-        if ($qrCode->validation_token) {
-            $token = $request->query('token');
-
-            // If no token provided, reject access
-            if (empty($token)) {
-                abort(403, 'Invalid QR code. Token is required. Please scan the QR code again.');
-            }
-
-            // If token doesn't match, reject access
-            if ($token !== $qrCode->validation_token) {
-                Log::warning('QR code accessed with invalid token', [
-                    'qr_code_id' => $qrCode->id,
-                    'branch_id' => $branch->id,
-                    'expected_token' => substr($qrCode->validation_token, 0, 8) . '...',
-                    'provided_token' => substr($token, 0, 8) . '...',
-                ]);
-                abort(403, 'Invalid QR code token. Please scan the latest QR code.');
-            } else {
-                // Token matches - valid access
-                Log::debug('QR code accessed with valid token', [
-                    'qr_code_id' => $qrCode->id,
-                    'branch_id' => $branch->id,
-                ]);
-            }
+        // If the found QR code REQUIRES a token, but none was provided (Case 2 path)
+        if ($qrCode->validation_token && empty($token)) {
+            abort(403, 'Invalid QR code. Token is required. Please scan the QR code again.');
         }
+
+        // Log successful access
+        Log::debug('QR code accessed', [
+            'qr_code_id' => $qrCode->id,
+            'branch_id' => $branch->id,
+            'has_token' => !empty($token)
+        ]);
 
         // Store branch_id in session for form submissions
         session(['submission_branch_id' => $branch->id]);
 
-        $token = $request->query('token');
         $tokenValid = $qrCode->validation_token && $token === $qrCode->validation_token;
         $wasExpired = false;
 
