@@ -4,204 +4,148 @@
 
 @section('content')
     <section
-        class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <div class="max-w-3xl w-full">
+        class="min-h-screen flex items-center justify-center py-8 md:py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <div class="max-w-xl md:max-w-3xl w-full">
             <!-- Success Card -->
             <div
-                class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-green-200 dark:border-green-700">
+                class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-green-100 dark:border-green-800">
                 <!-- Success Header with Animation -->
-                <div class="bg-gradient-to-r from-green-500 to-emerald-600 px-8 py-10 text-center relative overflow-hidden">
+                <div class="bg-gradient-to-r from-green-500 to-emerald-600 pt-8 pb-10 md:pt-12 md:pb-14 px-6 md:px-12 text-center relative overflow-hidden">
                     <!-- Animated Background Circles -->
-                    <div class="absolute inset-0 overflow-hidden">
-                        <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full animate-pulse"></div>
-                        <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full animate-pulse"
+                    <div class="absolute inset-0 overflow-hidden opacity-30">
+                        <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/20 rounded-full animate-pulse"></div>
+                        <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-white/20 rounded-full animate-pulse"
                             style="animation-delay: 500ms;"></div>
                     </div>
 
                     <!-- Success Icon with Animation -->
-                    <div class="relative z-10 mb-6">
+                    <div class="relative z-10 mb-5 md:mb-6">
                         <div
-                            class="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full shadow-xl animate-bounce">
-                            <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7">
+                            class="inline-flex items-center justify-center w-20 h-20 md:w-24 md:h-24 bg-white rounded-full shadow-lg animate-bounce">
+                            <svg class="w-10 h-10 md:w-12 md:h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7">
                                 </path>
                             </svg>
                         </div>
                     </div>
 
                     <!-- Success Title -->
-                    <h1 class="text-3xl font-bold text-white mb-3 tracking-tight">
-                        Submission Successful!
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 md:mb-3 tracking-tight">
+                        Submission Received!
                     </h1>
-                    <p class="text-green-50 text-lg font-medium">
-                        Your {{ $formName }} has been received
+                    <p class="text-green-50 text-base sm:text-lg md:text-xl font-medium opacity-90 max-w-2xl mx-auto">
+                        Your {{ $formName }} has been successfully submitted.
                     </p>
                 </div>
 
                 <!-- Submission Details -->
-                <div class="px-8 py-8 space-y-6">
+                <div class="px-6 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10 space-y-6 md:space-y-8">
                     <!-- Reference Number (Prominent Display) -->
                     <div
-                        class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-xl p-6 border-2 border-blue-200 dark:border-blue-700 shadow-md">
-                        <div class="flex items-center justify-between">
-                            <div class="flex-1">
+                        class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-5 md:p-6 border border-blue-100 dark:border-blue-800 shadow-inner">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 md:gap-6 text-center sm:text-left">
+                            <div class="flex-1 min-w-0">
                                 <p
-                                    class="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2 uppercase tracking-wider">
+                                    class="text-xs md:text-sm font-bold text-blue-600 dark:text-blue-400 mb-1.5 uppercase tracking-wider">
                                     Reference Number
                                 </p>
-                                <p class="text-2xl font-bold text-blue-700 dark:text-blue-300 font-mono tracking-wide select-all"
+                                <p class="text-lg sm:text-xl md:text-2xl font-black text-gray-800 dark:text-gray-100 font-mono tracking-tight break-all select-all leading-tight"
                                     id="referenceNumber">
                                     {{ $referenceNumber ?? 'N/A' }}
                                 </p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                    Please save this number for your records
+                                <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-2">
+                                    Please save this for your records
                                 </p>
                             </div>
                             <button onclick="copyToClipboard('{{ $referenceNumber }}')"
-                                class="ml-4 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 group">
-                                <i class='bx bx-copy text-lg'></i>
-                                <span class="text-sm font-semibold">Copy</span>
+                                class="w-full sm:w-auto px-6 py-3 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-gray-600 rounded-lg transition-all duration-200 shadow-sm flex items-center justify-center gap-2.5 group whitespace-nowrap">
+                                <i class='bx bx-copy text-lg md:text-xl'></i>
+                                <span class="text-sm md:text-base font-bold">Copy</span>
                             </button>
                         </div>
                     </div>
 
                     <!-- Submission Info Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-4 md:gap-6">
                         <!-- Submission Date & Time -->
                         <div
-                            class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0">
-                                    <div
-                                        class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                                        <i class='bx bx-calendar text-purple-600 dark:text-purple-400 text-xl'></i>
-                                    </div>
-                                </div>
-                                <div class="ml-3">
-                                    <p
-                                        class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-                                        Submitted On
-                                    </p>
-                                    <p class="text-sm font-bold text-gray-900 dark:text-gray-100">
-                                        {{ now()->format('d M Y, h:i A') }}
+                            class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 md:p-5 border border-gray-100 dark:border-gray-700">
+                            <div class="flex flex-col items-center sm:items-start text-center sm:text-left">
+                                <div class="mb-2 sm:mb-1 sm:flex sm:items-center sm:gap-2">
+                                    <i class='bx bx-calendar text-gray-400 dark:text-gray-500 text-lg md:text-xl'></i>
+                                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                                        Date
                                     </p>
                                 </div>
+                                <p class="text-sm md:text-lg font-bold text-gray-900 dark:text-gray-100 mt-0.5">
+                                    {{ now()->format('d M Y') }}
+                                </p>
+                                <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400">
+                                    {{ now()->format('h:i A') }}
+                                </p>
                             </div>
                         </div>
 
                         <!-- Status -->
                         <div
-                            class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0">
-                                    <div
-                                        class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                                        <i class='bx bx-check-circle text-green-600 dark:text-green-400 text-xl'></i>
-                                    </div>
-                                </div>
-                                <div class="ml-3">
-                                    <p
-                                        class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                            class="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 md:p-5 border border-green-100 dark:border-green-800">
+                            <div class="flex flex-col items-center sm:items-start text-center sm:text-left">
+                                <div class="mb-2 sm:mb-1 sm:flex sm:items-center sm:gap-2">
+                                    <i class='bx bx-check-circle text-green-500 dark:text-green-400 text-lg md:text-xl'></i>
+                                    <p class="text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide">
                                         Status
                                     </p>
-                                    <p class="text-sm font-bold text-green-600 dark:text-green-400">
-                                        Submitted Successfully
-                                    </p>
                                 </div>
+                                <p class="text-sm md:text-lg font-bold text-green-700 dark:text-green-300 mt-0.5">
+                                    Received
+                                </p>
+                                <p class="text-xs md:text-sm text-green-600 dark:text-green-400 opacity-80">
+                                    Processing soon
+                                </p>
                             </div>
                         </div>
                     </div>
 
                     <!-- What's Next Section -->
-                    <div class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-r-lg p-5">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0">
-                                <i class='bx bx-info-circle text-amber-600 dark:text-amber-400 text-2xl'></i>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="text-sm font-bold text-amber-900 dark:text-amber-300 mb-2">
-                                    What Happens Next?
-                                </h3>
-                                <ul class="space-y-2 text-sm text-amber-800 dark:text-amber-200">
-                                    <li class="flex items-start">
-                                        <i
-                                            class='bx bx-check text-amber-600 dark:text-amber-400 mt-0.5 mr-2 flex-shrink-0'></i>
-                                        <span>Our team will review your submission within <strong>3-5 business
-                                                days</strong></span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i
-                                            class='bx bx-check text-amber-600 dark:text-amber-400 mt-0.5 mr-2 flex-shrink-0'></i>
-                                        <span>You will receive an email confirmation shortly</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i
-                                            class='bx bx-check text-amber-600 dark:text-amber-400 mt-0.5 mr-2 flex-shrink-0'></i>
-                                        <span>If we need additional information, we'll contact you using the details you
-                                            provided</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                    <div class="bg-amber-50 dark:bg-amber-900/10 rounded-xl p-5 md:p-6 border border-amber-100 dark:border-amber-800/50">
+                         <h3 class="text-sm md:text-base font-bold text-amber-900 dark:text-amber-300 mb-3 flex items-center gap-2">
+                             <i class='bx bx-time-five text-amber-600 text-lg'></i> What's Next?
+                         </h3>
+                         <ul class="space-y-2.5 text-sm md:text-base text-amber-800 dark:text-amber-200/80">
+                             <li class="flex items-start gap-2.5">
+                                 <span class="text-amber-500 mt-1">•</span>
+                                 <span>We will review your request within <strong>3-5 business days</strong>.</span>
+                             </li>
+                             <li class="flex items-start gap-2.5">
+                                 <span class="text-amber-500 mt-1">•</span>
+                                 <span>Check your email for confirmation.</span>
+                             </li>
+                         </ul>
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                    <div class="space-y-3 pt-2">
                         <!-- Preview PDF Button -->
                         <a href="{{ route('public.forms.pdf.preview', $submissionToken) }}" target="_blank"
-                            class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg font-semibold group">
-                            <i class='bx bx-show text-lg group-hover:scale-110 transition-transform'></i>
-                            <span>Preview PDF</span>
+                            class="w-full flex items-center justify-center gap-2.5 px-6 py-4 bg-gray-900 hover:bg-black text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl font-bold text-base md:text-lg group border border-transparent">
+                            <i class='bx bx-file text-xl md:text-2xl mb-0.5'></i>
+                            <span>Download / Preview PDF</span>
                         </a>
 
                         <!-- Return Home Button -->
                         <a href="{{ route('home') }}"
-                            class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg font-semibold group">
-                            <i class='bx bx-home text-lg group-hover:scale-110 transition-transform'></i>
+                            class="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 hover:border-gray-300 rounded-xl transition-all duration-200 font-semibold text-sm md:text-base shadow-sm">
+                            <i class='bx bx-arrow-back text-lg md:text-xl'></i>
                             <span>Return to Home</span>
                         </a>
                     </div>
-
-                    <!-- Contact Support Info -->
-                    <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
-                        <p class="text-center text-sm text-gray-600 dark:text-gray-400">
-                            Need help? Contact us at
-                            <a href="mailto:support@bmmb.com.my"
-                                class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">support@bmmb.com.my</a>
-                            or call
-                            <a href="tel:+60321611000"
-                                class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">03-2161 1000</a>
-                        </p>
-                    </div>
                 </div>
-            </div>
-
-            <!-- Additional Tips Card -->
-            <div
-                class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        <i class='bx bx-bulb text-yellow-500 text-3xl'></i>
-                    </div>
-                    <div class="ml-4">
-                        <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2">
-                            💡 Helpful Tips
-                        </h3>
-                        <ul class="space-y-1.5 text-xs text-gray-600 dark:text-gray-400">
-                            <li class="flex items-start">
-                                <span class="text-green-500 mr-2">•</span>
-                                <span>Save or screenshot your reference number for future inquiries</span>
-                            </li>
-                            <li class="flex items-start">
-                                <span class="text-green-500 mr-2">•</span>
-                                <span>Check your email (including spam folder) for confirmation</span>
-                            </li>
-                            <li class="flex items-start">
-                                <span class="text-green-500 mr-2">•</span>
-                                <span>You can print this page for your records before leaving</span>
-                            </li>
-                        </ul>
-                    </div>
+                
+                <!-- Footer Support Link -->
+                 <div class="bg-gray-50 dark:bg-gray-900/50 px-6 py-4 md:px-8 md:py-6 border-t border-gray-100 dark:border-gray-800 text-center">
+                    <p class="text-xs md:text-sm text-gray-400 dark:text-gray-500">
+                        Need help? <a href="tel:+60321611000" class="underline hover:text-gray-600 dark:hover:text-gray-400">Contact Support</a>
+                    </p>
                 </div>
             </div>
         </div>
