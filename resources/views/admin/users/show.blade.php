@@ -50,6 +50,26 @@
                     <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
                         <dt
                             class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                            Staff ID
+                        </dt>
+                        <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
+                            {{ $user->username ?: 'Not provided' }}
+                        </dd>
+                    </div>
+                    @if($user->map_staff_id)
+                        <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
+                            <dt
+                                class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                                MAP Profile ID
+                            </dt>
+                            <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
+                                {{ $user->map_staff_id }}
+                            </dd>
+                        </div>
+                    @endif
+                    <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
+                        <dt
+                            class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
                             Email
                         </dt>
                         <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
@@ -75,14 +95,14 @@
                         </dt>
                         <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                @if($user->role === 'admin') bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400
-                                @elseif($user->role === 'branch_manager') bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400
-                                @elseif($user->role === 'assistant_branch_manager') bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400
-                                @elseif($user->role === 'operation_officer') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400
-                                @elseif($user->role === 'headquarters') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
-                                @elseif($user->role === 'iam') bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400
-                                @else bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400
-                                @endif">
+                                        @if($user->role === 'admin') bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400
+                                        @elseif($user->role === 'branch_manager') bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400
+                                        @elseif($user->role === 'assistant_branch_manager') bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400
+                                        @elseif($user->role === 'operation_officer') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400
+                                        @elseif($user->role === 'headquarters') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
+                                        @elseif($user->role === 'iam') bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400
+                                        @else bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400
+                                        @endif">
                                 {{ $user->role_display }}
                             </span>
                         </dd>
@@ -94,10 +114,10 @@
                         </dt>
                         <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
-                                @elseif($user->status === 'inactive') bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400
-                                @else bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400
-                                @endif">
+                                        @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
+                                        @elseif($user->status === 'inactive') bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400
+                                        @else bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400
+                                        @endif">
                                 {{ ucfirst($user->status) }}
                             </span>
                         </dd>

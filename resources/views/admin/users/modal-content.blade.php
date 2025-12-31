@@ -28,6 +28,28 @@
                     {{ $user->last_name }}
                 </dd>
             </div>
+
+            <!-- Staff ID & MAP ID -->
+            <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
+                <dt
+                    class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                    Staff ID
+                </dt>
+                <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
+                    {{ $user->username ?: 'Not provided' }}
+                </dd>
+            </div>
+            @if($user->map_staff_id)
+                <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
+                    <dt
+                        class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">
+                        MAP Profile ID
+                    </dt>
+                    <dd class="text-sm text-gray-900 dark:text-white flex-1 text-left">
+                        {{ $user->map_staff_id }}
+                    </dd>
+                </div>
+            @endif
             <div class="flex items-start border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0 gap-4">
                 <dt
                     class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0 w-1/3">

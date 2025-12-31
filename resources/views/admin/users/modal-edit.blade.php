@@ -23,6 +23,20 @@
         </div>
     </div>
 
+    <!-- Staff ID (Username) -->
+    <div>
+        <label for="modal_username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Staff ID</label>
+        <input type="text" name="username" id="modal_username" value="{{ old('username', $user->username) }}" 
+               {{ $user->isMapUser() ? 'readonly' : '' }}
+               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('username') border-red-500 @enderror {{ $user->isMapUser() ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed' : '' }}">
+        @if($user->isMapUser())
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Synced from MAP (Read-only)</p>
+        @endif
+        @error('username')
+            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+        @enderror
+    </div>
+
     <!-- Email and Phone -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>

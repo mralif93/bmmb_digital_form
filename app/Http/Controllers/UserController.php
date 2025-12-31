@@ -26,6 +26,7 @@ class UserController extends Controller
                 $q->where('first_name', 'like', "%{$search}%")
                     ->orWhere('last_name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%")
                     ->orWhere('phone', 'like', "%{$search}%");
             });
         }
@@ -92,6 +93,7 @@ class UserController extends Controller
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
+                'username' => 'nullable|string|max:255|unique:users',
                 'password' => 'required|string|min:8|confirmed',
                 'phone' => 'nullable|string|max:20',
                 'role' => 'required|in:admin,branch_manager,assistant_branch_manager,operation_officer,headquarters,iam',
@@ -229,6 +231,7 @@ class UserController extends Controller
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
                 'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+                'username' => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
                 'phone' => 'nullable|string|max:20',
                 'role' => 'required|in:admin,branch_manager,assistant_branch_manager,operation_officer,headquarters,iam',
                 'status' => 'required|in:active,inactive,suspended',
@@ -503,6 +506,7 @@ class UserController extends Controller
                 $q->where('first_name', 'like', "%{$search}%")
                     ->orWhere('last_name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%")
                     ->orWhere('phone', 'like', "%{$search}%");
             });
         }
