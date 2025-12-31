@@ -10,7 +10,7 @@ Artisan::command('inspire', function () {
 
 // Schedule QR code regeneration every hour
 Schedule::command('qr-codes:regenerate')
-    ->hourly()
+    ->daily()
     ->withoutOverlapping()
     ->onOneServer()
     ->appendOutputTo(storage_path('logs/qr-codes-regeneration.log'));

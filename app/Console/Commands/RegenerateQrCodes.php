@@ -31,10 +31,10 @@ class RegenerateQrCodes extends Command
     public function handle()
     {
         $regenerateAll = $this->option('all');
-        
+
         if ($regenerateAll) {
             $this->info('Starting QR code regeneration for ALL active codes...');
-            
+
             // Get all active QR codes
             $qrCodes = QrCode::where('status', 'active')->get();
             $this->info("Found {$qrCodes->count()} active QR codes to regenerate.");
@@ -43,14 +43,14 @@ class RegenerateQrCodes extends Command
 
             // Get only expired active QR codes (expires_at < now AND status = active)
             $qrCodes = QrCode::where('status', 'active')
-                ->where(function($query) {
+                ->where(function ($query) {
                     $query->where('expires_at', '<', now())
-                          ->orWhereNull('expires_at'); // Also regenerate codes without expiration (legacy)
+                        ->orWhereNull('expires_at'); // Also regenerate codes without expiration (legacy)
                 })
                 ->get();
             $this->info("Found {$qrCodes->count()} expired QR codes to regenerate.");
         }
-        
+
         $total = $qrCodes->count();
         $regenerated = 0;
         $errors = 0;
@@ -59,7 +59,7 @@ class RegenerateQrCodes extends Command
             try {
                 // Generate new validation token for security
                 $newToken = bin2hex(random_bytes(16));
-                
+
                 // Generate QR code content based on type
                 $qrContent = $this->generateQrContent(
                     $qrCode->type,
@@ -89,7 +89,7 @@ class RegenerateQrCodes extends Command
                     'qr_code_image' => $fileName,
                     'content' => $qrContent,
                     'last_regenerated_at' => now(),
-                    'expires_at' => now()->addMinutes($this->getQrCodeExpirationMinutes()),
+                    'expires_at' => today()->endOfDay(),
                     'validation_token' => $newToken,
                 ]);
 
