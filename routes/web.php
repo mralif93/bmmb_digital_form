@@ -698,6 +698,7 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
             $viewData['stats'] = $stats;
             $viewData['dateFormat'] = $dateFormat;
             $viewData['timeFormat'] = $timeFormat;
+            $viewData['timezoneHelper'] = app(\App\Helpers\TimezoneHelper::class);
 
             return view('admin.dashboard', $viewData);
         })->name('dashboard');

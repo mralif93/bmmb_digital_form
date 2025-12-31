@@ -476,13 +476,16 @@ class FormSubmissionPresenter
                     $dateFormat = $settings['date_format'] ?? 'Y-m-d';
                     $timeFormat = $settings['time_format'] ?? 'H:i';
 
-                    // Simple check if it's a full timestamp or just date
-                    // If it contains ':', it likely has time
-                    if (str_contains($value, ':')) {
-                        return date("$dateFormat $timeFormat", strtotime($value));
-                    }
+                    $convertedDate = \App\Helpers\TimezoneHelper::toSystemTimezone($value);
 
-                    return date($dateFormat, strtotime($value));
+                    if ($convertedDate) {
+                        // Simple check if it's a full timestamp or just date
+                        // If it contains ':', it likely has time
+                        if (str_contains($value, ':')) {
+                            return $convertedDate->format("$dateFormat $timeFormat");
+                        }
+                        return $convertedDate->format($dateFormat);
+                    }
                 }
                 return $value;
 

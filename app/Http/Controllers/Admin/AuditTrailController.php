@@ -59,7 +59,11 @@ class AuditTrailController extends Controller
         // Get timezone helper
         $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
 
-        return view('admin.audit-trails.index', compact('auditTrails', 'actions', 'modelTypes', 'users', 'timezoneHelper'));
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i:s';
+
+        return view('admin.audit-trails.index', compact('auditTrails', 'actions', 'modelTypes', 'users', 'timezoneHelper', 'dateFormat', 'timeFormat'));
     }
 
     /**
@@ -69,6 +73,11 @@ class AuditTrailController extends Controller
     {
         $auditTrail->load('user');
         $timezoneHelper = app(\App\Helpers\TimezoneHelper::class);
-        return view('admin.audit-trails.show', compact('auditTrail', 'timezoneHelper'));
+
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i:s';
+
+        return view('admin.audit-trails.show', compact('auditTrail', 'timezoneHelper', 'dateFormat', 'timeFormat'));
     }
 }

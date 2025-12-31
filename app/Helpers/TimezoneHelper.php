@@ -27,7 +27,22 @@ class TimezoneHelper
         }
 
         $timezone = self::getSystemTimezone();
-        return $date->copy()->setTimezone($timezone);
+
+        // If it's already a Carbon instance
+        if ($date instanceof \Carbon\Carbon || $date instanceof \Illuminate\Support\Carbon) {
+            return $date->copy()->setTimezone($timezone);
+        }
+
+        // If it's a string, try to parse it
+        if (is_string($date)) {
+            try {
+                return \Illuminate\Support\Carbon::parse($date)->setTimezone($timezone);
+            } catch (\Exception $e) {
+                return null;
+            }
+        }
+
+        return null; // Return null for other types/failures so caller can fallback
     }
 
     /**

@@ -1431,7 +1431,14 @@ class SubmissionController extends Controller
         }
 
         // Generate PDF using DomPDF
-        $pdf = \PDF::loadView('admin.pdf.submission', compact('submission'));
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'd M Y'; // Default for PDF if not set
+        $timeFormat = $settings['time_format'] ?? 'h:i A'; // Default for PDF if not set
+
+        // PDF usually requires a specific format, but let's try to respect the system settings as much as possible
+        // Note: PDF fonts might not support all characters, so stick to standard date parts
+
+        $pdf = \PDF::loadView('admin.pdf.submission', compact('submission', 'dateFormat', 'timeFormat'));
         $pdf->setPaper('A4', 'portrait');
 
         // Stream PDF in browser (for preview)
