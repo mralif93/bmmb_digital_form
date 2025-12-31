@@ -79,38 +79,20 @@
                 </div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <!-- Date From -->
-                <div>
-                    <label for="date_from" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Deleted From</label>
-                    <input type="date" 
-                           name="date_from" 
-                           id="date_from" 
-                           value="{{ request('date_from') }}"
-                           class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                </div>
-                
-                <!-- Date To -->
-                <div>
-                    <label for="date_to" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Deleted To</label>
-                    <input type="date" 
-                           name="date_to" 
-                           id="date_to" 
-                           value="{{ request('date_to') }}"
-                           class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                </div>
-            </div>
+
             
             <!-- Action Buttons -->
             <div class="flex items-center justify-end space-x-2">
-                <a href="{{ route('admin.users.trashed') }}" class="inline-flex items-center justify-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 text-xs font-semibold rounded-lg transition-colors">
-                    <i class='bx bx-x mr-1.5 text-sm'></i>
-                    Clear
-                </a>
                 <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors">
                     <i class='bx bx-search mr-1.5 text-sm'></i>
                     Search
                 </button>
+                @if(request()->hasAny(['search', 'role', 'status']))
+                    <a href="{{ route('admin.users.trashed') }}" class="inline-flex items-center justify-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 text-xs font-semibold rounded-lg transition-colors">
+                        <i class='bx bx-x mr-1.5'></i>
+                        Clear
+                    </a>
+                @endif
             </div>
         </form>
     </div>

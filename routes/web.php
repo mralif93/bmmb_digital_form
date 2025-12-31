@@ -720,8 +720,21 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
 
         // Branch Management (Admin, HQ, and IAM)
         Route::middleware('admin-or-hq-or-iam')->group(function () {
+            // Branches
+            Route::get('/branches/trashed', [BranchController::class, 'trashed'])->name('branches.trashed');
+            Route::post('/branches/{id}/restore', [BranchController::class, 'restore'])->name('branches.restore');
+            Route::delete('/branches/{id}/force-delete', [BranchController::class, 'forceDelete'])->name('branches.force-delete');
             Route::resource('branches', BranchController::class);
+            // States
+            Route::get('states/trashed', [\App\Http\Controllers\Admin\StateController::class, 'trashed'])->name('states.trashed');
+            Route::post('states/{id}/restore', [\App\Http\Controllers\Admin\StateController::class, 'restore'])->name('states.restore');
+            Route::delete('states/{id}/force-delete', [\App\Http\Controllers\Admin\StateController::class, 'forceDelete'])->name('states.force-delete');
             Route::resource('states', \App\Http\Controllers\Admin\StateController::class);
+
+            // Regions
+            Route::get('regions/trashed', [\App\Http\Controllers\Admin\RegionController::class, 'trashed'])->name('regions.trashed');
+            Route::post('regions/{id}/restore', [\App\Http\Controllers\Admin\RegionController::class, 'restore'])->name('regions.restore');
+            Route::delete('regions/{id}/force-delete', [\App\Http\Controllers\Admin\RegionController::class, 'forceDelete'])->name('regions.force-delete');
             Route::resource('regions', \App\Http\Controllers\Admin\RegionController::class);
         });
 
@@ -740,6 +753,18 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
             Route::resource('qr-codes', QrCodeManagementController::class);
             Route::post('/qr-codes/{qr_code}/regenerate', [QrCodeManagementController::class, 'regenerate'])->name('qr-codes.regenerate');
             Route::post('/qr-codes/regenerate-all', [QrCodeManagementController::class, 'regenerateAll'])->name('qr-codes.regenerate-all');
+
+            // Trashed QR Codes
+            Route::post('/qr-codes/{id}/restore', [QrCodeManagementController::class, 'restore'])->name('qr-codes.restore');
+            Route::delete('/qr-codes/{id}/force-delete', [QrCodeManagementController::class, 'forceDelete'])->name('qr-codes.force-delete');
+
+            // States Restore & Force Delete Routes
+            Route::post('states/{id}/restore', [\App\Http\Controllers\Admin\StateController::class, 'restore'])->name('states.restore');
+            Route::delete('states/{id}/force-delete', [\App\Http\Controllers\Admin\StateController::class, 'forceDelete'])->name('states.force-delete');
+
+            // Regions Restore & Force Delete Routes
+            Route::post('regions/{id}/restore', [\App\Http\Controllers\Admin\RegionController::class, 'restore'])->name('regions.restore');
+            Route::delete('regions/{id}/force-delete', [\App\Http\Controllers\Admin\RegionController::class, 'forceDelete'])->name('regions.force-delete');
         });
 
         // Profile

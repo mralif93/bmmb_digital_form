@@ -30,7 +30,7 @@
                 <a href="{{ route('admin.states.index') }}"
                     class="px-4 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">Cancel</a>
                 <button type="submit"
-                    class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded-lg">Create
+                    class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-medium rounded-lg">Create
                     State</button>
             </div>
         </form>

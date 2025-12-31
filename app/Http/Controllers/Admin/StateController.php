@@ -28,6 +28,26 @@ class StateController extends Controller
     }
 
     /**
+     * Display a listing of trashed resources.
+     */
+    public function trashed(Request $request)
+    {
+        $query = State::onlyTrashed();
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        $states = $query->withCount('branches')->orderBy('deleted_at', 'desc')->paginate(15)->withQueryString();
+
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'd/m/Y';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
+        return view('admin.states.trashed', compact('states', 'dateFormat', 'timeFormat'));
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -61,10 +81,15 @@ class StateController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(State $state)
+    public function show($id)
     {
+        $state = State::withTrashed()->findOrFail($id);
         $state->load(['branches' => fn($q) => $q->orderBy('branch_name')->limit(10)]);
-        return view('admin.states.show', compact('state'));
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'd/m/Y';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
+        return view('admin.states.show', compact('state', 'dateFormat', 'timeFormat'));
     }
 
     /**
@@ -126,5 +151,60 @@ class StateController extends Controller
 
         return redirect()->route('admin.states.index')
             ->with('success', 'State deleted successfully!');
+    }
+
+    /**
+     * Restore the specified soft-deleted resource.
+     */
+    public function restore($id)
+    {
+        $state = State::onlyTrashed()->findOrFail($id);
+        $state->restore();
+
+        $this->logAuditTrail(
+            action: 'restore',
+            description: "Restored state: {$state->name}",
+            modelType: State::class,
+            modelId: $state->id,
+            newValues: $state->toArray()
+        );
+
+        return redirect()->route('admin.states.index', ['trashed' => 'true'])
+            ->with('success', 'State restored successfully!');
+    }
+
+    /**
+     * Permanently remove the specified resource from storage.
+     */
+    public function forceDelete($id)
+    {
+        $state = State::onlyTrashed()->findOrFail($id);
+
+        if ($state->branches()->withTrashed()->exists()) {
+            return redirect()->route('admin.states.index', ['trashed' => 'true'])
+                ->with('error', 'Cannot permanently delete state with associated branches (even if deleted).');
+        }
+
+        $oldValues = $state->toArray();
+        $stateName = $state->name;
+        $stateId = $state->id;
+
+        $state->forceDelete();
+
+        $this->logAuditTrail(
+            action: 'force_delete',
+            description: "Permanently deleted state: {$stateName}",
+            modelType: State::class,
+            modelId: $stateId,
+            oldValues: $oldValues
+        );
+
+        if (State::onlyTrashed()->exists()) {
+            return redirect()->route('admin.states.index', ['trashed' => 'true'])
+                ->with('success', 'State permanently deleted successfully!');
+        }
+
+        return redirect()->route('admin.states.index')
+            ->with('success', 'State permanently deleted successfully!');
     }
 }

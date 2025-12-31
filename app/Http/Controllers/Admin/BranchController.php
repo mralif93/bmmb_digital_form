@@ -46,6 +46,41 @@ class BranchController extends Controller
     }
 
     /**
+     * Display a listing of trashed resources.
+     */
+    public function trashed(Request $request)
+    {
+        $query = Branch::onlyTrashed();
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('branch_name', 'like', "%{$search}%")
+                    ->orWhere('ti_agent_code', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('address', 'like', "%{$search}%")
+                    ->orWhereHas('stateRelation', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('regionRelation', fn($q) => $q->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        // Filter by state
+        if ($request->filled('state')) {
+            $query->where('state_id', $request->state);
+        }
+
+        // Filter by region
+        if ($request->filled('region')) {
+            $query->where('region_id', $request->region);
+        }
+
+        $branches = $query->orderBy('deleted_at', 'desc')->paginate(15)->withQueryString();
+
+        return view('admin.branches.trashed', compact('branches'));
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -175,5 +210,71 @@ class BranchController extends Controller
 
         return redirect()->route('admin.branches.index')
             ->with('success', 'Branch deleted successfully!');
+    }
+
+    /**
+     * Restore a soft-deleted branch.
+     */
+    public function restore($id)
+    {
+        try {
+            $branch = Branch::onlyTrashed()->findOrFail($id);
+            $branch->restore();
+
+            // Log audit trail
+            $this->logAuditTrail(
+                action: 'restore',
+                description: "Restored branch: {$branch->branch_name} (TI Code: {$branch->ti_agent_code})",
+                modelType: Branch::class,
+                modelId: $branch->id
+            );
+
+            return redirect()->route('admin.branches.index', ['trashed' => 'true'])
+                ->with('success', 'Branch restored successfully!');
+        } catch (\Exception $e) {
+            \Log::error("Error restoring branch ID {$id}: " . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to restore branch: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Permanently delete a branch.
+     */
+    public function forceDelete($id)
+    {
+        try {
+            $branch = Branch::onlyTrashed()->findOrFail($id);
+            $branchName = $branch->branch_name;
+            $oldValues = $branch->toArray();
+
+            $branch->forceDelete();
+
+            // Log audit trail
+            $this->logAuditTrail(
+                action: 'force_delete',
+                description: "Permanently deleted branch: {$branchName}",
+                modelType: Branch::class,
+                modelId: $id,
+                oldValues: $oldValues
+            );
+
+            // Check if there are any more trashed branches
+            $remainingTrashedCount = Branch::onlyTrashed()->count();
+
+            if ($remainingTrashedCount > 0) {
+                // Stay on trashed view
+                return redirect()->route('admin.branches.index', ['trashed' => 'true'])
+                    ->with('success', 'Branch permanently deleted successfully!');
+            } else {
+                // No more trashed branches, go back to active list
+                return redirect()->route('admin.branches.index')
+                    ->with('success', 'Branch permanently deleted successfully! No more trashed branches.');
+            }
+        } catch (\Exception $e) {
+            \Log::error("Error force deleting branch ID {$id}: " . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to delete branch: ' . $e->getMessage());
+        }
     }
 }

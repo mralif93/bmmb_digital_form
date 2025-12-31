@@ -15,7 +15,7 @@
         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
             <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Region Details</h3>
             <a href="{{ route('admin.regions.edit', $region) }}"
-                class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-lg">Edit</a>
+                class="px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg">Edit</a>
         </div>
         <div class="p-6">
             <dl class="grid grid-cols-2 gap-4">

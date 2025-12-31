@@ -19,7 +19,13 @@ class QrCodeManagementController extends Controller
      */
     public function index(Request $request)
     {
-        $query = QrCode::with(['branch', 'creator']);
+        $showTrashed = $request->query('trashed') === 'true';
+
+        if ($showTrashed) {
+            $query = QrCode::onlyTrashed()->with(['branch', 'creator']);
+        } else {
+            $query = QrCode::with(['branch', 'creator']);
+        }
 
         // Search functionality
         if ($request->filled('search')) {
@@ -73,7 +79,7 @@ class QrCodeManagementController extends Controller
         $dateFormat = $settings['date_format'] ?? 'Y-m-d';
         $timeFormat = $settings['time_format'] ?? 'H:i:s';
 
-        return view('admin.qr-codes.index', compact('qrCodes', 'branches', 'timezoneHelper', 'dateFormat', 'timeFormat'));
+        return view('admin.qr-codes.index', compact('qrCodes', 'branches', 'timezoneHelper', 'dateFormat', 'timeFormat', 'showTrashed'));
     }
 
     /**
@@ -420,5 +426,76 @@ class QrCodeManagementController extends Controller
     {
         $settings = Cache::get('system_settings', []);
         return (int) ($settings['qr_code_expiration_minutes'] ?? 60);
+    }
+
+    /**
+     * Restore a soft-deleted QR code.
+     */
+    public function restore($id)
+    {
+        try {
+            $qrCode = QrCode::onlyTrashed()->findOrFail($id);
+            $qrCode->restore();
+
+            // Log audit trail
+            $this->logAuditTrail(
+                action: 'restore',
+                description: "Restored QR code: {$qrCode->name}",
+                modelType: QrCode::class,
+                modelId: $qrCode->id
+            );
+
+            return redirect()->route('admin.qr-codes.index', ['trashed' => 'true'])
+                ->with('success', 'QR code restored successfully!');
+        } catch (\Exception $e) {
+            \Log::error("Error restoring QR code ID {$id}: " . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to restore QR code: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Permanently delete a QR code.
+     */
+    public function forceDelete($id)
+    {
+        try {
+            $qrCode = QrCode::onlyTrashed()->findOrFail($id);
+            $qrCodeName = $qrCode->name;
+            $oldValues = $qrCode->toArray();
+
+            // Delete QR code image if exists
+            if ($qrCode->qr_code_image) {
+                Storage::disk('public')->delete('qr-codes/' . $qrCode->qr_code_image);
+            }
+
+            $qrCode->forceDelete();
+
+            // Log audit trail
+            $this->logAuditTrail(
+                action: 'force_delete',
+                description: "Permanently deleted QR code: {$qrCodeName}",
+                modelType: QrCode::class,
+                modelId: $id,
+                oldValues: $oldValues
+            );
+
+            // Check if there are any more trashed QR codes
+            $remainingTrashedCount = QrCode::onlyTrashed()->count();
+
+            if ($remainingTrashedCount > 0) {
+                // Stay on trashed view
+                return redirect()->route('admin.qr-codes.index', ['trashed' => 'true'])
+                    ->with('success', 'QR code permanently deleted successfully!');
+            } else {
+                // No more trashed QR codes, go back to active list
+                return redirect()->route('admin.qr-codes.index')
+                    ->with('success', 'QR code permanently deleted successfully! No more trashed QR codes.');
+            }
+        } catch (\Exception $e) {
+            \Log::error("Error force deleting QR code ID {$id}: " . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to delete QR code: ' . $e->getMessage());
+        }
     }
 }

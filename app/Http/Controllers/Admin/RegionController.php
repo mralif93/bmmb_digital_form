@@ -28,6 +28,26 @@ class RegionController extends Controller
     }
 
     /**
+     * Display a listing of trashed resources.
+     */
+    public function trashed(Request $request)
+    {
+        $query = Region::onlyTrashed();
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        $regions = $query->withCount('branches')->orderBy('deleted_at', 'desc')->paginate(15)->withQueryString();
+
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'd/m/Y';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
+        return view('admin.regions.trashed', compact('regions', 'dateFormat', 'timeFormat'));
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -61,10 +81,15 @@ class RegionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Region $region)
+    public function show($id)
     {
+        $region = Region::withTrashed()->findOrFail($id);
         $region->load(['branches' => fn($q) => $q->orderBy('branch_name')->limit(10)]);
-        return view('admin.regions.show', compact('region'));
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'd/m/Y';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
+        return view('admin.regions.show', compact('region', 'dateFormat', 'timeFormat'));
     }
 
     /**
@@ -126,5 +151,60 @@ class RegionController extends Controller
 
         return redirect()->route('admin.regions.index')
             ->with('success', 'Region deleted successfully!');
+    }
+
+    /**
+     * Restore the specified soft-deleted resource.
+     */
+    public function restore($id)
+    {
+        $region = Region::onlyTrashed()->findOrFail($id);
+        $region->restore();
+
+        $this->logAuditTrail(
+            action: 'restore',
+            description: "Restored region: {$region->name}",
+            modelType: Region::class,
+            modelId: $region->id,
+            newValues: $region->toArray()
+        );
+
+        return redirect()->route('admin.regions.index', ['trashed' => 'true'])
+            ->with('success', 'Region restored successfully!');
+    }
+
+    /**
+     * Permanently remove the specified resource from storage.
+     */
+    public function forceDelete($id)
+    {
+        $region = Region::onlyTrashed()->findOrFail($id);
+
+        if ($region->branches()->withTrashed()->exists()) {
+            return redirect()->route('admin.regions.index', ['trashed' => 'true'])
+                ->with('error', 'Cannot permanently delete region with associated branches (even if deleted).');
+        }
+
+        $oldValues = $region->toArray();
+        $regionName = $region->name;
+        $regionId = $region->id;
+
+        $region->forceDelete();
+
+        $this->logAuditTrail(
+            action: 'force_delete',
+            description: "Permanently deleted region: {$regionName}",
+            modelType: Region::class,
+            modelId: $regionId,
+            oldValues: $oldValues
+        );
+
+        if (Region::onlyTrashed()->exists()) {
+            return redirect()->route('admin.regions.index', ['trashed' => 'true'])
+                ->with('success', 'Region permanently deleted successfully!');
+        }
+
+        return redirect()->route('admin.regions.index')
+            ->with('success', 'Region permanently deleted successfully!');
     }
 }

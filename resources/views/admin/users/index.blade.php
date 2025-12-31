@@ -85,14 +85,16 @@
         
         <!-- Action Buttons -->
         <div class="flex items-center justify-end space-x-2">
-            <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 text-xs font-semibold rounded-lg transition-colors">
-                <i class='bx bx-x mr-1.5'></i>
-                Clear
-            </a>
             <button type="submit" class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors">
                 <i class='bx bx-search mr-1.5'></i>
                 Search
             </button>
+            @if(request()->hasAny(['search', 'role', 'status']))
+                <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 text-xs font-semibold rounded-lg transition-colors">
+                    <i class='bx bx-x mr-1.5'></i>
+                    Clear
+                </a>
+            @endif
         </div>
     </form>
 </div>

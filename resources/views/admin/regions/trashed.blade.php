@@ -1,8 +1,8 @@
 @extends('layouts.admin-minimal')
 
-@section('title', 'States Management - BMMB Digital Forms')
-@section('page-title', 'States Management')
-@section('page-description', 'Manage all state records')
+@section('title', 'Trashed Regions - BMMB Digital Forms')
+@section('page-title', 'Trashed Regions')
+@section('page-description', 'View and manage deleted regions')
 
 @section('content')
     @if(session('success'))
@@ -21,30 +21,26 @@
 
     <div class="mb-4 flex items-center justify-between">
         <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                <i class='bx bx-map text-orange-600 dark:text-orange-400 text-xl'></i>
+            <div class="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+                <i class='bx bx-trash text-red-600 dark:text-red-400 text-xl'></i>
             </div>
             <div>
-                <h2 class="text-sm font-semibold text-gray-900 dark:text-white">States Management</h2>
-                <p class="text-xs text-gray-600 dark:text-gray-400">Total: {{ $states->total() }} records</p>
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Trashed Regions</h2>
+                <p class="text-xs text-gray-600 dark:text-gray-400">Total: {{ $regions->total() }} records</p>
             </div>
         </div>
         <div class="flex items-center space-x-2">
-            <a href="{{ route('admin.states.trashed') }}"
-                class="inline-flex items-center px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 text-xs font-semibold rounded-lg transition-colors">
-                <i class='bx bx-trash mr-1.5'></i>
-                Trashed States
-            </a>
-            <a href="{{ route('admin.states.create') }}"
-                class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors">
-                <i class='bx bx-plus mr-1.5'></i>
-                Create New
+            <a href="{{ route('admin.regions.index') }}"
+                class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 text-xs font-semibold rounded-lg transition-colors">
+                <i class='bx bx-arrow-back mr-1.5'></i>
+                Back to List
             </a>
         </div>
     </div>
 
+    <!-- Search and Filter Section -->
     <div class="mb-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-        <form method="GET" action="{{ route('admin.states.index') }}" class="space-y-3">
+        <form method="GET" action="{{ route('admin.regions.trashed') }}" class="space-y-3">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div class="md:col-span-4">
                     <label for="search"
@@ -67,7 +63,7 @@
                     Search
                 </button>
                 @if(request('search'))
-                    <a href="{{ route('admin.states.index') }}"
+                    <a href="{{ route('admin.regions.trashed') }}"
                         class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 text-xs font-semibold rounded-lg transition-colors">
                         <i class='bx bx-x mr-1.5'></i>
                         Clear
@@ -86,47 +82,56 @@
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Name
                     </th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
-                        Branches</th>
+                        Deleted At</th>
                     <th class="px-4 py-3 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
                         Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                @forelse($states as $state)
+                @forelse($regions as $region)
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                        <td class="px-4 py-3 text-xs text-gray-600 dark:text-gray-400">{{ $state->id }}</td>
-                        <td class="px-4 py-3 text-xs font-semibold text-gray-900 dark:text-white">{{ $state->name }}</td>
-                        <td class="px-4 py-3 text-xs text-gray-600 dark:text-gray-400">{{ $state->branches_count }}</td>
+                        <td class="px-4 py-3 text-xs text-gray-600 dark:text-gray-400">{{ $region->id }}</td>
+                        <td class="px-4 py-3 text-xs font-semibold text-gray-900 dark:text-white">{{ $region->name }}</td>
+                        <td class="px-4 py-3 text-xs text-gray-600 dark:text-gray-400">
+                            {{ $region->deleted_at ? $region->deleted_at->format($dateFormat . ' ' . $timeFormat) : '-' }}
+                        </td>
                         <td class="px-4 py-3 text-right">
                             <div class="flex items-center justify-end space-x-2">
-                                <a href="{{ route('admin.states.show', $state) }}"
-                                    class="px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded-lg text-xs">View</a>
-                                <a href="{{ route('admin.states.edit', $state) }}"
-                                    class="px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 rounded-lg text-xs">Edit</a>
-                                @if($state->branches_count == 0)
-                                    <form action="{{ route('admin.states.destroy', $state) }}" method="POST" class="inline"
-                                        onsubmit="return confirm('Delete this state?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                            class="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:text-red-400 rounded-lg text-xs">Delete</button>
-                                    </form>
-                                @endif
+                                <form action="{{ route('admin.regions.restore', $region->id) }}" method="POST"
+                                    class="inline-block"
+                                    onsubmit="return confirm('Are you sure you want to restore this region?');">
+                                    @csrf
+                                    <button type="submit"
+                                        class="inline-flex items-center justify-center px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-400 rounded-lg text-xs transition-colors">
+                                        Restore
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.regions.force-delete', $region->id) }}" method="POST"
+                                    class="inline-block"
+                                    onsubmit="return confirm('Are you sure you want to permanently delete this region? This action cannot be undone.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="inline-flex items-center justify-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg text-xs transition-colors">
+                                        Delete Permanently
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-4 py-8 text-center text-xs text-gray-500 dark:text-gray-400">No states found
+                        <td colspan="4" class="px-4 py-8 text-center text-xs text-gray-500 dark:text-gray-400">No trashed
+                            regions found
                         </td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
 
-        @if($states->hasPages())
+        @if($regions->hasPages())
             <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
-                {{ $states->links() }}
+                {{ $regions->links() }}
             </div>
         @endif
     </div>
