@@ -90,4 +90,76 @@ class BranchQrController extends Controller
             'primaryColor' => $primaryColor,
         ]);
     }
+    /**
+     * Download the counter display as a PDF.
+     */
+    public function downloadPdf()
+    {
+        $user = auth()->user();
+
+        // Ensure user has a branch
+        if (!$user->branch_id) {
+            abort(403, 'You must optionally be assigned to a branch to download the counter display.');
+        }
+
+        $branch = $user->branch;
+
+        // Reuse logic to find or create QR code (same as display)
+        // Find or create today's QR code for this branch
+        $qrCode = QrCode::where('branch_id', $branch->id)
+            ->where('type', 'branch')
+            ->whereDate('created_at', today())
+            ->where('expires_at', '>', now())
+            ->latest()
+            ->first();
+
+        if (!$qrCode) {
+            $qrCode = QrCode::where('branch_id', $branch->id)
+                ->where('type', 'branch')
+                ->where('expires_at', '>', now())
+                ->latest()
+                ->first();
+        }
+
+        if (!$qrCode) {
+            // Generate on the fly if missing (same as display)
+            $token = \Illuminate\Support\Str::random(32);
+            $url = route('public.branch', ['tiAgentCode' => $branch->ti_agent_code]);
+            $url .= (str_contains($url, '?') ? '&' : '?') . 'token=' . $token;
+
+            $qrCode = QrCode::create([
+                'name' => 'Branch QR - ' . now()->toDateString(),
+                'branch_id' => $branch->id,
+                'validation_token' => $token,
+                'content' => $url,
+                'expires_at' => today()->endOfDay(),
+                'type' => 'branch',
+                'created_by' => $user->id,
+                'last_regenerated_at' => now(),
+            ]);
+        }
+
+        $qrContent = null;
+        if ($qrCode) {
+            $url = route('public.branch', ['tiAgentCode' => $branch->ti_agent_code]);
+            $url .= (str_contains($url, '?') ? '&' : '?') . 'token=' . $qrCode->validation_token;
+            $qrContent = $url;
+        }
+
+        // Get primary color from settings
+        $settings = Cache::get('system_settings', []);
+        $primaryColor = $settings['primary_color'] ?? '#FE8000';
+
+        // Load PDF View
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.qr-codes.display', [
+            'branch' => $branch,
+            'qrCode' => $qrCode,
+            'qrContent' => $qrContent,
+            'primaryColor' => $primaryColor,
+            'isPdf' => true
+        ]);
+
+        return $pdf->setPaper('a4', 'portrait')
+            ->stream('Counter_Display_' . $branch->ti_agent_code . '.pdf');
+    }
 }

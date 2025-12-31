@@ -102,8 +102,9 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
     // Admin Routes
 
     // Shared Admin Routes (Accessible to BM, ABM, HQ, etc.)
-    Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
         Route::get('/branch/qr-display', [\App\Http\Controllers\Admin\BranchQrController::class, 'display'])->name('branch.qr-display');
+        Route::get('/branch/qr-display/pdf', [\App\Http\Controllers\Admin\BranchQrController::class, 'downloadPdf'])->name('branch.qr-display.pdf');
     });
 
     Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
