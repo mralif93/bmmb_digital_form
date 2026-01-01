@@ -40,6 +40,9 @@ class SettingsController extends Controller
             'enable_analytics' => 'nullable|boolean',
             'default_theme' => 'nullable|string|in:light,dark,auto',
             'primary_color' => ['nullable', 'string', 'regex:/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/'],
+            'map_sync_enabled' => 'nullable|boolean',
+            'map_sync_frequency' => 'nullable|string|in:daily,hourly,every_4_hours,every_30_minutes,every_15_minutes',
+            'map_sync_time' => 'nullable|date_format:H:i',
         ]);
 
         // Get current settings
@@ -95,6 +98,9 @@ class SettingsController extends Controller
                 'enable_analytics' => false,
                 'default_theme' => 'light',
                 'primary_color' => '#FE8000', // Default orange color
+                'map_sync_enabled' => true,
+                'map_sync_frequency' => 'daily',
+                'map_sync_time' => '06:00',
             ];
         }
 
@@ -114,6 +120,9 @@ class SettingsController extends Controller
             'enable_analytics' => false,
             'default_theme' => 'light',
             'primary_color' => '#FE8000',
+            'map_sync_enabled' => true,
+            'map_sync_frequency' => 'daily',
+            'map_sync_time' => '06:00',
         ], $settings);
     }
 }

@@ -109,6 +109,29 @@ bmmb_digital_form/
    DB_PASSWORD=
    ```
 
+### 🔑 Important Environment Variables
+
+### 🔑 Configuration Guide
+
+#### 1. eForm Configuration (`.env`)
+These variables must be set in the **eForm** application's `.env` file:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| **APP_URL** | **Critical.** Base URL for Nginx proxying. | `http://localhost/eform` |
+| **MAP_DATABASE_PATH** | Absolute path to MAP's SQLite DB (for user sync). | `/var/www/FinancingApp/db.sqlite3` |
+| **MAP_SSO_SECRET** | Shared secret for token verification (Must match MAP). | `my-secure-secret-key` |
+| **MAP_LOGIN_URL** | MAP's login page URL. | `http://192.168.1.10:8000/pengurusan/login/` |
+| **MAP_LOGOUT_URL** | MAP's logout endpoint. | `http://192.168.1.10:8000/pengurusan/logout/` |
+| **MAP_VERIFY_URL** | MAP's API endpoint to verify tokens. | `http://192.168.1.10:8000/api/eform/verify/` |
+
+#### 2. MAP (FinancingApp) Configuration
+Ensure the following configurations are set in the **MAP** application (`FinancingApp`) to allow eForm integration:
+
+- **SSO Secret**: The `MAP_SSO_SECRET` in eForm must match the secret key defined in MAP's `settings.py` or `.env`.
+- **Redirect Whitelist**: Ensure MAP trusts the eForm redirect URL (e.g., `http://localhost/eform/login/msg`).
+- **CORS Headers**: If API calls are client-side, ensure MAP allows requests from the eForm domain.
+
 6. **Run migrations**
    ```bash
    php artisan migrate
@@ -169,12 +192,43 @@ The forms feature an interactive stepper component built with Alpine.js:
 - **Progress tracking**: Completed steps show checkmarks
 - **Smooth transitions**: Animated transitions between steps
 
-### Recent Improvements
 
-✅ Fixed stepper synchronization across all forms  
-✅ Converted from JavaScript-based navigation to Alpine.js  
-✅ Added smooth transitions and animations  
-✅ Unified navigation experience across DAR, RAF, DCR, and SRF forms
+### 🔄 Recent Updates & Changelog
+
+Here is a summary of the latest changes and features implemented in the project:
+
+#### 1. Data Consistency & Localization
+- **Timezone Standardization**: All dates and times across the system (Views, PDFs, Exports, Audit Trails) now strictly follow the system settings (Default: `Asia/Kuala_Lumpur`, Format: `d M Y, h:i A`).
+- **Date Formatting**: Fixed inconsistent date formats in dashboards, submission lists, details modals, and PDF reports.
+- **Null Handling**: Improved robustness against null dates in user and submission data.
+
+#### 2. Admin Scheduler & Sync Settings
+- **New Scheduler Tab**: Added a dedicated "Scheduler" tab in Admin Settings.
+- **Dynamic Scheduling**: Admins can now configure the MAP database sync frequency (`Daily`, `Hourly`, `Every 30 Minutes`, etc.) without code changes.
+- **Last Sync Indicator**: Displays the timestamp of the last successful MAP sync to ensure visibility.
+
+#### 3. "Trashed" Functionality (Soft Deletes)
+- **Extended Soft Deletes**: Implemented Soft Deletes for **Branches**, **States**, and **Regions** (previously only available for Users).
+- **Dedicated Trashed Views**: Created separate "Trashed" views for all modules to keep the main index clean.
+- **Restore & Force Delete**: Added functionality to restore soft-deleted items or permanently remove them.
+- **Audit Logging**: All restore and force-delete actions are logged in the Audit Trail.
+
+#### 4. UI/UX Enhancements
+- **Search UI alignment**: Standardized search bars, buttons, and layouts across Users, Branches, States, and Regions modules.
+- **Color Standardization**: Updated UI colors for States (formerly Purple) and Regions (formerly Teal) to match the primary **Orange** branding.
+- **Mobile Responsive Menu**: Fixed mobile menu layout and responsiveness.
+- **Consistent Icons**: Removed redundant action icons and standardized button styles.
+
+#### 5. User Management Improvements
+- **Staff ID Field**: Renamed "Username" to "Staff ID" in the UI to match business terminology.
+- **Staff ID Column**: Added a dedicated column for Staff ID in the User Index.
+- **Read-Only Fields**: prevented manual editing of MAP-synced fields (Staff ID, Email) to avoid data conflicts.
+
+#### 6. Bug Fixes & Technical Improvements
+- **Nginx & Routing**: Fixed Nginx proxy and URL generation issues for `/eform` path prefix.
+- **Migration Fixes**: Resolved schema constraints in database migrations.
+- **Role & Access Control**: Refined logic for User Roles and permissions.
+
 
 ## 🔧 Development
 
@@ -195,6 +249,39 @@ npm run watch  # Watch for changes
 php artisan migrate        # Run migrations
 php artisan migrate:fresh  # Fresh migration with seeding
 php artisan db:seed        # Seed database
+```
+
+## ⏰ Scheduler Setup
+
+The application relies on Laravel's Task Scheduler for the MAP database synchronization.
+
+### Local Development
+To run the scheduler locally, open a new terminal and run:
+```bash
+php artisan schedule:work
+```
+
+### Production
+For production environments, add the following Cron entry to your server:
+```bash
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+### Configuration
+You can configure the synchronization frequency in **System Settings > Scheduler**.
+Available options:
+- **Standard**: Daily, Every 4 Hours, Hourly
+- **Critical**: Every 5 Minutes, Every Minute
+
+## 🐳 Docker & Permissions
+
+If you are running the application using Docker, you may encounter permission issues after restarting containers (e.g., `docker-compose down` followed by `up`).
+
+To ensure the application functions correctly, you must run the permissions fix script:
+
+```bash
+chmod +x fix-permissions.sh
+./fix-permissions.sh
 ```
 
 ## 📊 Database Structure

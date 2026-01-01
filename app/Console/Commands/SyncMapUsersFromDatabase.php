@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use PDO;
+use Illuminate\Support\Facades\Cache;
 
 class SyncMapUsersFromDatabase extends Command
 {
@@ -146,6 +147,13 @@ class SyncMapUsersFromDatabase extends Command
                 ['Errors', $errors],
             ]
         );
+
+        // Update last sync time in system settings cache
+        if (!$dryRun) {
+            $settings = Cache::get('system_settings', []);
+            $settings['map_last_sync_at'] = now()->toDateTimeString();
+            Cache::forever('system_settings', $settings);
+        }
 
         if ($dryRun) {
             $this->newLine();
