@@ -169,7 +169,24 @@ location /eform/ {
 
 - **eform_web**: 9000 (internal)
 - **eform_nginx**: 9001 (exposed to network)
+- **eform_scheduler**: Background process (no ports)
 - **Main nginx**: Routes `/eform/` to `eform_nginx:9001`
+
+## Background Tasks (Scheduler)
+
+A dedicated `scheduler` service runs `php artisan schedule:work` in the background to handle tasks like the MAP database synchronization.
+
+### Managing the Scheduler
+```bash
+# Start scheduler
+docker-compose up -d scheduler
+
+# Check scheduler logs
+docker-compose logs -f scheduler
+
+# Restart scheduler
+docker-compose restart scheduler
+```
 
 ## Health Checks
 

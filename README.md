@@ -256,10 +256,19 @@ php artisan db:seed        # Seed database
 The application relies on Laravel's Task Scheduler for the MAP database synchronization.
 
 ### Local Development
-To run the scheduler locally, open a new terminal and run:
+To run the scheduler locally without Docker:
 ```bash
 php artisan schedule:work
 ```
+
+### 🐳 Docker Configuration
+We have included a dedicated `scheduler` service in `docker-compose.yml` that runs `php artisan schedule:work` automatically.
+
+To start it:
+```bash
+docker-compose up -d scheduler
+```
+(It will start automatically with `docker-compose up -d`)
 
 ### Production
 For production environments, add the following Cron entry to your server:
