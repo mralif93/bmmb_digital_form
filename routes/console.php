@@ -16,7 +16,12 @@ Schedule::command('qr-codes:regenerate')
     ->appendOutputTo(storage_path('logs/qr-codes-regeneration.log'));
 
 // Retrieve system settings
-$settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+try {
+    $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+} catch (\Throwable $e) {
+    // Handling for when database connection fails (e.g. during build)
+    $settings = [];
+}
 
 // Schedule MAP branches/states/regions sync daily at 5 AM (before user sync)
 Schedule::command('map:sync-branches --all')
