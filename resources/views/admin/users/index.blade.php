@@ -30,7 +30,8 @@
             Trashed Users
         </a>
             <button onclick="openUserCreateModal()" class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors">
-        Create New
+            <i class='bx bx-plus mr-1.5'></i>
+            Create New
         </button>
     </div>
 </div>
