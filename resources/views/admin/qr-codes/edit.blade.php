@@ -68,6 +68,9 @@
                         @error('content')
                             <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
+                        <p id="branch-url-help" class="mt-1 text-xs text-blue-600 dark:text-blue-400 hidden">
+                            The secure URL for this branch is generated automatically on save.
+                        </p>
                     </div>
 
                     <!-- Branch -->
@@ -107,47 +110,30 @@
                     </div>
 
                     <!-- Size and Format -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="size" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Size: <span class="text-gray-500">(px)</span>
-                            </label>
-                            <input type="number" name="size" id="size" value="{{ old('size', $qrCode->size) }}" min="100"
-                                max="1000"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('size') border-red-500 @enderror">
-                            @error('size')
-                                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label for="format" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Format:
-                            </label>
-                            <select name="format" id="format"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('format') border-red-500 @enderror">
-                                <option value="png" {{ old('format', $qrCode->format) == 'png' ? 'selected' : '' }}>PNG
-                                </option>
-                                <option value="svg" {{ old('format', $qrCode->format) == 'svg' ? 'selected' : '' }}>SVG
-                                </option>
-                                <option value="jpg" {{ old('format', $qrCode->format) == 'jpg' ? 'selected' : '' }}>JPG
-                                </option>
-                            </select>
-                            @error('format')
-                                <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <div>
+                        <label for="size" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Size: <span class="text-gray-500">(px)</span>
+                        </label>
+                        <input type="number" name="size" id="size" value="{{ old('size', $qrCode->size) }}" min="100"
+                            max="1000"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('size') border-red-500 @enderror">
+                        @error('size')
+                            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                        <!-- Format hidden input (forced to SVG) -->
+                        <input type="hidden" name="format" value="svg">
                     </div>
-                </div>
 
-                <div class="flex justify-end space-x-3 mt-6">
-                    <a href="{{ route('admin.qr-codes.show', $qrCode->id) }}"
-                        class="px-4 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        Cancel
-                    </a>
-                    <button type="submit"
-                        class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-medium rounded-lg transition-colors">
-                        Update QR Code
-                    </button>
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <a href="{{ route('admin.qr-codes.show', $qrCode->id) }}"
+                            class="px-4 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            Cancel
+                        </a>
+                        <button type="submit"
+                            class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-medium rounded-lg transition-colors">
+                            Update QR Code
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -177,6 +163,37 @@
                 const previewDiv = document.getElementById('qrcode-preview');
                 let qrcode = null;
 
+                const helpMessage = document.getElementById('branch-url-help');
+
+                function handleTypeChange() {
+                    const type = typeSelect ? typeSelect.value : '';
+                    const isBranch = type === 'branch';
+
+                    // Check if content is already a secure URL (contains token=)
+                    const isSecureUrl = contentInput.value.includes('token=');
+
+                    if (isBranch) {
+                        contentInput.readOnly = true;
+                        contentInput.classList.add('bg-gray-100', 'text-gray-500', 'cursor-not-allowed');
+                        contentInput.classList.remove('bg-white', 'text-gray-900');
+                        helpMessage.classList.remove('hidden');
+
+                        // If empty, set placeholder
+                        if (!contentInput.value) {
+                            contentInput.value = 'System will generate secure URL automatically';
+                        }
+                    } else {
+                        if (contentInput.value === 'System will generate secure URL automatically') {
+                            contentInput.value = '';
+                        }
+                        contentInput.readOnly = false;
+                        contentInput.classList.remove('bg-gray-100', 'text-gray-500', 'cursor-not-allowed');
+                        contentInput.classList.add('bg-white', 'text-gray-900');
+                        helpMessage.classList.add('hidden');
+                    }
+                    updatePreview();
+                }
+
                 function generateQrContent(type, content, branchId) {
                     if (!content && type !== 'branch') return '';
 
@@ -188,9 +205,11 @@
                                 if (branchOption && branchOption.value) {
                                     const branchCode = branchOption.textContent.match(/\(([^)]+)\)/)?.[1];
                                     if (branchCode) {
-                                        // Generate preview token (real token generated on server)
-                                        const previewToken = 'preview-' + Math.random().toString(36).substring(2, 15);
-                                        return window.location.origin + '/eform/branch/' + branchCode + '?token=' + previewToken;
+                                        // If content already has a URL, use it (for edit view)
+                                        if (content && content.includes('http')) {
+                                            return content;
+                                        }
+                                        return window.location.origin + '/branch/' + branchCode + '?token=GENERATED_ON_SAVE';
                                     }
                                 }
                             }
@@ -259,6 +278,7 @@
 
                 // Add event listeners
                 if (typeSelect) {
+                    typeSelect.addEventListener('change', handleTypeChange);
                     typeSelect.addEventListener('change', updatePreview);
                 }
                 if (contentInput) {
@@ -269,6 +289,7 @@
                 }
 
                 // Initial preview
+                handleTypeChange();
                 setTimeout(updatePreview, 300);
             });
         </script>

@@ -45,20 +45,10 @@ class QrCodeSeeder extends Seeder
                 $url = route('public.branch', ['tiAgentCode' => $branch->ti_agent_code]);
 
                 // Generate QR code name
-                $qrName = "{$branch->branch_name} - Branch Access";
+                $qrName = "Branch QR - {$branch->branch_name}";
 
                 // Generate validation token
                 $validationToken = Str::random(32);
-
-                // Generate QR code image
-                $qrImage = QrCodeGenerator::format('svg')
-                    ->size(300)
-                    ->margin(2)
-                    ->generate($url);
-
-                // Save QR code image
-                $qrImagePath = "qr-codes/branches/{$branch->ti_agent_code}.svg";
-                Storage::disk('public')->put($qrImagePath, $qrImage);
 
                 // Create or update QR code record
                 QrCode::create([
@@ -66,7 +56,7 @@ class QrCodeSeeder extends Seeder
                     'type' => 'branch',
                     'name' => $qrName,
                     'content' => $url,
-                    'qr_code_image' => $qrImagePath,
+                    'qr_code_image' => null,
                     'status' => 'active',
                     'size' => 300,
                     'format' => 'svg',

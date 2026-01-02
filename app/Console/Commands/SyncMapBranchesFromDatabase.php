@@ -431,13 +431,13 @@ class SyncMapBranchesFromDatabase extends Command
             // Get expiration minutes from settings
             $expirationMinutes = $this->getQrCodeExpirationMinutes();
 
-            // Create QR code record (no image file - rendered dynamically in browser)
+            // Create QR code record
             QrCode::create([
                 'name' => 'Branch QR - ' . $branchName,
                 'type' => 'branch',
                 'content' => $qrContent,
                 'branch_id' => $branchId,
-                'qr_code_image' => null, // No image file - rendered dynamically
+                'qr_code_image' => null,
                 'status' => 'active',
                 'size' => 300,
                 'format' => 'svg',

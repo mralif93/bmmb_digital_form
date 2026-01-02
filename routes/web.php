@@ -750,6 +750,7 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
             });
 
             // QR Code Management (CRUD)
+            Route::get('/qr-codes/trashed', [QrCodeManagementController::class, 'trashed'])->name('qr-codes.trashed');
             Route::resource('qr-codes', QrCodeManagementController::class);
             Route::post('/qr-codes/{qr_code}/regenerate', [QrCodeManagementController::class, 'regenerate'])->name('qr-codes.regenerate');
             Route::post('/qr-codes/regenerate-all', [QrCodeManagementController::class, 'regenerateAll'])->name('qr-codes.regenerate-all');

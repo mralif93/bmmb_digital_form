@@ -5,238 +5,256 @@
 @section('page-description', 'Add a new QR code to the system')
 
 @section('content')
-<div class="mb-4 flex items-center justify-end">
-    <a href="{{ route('admin.qr-codes.index') }}" class="inline-flex items-center px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
-        <i class='bx bx-arrow-back mr-1.5'></i>
-        Back to List
-    </a>
-</div>
+    <div class="mb-4 flex items-center justify-end">
+        <a href="{{ route('admin.qr-codes.index') }}"
+            class="inline-flex items-center px-3 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
+            <i class='bx bx-arrow-back mr-1.5'></i>
+            Back to List
+        </a>
+    </div>
 
-<div class="max-w-3xl mx-auto">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">QR Code Information</h3>
-        </div>
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-white">QR Code Information</h3>
+            </div>
 
-        <form action="{{ route('admin.qr-codes.store') }}" method="POST" class="p-6">
-            @csrf
-            
-            <div class="space-y-4">
-                <!-- Name -->
-                <div>
-                    <label for="name" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Name: <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" name="name" id="name" value="{{ old('name') }}" required
-                           placeholder="e.g., Branch QR Code - KL001"
-                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('name') border-red-500 @enderror">
-                    @error('name')
-                        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
+            <form action="{{ route('admin.qr-codes.store') }}" method="POST" class="p-6">
+                @csrf
 
-                <!-- Type -->
-                <div>
-                    <label for="type" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Type: <span class="text-red-500">*</span>
-                    </label>
-                    <select name="type" id="type" required
+                <div class="space-y-4">
+                    <!-- Name -->
+                    <div>
+                        <label for="name" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Name: <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="name" id="name" value="{{ old('name') }}" required
+                            placeholder="e.g., Branch QR Code - KL001"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('name') border-red-500 @enderror">
+                        @error('name')
+                            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Type -->
+                    <div>
+                        <label for="type" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Type: <span class="text-red-500">*</span>
+                        </label>
+                        <select name="type" id="type" required
                             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('type') border-red-500 @enderror">
-                        <option value="">Select QR code type</option>
-                        <option value="branch" {{ old('type') == 'branch' ? 'selected' : '' }}>Branch</option>
-                        <option value="url" {{ old('type', 'url') == 'url' ? 'selected' : '' }}>URL</option>
-                        <option value="text" {{ old('type') == 'text' ? 'selected' : '' }}>Text</option>
-                        <option value="phone" {{ old('type') == 'phone' ? 'selected' : '' }}>Phone</option>
-                        <option value="email" {{ old('type') == 'email' ? 'selected' : '' }}>Email</option>
-                        <option value="sms" {{ old('type') == 'sms' ? 'selected' : '' }}>SMS</option>
-                        <option value="wifi" {{ old('type') == 'wifi' ? 'selected' : '' }}>WiFi</option>
-                        <option value="vcard" {{ old('type') == 'vcard' ? 'selected' : '' }}>vCard</option>
-                    </select>
-                    @error('type')
-                        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
+                            <option value="">Select QR code type</option>
+                            <option value="branch" {{ old('type') == 'branch' ? 'selected' : '' }}>Branch</option>
+                            <option value="url" {{ old('type', 'url') == 'url' ? 'selected' : '' }}>URL</option>
+                            <option value="text" {{ old('type') == 'text' ? 'selected' : '' }}>Text</option>
+                            <option value="phone" {{ old('type') == 'phone' ? 'selected' : '' }}>Phone</option>
+                            <option value="email" {{ old('type') == 'email' ? 'selected' : '' }}>Email</option>
+                            <option value="sms" {{ old('type') == 'sms' ? 'selected' : '' }}>SMS</option>
+                            <option value="wifi" {{ old('type') == 'wifi' ? 'selected' : '' }}>WiFi</option>
+                            <option value="vcard" {{ old('type') == 'vcard' ? 'selected' : '' }}>vCard</option>
+                        </select>
+                        @error('type')
+                            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                <!-- Content -->
-                <div>
-                    <label for="content" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Content: <span class="text-red-500">*</span>
-                    </label>
-                    <textarea name="content" id="content" rows="4" required
-                              placeholder="Enter content (URL, text, phone number, email, etc.)"
-                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y @error('content') border-red-500 @enderror">{{ old('content') }}</textarea>
-                    @error('content')
-                        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
+                    <!-- Content -->
+                    <div>
+                        <label for="content" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Content: <span class="text-red-500">*</span>
+                        </label>
+                        <textarea name="content" id="content" rows="4" required
+                            placeholder="Enter content (URL, text, phone number, email, etc.)"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y @error('content') border-red-500 @enderror">{{ old('content') }}</textarea>
+                        @error('content')
+                            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                        <p id="branch-url-help" class="mt-1 text-xs text-blue-600 dark:text-blue-400 hidden">
+                            The secure URL for this branch will be generated automatically upon saving.
+                        </p>
+                    </div>
 
-                <!-- Branch -->
-                <div>
-                    <label for="branch_id" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Branch: <span class="text-gray-500">(Optional)</span>
-                    </label>
-                    <select name="branch_id" id="branch_id"
+                    <!-- Branch -->
+                    <div>
+                        <label for="branch_id" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Branch: <span class="text-gray-500">(Optional)</span>
+                        </label>
+                        <select name="branch_id" id="branch_id"
                             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('branch_id') border-red-500 @enderror">
-                        <option value="">Select branch (optional)</option>
-                        @foreach($branches as $branch)
-                            <option value="{{ $branch->id }}" {{ old('branch_id') == $branch->id ? 'selected' : '' }}>
-                                {{ $branch->branch_name }} ({{ $branch->ti_agent_code }})
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('branch_id')
-                        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
+                            <option value="">Select branch (optional)</option>
+                            @foreach($branches as $branch)
+                                <option value="{{ $branch->id }}" {{ old('branch_id') == $branch->id ? 'selected' : '' }}>
+                                    {{ $branch->branch_name }} ({{ $branch->ti_agent_code }})
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('branch_id')
+                            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                <!-- Status -->
-                <div>
-                    <label for="status" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Status: <span class="text-red-500">*</span>
-                    </label>
-                    <select name="status" id="status" required
+                    <!-- Status -->
+                    <div>
+                        <label for="status" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Status: <span class="text-red-500">*</span>
+                        </label>
+                        <select name="status" id="status" required
                             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('status') border-red-500 @enderror">
-                        <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                    </select>
-                    @error('status')
-                        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
+                            <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        </select>
+                        @error('status')
+                            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                <!-- Size and Format -->
-                <div class="grid grid-cols-2 gap-4">
+                    <!-- Size and Format -->
                     <div>
                         <label for="size" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Size: <span class="text-gray-500">(px)</span>
                         </label>
                         <input type="number" name="size" id="size" value="{{ old('size', 300) }}" min="100" max="1000"
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('size') border-red-500 @enderror">
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('size') border-red-500 @enderror">
                         @error('size')
                             <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
+                        <!-- Format hidden input (forced to SVG) -->
+                        <input type="hidden" name="format" value="svg">
                     </div>
-                    <div>
-                        <label for="format" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Format:
-                        </label>
-                        <select name="format" id="format"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('format') border-red-500 @enderror">
-                            <option value="png" {{ old('format', 'png') == 'png' ? 'selected' : '' }}>PNG</option>
-                            <option value="svg" {{ old('format') == 'svg' ? 'selected' : '' }}>SVG</option>
-                            <option value="jpg" {{ old('format') == 'jpg' ? 'selected' : '' }}>JPG</option>
-                        </select>
-                        @error('format')
-                            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
+
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <a href="{{ route('admin.qr-codes.index') }}"
+                            class="px-4 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            Cancel
+                        </a>
+                        <button type="submit"
+                            class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-medium rounded-lg transition-colors">
+                            Create QR Code
+                        </button>
                     </div>
                 </div>
-            </div>
+            </form>
+        </div>
 
-            <div class="flex justify-end space-x-3 mt-6">
-                <a href="{{ route('admin.qr-codes.index') }}" class="px-4 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    Cancel
-                </a>
-                <button type="submit" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-medium rounded-lg transition-colors">
-                    Create QR Code
-                </button>
+        <!-- QR Code Preview -->
+        <div class="mt-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Live Preview</h3>
+            <div class="flex flex-col items-center">
+                <div id="qrcode-preview"
+                    class="w-64 h-64 border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white flex items-center justify-center">
+                    <p class="text-xs text-gray-400 dark:text-gray-500">Enter content to see preview</p>
+                </div>
+                <p class="mt-4 text-xs text-gray-600 dark:text-gray-400 text-center">Preview updates automatically as you
+                    type</p>
             </div>
-        </form>
-    </div>
-    
-    <!-- QR Code Preview -->
-    <div class="mt-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Live Preview</h3>
-        <div class="flex flex-col items-center">
-            <div id="qrcode-preview" class="w-64 h-64 border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white flex items-center justify-center">
-                <p class="text-xs text-gray-400 dark:text-gray-500">Enter content to see preview</p>
-            </div>
-            <p class="mt-4 text-xs text-gray-600 dark:text-gray-400 text-center">Preview updates automatically as you type</p>
         </div>
     </div>
-</div>
 
-@push('scripts')
-<!-- QRCode.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const typeSelect = document.getElementById('type');
-    const contentInput = document.getElementById('content');
-    const branchSelect = document.getElementById('branch_id');
-    const previewDiv = document.getElementById('qrcode-preview');
-    
-    function generateQrContent(type, content, branchId) {
-        if (!content) return '';
-        
-        type = type.toLowerCase();
-        switch(type) {
-            case 'branch':
-                if (branchId) {
-                    const branchOption = branchSelect.options[branchSelect.selectedIndex];
-                    if (branchOption && branchOption.value) {
-                        const branchCode = branchOption.textContent.match(/\(([^)]+)\)/)?.[1];
-                        if (branchCode) {
-                            return window.location.origin + '/branch/' + branchCode;
+    @push('scripts')
+        <!-- QRCode.js CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const typeSelect = document.getElementById('type');
+                const contentInput = document.getElementById('content');
+                const branchSelect = document.getElementById('branch_id');
+                const previewDiv = document.getElementById('qrcode-preview');
+                const helpMessage = document.getElementById('branch-url-help');
+
+                function handleTypeChange() {
+                    const type = typeSelect.value;
+                    const isBranch = type === 'branch';
+
+                    if (isBranch) {
+                        contentInput.value = 'System will generate secure URL automatically';
+                        contentInput.readOnly = true;
+                        contentInput.classList.add('bg-gray-100', 'text-gray-500', 'cursor-not-allowed');
+                        contentInput.classList.remove('bg-white', 'text-gray-900');
+                        helpMessage.classList.remove('hidden');
+                    } else {
+                        if (contentInput.value === 'System will generate secure URL automatically') {
+                            contentInput.value = '';
                         }
+                        contentInput.readOnly = false;
+                        contentInput.classList.remove('bg-gray-100', 'text-gray-500', 'cursor-not-allowed');
+                        contentInput.classList.add('bg-white', 'text-gray-900');
+                        helpMessage.classList.add('hidden');
+                    }
+                    updatePreview();
+                }
+
+                function generateQrContent(type, content, branchId) {
+                    if (!content) return '';
+
+                    type = type.toLowerCase();
+                    switch (type) {
+                        case 'branch':
+                            if (branchId) {
+                                const branchOption = branchSelect.options[branchSelect.selectedIndex];
+                                if (branchOption && branchOption.value) {
+                                    const branchCode = branchOption.textContent.match(/\(([^)]+)\)/)?.[1];
+                                    if (branchCode) {
+                                        return window.location.origin + '/branch/' + branchCode + '?token=GENERATED_ON_SAVE';
+                                    }
+                                }
+                            }
+                            return content;
+                        case 'phone':
+                            return 'tel:' + content;
+                        case 'email':
+                            return 'mailto:' + content;
+                        case 'sms':
+                            return 'sms:' + content;
+                        case 'wifi':
+                            return 'WIFI:T:' + content + ';;';
+                        default:
+                            return content;
                     }
                 }
-                return content;
-            case 'phone':
-                return 'tel:' + content;
-            case 'email':
-                return 'mailto:' + content;
-            case 'sms':
-                return 'sms:' + content;
-            case 'wifi':
-                return 'WIFI:T:' + content + ';;';
-            default:
-                return content;
-        }
-    }
-    
-    function updatePreview() {
-        const type = typeSelect.value;
-        const content = contentInput.value;
-        const branchId = branchSelect.value;
-        
-        if (!type || !content) {
-            previewDiv.innerHTML = '<p class="text-xs text-gray-400 dark:text-gray-500">Enter content to see preview</p>';
-            return;
-        }
-        
-        const qrContent = generateQrContent(type, content, branchId);
-        
-        // Clear previous QR code
-        previewDiv.innerHTML = '';
-        
-        // Generate new QR code
-        QRCode.toCanvas(previewDiv, qrContent, {
-            width: 256,
-            margin: 2,
-            color: {
-                dark: '#000000',
-                light: '#FFFFFF'
-            }
-        }, function (error) {
-            if (error) {
-                previewDiv.innerHTML = '<p class="text-xs text-red-500">Error generating preview</p>';
-                console.error(error);
-            }
-        });
-    }
-    
-    // Add event listeners
-    typeSelect.addEventListener('change', updatePreview);
-    contentInput.addEventListener('input', updatePreview);
-    branchSelect.addEventListener('change', updatePreview);
-    
-    // Initial preview if content exists
-    if (contentInput.value) {
-        updatePreview();
-    }
-});
-</script>
-@endpush
-@endsection
 
+                function updatePreview() {
+                    const type = typeSelect.value;
+                    const content = contentInput.value;
+                    const branchId = branchSelect.value;
+
+                    if (!type || !content) {
+                        previewDiv.innerHTML = '<p class="text-xs text-gray-400 dark:text-gray-500">Enter content to see preview</p>';
+                        return;
+                    }
+
+                    const qrContent = generateQrContent(type, content, branchId);
+
+                    // Clear previous QR code
+                    previewDiv.innerHTML = '';
+
+                    // Generate new QR code
+                    QRCode.toCanvas(previewDiv, qrContent, {
+                        width: 256,
+                        margin: 2,
+                        color: {
+                            dark: '#000000',
+                            light: '#FFFFFF'
+                        }
+                    }, function (error) {
+                        if (error) {
+                            previewDiv.innerHTML = '<p class="text-xs text-red-500">Error generating preview</p>';
+                            console.error(error);
+                        }
+                    });
+                }
+
+                // Add event listeners
+                typeSelect.addEventListener('change', handleTypeChange);
+                typeSelect.addEventListener('change', updatePreview);
+                contentInput.addEventListener('input', updatePreview);
+                branchSelect.addEventListener('change', updatePreview);
+
+                // Initial check
+                handleTypeChange();
+                if (contentInput.value) {
+                    updatePreview();
+                }
+            });
+        </script>
+    @endpush
+@endsection

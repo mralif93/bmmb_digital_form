@@ -7,7 +7,7 @@ use App\Models\QrCode;
 use App\Models\Branch;
 use App\Traits\LogsAuditTrail;
 use Illuminate\Http\Request;
-use SimpleSoftwareIO\QrCode\Facades\QrCode as QrCodeGenerator;
+
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
 
@@ -19,13 +19,7 @@ class QrCodeManagementController extends Controller
      */
     public function index(Request $request)
     {
-        $showTrashed = $request->query('trashed') === 'true';
-
-        if ($showTrashed) {
-            $query = QrCode::onlyTrashed()->with(['branch', 'creator']);
-        } else {
-            $query = QrCode::with(['branch', 'creator']);
-        }
+        $query = QrCode::with(['branch', 'creator']);
 
         // Search functionality
         if ($request->filled('search')) {
@@ -79,7 +73,45 @@ class QrCodeManagementController extends Controller
         $dateFormat = $settings['date_format'] ?? 'Y-m-d';
         $timeFormat = $settings['time_format'] ?? 'H:i:s';
 
-        return view('admin.qr-codes.index', compact('qrCodes', 'branches', 'timezoneHelper', 'dateFormat', 'timeFormat', 'showTrashed'));
+        return view('admin.qr-codes.index', compact('qrCodes', 'branches', 'timezoneHelper', 'dateFormat', 'timeFormat'));
+    }
+
+    /**
+     * Display a listing of trashed resources.
+     */
+    public function trashed(Request $request)
+    {
+        $query = QrCode::onlyTrashed()->with(['branch', 'creator']);
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%")
+                    ->orWhereHas('branch', function ($branchQuery) use ($search) {
+                        $branchQuery->where('branch_name', 'like', "%{$search}%")
+                            ->orWhere('ti_agent_code', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // Filter by type
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Filter by branch
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        $qrCodes = $query->orderBy('deleted_at', 'desc')->paginate(15)->withQueryString();
+
+        // Get branches for filter dropdown
+        $branches = Branch::orderBy('branch_name')->get();
+
+        return view('admin.qr-codes.trashed', compact('qrCodes', 'branches'));
     }
 
     /**
@@ -110,7 +142,8 @@ class QrCodeManagementController extends Controller
         $validated['type'] = strtolower($validated['type']);
         $validated['status'] = strtolower($validated['status']);
         $validated['size'] = $validated['size'] ?? 300;
-        $validated['format'] = $validated['format'] ?? 'png';
+        $validated['size'] = $validated['size'] ?? 300;
+        $validated['format'] = 'svg'; // Force SVG format
         $validated['created_by'] = auth()->id();
 
         // Generate new validation token
@@ -119,18 +152,7 @@ class QrCodeManagementController extends Controller
         // Generate QR code content based on type
         $qrContent = $this->generateQrContent($validated['type'], $validated['content'], $validated['branch_id'] ?? null, $validationToken);
 
-        // Generate QR code image
-        $qrCodeImage = QrCodeGenerator::format($validated['format'])
-            ->size($validated['size'])
-            ->margin(2)
-            ->generate($qrContent);
-
-        // Save QR code image
-        $fileName = 'qr_' . time() . '_' . uniqid() . '.' . $validated['format'];
-        $filePath = 'qr-codes/' . $fileName;
-        Storage::disk('public')->put($filePath, $qrCodeImage);
-
-        $validated['qr_code_image'] = $fileName;
+        $validated['qr_code_image'] = null; // No server-side image generation
         $validated['content'] = $qrContent;
         $validated['last_regenerated_at'] = now();
         $validated['expires_at'] = now()->addMinutes($this->getQrCodeExpirationMinutes());
@@ -194,7 +216,8 @@ class QrCodeManagementController extends Controller
         $validated['type'] = strtolower($validated['type']);
         $validated['status'] = strtolower($validated['status']);
         $validated['size'] = $validated['size'] ?? 300;
-        $validated['format'] = $validated['format'] ?? 'png';
+        $validated['size'] = $validated['size'] ?? 300;
+        $validated['format'] = 'svg'; // Force SVG format
 
         // Regenerate QR code if content, type, or format changed
         $needsRegeneration = $qr_code->content !== $validated['content']
@@ -209,23 +232,12 @@ class QrCodeManagementController extends Controller
             // Generate QR code content based on type
             $qrContent = $this->generateQrContent($validated['type'], $validated['content'], $validated['branch_id'] ?? null, $validationToken);
 
-            // Delete old QR code image
+            // Delete old QR code image if it exists (cleanup)
             if ($qr_code->qr_code_image) {
                 Storage::disk('public')->delete('qr-codes/' . $qr_code->qr_code_image);
             }
 
-            // Generate new QR code image
-            $qrCodeImage = QrCodeGenerator::format($validated['format'])
-                ->size($validated['size'])
-                ->margin(2)
-                ->generate($qrContent);
-
-            // Save new QR code image
-            $fileName = 'qr_' . time() . '_' . uniqid() . '.' . $validated['format'];
-            $filePath = 'qr-codes/' . $fileName;
-            Storage::disk('public')->put($filePath, $qrCodeImage);
-
-            $validated['qr_code_image'] = $fileName;
+            $validated['qr_code_image'] = null;
             $validated['content'] = $qrContent;
             $validated['last_regenerated_at'] = now();
             $validated['expires_at'] = now()->addMinutes($this->getQrCodeExpirationMinutes());
@@ -356,20 +368,9 @@ class QrCodeManagementController extends Controller
                 Storage::disk('public')->delete('qr-codes/' . $qr_code->qr_code_image);
             }
 
-            // Generate new QR code image
-            $qrCodeImage = QrCodeGenerator::format($qr_code->format)
-                ->size($qr_code->size)
-                ->margin(2)
-                ->generate($qrContent);
-
-            // Save new QR code image
-            $fileName = 'qr_' . time() . '_' . uniqid() . '.' . $qr_code->format;
-            $filePath = 'qr-codes/' . $fileName;
-            Storage::disk('public')->put($filePath, $qrCodeImage);
-
             // Update QR code record with new expiration and token
             $qr_code->update([
-                'qr_code_image' => $fileName,
+                'qr_code_image' => null,
                 'content' => $qrContent,
                 'last_regenerated_at' => now(),
                 'expires_at' => now()->addMinutes($this->getQrCodeExpirationMinutes()),
@@ -445,7 +446,7 @@ class QrCodeManagementController extends Controller
                 modelId: $qrCode->id
             );
 
-            return redirect()->route('admin.qr-codes.index', ['trashed' => 'true'])
+            return redirect()->route('admin.qr-codes.trashed')
                 ->with('success', 'QR code restored successfully!');
         } catch (\Exception $e) {
             \Log::error("Error restoring QR code ID {$id}: " . $e->getMessage());
@@ -485,7 +486,7 @@ class QrCodeManagementController extends Controller
 
             if ($remainingTrashedCount > 0) {
                 // Stay on trashed view
-                return redirect()->route('admin.qr-codes.index', ['trashed' => 'true'])
+                return redirect()->route('admin.qr-codes.trashed')
                     ->with('success', 'QR code permanently deleted successfully!');
             } else {
                 // No more trashed QR codes, go back to active list

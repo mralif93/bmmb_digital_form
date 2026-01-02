@@ -7,7 +7,7 @@ use App\Models\QrCode;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
-use SimpleSoftwareIO\QrCode\Facades\QrCode as QrCodeGenerator;
+
 
 class RegenerateQrCodes extends Command
 {
@@ -35,8 +35,8 @@ class RegenerateQrCodes extends Command
         if ($regenerateAll) {
             $this->info('Starting QR code regeneration for ALL active codes...');
 
-            // Get all active QR codes
-            $qrCodes = QrCode::where('status', 'active')->get();
+            // Get all active QR codes with branch relationship
+            $qrCodes = QrCode::where('status', 'active')->with('branch')->get();
             $this->info("Found {$qrCodes->count()} active QR codes to regenerate.");
         } else {
             $this->info('Starting QR code regeneration for expired codes...');
@@ -68,25 +68,21 @@ class RegenerateQrCodes extends Command
                     $newToken
                 );
 
-                // Delete old QR code image if exists
+                // Delete old QR code image if exists (cleanup)
                 if ($qrCode->qr_code_image) {
                     Storage::disk('public')->delete('qr-codes/' . $qrCode->qr_code_image);
                 }
 
-                // Generate new QR code image
-                $qrCodeImage = QrCodeGenerator::format($qrCode->format)
-                    ->size($qrCode->size)
-                    ->margin(2)
-                    ->generate($qrContent);
+                // Standardize Name if type is branch
+                $name = $qrCode->name;
+                if ($qrCode->type === 'branch' && $qrCode->branch) {
+                    $name = 'Branch QR - ' . $qrCode->branch->branch_name;
+                }
 
-                // Save new QR code image
-                $fileName = 'qr_' . time() . '_' . uniqid() . '.' . $qrCode->format;
-                $filePath = 'qr-codes/' . $fileName;
-                Storage::disk('public')->put($filePath, $qrCodeImage);
-
-                // Update QR code record with new expiration and token
+                // Update QR code record
                 $qrCode->update([
-                    'qr_code_image' => $fileName,
+                    'name' => $name,
+                    'qr_code_image' => null, // No server-side image generation
                     'content' => $qrContent,
                     'last_regenerated_at' => now(),
                     'expires_at' => today()->endOfDay(),

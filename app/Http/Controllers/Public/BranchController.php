@@ -85,45 +85,7 @@ class BranchController extends Controller
     /**
      * Regenerate an expired QR code
      */
-    private function regenerateQrCode(QrCode $qrCode)
-    {
-        try {
-            $branch = $qrCode->branch;
-            // Generate new validation token
-            $newToken = bin2hex(random_bytes(16));
 
-            // Generate QR code URL with token
-            $qrContent = $branch ? route('public.branch', ['tiAgentCode' => $branch->ti_agent_code, 'token' => $newToken]) : $qrCode->content;
-
-            // Delete old QR code image
-            if ($qrCode->qr_code_image) {
-                Storage::disk('public')->delete('qr-codes/' . $qrCode->qr_code_image);
-            }
-
-            // Generate new QR code image
-            $qrCodeImage = QrCodeGenerator::format($qrCode->format)
-                ->size($qrCode->size)
-                ->margin(2)
-                ->generate($qrContent);
-
-            // Save new QR code image
-            $fileName = 'qr_' . time() . '_' . uniqid() . '.' . $qrCode->format;
-            $filePath = 'qr-codes/' . $fileName;
-            Storage::disk('public')->put($filePath, $qrCodeImage);
-
-            // Update QR code record with new expiration and token
-            $qrCode->update([
-                'qr_code_image' => $fileName,
-                'content' => $qrContent,
-                'last_regenerated_at' => now(),
-                'expires_at' => now()->addMinutes($this->getQrCodeExpirationMinutes()),
-                'validation_token' => $newToken,
-            ]);
-        } catch (\Exception $e) {
-            // Log error but don't fail the request
-            Log::error('Failed to auto-regenerate QR code: ' . $e->getMessage());
-        }
-    }
 
     /**
      * Get QR code expiration minutes from settings

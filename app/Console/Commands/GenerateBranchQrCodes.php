@@ -78,16 +78,7 @@ class GenerateBranchQrCodes extends Command
                 ];
                 $qrContent = route('public.branch', $params);
 
-                // Generate QR code image using SVG (no extension required)
-                $qrCodeImage = QrCodeGenerator::format('svg')
-                    ->size(300)
-                    ->margin(2)
-                    ->generate($qrContent);
-
-                // Save QR code image
-                $fileName = 'qr_' . time() . '_' . uniqid() . '.svg';
-                $filePath = 'qr-codes/' . $fileName;
-                Storage::disk('public')->put($filePath, $qrCodeImage);
+                $qrContent = route('public.branch', $params);
 
                 // Get expiration minutes
                 $settings = Cache::get('system_settings', []);
@@ -99,7 +90,7 @@ class GenerateBranchQrCodes extends Command
                     'type' => 'branch',
                     'content' => $qrContent,
                     'branch_id' => $branch->id,
-                    'qr_code_image' => $fileName,
+                    'qr_code_image' => null,
                     'status' => 'active',
                     'size' => 300,
                     'format' => 'svg',
