@@ -29,6 +29,10 @@
             <i class='bx bx-trash mr-1.5'></i>
             Trashed Users
         </a>
+            <button onclick="confirmResync('{{ route('admin.users.resync') }}')" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors">
+                <i class='bx bx-refresh mr-1.5'></i>
+                Resync
+            </button>
             <button onclick="openUserCreateModal()" class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors">
             <i class='bx bx-plus mr-1.5'></i>
             Create New
@@ -283,8 +287,60 @@
     </div>
 </div>
 
+
 @push('scripts')
 <script>
+    function confirmResync(route) {
+        Swal.fire({
+            title: 'Resync with MAP?',
+            html: `
+                <div class="text-center">
+                    <p class="mb-2">Are you sure you want to resync data from the MAP database?</p>
+                    <p class="text-sm text-gray-600">This process might take a while depending on the amount of data.</p>
+                </div>
+            `,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Resync',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#2563eb',
+            cancelButtonColor: '#6b7280',
+            customClass: {
+                popup: 'rounded-lg',
+                htmlContainer: 'text-center',
+                confirmButton: 'rounded-lg',
+                cancelButton: 'rounded-lg'
+            },
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = route;
+                
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = '{{ csrf_token() }}';
+                form.appendChild(csrf);
+                
+                document.body.appendChild(form);
+                form.submit();
+                
+                // Show loading state
+                Swal.fire({
+                    title: 'Syncing...',
+                    text: 'Please wait while we sync the data.',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+            }
+        });
+    }
+
 @php
     $settings = \Illuminate\Support\Facades\Cache::get('system_settings', [
         'primary_color' => '#FE8000',

@@ -189,6 +189,23 @@ class BranchController extends Controller
     }
 
     /**
+     * Resync branches from MAP database.
+     */
+    public function resync()
+    {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('map:sync-branches', [
+                '--include-regions' => false,
+                '--include-states' => false,
+            ]);
+
+            return redirect()->back()->with('success', 'Branch synchronization started successfully. Check logs for details.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to start synchronization: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Branch $branch)

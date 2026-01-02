@@ -715,6 +715,7 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
             Route::get('/users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
             Route::post('/users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
             Route::delete('/users/{id}/force-delete', [UserController::class, 'forceDelete'])->name('users.force-delete');
+            Route::post('/users/resync', [UserController::class, 'resync'])->name('users.resync');
             Route::resource('users', UserController::class);
         });
 
@@ -722,17 +723,20 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
         Route::middleware('admin-or-hq-or-iam')->group(function () {
             // Branches
             Route::get('/branches/trashed', [BranchController::class, 'trashed'])->name('branches.trashed');
+            Route::post('/branches/resync', [BranchController::class, 'resync'])->name('branches.resync');
             Route::post('/branches/{id}/restore', [BranchController::class, 'restore'])->name('branches.restore');
             Route::delete('/branches/{id}/force-delete', [BranchController::class, 'forceDelete'])->name('branches.force-delete');
             Route::resource('branches', BranchController::class);
             // States
             Route::get('states/trashed', [\App\Http\Controllers\Admin\StateController::class, 'trashed'])->name('states.trashed');
+            Route::post('states/resync', [\App\Http\Controllers\Admin\StateController::class, 'resync'])->name('states.resync');
             Route::post('states/{id}/restore', [\App\Http\Controllers\Admin\StateController::class, 'restore'])->name('states.restore');
             Route::delete('states/{id}/force-delete', [\App\Http\Controllers\Admin\StateController::class, 'forceDelete'])->name('states.force-delete');
             Route::resource('states', \App\Http\Controllers\Admin\StateController::class);
 
             // Regions
             Route::get('regions/trashed', [\App\Http\Controllers\Admin\RegionController::class, 'trashed'])->name('regions.trashed');
+            Route::post('regions/resync', [\App\Http\Controllers\Admin\RegionController::class, 'resync'])->name('regions.resync');
             Route::post('regions/{id}/restore', [\App\Http\Controllers\Admin\RegionController::class, 'restore'])->name('regions.restore');
             Route::delete('regions/{id}/force-delete', [\App\Http\Controllers\Admin\RegionController::class, 'forceDelete'])->name('regions.force-delete');
             Route::resource('regions', \App\Http\Controllers\Admin\RegionController::class);

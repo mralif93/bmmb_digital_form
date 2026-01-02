@@ -126,6 +126,20 @@ class RegionController extends Controller
     }
 
     /**
+     * Resync regions from MAP database.
+     */
+    public function resync()
+    {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('map:migrate-regions');
+
+            return redirect()->back()->with('success', 'Region synchronization completed successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to sync regions: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Region $region)

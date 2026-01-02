@@ -324,6 +324,20 @@ class UserController extends Controller
     }
 
     /**
+     * Resync users from MAP database.
+     */
+    public function resync()
+    {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('map:sync-from-db');
+
+            return redirect()->back()->with('success', 'User synchronization started successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to sync users: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
