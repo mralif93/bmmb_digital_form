@@ -18,25 +18,25 @@ services:
     networks:
       map_bom_rev_network: {}
 
-  scheduler:
-    container_name: eform_scheduler
-    build: .
-    restart: unless-stopped
-    volumes:
-      - ${MAP_DB_PATH:-./database}:/db
-      - /opt/map/map_db/db.sqlite3:/map_db/db.sqlite3
-      - .:/var/www/html
-      - ./storage:/var/www/html/storage
-      - ./bootstrap/cache:/var/www/html/bootstrap/cache
-    environment:
-      - APP_ENV=${APP_ENV:-production}
-      - APP_KEY=${APP_KEY}
-      - DB_CONNECTION=${DB_CONNECTION:-sqlite}
-    depends_on:
-      - web
-    networks:
-      map_bom_rev_network: {}
-    command: php artisan schedule:work
+  # scheduler:
+  #   container_name: eform_scheduler
+  #   build: .
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ${MAP_DB_PATH:-./database}:/db
+  #     - /opt/map/map_db/db.sqlite3:/map_db/db.sqlite3
+  #     - .:/var/www/html
+  #     - ./storage:/var/www/html/storage
+  #     - ./bootstrap/cache:/var/www/html/bootstrap/cache
+  #   environment:
+  #     - APP_ENV=${APP_ENV:-production}
+  #     - APP_KEY=${APP_KEY}
+  #     - DB_CONNECTION=${DB_CONNECTION:-sqlite}
+  #   depends_on:
+  #     - web
+  #   networks:
+  #     map_bom_rev_network: {}
+  #   command: php artisan schedule:work
 
   nginx:
     container_name: eform_nginx
