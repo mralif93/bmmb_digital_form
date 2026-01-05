@@ -23,6 +23,11 @@ class FormController extends Controller
             }
         }
 
+        // Check if branch ID is present in session
+        if (!session('submission_branch_id')) {
+            abort(403, 'Access Restricted. Please scan the Branch QR Code to access this form.');
+        }
+
         // Get form from new Form model
         $form = Form::where('slug', $slug)
             ->where('status', 'active')
@@ -57,6 +62,11 @@ class FormController extends Controller
             }
         }
 
+        // Check if branch ID is present in session
+        if (!session('submission_branch_id')) {
+            abort(403, 'Access Restricted. Please scan the Branch QR Code to access this form.');
+        }
+
         // Get form from new Form model (required - no fallback to old system)
         $form = Form::where('slug', $type)
             ->where('status', 'active')
@@ -74,7 +84,7 @@ class FormController extends Controller
         $formRenderer = app(FormRendererService::class);
         $formHtml = $formRenderer->renderForm($form->id, $formType);
         $sections = $formRenderer->getSections($form->id, $formType);
-        
+
         return view('public.forms.dynamic', compact('form', 'type', 'formHtml', 'sections'));
     }
 }

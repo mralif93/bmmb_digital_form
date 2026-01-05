@@ -49,7 +49,7 @@ class FormSubmissionController extends Controller
 
         // Check if multiple submissions are allowed
         if (!$form->allow_multiple_submissions) {
-            $branchId = session('submission_branch_id');
+            $branchId = session('submission_branch_id') ?? $request->input('branch_id');
             $existingSubmission = FormSubmission::where('form_id', $form->id)
                 ->where('branch_id', $branchId)
                 ->where('status', '!=', 'cancelled')
@@ -216,8 +216,8 @@ class FormSubmissionController extends Controller
             }
         }
 
-        // Get branch_id from session if available
-        $branchId = session('submission_branch_id');
+        // Get branch_id from session if available, otherwise try request input (from hidden field)
+        $branchId = session('submission_branch_id') ?? $request->input('branch_id');
 
         // Generate unique submission token (keep for internal use)
         $submissionToken = Str::random(32) . '-' . time();
