@@ -122,7 +122,7 @@
                         <label for="bio"
                             class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Bio</label>
                         <textarea name="bio" id="bio" rows="3"
-                            class="w-full px-3 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('bio') border-red-500 @enderror"
+                            class="w-full px-3 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent @error('bio') border-red-500 @enderror"
                             placeholder="Tell us about yourself...">{{ old('bio', $user->bio) }}</textarea>
                         @error('bio')
                             <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>

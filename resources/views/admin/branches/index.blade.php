@@ -52,7 +52,7 @@
                     <div class="relative">
                         <input type="text" name="search" id="search" value="{{ request('search') }}"
                             placeholder="Search by name, code, email, address, state, or region..."
-                            class="w-full pl-10 pr-4 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                            class="w-full pl-10 pr-4 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
                         <i
                             class='bx bx-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500'></i>
                     </div>
@@ -110,7 +110,7 @@
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-900">
                     <tr>
                         <th
                             class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
@@ -219,11 +219,11 @@
                 Swal.fire({
                     title: 'Delete Branch?',
                     html: `
-                                                    <div class="text-center">
-                                                        <p class="mb-2">Are you sure you want to delete this branch?</p>
-                                                        <p class="text-sm text-gray-600 dark:text-gray-400">This action will move the branch to the trash.</p>
-                                                    </div>
-                                                `,
+                                                            <div class="text-center">
+                                                                <p class="mb-2">Are you sure you want to delete this branch?</p>
+                                                                <p class="text-sm text-gray-600 dark:text-gray-400">This action will move the branch to the trash.</p>
+                                                            </div>
+                                                        `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, Delete',
@@ -265,11 +265,11 @@
                 Swal.fire({
                     title: 'Resync with MAP?',
                     html: `
-                                                        <div class="text-center">
-                                                            <p class="mb-2">Are you sure you want to resync data from the MAP database?</p>
-                                                            <p class="text-sm text-gray-600 dark:text-gray-400">This process might take a while depending on the amount of data.</p>
-                                                        </div>
-                                                    `,
+                                                                <div class="text-center">
+                                                                    <p class="mb-2">Are you sure you want to resync data from the MAP database?</p>
+                                                                    <p class="text-sm text-gray-600 dark:text-gray-400">This process might take a while depending on the amount of data.</p>
+                                                                </div>
+                                                            `,
                     icon: 'info',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, Resync',

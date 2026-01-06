@@ -47,7 +47,8 @@
                     <option value="">All Users</option>
                     @foreach($users as $user)
                         <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
-                            {{ $user->full_name }}</option>
+                            {{ $user->full_name }}
+                        </option>
                     @endforeach
                 </select>
             </div>
@@ -59,7 +60,8 @@
                     <option value="">All Models</option>
                     @foreach($modelTypes as $modelType)
                         <option value="{{ $modelType }}" {{ request('model_type') == $modelType ? 'selected' : '' }}>
-                            {{ class_basename($modelType) }}</option>
+                            {{ class_basename($modelType) }}
+                        </option>
                     @endforeach
                 </select>
             </div>
@@ -79,7 +81,7 @@
             <div class="lg:col-span-5">
                 <div class="flex items-center space-x-2">
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by description..."
-                        class="flex-1 px-3 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        class="flex-1 px-3 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
                     <button type="submit"
                         class="px-4 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition-colors">
                         <i class='bx bx-search mr-1'></i>
@@ -99,7 +101,7 @@
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-900">
                     <tr>
                         <th
                             class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">

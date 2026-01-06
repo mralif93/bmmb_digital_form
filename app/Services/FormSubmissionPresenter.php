@@ -460,11 +460,11 @@ class FormSubmissionPresenter
             case 'signature':
                 if (str_starts_with($value, 'data:image')) {
                     // Render Base64 image
-                    return '<div class="signature-display"><img src="' . $value . '" alt="Signature" class="max-w-xs border border-gray-300 dark:border-gray-600 rounded"></div>';
+                    return '<div class="signature-display"><img src="' . $value . '" alt="Signature" class="max-w-xs border border-gray-300 dark:border-gray-600 rounded bg-white"></div>';
                 } else {
                     // Legacy: file path
                     $url = asset('storage/' . $value);
-                    return '<div class="signature-display"><img src="' . $url . '" alt="Signature" class="max-w-xs border border-gray-300 dark:border-gray-600 rounded"></div>';
+                    return '<div class="signature-display"><img src="' . $url . '" alt="Signature" class="max-w-xs border border-gray-300 dark:border-gray-600 rounded bg-white"></div>';
                 }
 
             case 'file':

@@ -476,7 +476,7 @@
                             <div class="relative">
                                 <input type="text" name="search" id="search" value="{{ request('search') }}"
                                     placeholder="Search by name, email, phone..."
-                                    class="w-full pl-10 pr-4 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    class="w-full pl-10 pr-4 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                                 <i
                                     class='bx bx-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500'></i>
                             </div>
@@ -513,8 +513,8 @@
                                 class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                                 <option value="">All Branches</option>
                                 @foreach($branches ?? [] as $branch)
-                                    <option value="{{ $branch->id }}" {{ request('branch_id') == $branch->id ? 'selected' : '' }}>
-                                        {{ $branch->name }}
+                                    <option value="{{ $branch?->id }}" {{ request('branch_id') == $branch?->id ? 'selected' : '' }}>
+                                        {{ $branch?->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -565,7 +565,7 @@
                             <div class="relative">
                                 <input type="text" name="search" id="search" value="{{ request('search') }}"
                                     placeholder="Search by ID, name, email, branch..."
-                                    class="w-full pl-10 pr-4 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    class="w-full pl-10 pr-4 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                                 <i
                                     class='bx bx-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500'></i>
                             </div>
@@ -598,8 +598,8 @@
                                     class="w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                                     <option value="">All Branches</option>
                                     @foreach($branches ?? [] as $branch)
-                                        <option value="{{ $branch->id }}" {{ request('branch_id') == $branch->id ? 'selected' : '' }}>
-                                            {{ $branch->name }}
+                                        <option value="{{ $branch?->id }}" {{ request('branch_id') == $branch?->id ? 'selected' : '' }}>
+                                            {{ $branch?->name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -715,14 +715,14 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span
                                         class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                                                                                                                                                            @if($user->role === 'admin') bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400
-                                                                                                                                                                                            @elseif($user->role === 'branch_manager') bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400
-                                                                                                                                                                                            @elseif($user->role === 'assistant_branch_manager') bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400
-                                                                                                                                                                                            @elseif($user->role === 'operation_officer') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400
-                                                                                                                                                                                            @elseif($user->role === 'headquarters') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
-                                                                                                                                                                                            @elseif($user->role === 'iam') bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400
-                                                                                                                                                                                            @else bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400
-                                                                                                                                                                                            @endif">
+                                                                                                                                                                                                                    @if($user->role === 'admin') bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400
+                                                                                                                                                                                                                    @elseif($user->role === 'branch_manager') bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400
+                                                                                                                                                                                                                    @elseif($user->role === 'assistant_branch_manager') bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400
+                                                                                                                                                                                                                    @elseif($user->role === 'operation_officer') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400
+                                                                                                                                                                                                                    @elseif($user->role === 'headquarters') bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
+                                                                                                                                                                                                                    @elseif($user->role === 'iam') bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400
+                                                                                                                                                                                                                    @else bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400
+                                                                                                                                                                                                                    @endif">
                                         {{ $user->role_display }}
                                     </span>
                                 </td>
@@ -739,11 +739,11 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span
                                         class="px-2 py-1 text-xs font-semibold rounded-full 
-                                                                                                                                                                                            @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
-                                                                                                                                                                                            @elseif($user->status === 'inactive') bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
-                                                                                                                                                                                            @elseif($user->status === 'suspended') bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
-                                                                                                                                                                                            @else bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
-                                                                                                                                                                                            @endif">
+                                                                                                                                                                                                                    @if($user->status === 'active') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                                                                                                                                                                                                                    @elseif($user->status === 'inactive') bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
+                                                                                                                                                                                                                    @elseif($user->status === 'suspended') bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
+                                                                                                                                                                                                                    @else bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
+                                                                                                                                                                                                                    @endif">
                                         {{ ucfirst($user->status) }}
                                     </span>
                                 </td>
@@ -885,14 +885,14 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span
                                         class="px-2 py-1 text-xs font-semibold rounded-full 
-                                                                                                                                                                                            @if($submission->status === 'approved') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
-                                                                                                                                                                                            @elseif($submission->status === 'rejected') bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
-                                                                                                                                                                                            @elseif(in_array($submission->status, ['submitted', 'under_review'])) bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400
-                                                                                                                                                                                            @elseif($submission->status === 'in_progress') bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400
-                                                                                                                                                                                            @elseif($submission->status === 'completed') bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400
-                                                                                                                                                                                            @elseif($submission->status === 'pending_process') bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400
-                                                                                                                                                                                            @else bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
-                                                                                                                                                                                            @endif">
+                                                                                                                                                                                                                    @if($submission->status === 'approved') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
+                                                                                                                                                                                                                    @elseif($submission->status === 'rejected') bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
+                                                                                                                                                                                                                    @elseif(in_array($submission->status, ['submitted', 'under_review'])) bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400
+                                                                                                                                                                                                                    @elseif($submission->status === 'in_progress') bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400
+                                                                                                                                                                                                                    @elseif($submission->status === 'completed') bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400
+                                                                                                                                                                                                                    @elseif($submission->status === 'pending_process') bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400
+                                                                                                                                                                                                                    @else bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
+                                                                                                                                                                                                                    @endif">
                                         {{ ucfirst(str_replace('_', ' ', $submission->status)) }}
                                     </span>
                                 </td>
@@ -1531,10 +1531,10 @@
                     Swal.fire({
                         title: `Set User to ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}?`,
                         html: `
-                                                                                                                                                                        <div class="text-center">
-                                                                                                                                                                            <p class="mb-2">Are you sure you want to set this user to <strong>${actionText}</strong>?</p>
-                                                                                                                                                                        </div>
-                                                                                                                                                                    `,
+                                                                                                                                                                                                <div class="text-center">
+                                                                                                                                                                                                    <p class="mb-2">Are you sure you want to set this user to <strong>${actionText}</strong>?</p>
+                                                                                                                                                                                                </div>
+                                                                                                                                                                                            `,
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonText: `Yes, Set ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}`,
@@ -1629,11 +1629,11 @@
                     Swal.fire({
                         title: 'Verify Email?',
                         html: `
-                                                                                                                                                                        <div class="text-center">
-                                                                                                                                                                            <p class="mb-2">Are you sure you want to verify this user's email address?</p>
-                                                                                                                                                                            <p class="text-sm text-gray-600">This will mark the email as verified.</p>
-                                                                                                                                                                        </div>
-                                                                                                                                                                    `,
+                                                                                                                                                                                                <div class="text-center">
+                                                                                                                                                                                                    <p class="mb-2">Are you sure you want to verify this user's email address?</p>
+                                                                                                                                                                                                    <p class="text-sm text-gray-600">This will mark the email as verified.</p>
+                                                                                                                                                                                                </div>
+                                                                                                                                                                                            `,
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonText: 'Yes, Verify Email',
@@ -1704,11 +1704,11 @@
                     Swal.fire({
                         title: 'Unverify Email?',
                         html: `
-                                                                                                                                                                        <div class="text-center">
-                                                                                                                                                                            <p class="mb-2">Are you sure you want to unverify this user's email address?</p>
-                                                                                                                                                                            <p class="text-sm text-gray-600">This will mark the email as not verified.</p>
-                                                                                                                                                                        </div>
-                                                                                                                                                                    `,
+                                                                                                                                                                                                <div class="text-center">
+                                                                                                                                                                                                    <p class="mb-2">Are you sure you want to unverify this user's email address?</p>
+                                                                                                                                                                                                    <p class="text-sm text-gray-600">This will mark the email as not verified.</p>
+                                                                                                                                                                                                </div>
+                                                                                                                                                                                            `,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'Yes, Unverify Email',
