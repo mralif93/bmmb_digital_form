@@ -149,6 +149,27 @@ class RegenerateQrCodes extends Command
     private function getQrCodeExpirationMinutes(): int
     {
         $settings = Cache::get('system_settings', []);
+
+        // If auto-generation is enabled, use the frequency to determine expiration
+        if ($settings['qr_code_auto_generate'] ?? true) {
+            $frequency = $settings['qr_code_auto_gen_frequency'] ?? 'daily';
+
+            switch ($frequency) {
+                case 'weekly':
+                    return 10080; // 7 days * 24 * 60
+                case 'monthly':
+                    return 43200; // 30 days * 24 * 60
+                case 'quarterly':
+                    return 129600; // 90 days * 24 * 60
+                case 'yearly':
+                    return 525600; // 365 days * 24 * 60
+                case 'daily':
+                default:
+                    return 1440; // 24 hours * 60
+            }
+        }
+
+        // Fallback to manual setting if auto-generation is disabled
         return (int) ($settings['qr_code_expiration_minutes'] ?? 60);
     }
 }
