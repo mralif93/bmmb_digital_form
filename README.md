@@ -229,6 +229,14 @@ Here is a summary of the latest changes and features implemented in the project:
 - **Migration Fixes**: Resolved schema constraints in database migrations.
 - **Role & Access Control**: Refined logic for User Roles and permissions.
 
+#### 7. Recent Quality of Life Improvements (Q1 2026)
+- **Enhanced QR Code Scheduler**: Unified QR code regeneration logic. Manual regeneration now respects the "Frequency" setting (Daily/Weekly) defined in Scheduler settings, ensuring consistent expiration times.
+- **Universal Dark Mode**: Comprehensive dark theme audit and fixes across all Admin pages, ensuring text legibility and UI consistency.
+- **PDF Optimization**: Refined PDF layouts for all forms (Portrait A4), standardized font sizes (Outfit), and fixed color branding for professional printing.
+- **Role Access Fixes**: Resolved "Access Denied" issues for Operation Officers (OO) and Assistant Branch Managers (ABM), granting them proper processing rights.
+- **Form Submission Refinements**: Fixed radio button reset issues and array display errors in submission details.
+- **Robust Syncing**: Hardened MAP synchronization commands against `STDIN` errors and schema conflicts during automated runs.
+
 
 ## 🔧 Development
 
