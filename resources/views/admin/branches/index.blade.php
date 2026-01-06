@@ -219,11 +219,11 @@
                 Swal.fire({
                     title: 'Delete Branch?',
                     html: `
-                                    <div class="text-center">
-                                        <p class="mb-2">Are you sure you want to delete this branch?</p>
-                                        <p class="text-sm text-gray-600">This action will move the branch to the trash.</p>
-                                    </div>
-                                `,
+                                                    <div class="text-center">
+                                                        <p class="mb-2">Are you sure you want to delete this branch?</p>
+                                                        <p class="text-sm text-gray-600 dark:text-gray-400">This action will move the branch to the trash.</p>
+                                                    </div>
+                                                `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, Delete',
@@ -265,11 +265,11 @@
                 Swal.fire({
                     title: 'Resync with MAP?',
                     html: `
-                                        <div class="text-center">
-                                            <p class="mb-2">Are you sure you want to resync data from the MAP database?</p>
-                                            <p class="text-sm text-gray-600">This process might take a while depending on the amount of data.</p>
-                                        </div>
-                                    `,
+                                                        <div class="text-center">
+                                                            <p class="mb-2">Are you sure you want to resync data from the MAP database?</p>
+                                                            <p class="text-sm text-gray-600 dark:text-gray-400">This process might take a while depending on the amount of data.</p>
+                                                        </div>
+                                                    `,
                     icon: 'info',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, Resync',

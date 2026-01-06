@@ -35,7 +35,8 @@
                 <i class='bx bx-trash mr-1.5'></i>
                 Trashed States
             </a>
-            <button onclick="confirmResync('{{ route('admin.states.resync') }}')" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors">
+            <button onclick="confirmResync('{{ route('admin.states.resync') }}')"
+                class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors">
                 <i class='bx bx-refresh mr-1.5'></i>
                 Resync
             </button>
@@ -140,11 +141,11 @@
                 Swal.fire({
                     title: 'Delete State?',
                     html: `
-                            <div class="text-center">
-                                <p class="mb-2">Are you sure you want to delete this state?</p>
-                                <p class="text-sm text-gray-600">This action will move the state to the trash.</p>
-                            </div>
-                        `,
+                                            <div class="text-center">
+                                                <p class="mb-2">Are you sure you want to delete this state?</p>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">This action will move the state to the trash.</p>
+                                            </div>
+                                        `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, Delete',
@@ -186,11 +187,11 @@
                 Swal.fire({
                     title: 'Resync with MAP?',
                     html: `
-                                <div class="text-center">
-                                    <p class="mb-2">Are you sure you want to resync data from the MAP database?</p>
-                                    <p class="text-sm text-gray-600">This process might take a while depending on the amount of data.</p>
-                                </div>
-                            `,
+                                                    <div class="text-center">
+                                                        <p class="mb-2">Are you sure you want to resync data from the MAP database?</p>
+                                                        <p class="text-sm text-gray-600 dark:text-gray-400">This process might take a while depending on the amount of data.</p>
+                                                    </div>
+                                            `,
                     icon: 'info',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, Resync',

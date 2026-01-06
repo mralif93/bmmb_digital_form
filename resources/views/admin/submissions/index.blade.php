@@ -350,7 +350,7 @@ function confirmTakeUp(formSlug, submissionId) {
         html: `
             <div class="text-center">
                 <p class="mb-2">Are you sure you want to take up this submission?</p>
-                <p class="text-sm text-gray-600">The status will change from <strong>Submitted</strong> to <strong>Pending Process</strong>.</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">The status will change from <strong>Submitted</strong> to <strong>Pending Process</strong>.</p>
             </div>
         `,
         icon: 'question',
@@ -454,7 +454,7 @@ function deleteSubmission(formSlug, submissionId) {
         html: `
             <div class="text-center">
                 <p class="mb-2">Are you sure you want to delete this submission?</p>
-                <p class="text-sm text-gray-600">This action can be undone by restoring it from the trashed submissions.</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">This action can be undone by restoring it from the trashed submissions.</p>
             </div>
         `,
         icon: 'warning',
