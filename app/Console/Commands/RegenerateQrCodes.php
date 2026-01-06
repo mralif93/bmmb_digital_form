@@ -85,7 +85,7 @@ class RegenerateQrCodes extends Command
                     'qr_code_image' => null, // No server-side image generation
                     'content' => $qrContent,
                     'last_regenerated_at' => now(),
-                    'expires_at' => today()->endOfDay(),
+                    'expires_at' => now()->addMinutes($this->getQrCodeExpirationMinutes()),
                     'validation_token' => $newToken,
                 ]);
 

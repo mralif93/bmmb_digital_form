@@ -417,7 +417,8 @@ class FormSubmissionPresenter
         // Check if it's a signature field
         if (
             str_contains($fieldName, 'signature') ||
-            (is_string($value) && str_contains($value, 'signatures/'))
+            (is_string($value) && str_contains($value, 'signatures/')) ||
+            (is_string($value) && str_starts_with($value, 'data:image'))
         ) {
             return 'signature';
         }
@@ -457,8 +458,14 @@ class FormSubmissionPresenter
     {
         switch ($type) {
             case 'signature':
-                $url = asset('storage/' . $value);
-                return '<div class="signature-display"><img src="' . $url . '" alt="Signature" class="max-w-xs border border-gray-300 dark:border-gray-600 rounded"></div>';
+                if (str_starts_with($value, 'data:image')) {
+                    // Render Base64 image
+                    return '<div class="signature-display"><img src="' . $value . '" alt="Signature" class="max-w-xs border border-gray-300 dark:border-gray-600 rounded"></div>';
+                } else {
+                    // Legacy: file path
+                    $url = asset('storage/' . $value);
+                    return '<div class="signature-display"><img src="' . $url . '" alt="Signature" class="max-w-xs border border-gray-300 dark:border-gray-600 rounded"></div>';
+                }
 
             case 'file':
                 $url = asset('storage/' . $value);

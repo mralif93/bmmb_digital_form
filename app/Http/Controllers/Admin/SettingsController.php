@@ -34,6 +34,8 @@ class SettingsController extends Controller
             'date_format' => 'nullable|string',
             'time_format' => 'nullable|string',
             'qr_code_expiration_minutes' => 'nullable|integer|min:1|max:10080', // 1 minute to 7 days (10080 minutes)
+            'qr_code_auto_generate' => 'nullable|boolean',
+            'qr_code_auto_gen_frequency' => 'nullable|string|in:daily,weekly,monthly,quarterly,yearly',
             'enable_registration' => 'nullable|boolean',
             'enable_offline_mode' => 'nullable|boolean',
             'enable_email_notifications' => 'nullable|boolean',

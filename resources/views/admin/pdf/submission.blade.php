@@ -386,7 +386,7 @@
                     stripos($sectionName, 'signature') !== false
                 )
             )
-                                                @continue
+                                                    @continue
         @endif
 
         {{-- Skip Remittance Details, Declaration, and Signature for SRF --}}
@@ -405,7 +405,7 @@
                     stripos($sectionName, 'confirmation') !== false
                 )
             )
-                                                @continue
+                                                    @continue
         @endif
 
 
@@ -419,9 +419,9 @@
                     && !(stripos($sectionName, 'declaration') !== false && $submission->form->slug === 'dar')
                     && !($submission->form->slug === 'srf' && (strtolower($sectionName) === 'account type' || strtolower($sectionName) === 'service request details' || stripos($sectionName, 'consent') !== false || stripos($sectionName, 'agreements') !== false || strtolower($sectionName) === 'customer information'))
                 )
-                                                    <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
-                                                        {{ strtoupper($sectionName) }}
-                                                    </div>
+                                                        <div class="section-header" style="padding: 6px 10px; font-size: 9pt; font-weight: bold; border-bottom: none; background: {{ $submission->form->slug === 'srf' ? '#fff' : '#ea580c' }}; color: {{ $submission->form->slug === 'srf' ? '#000' : 'white' }}; border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#c2410c' }};">
+                                                            {{ strtoupper($sectionName) }}
+                                                        </div>
             @endif
 
             {{-- Special 3-column layout for Data Correction Details --}}
@@ -753,7 +753,7 @@
 
                     {{-- 8. Zakat Savings --}}
                     @php 
-                                                                                                                                                        $cZak = $isChecked('field_8');
+                                                                                                                                                                        $cZak = $isChecked('field_8');
                         $zakSav = $isChecked('field_8_1');
                         $zakCur = $isChecked('field_8_2');
                         $zakAgent = $getField('field_8_3');
@@ -931,7 +931,7 @@
 
                     {{-- 12. Physical Delivery --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cPhys = $isChecked('field_12');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $cPhys = $isChecked('field_12');
                         $physRM = $getField('field_12_1');    
                     @endphp
                     <div style="margin-top: 2px;">
@@ -954,7 +954,7 @@
 
                     {{-- 13. Others --}}
                     @php 
-                                                                                                                                                                                                                                                                                                                                        $cOthers = $isChecked('field_13');
+                                                                                                                                                                                                                                                                                                                                                        $cOthers = $isChecked('field_13');
                         $othersText = $getField('field_13_1');
                     @endphp
                     <div style="margin-top: 2px;">
@@ -2173,7 +2173,7 @@
                         $declName = $getRawDAR('field_6_1') ?? '';
                         $declIC = $getRawDAR('field_6_2') ?? '';
                         $declSigPath = $getRawDAR('field_6_3') ?? '';
-                        if (is_string($declSigPath)) {
+                        if (is_string($declSigPath) && !str_starts_with($declSigPath, 'data:image')) {
                             $declSigPath = str_replace('storage/', '', $declSigPath);
                         }
                     @endphp
@@ -2189,7 +2189,11 @@
                                     <td style="width: 60%; vertical-align: bottom; padding-bottom: 3px;">
                                         <div style="border-bottom: 1px dotted #000; display: inline-block; min-width: 200px; height: 30px; margin-bottom: 3px;">
                                             @if($declSigPath)
-                                                <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature" style="max-height: 30px; max-width: 180px;">
+                                                @if(str_starts_with($declSigPath, 'data:image'))
+                                                    <img src="{{ $declSigPath }}" alt="Signature" style="max-height: 30px; max-width: 180px;">
+                                                @else
+                                                    <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature" style="max-height: 30px; max-width: 180px;">
+                                                @endif
                                             @endif
                                         </div>
                                         <div style="font-size: 6pt;">(Signature of Data Subject (account holder) / Third Party Requestor)</div>
@@ -2212,7 +2216,7 @@
                     $declIC = collect($fields)->firstWhere('label', 'NRIC/Passport No.')['value'] ?? '';
                     $declSigField = collect($fields)->firstWhere('label', 'Signature');
                     $declSigPath = $declSigField ? ($declSigField['value'] ?? '') : '';
-                    if (is_string($declSigPath)) {
+                    if (is_string($declSigPath) && !str_starts_with($declSigPath, 'data:image')) {
                         $declSigPath = str_replace('storage/', '', $declSigPath);
                     }
                 @endphp
@@ -2230,7 +2234,11 @@
                                 <td style="width: 60%; vertical-align: bottom; padding-bottom: 3px;">
                                     <div style="border-bottom: 1px dotted #000; display: inline-block; min-width: 200px; height: 30px; margin-bottom: 3px;">
                                         @if($declSigPath)
-                                            <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature" style="max-height: 30px; max-width: 180px;">
+                                            @if(str_starts_with($declSigPath, 'data:image'))
+                                                <img src="{{ $declSigPath }}" alt="Signature" style="max-height: 30px; max-width: 180px;">
+                                            @else
+                                                <img src="{{ public_path('storage/' . $declSigPath) }}" alt="Signature" style="max-height: 30px; max-width: 180px;">
+                                            @endif
                                         @endif
                                     </div>
                                     <div style="font-size: 6pt;">(Signature of Data Subject (account holder) / Third Party Requestor)</div>
@@ -2353,10 +2361,14 @@
                                     style="border: 1px solid {{ $submission->form->slug === 'srf' ? '#000' : '#e5e7eb' }}; padding: 3px 5px; width: 60%; vertical-align: top;">
                                     @if($field['type'] === 'signature')
                                         <div class="signature-box">
-                                            @php
-                                                $signaturePath = str_replace('storage/', '', $field['value']);
-                                            @endphp
-                                            <img src="{{ public_path('storage/' . $signaturePath) }}" alt="Signature">
+                                            @if(str_starts_with($field['value'], 'data:image'))
+                                                <img src="{{ $field['value'] }}" alt="Signature">
+                                            @else
+                                                @php
+                                                    $signaturePath = str_replace('storage/', '', $field['value']);
+                                                @endphp
+                                                <img src="{{ public_path('storage/' . $signaturePath) }}" alt="Signature">
+                                            @endif
                                         </div>
                                     @elseif($field['type'] === 'file')
                                         📎 File Attached: {{ basename($field['value']) }}

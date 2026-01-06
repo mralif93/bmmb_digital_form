@@ -176,11 +176,7 @@
                                         class="inline-flex items-center justify-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 dark:text-orange-400 rounded-lg text-xs transition-colors">
                                         Edit
                                     </a>
-                                    <button onclick="confirmRegenerateQr('{{ route('admin.branches.regenerate-qr', $branch->id) }}')"
-                                        class="inline-flex items-center justify-center px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-400 rounded-lg text-xs transition-colors"
-                                        title="Regenerate QR Code">
-                                        <i class='bx bx-qr'></i>
-                                    </button>
+                                    <!-- Regenerate QR Button Removed -->
                                     <button onclick="deleteBranch({{ $branch->id }})"
                                         class="inline-flex items-center justify-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg text-xs transition-colors">
                                         Delete
@@ -223,11 +219,11 @@
                 Swal.fire({
                     title: 'Delete Branch?',
                     html: `
-                            <div class="text-center">
-                                <p class="mb-2">Are you sure you want to delete this branch?</p>
-                                <p class="text-sm text-gray-600">This action will move the branch to the trash.</p>
-                            </div>
-                        `,
+                                    <div class="text-center">
+                                        <p class="mb-2">Are you sure you want to delete this branch?</p>
+                                        <p class="text-sm text-gray-600">This action will move the branch to the trash.</p>
+                                    </div>
+                                `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, Delete',
@@ -269,11 +265,11 @@
                 Swal.fire({
                     title: 'Resync with MAP?',
                     html: `
-                                <div class="text-center">
-                                    <p class="mb-2">Are you sure you want to resync data from the MAP database?</p>
-                                    <p class="text-sm text-gray-600">This process might take a while depending on the amount of data.</p>
-                                </div>
-                            `,
+                                        <div class="text-center">
+                                            <p class="mb-2">Are you sure you want to resync data from the MAP database?</p>
+                                            <p class="text-sm text-gray-600">This process might take a while depending on the amount of data.</p>
+                                        </div>
+                                    `,
                     icon: 'info',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, Resync',
@@ -315,45 +311,7 @@
                 });
             }
 
-            function confirmRegenerateQr(route) {
-                Swal.fire({
-                    title: 'Regenerate QR Code?',
-                    html: `
-                                <div class="text-center">
-                                    <p class="mb-2">Are you sure you want to regenerate the QR Code for this branch?</p>
-                                    <p class="text-sm text-red-600 font-semibold">This will invalidate the existing QR Code immediately.</p>
-                                </div>
-                            `,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, Regenerate',
-                    cancelButtonText: 'Cancel',
-                    confirmButtonColor: '#f97316',
-                    cancelButtonColor: '#6b7280',
-                    customClass: {
-                        popup: 'rounded-lg',
-                        htmlContainer: 'text-center',
-                        confirmButton: 'rounded-lg',
-                        cancelButton: 'rounded-lg'
-                    },
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = route;
-
-                        const csrf = document.createElement('input');
-                        csrf.type = 'hidden';
-                        csrf.name = '_token';
-                        csrf.value = '{{ csrf_token() }}';
-                        form.appendChild(csrf);
-
-                        document.body.appendChild(form);
-                        form.submit();
-                    }
-                });
-            }
+            // confirmRegenerateQr function removed
         </script>
     @endpush
 @endsection

@@ -132,50 +132,12 @@ class FormSubmissionController extends Controller
             $fieldName = $field->field_name;
             $value = $formData[$fieldName] ?? null;
 
-            // Handle signature fields - convert base64 to image file
+            // Handle signature fields - store base64 directly in database
             if ($field->field_type === 'signature' && !empty($value)) {
-                try {
-                    // Decode base64 signature
-                    if (preg_match('/^data:image\/(\w+);base64,/', $value, $matches)) {
-                        $imageType = $matches[1]; // png, jpeg, etc.
-                        $base64Data = substr($value, strpos($value, ',') + 1);
-                        $imageData = base64_decode($base64Data);
-
-                        if ($imageData !== false) {
-                            // Generate unique filename
-                            $fileName = 'signature_' . $fieldName . '_' . time() . '_' . Str::random(8) . '.png';
-                            $filePath = 'submissions/' . $form->slug . '/signatures/' . $fileName;
-
-                            // Ensure directory exists
-                            $fullPath = storage_path('app/public/' . $filePath);
-                            $directory = dirname($fullPath);
-                            if (!file_exists($directory)) {
-                                mkdir($directory, 0755, true);
-                            }
-
-                            // Save image file
-                            file_put_contents($fullPath, $imageData);
-
-                            // Add to file uploads array
-                            $fileUploads[] = [
-                                'field_name' => $fieldName,
-                                'field_label' => $field->field_label,
-                                'name' => $fileName,
-                                'path' => $filePath,
-                                'size' => strlen($imageData),
-                                'mime' => 'image/png',
-                                'type' => 'signature',
-                            ];
-
-                            // Store file path instead of base64 data
-                            $fieldResponses[$fieldName] = $filePath;
-                            $formData[$fieldName] = $filePath;
-                        }
-                    }
-                } catch (\Exception $e) {
-                    \Log::error('Error processing signature field ' . $fieldName . ': ' . $e->getMessage());
-                    // Fallback: keep base64 if file save fails
+                // Ensure it's a valid base64 image string
+                if (preg_match('/^data:image\/(\w+);base64,/', $value)) {
                     $fieldResponses[$fieldName] = $value;
+                    $formData[$fieldName] = $value;
                 }
             }
             // Handle regular file uploads

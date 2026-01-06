@@ -177,6 +177,10 @@
                             Last Regenerated
                         </th>
                         <th
+                            class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            Expires At
+                        </th>
+                        <th
                             class="px-4 py-3 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                             Actions
                         </th>
@@ -234,6 +238,20 @@
                                     </div>
                                 @endif
                             </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                @if($qrCode->expires_at)
+                                    <div class="text-xs text-gray-900 dark:text-white">
+                                        {{ $timezoneHelper->convert($qrCode->expires_at)?->format($dateFormat) }}
+                                    </div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                                        {{ $timezoneHelper->convert($qrCode->expires_at)?->format($timeFormat) }}
+                                    </div>
+                                @else
+                                    <div class="text-xs text-gray-400 dark:text-gray-500 italic">
+                                        Never
+                                    </div>
+                                @endif
+                            </td>
                             <td class="px-4 py-3 whitespace-nowrap text-right text-xs font-medium">
                                 <div class="flex items-center justify-end space-x-2">
                                     @if(isset($showTrashed) && $showTrashed)
@@ -268,6 +286,13 @@
                                                 class="inline-flex items-center justify-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-500 dark:bg-gray-900/30 dark:hover:bg-gray-900/50 dark:text-gray-400 rounded-lg text-xs transition-colors cursor-not-allowed"
                                                 title="QR Code is inactive">
                                                 QR Code
+                                            </button>
+                                        @endif
+                                        @if($qrCode->status === 'active')
+                                            <button onclick="confirmRegenerate('{{ route('admin.qr-codes.regenerate', $qrCode->id) }}')"
+                                                class="inline-flex items-center justify-center px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-400 rounded-lg text-xs transition-colors"
+                                                title="Regenerate QR Code">
+                                                Regenerate QR
                                             </button>
                                         @endif
                                         <a href="{{ route('admin.qr-codes.show', $qrCode->id) }}"
@@ -319,19 +344,59 @@
         <!-- qrjs2 CDN -->
         <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
         <script>
+            function confirmRegenerate(route) {
+                Swal.fire({
+                    title: 'Regenerate QR Code?',
+                    html: `
+                        <div class="text-center">
+                            <p class="mb-2">Are you sure you want to regenerate this QR Code?</p>
+                            <p class="text-sm text-red-600 font-semibold">This will invalidate the existing QR Code immediately.</p>
+                        </div>
+                    `,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Regenerate',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#f97316',
+                    cancelButtonColor: '#6b7280',
+                    customClass: {
+                        popup: 'rounded-lg',
+                        htmlContainer: 'text-center',
+                        confirmButton: 'rounded-lg',
+                        cancelButton: 'rounded-lg'
+                    },
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = route;
+
+                        const csrf = document.createElement('input');
+                        csrf.type = 'hidden';
+                        csrf.name = '_token';
+                        csrf.value = '{{ csrf_token() }}';
+                        form.appendChild(csrf);
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            }
+
             function showQrCodePopup(qrContent, qrCodeName) {
                 Swal.fire({
                     title: qrCodeName,
                     html: `
-                                                            <div class="flex flex-col items-center">
-                                                                <div id="qrcode-popup" class="w-64 h-64 border border-gray-300 rounded-lg p-4 bg-white mb-4 flex items-center justify-center"></div>
-                                                                <button onclick="downloadQrCode('${qrCodeName}')" 
-                                                                   class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                                                    <i class='bx bx-download mr-2'></i>
-                                                                    Download QR Code
-                                                                </button>
-                                                            </div>
-                                                        `,
+                                                                    <div class="flex flex-col items-center">
+                                                                        <div id="qrcode-popup" class="w-64 h-64 border border-gray-300 rounded-lg p-4 bg-white mb-4 flex items-center justify-center"></div>
+                                                                        <button onclick="downloadQrCode('${qrCodeName}')" 
+                                                                           class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                                                                            <i class='bx bx-download mr-2'></i>
+                                                                            Download QR Code
+                                                                        </button>
+                                                                    </div>
+                                                                `,
                     width: '500px',
                     showCloseButton: true,
                     showConfirmButton: false,
@@ -377,16 +442,16 @@
                 Swal.fire({
                     title: 'Regenerate All QR Codes?',
                     html: `
-                                                            <div class="text-center">
-                                                                <p class="mb-2">Are you sure you want to regenerate all active QR codes?</p>
-                                                                <p class="text-sm text-gray-600 mb-2">This will:</p>
-                                                                <ul class="text-sm text-gray-600 list-disc list-inside mt-2 inline-block text-left">
-                                                                    <li>Update all QR code images</li>
-                                                                    <li>Generate new validation tokens</li>
-                                                                    <li>Invalidate old QR codes</li>
-                                                                </ul>
-                                                            </div>
-                                                        `,
+                                                                    <div class="text-center">
+                                                                        <p class="mb-2">Are you sure you want to regenerate all active QR codes?</p>
+                                                                        <p class="text-sm text-gray-600 mb-2">This will:</p>
+                                                                        <ul class="text-sm text-gray-600 list-disc list-inside mt-2 inline-block text-left">
+                                                                            <li>Update all QR code images</li>
+                                                                            <li>Generate new validation tokens</li>
+                                                                            <li>Invalidate old QR codes</li>
+                                                                        </ul>
+                                                                    </div>
+                                                                `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, Regenerate All',

@@ -208,54 +208,7 @@ class BranchController extends Controller
     /**
      * Regenerate QR Code for a specific branch.
      */
-    public function regenerateQr(Branch $branch)
-    {
-        $user = auth()->user();
-
-        // 1. Find existing active Branch QR for this branch
-        $existingQr = \App\Models\QrCode::where('branch_id', $branch->id)
-            ->where('type', 'branch')
-            ->where('expires_at', '>', now())
-            ->latest()
-            ->first();
-
-        // 2. Invalidate existing QR (delete record)
-        if ($existingQr) {
-            $existingQr->delete();
-        }
-
-        // 3. Generate new details
-        $token = \Illuminate\Support\Str::random(32);
-        $url = route('public.branch', ['tiAgentCode' => $branch->ti_agent_code]);
-        $url .= (str_contains($url, '?') ? '&' : '?') . 'token=' . $token;
-
-        // Get expiration from settings
-        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
-        $expirationMinutes = $settings['qr_code_expiration_minutes'] ?? 1440; // Default 24 hours
-
-        // 4. Create new QR Code record
-        $newQr = \App\Models\QrCode::create([
-            'name' => 'Branch QR - ' . now()->toDateString(),
-            'branch_id' => $branch->id,
-            'validation_token' => $token,
-            'content' => $url,
-            'expires_at' => now()->addMinutes($expirationMinutes),
-            'type' => 'branch',
-            'created_by' => $user->id,
-            'last_regenerated_at' => now(),
-        ]);
-
-        // 5. Log audit trail
-        $this->logAuditTrail(
-            action: 'regenerate_qr',
-            description: "Regenerated QR Code for branch: {$branch->branch_name}",
-            modelType: Branch::class,
-            modelId: $branch->id,
-            newValues: ['qr_code_id' => $newQr->id]
-        );
-
-        return redirect()->back()->with('success', 'QR Code regenerated successfully!');
-    }
+    // regenerateQr method removed
 
     /**
      * Remove the specified resource from storage.
