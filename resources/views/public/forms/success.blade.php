@@ -10,7 +10,8 @@
             <div
                 class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-green-100 dark:border-green-800">
                 <!-- Success Header with Animation -->
-                <div class="bg-gradient-to-r from-green-500 to-emerald-600 pt-8 pb-10 md:pt-12 md:pb-14 px-6 md:px-12 text-center relative overflow-hidden">
+                <div
+                    class="bg-gradient-to-r from-green-500 to-emerald-600 pt-8 pb-10 md:pt-12 md:pb-14 px-6 md:px-12 text-center relative overflow-hidden">
                     <!-- Animated Background Circles -->
                     <div class="absolute inset-0 overflow-hidden opacity-30">
                         <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/20 rounded-full animate-pulse"></div>
@@ -22,7 +23,8 @@
                     <div class="relative z-10 mb-5 md:mb-6">
                         <div
                             class="inline-flex items-center justify-center w-20 h-20 md:w-24 md:h-24 bg-white rounded-full shadow-lg animate-bounce">
-                            <svg class="w-10 h-10 md:w-12 md:h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-10 h-10 md:w-12 md:h-12 text-green-600" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7">
                                 </path>
                             </svg>
@@ -43,7 +45,8 @@
                     <!-- Reference Number (Prominent Display) -->
                     <div
                         class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-5 md:p-6 border border-blue-100 dark:border-blue-800 shadow-inner">
-                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 md:gap-6 text-center sm:text-left">
+                        <div
+                            class="flex flex-col sm:flex-row items-center justify-between gap-4 md:gap-6 text-center sm:text-left">
                             <div class="flex-1 min-w-0">
                                 <p
                                     class="text-xs md:text-sm font-bold text-blue-600 dark:text-blue-400 mb-1.5 uppercase tracking-wider">
@@ -73,7 +76,8 @@
                             <div class="flex flex-col items-center sm:items-start text-center sm:text-left">
                                 <div class="mb-2 sm:mb-1 sm:flex sm:items-center sm:gap-2">
                                     <i class='bx bx-calendar text-gray-400 dark:text-gray-500 text-lg md:text-xl'></i>
-                                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                                    <p
+                                        class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                                         Date
                                     </p>
                                 </div>
@@ -92,7 +96,8 @@
                             <div class="flex flex-col items-center sm:items-start text-center sm:text-left">
                                 <div class="mb-2 sm:mb-1 sm:flex sm:items-center sm:gap-2">
                                     <i class='bx bx-check-circle text-green-500 dark:text-green-400 text-lg md:text-xl'></i>
-                                    <p class="text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide">
+                                    <p
+                                        class="text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide">
                                         Status
                                     </p>
                                 </div>
@@ -107,20 +112,22 @@
                     </div>
 
                     <!-- What's Next Section -->
-                    <div class="bg-amber-50 dark:bg-amber-900/10 rounded-xl p-5 md:p-6 border border-amber-100 dark:border-amber-800/50">
-                         <h3 class="text-sm md:text-base font-bold text-amber-900 dark:text-amber-300 mb-3 flex items-center gap-2">
-                             <i class='bx bx-time-five text-amber-600 text-lg'></i> What's Next?
-                         </h3>
-                         <ul class="space-y-2.5 text-sm md:text-base text-amber-800 dark:text-amber-200/80">
-                             <li class="flex items-start gap-2.5">
-                                 <span class="text-amber-500 mt-1">•</span>
-                                 <span>We will review your request within <strong>3-5 business days</strong>.</span>
-                             </li>
-                             <li class="flex items-start gap-2.5">
-                                 <span class="text-amber-500 mt-1">•</span>
-                                 <span>Check your email for confirmation.</span>
-                             </li>
-                         </ul>
+                    <div
+                        class="bg-amber-50 dark:bg-amber-900/10 rounded-xl p-5 md:p-6 border border-amber-100 dark:border-amber-800/50">
+                        <h3
+                            class="text-sm md:text-base font-bold text-amber-900 dark:text-amber-300 mb-3 flex items-center gap-2">
+                            <i class='bx bx-time-five text-amber-600 text-lg'></i> What's Next?
+                        </h3>
+                        <ul class="space-y-2.5 text-sm md:text-base text-amber-800 dark:text-amber-200/80">
+                            <li class="flex items-start gap-2.5">
+                                <span class="text-amber-500 mt-1">•</span>
+                                <span>Please wait for our officer to call you.</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <span class="text-amber-500 mt-1">•</span>
+                                <span>Show this reference number to the officer when called.</span>
+                            </li>
+                        </ul>
                     </div>
 
                     <!-- Action Buttons -->
@@ -140,11 +147,13 @@
                         </a>
                     </div>
                 </div>
-                
+
                 <!-- Footer Support Link -->
-                 <div class="bg-gray-50 dark:bg-gray-900/50 px-6 py-4 md:px-8 md:py-6 border-t border-gray-100 dark:border-gray-800 text-center">
+                <div
+                    class="bg-gray-50 dark:bg-gray-900/50 px-6 py-4 md:px-8 md:py-6 border-t border-gray-100 dark:border-gray-800 text-center">
                     <p class="text-xs md:text-sm text-gray-400 dark:text-gray-500">
-                        Need help? <a href="tel:+60321611000" class="underline hover:text-gray-600 dark:hover:text-gray-400">Contact Support</a>
+                        Need help? <a href="tel:+60321611000"
+                            class="underline hover:text-gray-600 dark:hover:text-gray-400">Contact Support</a>
                     </p>
                 </div>
             </div>
