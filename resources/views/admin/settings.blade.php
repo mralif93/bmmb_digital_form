@@ -40,7 +40,7 @@
             @csrf
             @method('PUT')
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700"
-                x-data="{ activeTab: 'general' }">
+                x-data="{ activeTab: 'general', qrAccessEnabled: {{ ($settings['qr_code_auto_generate'] ?? true) ? 'true' : 'false' }} }">
                 <div class="border-b border-gray-200 dark:border-gray-700">
                     <nav class="flex space-x-8 px-6" aria-label="Tabs">
                         <button type="button" @click="activeTab = 'general'"
@@ -441,6 +441,38 @@
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">MAP Synchronization</h3>
                             <div class="space-y-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900 dark:text-white">Enable Auto-Regeneration (QR Code)</h4>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Automatically regenerate QR codes periodically</p>
+                                    </div>
+                                    <!-- Hidden input to ensure false is sent when unchecked -->
+                                    <input type="hidden" name="qr_code_auto_generate" value="0">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" name="qr_code_auto_generate" value="1" {{ ($settings['qr_code_auto_generate'] ?? true) ? 'checked' : '' }}
+                                            class="sr-only peer"
+                                            x-model="qrAccessEnabled"
+                                            @click="toggleQrFrequency()">
+                                        <div
+                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
+                                        </div>
+                                    </label>
+                                </div>
+                                <div x-show="qrAccessEnabled" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Regeneration Frequency</label>
+                                        <select name="qr_code_auto_gen_frequency"
+                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
+                                            <option value="daily" {{ ($settings['qr_code_auto_gen_frequency'] ?? 'daily') == 'daily' ? 'selected' : '' }}>Daily</option>
+                                            <option value="weekly" {{ ($settings['qr_code_auto_gen_frequency'] ?? 'daily') == 'weekly' ? 'selected' : '' }}>Weekly</option>
+                                            <option value="monthly" {{ ($settings['qr_code_auto_gen_frequency'] ?? 'daily') == 'monthly' ? 'selected' : '' }}>Monthly</option>
+                                            <option value="quarterly" {{ ($settings['qr_code_auto_gen_frequency'] ?? 'daily') == 'quarterly' ? 'selected' : '' }}>Quarterly</option>
+                                            <option value="yearly" {{ ($settings['qr_code_auto_gen_frequency'] ?? 'daily') == 'yearly' ? 'selected' : '' }}>Yearly</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <hr class="border-gray-200 dark:border-gray-700">
+
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <h4 class="text-sm font-medium text-gray-900 dark:text-white">Enable User Sync</h4>

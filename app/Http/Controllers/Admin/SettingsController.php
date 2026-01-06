@@ -92,6 +92,8 @@ class SettingsController extends Controller
                 'date_format' => 'd/m/Y',
                 'time_format' => 'h:i A',
                 'qr_code_expiration_minutes' => 1440, // 24 hours
+                'qr_code_auto_generate' => true,
+                'qr_code_auto_gen_frequency' => 'daily',
                 'enable_registration' => true,
                 'enable_offline_mode' => true,
                 'enable_email_notifications' => true,
@@ -114,6 +116,8 @@ class SettingsController extends Controller
             'date_format' => 'd/m/Y',
             'time_format' => 'h:i A',
             'qr_code_expiration_minutes' => 1440,
+            'qr_code_auto_generate' => true,
+            'qr_code_auto_gen_frequency' => 'daily',
             'enable_registration' => true,
             'enable_offline_mode' => true,
             'enable_email_notifications' => true,

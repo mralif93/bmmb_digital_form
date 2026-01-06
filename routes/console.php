@@ -8,19 +8,41 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Schedule QR code regeneration every hour
-Schedule::command('qr-codes:regenerate')
-    ->daily()
-    ->withoutOverlapping()
-    ->onOneServer()
-    ->appendOutputTo(storage_path('logs/qr-codes-regeneration.log'));
-
 // Retrieve system settings
 try {
     $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
 } catch (\Throwable $e) {
     // Handling for when database connection fails (e.g. during build)
     $settings = [];
+}
+
+// Schedule QR code regeneration based on settings
+if ($settings['qr_code_auto_generate'] ?? true) {
+    $frequency = $settings['qr_code_auto_gen_frequency'] ?? 'daily';
+
+    $command = Schedule::command('qr-codes:regenerate')
+        ->withoutOverlapping()
+        ->onOneServer()
+        ->appendOutputTo(storage_path('logs/qr-codes-regeneration.log'));
+
+    switch ($frequency) {
+        case 'weekly':
+            $command->weekly();
+            break;
+        case 'monthly':
+            $command->monthly();
+            break;
+        case 'quarterly':
+            $command->quarterly();
+            break;
+        case 'yearly':
+            $command->yearly();
+            break;
+        case 'daily':
+        default:
+            $command->daily();
+            break;
+    }
 }
 
 // Schedule MAP branches/states/regions sync daily at 5 AM (before user sync)
