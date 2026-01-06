@@ -727,6 +727,7 @@ Route::group(['prefix' => env('ROUTE_PREFIX', '')], function () {
             Route::post('/branches/{id}/restore', [BranchController::class, 'restore'])->name('branches.restore');
             Route::delete('/branches/{id}/force-delete', [BranchController::class, 'forceDelete'])->name('branches.force-delete');
             Route::resource('branches', BranchController::class);
+            Route::post('/branches/{branch}/regenerate-qr', [BranchController::class, 'regenerateQr'])->name('branches.regenerate-qr');
             // States
             Route::get('states/trashed', [\App\Http\Controllers\Admin\StateController::class, 'trashed'])->name('states.trashed');
             Route::post('states/resync', [\App\Http\Controllers\Admin\StateController::class, 'resync'])->name('states.resync');
