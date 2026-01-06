@@ -912,10 +912,19 @@ class FormRendererService
                     // Resize canvas to maintain aspect ratio
                     function resizeCanvas() {
                         const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                        
+                        // Store current signature data
+                        const data = signaturePad.toData();
+                        
                         canvas.width = canvas.offsetWidth * ratio;
                         canvas.height = canvas.offsetHeight * ratio;
                         canvas.getContext("2d").scale(ratio, ratio);
+                        
+                        // Restore signature data if exists, otherwise clear
                         signaturePad.clear();
+                        if (data && data.length > 0) {
+                            signaturePad.fromData(data);
+                        }
                     }
                     
                     // Initial resize
@@ -925,8 +934,14 @@ class FormRendererService
                     // Save signature to hidden input
                     signaturePad.addEventListener("endStroke", function() {
                         if (!signaturePad.isEmpty()) {
-                            hiddenInput.value = signaturePad.toDataURL("image/png");
+                            const dataUrl = signaturePad.toDataURL("image/png");
+                            hiddenInput.value = dataUrl;
+                        } else {
+                             hiddenInput.value = "";
                         }
+                        // Dispatch input/change events so other listeners (Alpine, etc.) pick it up
+                        hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+                        hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
                     });
                     
                     // Clear button
@@ -934,6 +949,9 @@ class FormRendererService
                         clearBtn.addEventListener("click", function() {
                             signaturePad.clear();
                             hiddenInput.value = "";
+                            // Dispatch events on clear
+                            hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+                            hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
                         });
                     }
                 } else if (canvas) {
