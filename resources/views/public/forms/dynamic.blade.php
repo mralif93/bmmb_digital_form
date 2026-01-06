@@ -79,10 +79,10 @@
                                         <!-- Step Circle -->
                                         <div class="rounded-full flex items-center justify-center font-bold transition-all duration-500 ease-out"
                                             :class="{
-                                                                                         'w-12 h-12 text-base bg-gradient-to-br from-primary-500 to-primary-600 text-white ring-4 ring-primary-200 shadow-2xl shadow-primary-500/50 scale-110': currentStep === {{ $stepNumber }},
-                                                                                         'w-9 h-9 text-xs bg-primary-600 text-white ring-2 ring-primary-300/50 shadow-lg': currentStep > {{ $stepNumber }},
-                                                                                         'w-9 h-9 text-xs bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 shadow-md': currentStep < {{ $stepNumber }}
-                                                                                     }"
+                                                                                                     'w-12 h-12 text-base bg-gradient-to-br from-primary-500 to-primary-600 text-white ring-4 ring-primary-200 shadow-2xl shadow-primary-500/50 scale-110': currentStep === {{ $stepNumber }},
+                                                                                                     'w-9 h-9 text-xs bg-primary-600 text-white ring-2 ring-primary-300/50 shadow-lg': currentStep > {{ $stepNumber }},
+                                                                                                     'w-9 h-9 text-xs bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 shadow-md': currentStep < {{ $stepNumber }}
+                                                                                                 }"
                                             :style="currentStep === {{ $stepNumber }} ? 'box-shadow: 0 10px 40px -10px rgba(254, 128, 0, 0.6), 0 0 0 4px rgba(254, 128, 0, 0.1)' : ''">
                                             <i class='bx bx-check font-bold'
                                                 :class="currentStep > {{ $stepNumber }} ? 'text-base' : ''"
@@ -92,10 +92,10 @@
                                         <!-- Step Label -->
                                         <div class="mt-3 text-center">
                                             <span class="text-xs font-semibold block transition-all duration-300" :class="{
-                                                                                              'text-primary-700 dark:text-primary-400 scale-105': currentStep === {{ $stepNumber }},
-                                                                                              'text-primary-600 dark:text-primary-500': currentStep > {{ $stepNumber }},
-                                                                                              'text-gray-500 dark:text-gray-500': currentStep < {{ $stepNumber }}
-                                                                                          }">
+                                                                                                          'text-primary-700 dark:text-primary-400 scale-105': currentStep === {{ $stepNumber }},
+                                                                                                          'text-primary-600 dark:text-primary-500': currentStep > {{ $stepNumber }},
+                                                                                                          'text-gray-500 dark:text-gray-500': currentStep < {{ $stepNumber }}
+                                                                                                      }">
                                                 {{ $shortLabel }}
                                             </span>
                                             <span
@@ -109,8 +109,8 @@
                                     @if($index < count($sections) - 1 || true)
                                         <div class="flex-1 h-1 mx-3 mb-6 transition-all duration-500 rounded-full relative overflow-hidden"
                                             :class="{
-                                                                                                     'bg-gray-200 dark:bg-gray-700': currentStep <= {{ $stepNumber }}
-                                                                                                 }">
+                                                                                                                     'bg-gray-200 dark:bg-gray-700': currentStep <= {{ $stepNumber }}
+                                                                                                                 }">
                                             <div class="h-full bg-gradient-to-r from-primary-500 to-primary-600 rounded-full transition-all duration-500"
                                                 :style="currentStep > {{ $stepNumber }} ? 'width: 100%' : 'width: 0%'"></div>
                                         </div>
@@ -123,10 +123,10 @@
                                     <!-- Step Circle -->
                                     <div class="rounded-full flex items-center justify-center font-bold transition-all duration-500 ease-out"
                                         :class="{
-                                                                     'w-12 h-12 text-base bg-gradient-to-br from-primary-500 to-primary-600 text-white ring-4 ring-primary-200 shadow-2xl shadow-primary-500/50 scale-110': currentStep === {{ count($sections) + 1 }},
-                                                                     'w-9 h-9 text-xs bg-primary-600 text-white ring-2 ring-primary-300/50 shadow-lg': currentStep > {{ count($sections) + 1 }},
-                                                                     'w-9 h-9 text-xs bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 shadow-md': currentStep < {{ count($sections) + 1 }}
-                                                                 }"
+                                                                             'w-12 h-12 text-base bg-gradient-to-br from-primary-500 to-primary-600 text-white ring-4 ring-primary-200 shadow-2xl shadow-primary-500/50 scale-110': currentStep === {{ count($sections) + 1 }},
+                                                                             'w-9 h-9 text-xs bg-primary-600 text-white ring-2 ring-primary-300/50 shadow-lg': currentStep > {{ count($sections) + 1 }},
+                                                                             'w-9 h-9 text-xs bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 shadow-md': currentStep < {{ count($sections) + 1 }}
+                                                                         }"
                                         :style="currentStep === {{ count($sections) + 1 }} ? 'box-shadow: 0 10px 40px -10px rgba(254, 128, 0, 0.6), 0 0 0 4px rgba(254, 128, 0, 0.1)' : ''">
                                         <i class='bx bx-check font-bold'
                                             :class="currentStep > {{ count($sections) + 1 }} ? 'text-base' : ''"
@@ -140,10 +140,10 @@
                                     <!-- Step Label -->
                                     <div class="mt-3 text-center">
                                         <span class="text-xs font-semibold block transition-all duration-300" :class="{
-                                                                          'text-primary-700 dark:text-primary-400 scale-105': currentStep === {{ count($sections) + 1 }},
-                                                                          'text-primary-600 dark:text-primary-500': currentStep > {{ count($sections) + 1 }},
-                                                                          'text-gray-500 dark:text-gray-500': currentStep < {{ count($sections) + 1 }}
-                                                                      }">
+                                                                                  'text-primary-700 dark:text-primary-400 scale-105': currentStep === {{ count($sections) + 1 }},
+                                                                                  'text-primary-600 dark:text-primary-500': currentStep > {{ count($sections) + 1 }},
+                                                                                  'text-gray-500 dark:text-gray-500': currentStep < {{ count($sections) + 1 }}
+                                                                              }">
                                             Review
                                         </span>
                                         <span
@@ -185,10 +185,10 @@
                                         <!-- Step Circle -->
                                         <div class="rounded-full flex items-center justify-center text-xs font-bold transition-all duration-500"
                                             :class="{
-                                                                                         'w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 text-white ring-3 ring-primary-200 shadow-xl scale-110': currentStep === {{ $stepNumber }},
-                                                                                         'w-7 h-7 bg-primary-600 text-white ring-1 ring-primary-300 shadow-md': currentStep > {{ $stepNumber }},
-                                                                                         'w-7 h-7 bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 shadow-sm': currentStep < {{ $stepNumber }}
-                                                                                     }">
+                                                                                                     'w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 text-white ring-3 ring-primary-200 shadow-xl scale-110': currentStep === {{ $stepNumber }},
+                                                                                                     'w-7 h-7 bg-primary-600 text-white ring-1 ring-primary-300 shadow-md': currentStep > {{ $stepNumber }},
+                                                                                                     'w-7 h-7 bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 shadow-sm': currentStep < {{ $stepNumber }}
+                                                                                                 }">
                                             <i class='bx bx-check text-xs font-bold' x-show="currentStep > {{ $stepNumber }}"></i>
                                             <span x-show="currentStep <= {{ $stepNumber }}">{{ $stepNumber }}</span>
                                         </div>
@@ -206,10 +206,10 @@
                                 <div class="flex items-center relative z-10">
                                     <div class="rounded-full flex items-center justify-center text-xs font-bold transition-all duration-500"
                                         :class="{
-                                                                     'w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 text-white ring-3 ring-primary-200 shadow-xl scale-110': currentStep === {{ count($sections) + 1 }},
-                                                                     'w-7 h-7 bg-primary-600 text-white ring-1 ring-primary-300 shadow-md': currentStep > {{ count($sections) + 1 }},
-                                                                     'w-7 h-7 bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 shadow-sm': currentStep < {{ count($sections) + 1 }}
-                                                                 }">
+                                                                             'w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 text-white ring-3 ring-primary-200 shadow-xl scale-110': currentStep === {{ count($sections) + 1 }},
+                                                                             'w-7 h-7 bg-primary-600 text-white ring-1 ring-primary-300 shadow-md': currentStep > {{ count($sections) + 1 }},
+                                                                             'w-7 h-7 bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 shadow-sm': currentStep < {{ count($sections) + 1 }}
+                                                                         }">
                                         <i class='bx bx-check text-xs font-bold'
                                             x-show="currentStep > {{ count($sections) + 1 }}"></i>
                                         <i class='bx bx-show text-xs font-bold'
@@ -282,9 +282,23 @@
                                                         <span class="text-red-500">*</span>@endif:</span>
                                                 </div>
                                                 <div class="md:col-span-2">
-                                                    <span class="text-sm text-gray-900 dark:text-gray-100"
-                                                        x-text="currentStep === totalSteps ? getFieldValue('{{ $field->field_name }}') : 'Not provided'"
-                                                        x-init="$watch('currentStep', () => { if (currentStep === totalSteps) { $el.textContent = getFieldValue('{{ $field->field_name }}'); } })"></span>
+                                                    @if($field->field_type === 'signature')
+                                                        <div x-show="currentStep === totalSteps">
+                                                            <template
+                                                                x-if="getFieldValue('{{ $field->field_name }}') && getFieldValue('{{ $field->field_name }}').startsWith('data:image')">
+                                                                <img :src="getFieldValue('{{ $field->field_name }}')" alt="Signature"
+                                                                    class="max-h-24 border border-gray-300 rounded p-1 bg-white">
+                                                            </template>
+                                                            <template
+                                                                x-if="!getFieldValue('{{ $field->field_name }}') || !getFieldValue('{{ $field->field_name }}').startsWith('data:image')">
+                                                                <span class="text-sm text-gray-500 italic">Not signed</span>
+                                                            </template>
+                                                        </div>
+                                                    @else
+                                                        <span class="text-sm text-gray-900 dark:text-gray-100"
+                                                            x-text="currentStep === totalSteps ? getFieldValue('{{ $field->field_name }}') : 'Not provided'"
+                                                            x-init="$watch('currentStep', () => { if (currentStep === totalSteps) { $el.textContent = getFieldValue('{{ $field->field_name }}'); } })"></span>
+                                                    @endif
                                                 </div>
                                             </div>
                                         @endforeach
