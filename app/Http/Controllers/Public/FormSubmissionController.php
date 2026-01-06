@@ -280,8 +280,13 @@ class FormSubmissionController extends Controller
             abort(404, 'Submission not found');
         }
 
+        // Get system settings for date/time format
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'd/m/Y';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
         // Generate PDF using DomPDF
-        $pdf = \PDF::loadView('admin.pdf.submission', compact('submission'));
+        $pdf = \PDF::loadView('admin.pdf.submission', compact('submission', 'dateFormat', 'timeFormat'));
         $pdf->setPaper('A4', 'portrait');
 
         // Stream PDF in browser
@@ -301,7 +306,12 @@ class FormSubmissionController extends Controller
             abort(404, 'Submission not found');
         }
 
-        $pdf = \PDF::loadView('admin.pdf.submission', compact('submission'));
+        // Get system settings for date/time format
+        $settings = \Illuminate\Support\Facades\Cache::get('system_settings', []);
+        $dateFormat = $settings['date_format'] ?? 'd/m/Y';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+
+        $pdf = \PDF::loadView('admin.pdf.submission', compact('submission', 'dateFormat', 'timeFormat'));
         $pdf->setPaper('A4', 'portrait');
 
         // Download PDF file
